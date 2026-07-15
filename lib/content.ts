@@ -86,7 +86,7 @@ export interface LogoInstitucional {
 }
 
 export const footer = {
-  repo: "https://github.com/PLACEHOLDER/territorio-inn-2026",
+  repo: "https://github.com/Luis-Vanegas/territorio-inn-2026-manrique",
   licencia: "MIT",
   logos: [
     { src: "/logos/itm.svg", alt: "ITM" },

@@ -4,6 +4,9 @@ Landing pública de la propuesta **Territorio INN 2026** para la Comuna 3 de Med
 
 Reto escogido: **#2 — Empleo y Desarrollo Económico**.
 
+**Demo en producción:** https://territorio-inn-2026-manrique.vercel.app
+**Repositorio:** https://github.com/Luis-Vanegas/territorio-inn-2026-manrique
+
 Esta iteración es solo la cáscara visual: landing estática, sin autenticación, sin dashboards, sin conexión a base de datos. Esas capas llegan en iteraciones futuras.
 
 ## Equipo
