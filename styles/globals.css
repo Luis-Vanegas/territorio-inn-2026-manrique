@@ -1,0 +1,31 @@
+/* Reset mínimo + tipografía base. La jerarquía real vive en cada componente vía Tailwind. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-hueso: #f7f5f0;
+  --color-tinta: #1a1a1a;
+  --color-terracota: #c55a3c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-hueso);
+  color: var(--color-tinta);
+  font-family: var(--font-geist-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Margen editorial compartido: los titulares "rompen" contra este límite, no contra el viewport. */
+.margen-editorial {
+  padding-left: clamp(1.5rem, 5vw, 6rem);
+  padding-right: clamp(1.5rem, 5vw, 6rem);
+}
