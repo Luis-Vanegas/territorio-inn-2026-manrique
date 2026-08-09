@@ -7,10 +7,19 @@ import { sql } from '@/lib/db/neon';
 // Por eso la protección de /admin vive en app/admin/layout.tsx y NO en middleware.ts:
 // en Next 14 el middleware es Edge-only, donde node:crypto y cookies() no existen.
 
-const SECRET = process.env.ADMIN_SESSION_SECRET;
-if (!SECRET) throw new Error('Falta ADMIN_SESSION_SECRET');
-
 const DURACION_SESION = 8 * 60 * 60 * 1000; // 8 horas
+
+/**
+ * Diferida a propósito: leerla al importar el módulo hace que `next build`
+ * falle con "Failed to collect page data", porque Next importa cada página
+ * durante el build para inspeccionarla — no para atender un request. Ver el
+ * mismo razonamiento, más detallado, en lib/db/neon.ts.
+ */
+function obtenerSecreto(): string {
+  const secreto = process.env.ADMIN_SESSION_SECRET;
+  if (!secreto) throw new Error('Falta ADMIN_SESSION_SECRET');
+  return secreto;
+}
 
 // ── Passwords ────────────────────────────────────────────────
 // scrypt de node:crypto — no hace falta bcrypt como dependencia.
@@ -40,7 +49,7 @@ export function verificarPassword(ingresado: string, almacenado: string): boolea
 export function crearTokenSesion(email: string): string {
   const payload = JSON.stringify({ email, exp: Date.now() + DURACION_SESION });
   const payloadB64 = Buffer.from(payload).toString('base64url');
-  const firma = crypto.createHmac('sha256', SECRET!).update(payloadB64).digest('hex');
+  const firma = crypto.createHmac('sha256', obtenerSecreto()).update(payloadB64).digest('hex');
   return `${payloadB64}.${firma}`;
 }
 
@@ -53,7 +62,7 @@ export function verificarSesion(): { email: string } | null {
 
   // Se firma el base64url, no el JSON crudo: así la verificación no depende
   // de que el decode reproduzca byte a byte lo que se firmó.
-  const esperada = crypto.createHmac('sha256', SECRET!).update(payloadB64).digest('hex');
+  const esperada = crypto.createHmac('sha256', obtenerSecreto()).update(payloadB64).digest('hex');
   if (firma.length !== esperada.length) return null;
   if (!crypto.timingSafeEqual(Buffer.from(firma), Buffer.from(esperada))) return null;
 
