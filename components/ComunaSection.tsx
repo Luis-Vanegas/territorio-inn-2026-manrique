@@ -1,10 +1,12 @@
-// La Comuna 3 — Manrique: 3 KPIs en JetBrains Mono, gigantes, con altura escalonada para que no lea
-// como un dashboard de 3 columnas idénticas sino como una infografía editorial.
+// La Comuna 3 — Manrique: 4 KPIs en JetBrains Mono, gigantes, con altura escalonada para que no lea
+// como un dashboard de columnas idénticas sino como una infografía editorial. Los primeros 2
+// (desempleo Manrique 2019 vs. Antioquia 2026) van uno al lado del otro a propósito: la brecha
+// temporal entre ambos ES el punto.
 
 import { comuna } from "@/lib/content";
 import { ScrollReveal } from "./ScrollReveal";
 
-const DESPLAZAMIENTOS = ["lg:mt-0", "lg:mt-16", "lg:mt-4"];
+const DESPLAZAMIENTOS = ["lg:mt-0", "lg:mt-16", "lg:mt-4", "lg:mt-20"];
 
 export function ComunaSection() {
   return (
@@ -15,14 +17,14 @@ export function ComunaSection() {
         </h2>
       </ScrollReveal>
 
-      <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 lg:grid-cols-3">
+      <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-4">
         {comuna.kpis.map((kpi, indice) => (
           <ScrollReveal
             key={kpi.etiqueta}
             delay={indice * 0.1}
             className={DESPLAZAMIENTOS[indice]}
           >
-            <p className="font-mono text-6xl font-medium text-terracota sm:text-7xl">
+            <p className="font-mono text-5xl font-medium text-terracota sm:text-6xl">
               {kpi.valor}
             </p>
             <p className="mt-3 font-sans text-base font-medium text-tinta">

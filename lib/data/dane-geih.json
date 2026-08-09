@@ -1,0 +1,16 @@
+{
+  "fuente": "DANE - GEIH (Gran Encuesta Integrada de Hogares)",
+  "cobertura": "Antioquia (departamento) — el microdato público no desagrega a municipio ni comuna",
+  "periodo": "2026-05",
+  "fechaProceso": "2026-07-21",
+  "tasaDesempleo": 8,
+  "tasaInformalidad": 55.6,
+  "metodologia": {
+    "desempleo": "Desocupados (No ocupados.CSV, DSI=1) / (Ocupados + Desocupados), ponderado por FEX_C18.",
+    "informalidad": "Ocupados que no cotizan a pensión (Ocupados.CSV, P6920≠1) / total ocupados, ponderado por FEX_C18. Aproximación por seguridad social; no reproduce la metodología completa de informalidad del DANE."
+  },
+  "muestra": {
+    "registrosOcupados": 29920,
+    "registrosDesocupados": 3080
+  }
+}

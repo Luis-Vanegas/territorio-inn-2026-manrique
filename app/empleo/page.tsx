@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { ModuloProximamente } from "@/components/ModuloProximamente";
-import { enfoque } from "@/lib/content";
-
-const modulo = enfoque.modulos.find((m) => m.slug === "empleo")!;
+import { EmpleoModulo } from "@/components/EmpleoModulo";
 
 export const metadata: Metadata = {
-  title: `${modulo.nombre} · Territorio INN 2026`,
+  title: "Empleo · Territorio INN 2026",
 };
 
 export default function EmpleoPage() {
-  return <ModuloProximamente modulo={modulo} />;
+  return <EmpleoModulo />;
 }

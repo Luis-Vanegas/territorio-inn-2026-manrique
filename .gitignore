@@ -7,3 +7,7 @@ out
 next-env.d.ts
 
 .vercel
+
+# Fuentes de datos crudas (DANE, Cámara de Comercio, etc.) — pesadas, no van al repo
+*.zip
+/data/
