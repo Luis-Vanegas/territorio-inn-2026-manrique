@@ -4,9 +4,9 @@
  *
  *   npm run db:admin -- --email ana@itm.edu.co --nombre "Ana Restrepo"
  *
- * El password se pide por consola con el eco apagado y nunca se pasa como
- * argumento: los argumentos quedan en el historial del shell y en la lista de
- * procesos, donde cualquiera del equipo los puede leer.
+ * El password se pide por consola y nunca se pasa como argumento: los
+ * argumentos quedan en el historial del shell y en la lista de procesos,
+ * donde cualquiera del equipo los puede leer.
  *
  * Si el email ya existe, actualiza el password (sirve para resetear).
  */
@@ -48,25 +48,27 @@ function hashPassword(password) {
   return `${salt.toString('hex')}:${hash.toString('hex')}`;
 }
 
-/** Prompt sin eco: el password no queda visible en pantalla ni en el scrollback. */
+/**
+ * Prompt simple, sin enmascarar el password en pantalla.
+ *
+ * ponytail: la primera versión intentaba ocultar el password reescribiendo la
+ * línea con códigos ANSI, escuchando el stream a mano junto con
+ * readline.question(). Eso requiere setRawMode(true) para que stdin entregue
+ * el input carácter a carácter — sin eso, en Windows la terminal solo entrega
+ * el texto de a línea completa (recién al Enter), y la combinación se colgaba.
+ * Es un script que cada quien corre en su propia máquina para crear su propia
+ * cuenta: no hay a quién ocultarle la pantalla. Si algún día hace falta
+ * ocultarlo de verdad, la vía correcta es setRawMode, no esto.
+ */
+// Una sola interfaz para todo el script: crear una nueva por cada pregunta
+// (como hacía la versión anterior) es un patrón conocido por trabarse — la
+// segunda interfaz puede no recibir más datos del mismo stdin.
+const rl = createInterface({ input: process.stdin, output: process.stdout });
+
 function pedirPassword(mensaje) {
   return new Promise((resolveP, reject) => {
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
-    const alEscribir = (char) => {
-      // Se reescribe la línea sin los caracteres tipeados.
-      if (!['\n', '\r', ''].includes(char.toString())) {
-        process.stdout.write(`\x1b[2K\x1b[200D${mensaje}`);
-      }
-    };
-    process.stdin.on('data', alEscribir);
-
-    rl.question(mensaje, (valor) => {
-      process.stdin.removeListener('data', alEscribir);
-      rl.close();
-      process.stdout.write('\n');
-      resolveP(valor);
-    });
-    rl.on('SIGINT', () => { rl.close(); reject(new Error('Cancelado')); });
+    rl.question(mensaje, resolveP);
+    rl.once('SIGINT', () => reject(new Error('Cancelado')));
   });
 }
 
@@ -121,7 +123,9 @@ async function main() {
     : `Password actualizado: ${fila.email}`);
 }
 
-main().catch((e) => {
-  console.error(e.message);
-  process.exit(1);
-});
+main()
+  .catch((e) => {
+    console.error(e.message);
+    process.exitCode = 1;
+  })
+  .finally(() => rl.close());
