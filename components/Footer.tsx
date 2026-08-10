@@ -2,6 +2,7 @@
 // en vez de diluirse en el mismo fondo hueso del resto del sitio.
 
 import Image from "next/image";
+import Link from "next/link";
 import { footer } from "@/lib/content";
 import { equipo } from "@/lib/team";
 
@@ -36,7 +37,25 @@ export function Footer() {
           </p>
         </div>
 
-        <p className="font-mono text-xs text-hueso/50">Licencia {footer.licencia}</p>
+        <div>
+          <p className="font-mono text-xs uppercase tracking-[0.15em] text-hueso/50">Contacto</p>
+          <Link
+            href="/contacto"
+            className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota"
+          >
+            Escribinos
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-6">
+          <p className="font-mono text-xs text-hueso/50">Licencia {footer.licencia}</p>
+          {/* Mismo tratamiento visual que "Licencia": discreto, sin destacar, pero con
+              texto legible — un link sin texto reconocible es un problema de accesibilidad,
+              no solo de diseño. */}
+          <Link href="/admin/login" className="font-mono text-xs text-hueso/50 hover:text-terracota">
+            Equipo
+          </Link>
+        </div>
       </div>
     </footer>
   );
