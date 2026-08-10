@@ -6,17 +6,17 @@ export interface MiembroEquipo {
   iniciales: string;
   nombre: string;
   programaInstitucion: string;
-  rol: string;
+  /** Opcional: no todos tienen un rol definido todavía. */
+  rol?: string;
   /** Ruta dentro de /public, ej. "/equipo/luis.jpg". Opcional: sin foto, se muestran las iniciales. */
   foto?: string;
 }
 
 export const equipo: MiembroEquipo[] = [
   {
-    iniciales: "NA",
-    nombre: "Nombre Apellido",
-    programaInstitucion: "Programa · ITM",
-    rol: "Rol en el proyecto",
+    iniciales: "LR",
+    nombre: "Luis Rios Vanegas",
+    programaInstitucion: "Ingeniería en Ciencia de Datos, en curso · ITM",
   },
   {
     iniciales: "NA",

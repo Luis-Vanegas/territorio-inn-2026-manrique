@@ -50,7 +50,9 @@ export function EquipoSection() {
             <p className="mt-1 font-sans text-sm text-tinta/70">
               {miembro.programaInstitucion}
             </p>
-            <p className="mt-1 font-mono text-xs text-terracota">{miembro.rol}</p>
+            {miembro.rol && (
+              <p className="mt-1 font-mono text-xs text-terracota">{miembro.rol}</p>
+            )}
           </ScrollReveal>
         ))}
       </div>
