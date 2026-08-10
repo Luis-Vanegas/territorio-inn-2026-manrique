@@ -30,13 +30,13 @@ export function EquipoSection() {
             </span>
 
             {miembro.foto ? (
-              <div className="relative mt-4 aspect-[4/5] w-full overflow-hidden bg-tinta/5">
+              <div className="group relative mt-4 aspect-[4/5] w-full overflow-hidden bg-tinta/5">
                 <Image
                   src={miembro.foto}
                   alt={miembro.nombre}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover"
+                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 />
               </div>
             ) : (

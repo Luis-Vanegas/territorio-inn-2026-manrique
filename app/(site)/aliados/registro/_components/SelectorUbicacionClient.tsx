@@ -15,13 +15,7 @@ import type { Map as LeafletMap } from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
 
-import {
-  POLIGONO_MANRIQUE,
-  CENTRO_MANRIQUE,
-  LIMITES_MAPA,
-  ZOOM,
-} from '@/lib/geo/constantes';
-import { estaDentroDeManrique } from '@/lib/geo/validarPunto';
+import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, ZOOM } from '@/lib/geo/constantes';
 
 /**
  * Selector de ubicación: el corazón del registro.
@@ -31,8 +25,10 @@ import { estaDentroDeManrique } from '@/lib/geo/validarPunto';
  *   2. tocar el mapa
  *   3. arrastrar el punto ya puesto para afinar
  *
- * La validación contra el polígono corre en cada cambio para dar respuesta
- * inmediata. La server action la repite: esto es asistencia, no seguridad.
+ * Sin límite geográfico a propósito: mientras se junta volumen de datos de
+ * prueba, cualquier punto del mundo es válido. El polígono de Manrique queda
+ * como referencia visual — ya no bloquea el registro. La franja de Manrique
+ * se centra por defecto porque sigue siendo el foco real del proyecto.
  */
 
 const iconoSeleccion = L.divIcon({
@@ -71,9 +67,6 @@ export default function SelectorUbicacionClient({
   alCambiar: (p: Posicion | null, valida: boolean) => void;
 }) {
   const [posicion, setPosicion] = useState<Posicion | null>(valorInicial);
-  const [esValida, setEsValida] = useState(
-    valorInicial ? estaDentroDeManrique(valorInicial.lat, valorInicial.lng) : true,
-  );
   const [geo, setGeo] = useState<EstadoGeo>({ fase: 'inactivo' });
   const mapaRef = useRef<LeafletMap | null>(null);
 
@@ -81,10 +74,8 @@ export default function SelectorUbicacionClient({
 
   const elegir = useCallback(
     (p: Posicion, centrar = false) => {
-      const dentro = estaDentroDeManrique(p.lat, p.lng);
       setPosicion(p);
-      setEsValida(dentro);
-      alCambiar(p, dentro);
+      alCambiar(p, true);
 
       if (centrar && mapaRef.current) {
         mapaRef.current.flyTo([p.lat, p.lng], ZOOM.maximo - 1, { duration: 1 });
@@ -111,17 +102,6 @@ export default function SelectorUbicacionClient({
           lng: pos.coords.longitude,
           precision: pos.coords.accuracy,
         };
-
-        if (!estaDentroDeManrique(p.lat, p.lng)) {
-          // Pasa si la persona registra el negocio desde su casa, o si el GPS
-          // del equipo de escritorio ubica por IP con kilómetros de error.
-          setGeo({
-            fase: 'error',
-            mensaje:
-              'Tu ubicación actual está fuera de la Comuna 3. Si estás registrando el negocio desde otro lado, marcá el punto en el mapa.',
-          });
-          return;
-        }
 
         setGeo({ fase: 'inactivo' });
         elegir(p, true);
@@ -177,11 +157,6 @@ export default function SelectorUbicacionClient({
           zoom={ZOOM.seleccion}
           minZoom={ZOOM.minimo}
           maxZoom={ZOOM.maximo}
-          maxBounds={[
-            [LIMITES_MAPA[0][0], LIMITES_MAPA[0][1]],
-            [LIMITES_MAPA[1][0], LIMITES_MAPA[1][1]],
-          ]}
-          maxBoundsViscosity={0.8}
           scrollWheelZoom={false}
           className="h-full w-full"
         >
@@ -251,20 +226,12 @@ export default function SelectorUbicacionClient({
         aria-live="polite"
         className={[
           'mt-4 border-l-2 px-4 py-3 transition-colors',
-          !posicion
-            ? 'border-tinta/15 bg-tinta/[0.02]'
-            : !esValida
-              ? 'border-terracota bg-terracota/5'
-              : 'border-terracota bg-terracota/[0.04]',
+          !posicion ? 'border-tinta/15 bg-tinta/[0.02]' : 'border-terracota bg-terracota/[0.04]',
         ].join(' ')}
       >
         {!posicion ? (
           <p className="font-mono text-xs text-tinta/50">
             Todavía no marcaste el punto.
-          </p>
-        ) : !esValida ? (
-          <p className="font-mono text-xs text-terracota">
-            Ese punto está fuera de la Comuna 3. Arrastralo dentro del área marcada.
           </p>
         ) : (
           <>

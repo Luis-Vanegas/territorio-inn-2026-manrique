@@ -1,17 +1,18 @@
 import { z } from 'zod';
-import { BBOX_MANRIQUE } from '@/lib/geo/constantes';
 
 /**
  * Schema compartido entre el formulario (cliente) y la server action.
  * Una sola definición: si el cliente y el server validan distinto, el usuario
  * llena el formulario, pasa la validación y el server se lo rechaza igual.
  *
- * Este es el piso de validación, no el techo: la server action además verifica
- * point-in-polygon contra el límite real, y la base tiene sus propios CHECK.
+ * Este es el piso de validación, no el techo: la base tiene sus propios CHECK
+ * de rango real (-90..90 / -180..180) como última línea de defensa.
  */
 
 /** Se sube cuando cambie el texto legal. Queda grabado en cada registro. */
-export const VERSION_TERMINOS = '2026-01-v1';
+// v2: se saca la mención al ITM como responsable del tratamiento y se abre
+// la ubicación a cualquier punto del mundo (antes limitada a Manrique).
+export const VERSION_TERMINOS = '2026-08-v2';
 
 export const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export const TAMANO_MAX_FOTO = 5 * 1024 * 1024;
@@ -29,8 +30,6 @@ const telefonoColombiano = z
 /** Campo opcional que llega como "" desde un input vacío. */
 const opcional = <T extends z.ZodTypeAny>(schema: T) =>
   z.union([schema, z.literal('')]).transform((v) => (v === '' ? null : v));
-
-const [minLng, minLat, maxLng, maxLat] = BBOX_MANRIQUE;
 
 export const portafolioSchema = z
   .object({
@@ -56,17 +55,17 @@ export const portafolioSchema = z
       .min(2, 'Indicá el barrio')
       .max(80, 'Máximo 80 caracteres'),
 
-    // El bbox descarta lo obviamente lejano y da un mensaje claro. El polígono
-    // real se verifica aparte: un bbox es un rectángulo y Manrique no lo es.
+    // Rango real de coordenadas válidas, no acotado a Manrique: el registro
+    // acepta cualquier punto del mundo mientras se junta volumen de prueba.
     latitud: z
       .number({ error: 'Marcá la ubicación en el mapa' })
-      .min(minLat, 'La ubicación está fuera de Manrique')
-      .max(maxLat, 'La ubicación está fuera de Manrique'),
+      .min(-90, 'Latitud inválida')
+      .max(90, 'Latitud inválida'),
 
     longitud: z
       .number({ error: 'Marcá la ubicación en el mapa' })
-      .min(minLng, 'La ubicación está fuera de Manrique')
-      .max(maxLng, 'La ubicación está fuera de Manrique'),
+      .min(-180, 'Longitud inválida')
+      .max(180, 'Longitud inválida'),
 
     whatsapp: opcional(telefonoColombiano),
     telefono: opcional(telefonoColombiano),

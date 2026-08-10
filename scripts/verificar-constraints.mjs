@@ -63,14 +63,23 @@ function insertar(cambios = {}) {
 
 const CASOS = [
   {
-    caso: 'coordenadas fuera de Manrique (Bogotá)',
-    debePasar: false,
+    // La ubicación ya no se limita a Manrique (migración 006): esto tiene que
+    // ACEPTARSE. Es el mismo control positivo que el caso de abajo, con una
+    // coordenada real de otra ciudad — prueba justamente que el bbox viejo no
+    // sigue vivo en algún lado.
+    caso: 'coordenadas fuera de Manrique (Bogotá) — ahora válidas',
+    debePasar: true,
     ...insertar({ latitud: 4.65, longitud: -74.05 }),
   },
   {
-    caso: 'latitud dentro pero longitud fuera',
+    caso: 'latitud fuera del rango real (91)',
     debePasar: false,
-    ...insertar({ longitud: -75.6 }),
+    ...insertar({ latitud: 91 }),
+  },
+  {
+    caso: 'longitud fuera del rango real (-181)',
+    debePasar: false,
+    ...insertar({ longitud: -181 }),
   },
   {
     caso: 'sin ningún medio de contacto',

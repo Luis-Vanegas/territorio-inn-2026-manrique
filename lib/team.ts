@@ -16,19 +16,19 @@ export const equipo: MiembroEquipo[] = [
   {
     iniciales: "LR",
     nombre: "Luis Rios Vanegas",
-    programaInstitucion: "Ingeniería en Ciencia de Datos, en curso · ITM",
+    programaInstitucion: "Ingeniería en Ciencia de Datos, en curso",
     foto: "/equipo/fotoitm.jpeg",
   },
   {
     iniciales: "NA",
     nombre: "Nombre Apellido",
-    programaInstitucion: "Programa · ITM",
+    programaInstitucion: "Programa en curso",
     rol: "Rol en el proyecto",
   },
   {
     iniciales: "NA",
     nombre: "Nombre Apellido",
-    programaInstitucion: "Programa · ITM",
+    programaInstitucion: "Programa en curso",
     rol: "Rol en el proyecto",
   },
 ];

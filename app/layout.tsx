@@ -20,7 +20,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Territorio INN 2026 · Manrique",
   description:
-    "Propuesta para la Comuna 3 de Medellín — Presupuesto Participativo Comuna 3 + ITM. Reto: Empleo y Desarrollo Económico.",
+    "Propuesta para la Comuna 3 de Medellín — Presupuesto Participativo Comuna 3. Reto: Empleo y Desarrollo Económico.",
 };
 
 export default function RootLayout({
