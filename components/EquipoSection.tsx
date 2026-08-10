@@ -1,5 +1,9 @@
 // El Equipo: fichas editoriales separadas por una regla superior fina, sin sombras ni bordes redondeados.
 // La numeración mono ("01 — 02 — 03") reemplaza al ícono genérico como detalle tipográfico.
+//
+// La foto va grande y rectangular, como las de los negocios en Aliados — no un
+// avatar circular chico. Un círculo de 64px no alcanza para reconocer una cara;
+// acá el retrato ocupa todo el ancho de la columna, en formato vertical.
 
 import Image from "next/image";
 import { equipo } from "@/lib/team";
@@ -14,7 +18,7 @@ export function EquipoSection() {
         </h2>
       </ScrollReveal>
 
-      <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-14 lg:grid-cols-3">
+      <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
         {equipo.map((miembro, indice) => (
           <ScrollReveal
             key={`${miembro.nombre}-${indice}`}
@@ -26,19 +30,22 @@ export function EquipoSection() {
             </span>
 
             {miembro.foto ? (
-              <div className="relative mt-4 h-16 w-16 overflow-hidden rounded-full bg-tinta/5">
+              <div className="relative mt-4 aspect-[4/5] w-full overflow-hidden bg-tinta/5">
                 <Image
                   src={miembro.foto}
                   alt={miembro.nombre}
                   fill
-                  sizes="64px"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover"
                 />
               </div>
             ) : (
+              // Mismo formato y tamaño que la foto real: así una ficha sin
+              // foto todavía no rompe la alineación de la grilla con las que
+              // ya la tienen cargada.
               <div
                 aria-hidden
-                className="mt-4 flex h-16 w-16 items-center justify-center rounded-full bg-terracota font-mono text-lg text-hueso"
+                className="mt-4 flex aspect-[4/5] w-full items-center justify-center bg-terracota font-mono text-6xl text-hueso"
               >
                 {miembro.iniciales}
               </div>
