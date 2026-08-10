@@ -37,7 +37,7 @@ export async function iniciarSesion(
     maxAge: DURACION_SEGUNDOS,
   });
 
-  redirect('/admin/portafolios');
+  redirect('/admin/aliados');
 }
 
 export async function cerrarSesion(): Promise<void> {

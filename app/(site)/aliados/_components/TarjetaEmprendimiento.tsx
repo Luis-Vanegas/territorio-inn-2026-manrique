@@ -1,19 +1,12 @@
 import Image from 'next/image';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
+import { enlaceWhatsapp } from '@/lib/contacto';
 
 /**
  * Ficha de un emprendimiento en el listado.
  * Sin sombras ni bordes redondeados: el sistema es editorial, la separación
  * la da una línea de 1px y el aire, no una card flotante.
  */
-
-/** Deja solo los dígitos: wa.me no acepta espacios ni guiones. */
-function enlaceWhatsapp(numero: string): string {
-  const digitos = numero.replace(/\D/g, '');
-  // Los números colombianos se escriben sin indicativo. wa.me lo necesita.
-  const conPais = digitos.length === 10 ? `57${digitos}` : digitos;
-  return `https://wa.me/${conPais}`;
-}
 
 function Contacto({ portafolio }: { portafolio: Portafolio }) {
   const enlaces: { etiqueta: string; href: string }[] = [];
@@ -91,10 +84,14 @@ export function TarjetaEmprendimiento({
             </p>
           )}
 
-          <p className="mt-4 font-sans text-sm text-tinta/55">
+          {/* La ubicación es el dato que distingue a Aliados de una lista de
+              texto plano: se destaca con ícono y acento, no como un dato más
+              en gris junto a los demás. */}
+          <p className="mt-4 inline-flex items-baseline gap-1.5 border-l-2 border-terracota/40 pl-3 font-mono text-sm text-tinta/75">
+            <span aria-hidden="true">📍</span>
             {portafolio.direccion}
-            <span className="mx-2 text-tinta/25">·</span>
-            {portafolio.barrio}
+            <span className="text-tinta/30">·</span>
+            <span className="text-tinta/55">{portafolio.barrio}</span>
           </p>
 
           <Contacto portafolio={portafolio} />

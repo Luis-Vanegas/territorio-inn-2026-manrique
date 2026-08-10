@@ -12,7 +12,7 @@ import type { Portafolio } from '@/lib/db/portafolios.repo';
  * a dynamic() directo desde la página, que es un Server Component.
  */
 
-const MapaClient = dynamic(() => import('./MapaPortafoliosClient'), {
+const MapaClient = dynamic(() => import('./MapaAliadosClient'), {
   ssr: false,
   // El placeholder tiene la misma altura que el mapa: si no, la página salta
   // cuando el mapa termina de cargar.
@@ -23,7 +23,7 @@ const MapaClient = dynamic(() => import('./MapaPortafoliosClient'), {
   ),
 });
 
-export function MapaPortafolios(props: {
+export function MapaAliados(props: {
   portafolios: Portafolio[];
   alSeleccionar?: (id: string) => void;
 }) {

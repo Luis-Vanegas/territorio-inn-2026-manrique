@@ -130,7 +130,7 @@ export async function registrarPortafolio(
   }
 
   // El panel de moderación tiene que ver el registro nuevo sin esperar cache.
-  revalidatePath('/admin/portafolios');
+  revalidatePath('/admin/aliados');
 
   return { estado: 'ok', id, ...(avisoFoto ? { avisoFoto } : {}) };
 }

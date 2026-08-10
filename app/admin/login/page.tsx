@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 export default function LoginPage() {
   // Con sesión activa no tiene sentido mostrar el login.
   if (verificarSesion()) {
-    redirect('/admin/portafolios');
+    redirect('/admin/aliados');
   }
 
   return (

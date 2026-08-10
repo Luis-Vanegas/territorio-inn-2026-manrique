@@ -37,7 +37,7 @@ export function FiltroCategorias({
   return (
     <nav aria-label="Filtrar por categoría" className="flex flex-wrap gap-2">
       <Link
-        href="/portafolios"
+        href="/aliados"
         className={estilo(!activa)}
         aria-current={!activa ? 'page' : undefined}
       >
@@ -48,7 +48,7 @@ export function FiltroCategorias({
       {conResultados.map((c) => (
         <Link
           key={c.id}
-          href={`/portafolios?categoria=${c.id}`}
+          href={`/aliados?categoria=${c.id}`}
           className={estilo(activa === c.id)}
           aria-current={activa === c.id ? 'page' : undefined}
         >

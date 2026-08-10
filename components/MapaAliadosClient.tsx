@@ -13,6 +13,7 @@ import {
   ZOOM,
 } from '@/lib/geo/constantes';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
+import { enlaceWhatsapp } from '@/lib/contacto';
 
 /**
  * Mapa de la vitrina.
@@ -36,7 +37,7 @@ type Props = {
   alSeleccionar?: (id: string) => void;
 };
 
-export default function MapaPortafoliosClient({ portafolios, alSeleccionar }: Props) {
+export default function MapaAliadosClient({ portafolios, alSeleccionar }: Props) {
   // El polígono no cambia nunca; sin memo, react-leaflet vuelve a montar la
   // capa GeoJSON en cada render y el mapa parpadea al filtrar por categoría.
   const capaLimite = useMemo(
@@ -85,16 +86,34 @@ export default function MapaPortafoliosClient({ portafolios, alSeleccionar }: Pr
             alSeleccionar ? { click: () => alSeleccionar(p.id) } : undefined
           }
         >
-          <Popup>
+          <Popup minWidth={200}>
             <span className="block font-mono text-[10px] uppercase tracking-wide text-terracota">
               {p.categoria_nombre}
             </span>
             <strong className="mt-1 block font-display text-base font-medium text-tinta">
               {p.nombre}
             </strong>
-            <span className="mt-0.5 block font-sans text-xs text-tinta/60">
-              {p.barrio}
+
+            {/* La ubicación "canta" acá también: ícono + mono, no un dato
+                perdido entre el resto del popup. */}
+            <span className="mt-1.5 flex items-start gap-1 font-mono text-xs text-tinta/65">
+              <span aria-hidden="true">📍</span>
+              <span>
+                {p.direccion}
+                <span className="text-tinta/35"> · {p.barrio}</span>
+              </span>
             </span>
+
+            {p.whatsapp && (
+              <a
+                href={enlaceWhatsapp(p.whatsapp)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block font-mono text-xs text-terracota underline decoration-terracota/40 underline-offset-4 hover:text-tinta"
+              >
+                Escribir por WhatsApp →
+              </a>
+            )}
           </Popup>
         </Marker>
       ))}

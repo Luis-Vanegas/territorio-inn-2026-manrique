@@ -7,8 +7,8 @@ import { cerrarSesion } from '@/lib/actions/sesionAdmin';
 /**
  * Guard de las rutas de moderación.
  *
- * El grupo (panel) no aparece en la URL: /admin/(panel)/portafolios se sirve
- * como /admin/portafolios. Sirve para que este layout envuelva solo lo que hay
+ * El grupo (panel) no aparece en la URL: /admin/(panel)/aliados se sirve
+ * como /admin/aliados. Sirve para que este layout envuelva solo lo que hay
  * que proteger, dejando /admin/login por fuera.
  *
  * Acá y no en middleware.ts: en Next 14 el middleware corre en Edge Runtime,
@@ -30,7 +30,7 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
       <header className="margen-editorial flex flex-wrap items-baseline justify-between gap-4 border-b border-tinta/12 py-5">
         <nav className="flex flex-wrap items-baseline gap-5">
           <Link
-            href="/admin/portafolios"
+            href="/admin/aliados"
             className="font-mono text-xs uppercase tracking-wider text-tinta"
           >
             Moderación
@@ -42,11 +42,11 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
             Estadísticas
           </Link>
           <Link
-            href="/portafolios"
+            href="/aliados"
             target="_blank"
             className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota"
           >
-            ver vitrina ↗
+            ver mapa ↗
           </Link>
         </nav>
 

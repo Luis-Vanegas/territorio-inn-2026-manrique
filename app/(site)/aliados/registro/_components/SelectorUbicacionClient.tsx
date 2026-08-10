@@ -243,32 +243,44 @@ export default function SelectorUbicacionClient({
         </MapContainer>
       </div>
 
-      <p className="mt-3 font-mono text-xs leading-relaxed" role="status" aria-live="polite">
+      {/* La ubicación es el dato que distingue esta vitrina de cualquier
+          directorio de texto: se le da un bloque propio, grande y con acento,
+          no un renglón gris que se confunde con las instrucciones. */}
+      <div
+        role="status"
+        aria-live="polite"
+        className={[
+          'mt-4 border-l-2 px-4 py-3 transition-colors',
+          !posicion
+            ? 'border-tinta/15 bg-tinta/[0.02]'
+            : !esValida
+              ? 'border-terracota bg-terracota/5'
+              : 'border-terracota bg-terracota/[0.04]',
+        ].join(' ')}
+      >
         {!posicion ? (
-          <span className="text-tinta/50">
+          <p className="font-mono text-xs text-tinta/50">
             Todavía no marcaste el punto.
-          </span>
+          </p>
         ) : !esValida ? (
-          <span className="text-terracota">
+          <p className="font-mono text-xs text-terracota">
             Ese punto está fuera de la Comuna 3. Arrastralo dentro del área marcada.
-          </span>
+          </p>
         ) : (
-          <span className="text-tinta/50">
-            <span className="text-terracota">✓</span> Ubicación marcada ·{' '}
-            {posicion.lat.toFixed(6)}, {posicion.lng.toFixed(6)}
-            {posicion.precision && posicion.precision > 25 && (
-              <span className="text-tinta/35">
-                {' '}
-                · precisión ±{Math.round(posicion.precision)} m
-              </span>
-            )}
-            <span className="block text-tinta/35 sm:inline">
-              {' '}
-              — arrastrá el punto para afinarlo
-            </span>
-          </span>
+          <>
+            <p className="flex items-center gap-2 font-mono text-sm text-tinta">
+              <span aria-hidden="true">📍</span>
+              {posicion.lat.toFixed(6)}, {posicion.lng.toFixed(6)}
+            </p>
+            <p className="mt-1 font-mono text-xs text-tinta/45">
+              {posicion.precision && posicion.precision > 25
+                ? `precisión ±${Math.round(posicion.precision)} m — `
+                : ''}
+              arrastrá el punto para afinarlo
+            </p>
+          </>
         )}
-      </p>
+      </div>
     </div>
   );
 }

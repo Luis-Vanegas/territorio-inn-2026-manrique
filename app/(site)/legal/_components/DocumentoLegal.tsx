@@ -39,7 +39,7 @@ export function DocumentoLegal({
         </div>
 
         <Link
-          href="/portafolios/registro"
+          href="/aliados/registro"
           className="mt-16 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
         >
           ← Volver al registro

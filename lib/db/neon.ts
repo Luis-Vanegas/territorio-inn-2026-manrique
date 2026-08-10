@@ -28,6 +28,20 @@ import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
  * Con el Proxy, la conexión se arma en la primera query real. Si falta la
  * variable, el error aparece igual, con el mismo mensaje, en el momento en que
  * de verdad importa: al atender un request.
+ *
+ * ── `fetchOptions: { cache: 'no-store' }` — esto no es opcional ──
+ *
+ * El driver de Neon habla HTTP con `fetch()` por debajo, y Next.js parchea el
+ * `fetch` global para meterle su Data Cache. El resultado, descubierto en vivo:
+ * la PRIMERA consulta que corrió en el proceso —con la base recién vacía—
+ * quedó cacheada en disco (`.next/cache`), y todas las páginas siguieron
+ * sirviendo esa respuesta vacía aunque la base ya tuviera filas. `export const
+ * dynamic = 'force-dynamic'` en la página NO alcanzó a evitarlo: ese ajuste
+ * gobierna el `fetch` que Next ve en el código de la página, y el fetch de acá
+ * ocurre adentro de una dependencia de node_modules. Solo un reinicio limpio
+ * con `.next/cache` borrado lo destapó — en producción nadie borra esa carpeta
+ * entre deploys, así que sin este `cache: 'no-store'` el bug vuelve a aparecer
+ * y ya no hay forma de diagnosticarlo desde afuera.
  */
 
 let cliente: NeonQueryFunction<false, false> | null = null;
@@ -42,7 +56,7 @@ function obtenerCliente(): NeonQueryFunction<false, false> {
     );
   }
 
-  cliente = neon(url);
+  cliente = neon(url, { fetchOptions: { cache: 'no-store' } });
   return cliente;
 }
 

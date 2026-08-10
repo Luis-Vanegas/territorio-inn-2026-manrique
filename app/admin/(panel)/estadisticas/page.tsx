@@ -252,7 +252,7 @@ export default async function EstadisticasPage() {
           </a>
 
           <Link
-            href="/admin/portafolios"
+            href="/admin/aliados"
             className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
           >
             ← Volver a la cola

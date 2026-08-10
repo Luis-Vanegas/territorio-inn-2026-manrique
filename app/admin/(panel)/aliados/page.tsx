@@ -39,7 +39,7 @@ export default async function ModeracionPage({
       </h1>
 
       <p className="mt-3 max-w-xl font-sans text-sm text-tinta/60">
-        Cada registro aprobado se publica en la vitrina pública de inmediato.
+        Cada registro aprobado se publica en el mapa de Aliados de inmediato.
       </p>
 
       <nav aria-label="Filtrar por estado" className="mt-8 flex flex-wrap gap-2">
@@ -48,7 +48,7 @@ export default async function ModeracionPage({
           return (
             <Link
               key={e.id}
-              href={`/admin/portafolios?estado=${e.id}`}
+              href={`/admin/aliados?estado=${e.id}`}
               aria-current={activo ? 'page' : undefined}
               className={[
                 'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-mono text-xs transition-colors',

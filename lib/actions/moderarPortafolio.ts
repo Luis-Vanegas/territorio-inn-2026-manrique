@@ -83,8 +83,8 @@ export async function moderarPortafolio(
     return { estado: 'error', mensaje: 'No se pudo aplicar el cambio. Intentá de nuevo.' };
   }
 
-  revalidatePath('/admin/portafolios');
-  revalidatePath('/portafolios');
+  revalidatePath('/admin/aliados');
+  revalidatePath('/aliados');
 
   const mensajes = {
     aprobado: 'Publicado en la vitrina.',

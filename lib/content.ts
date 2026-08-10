@@ -15,6 +15,8 @@ export interface ModuloFuturo {
   slug: string;
   nombre: string;
   descripcion: string;
+  /** "activo": el módulo funciona de verdad. "proximamente": todavía es un stub. */
+  estado: "activo" | "proximamente";
 }
 
 export const hero = {
@@ -73,25 +75,27 @@ export const empleo = {
 
 export const enfoque = {
   titulo: "El enfoque",
-  nota: "[ Próximamente ]",
   modulos: [
     {
       numero: "01",
       slug: "empleo",
       nombre: "Empleo",
       descripcion: "Mapeo de oferta laboral y oficios activos en el territorio.",
+      estado: "activo",
     },
     {
       numero: "02",
       slug: "inventario-predictivo",
       nombre: "Inventario predictivo",
       descripcion: "Seguimiento de unidades productivas y su comportamiento en el tiempo.",
+      estado: "proximamente",
     },
     {
       numero: "03",
-      slug: "portafolios",
-      nombre: "Portafolios",
-      descripcion: "Vitrina digital para negocios y oficios locales.",
+      slug: "aliados",
+      nombre: "Aliados",
+      descripcion: "Negocios y oficios de Manrique, en el mapa y con contacto directo.",
+      estado: "activo",
     },
   ] satisfies ModuloFuturo[],
 };

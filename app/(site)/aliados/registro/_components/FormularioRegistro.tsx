@@ -134,19 +134,31 @@ const claseInput =
   'placeholder:text-tinta/30 focus:border-terracota focus:outline-none focus:ring-0 ' +
   'aria-[invalid=true]:border-terracota';
 
-function BarraEnvio({ faltantes }: { faltantes: string[] }) {
+function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }) {
   const { pending } = useFormStatus();
   const listo = faltantes.length === 0;
+  const completos = total - faltantes.length;
+  const porcentaje = Math.round((completos / total) * 100);
 
   return (
     <div className="sticky bottom-0 -mx-[clamp(1.5rem,5vw,6rem)] border-t border-tinta/12 bg-hueso/95 px-[clamp(1.5rem,5vw,6rem)] py-4 backdrop-blur">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* Barra de progreso real, no solo una lista de texto: ver el avance
+          moverse es lo que hace que alguien termine un formulario largo. */}
+      <div className="h-1 w-full overflow-hidden bg-tinta/8" aria-hidden="true">
+        <div
+          className="h-full bg-terracota transition-[width] duration-300 ease-out"
+          style={{ width: `${porcentaje}%` }}
+        />
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
         <p className="font-mono text-xs text-tinta/50">
           {listo ? (
-            <span className="text-terracota">Todo listo para enviar</span>
+            <span className="text-terracota">✓ Todo listo para enviar</span>
           ) : (
             <>
-              Falta: <span className="text-tinta/70">{faltantes.join(' · ')}</span>
+              <span className="text-tinta">{porcentaje}%</span> completado · falta{' '}
+              <span className="text-tinta/70">{faltantes.join(' · ')}</span>
             </>
           )}
         </p>
@@ -197,15 +209,18 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
 
-  const faltantes = [
-    !(coords && ubicacionValida) && 'ubicación',
-    !llenos.nombre && 'nombre',
-    !llenos.categoria && 'categoría',
-    !llenos.direccion && 'dirección',
-    !llenos.barrio && 'barrio',
-    !llenos.contacto && 'contacto',
-    !llenos.consentimiento && 'consentimiento',
-  ].filter(Boolean) as string[];
+  // Un solo array de requisitos: agregar o quitar un campo obligatorio ajusta
+  // a la vez la lista de "falta esto" y el total de la barra de progreso.
+  const REQUISITOS: [boolean, string][] = [
+    [Boolean(coords && ubicacionValida), 'ubicación'],
+    [llenos.nombre, 'nombre'],
+    [llenos.categoria, 'categoría'],
+    [llenos.direccion, 'dirección'],
+    [llenos.barrio, 'barrio'],
+    [llenos.contacto, 'contacto'],
+    [llenos.consentimiento, 'consentimiento'],
+  ];
+  const faltantes = REQUISITOS.filter(([cumplido]) => !cumplido).map(([, nombre]) => nombre);
 
   if (estado.estado === 'ok') {
     return (
@@ -219,8 +234,8 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
         </h2>
 
         <p className="mt-4 font-sans leading-relaxed text-tinta/70">
-          Tu emprendimiento aparece en la vitrina pública apenas el equipo termine
-          de revisarlo. Guardá este código por si necesitás consultarlo:
+          Tu negocio aparece en el mapa de Aliados apenas el equipo termine de
+          revisarlo. Guardá este código por si necesitás consultarlo:
         </p>
 
         <p className="mt-4 break-all border border-tinta/15 px-4 py-3 font-mono text-xs text-tinta/70">
@@ -232,10 +247,10 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
         )}
 
         <Link
-          href="/portafolios"
+          href="/aliados"
           className="mt-8 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
         >
-          ← Ver la vitrina
+          ← Ver el mapa
         </Link>
       </div>
     );
@@ -540,7 +555,7 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
         </div>
       </Seccion>
 
-      <BarraEnvio faltantes={faltantes} />
+      <BarraEnvio faltantes={faltantes} total={REQUISITOS.length} />
     </form>
   );
 }
