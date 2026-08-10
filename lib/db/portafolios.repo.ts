@@ -28,6 +28,8 @@ export type Portafolio = {
   facebook: string | null;
   foto_url: string | null;
   creado_en: string;
+  /** Valores de los campos que definió el admin en /admin/campos, por slug. */
+  campos_extra: Record<string, string | number | boolean>;
 };
 
 /** Lo que ve el panel de moderación: agrega estado y trazabilidad. */
@@ -64,7 +66,8 @@ const COLUMNAS_PUBLICAS = `
   p.instagram,
   p.facebook,
   p.foto_url,
-  p.creado_en
+  p.creado_en,
+  p.campos_extra
 `;
 
 // ─── Lecturas públicas ───────────────────────────────────────
@@ -144,6 +147,7 @@ export type NuevoPortafolio = {
   facebook: string | null;
   version_terminos: string;
   ip_registro: string | null;
+  campos_extra: Record<string, string | number | boolean>;
 };
 
 export async function crearPortafolio(datos: NuevoPortafolio): Promise<string> {
@@ -152,14 +156,16 @@ export async function crearPortafolio(datos: NuevoPortafolio): Promise<string> {
       nombre, descripcion, categoria_id, direccion, barrio,
       latitud, longitud,
       whatsapp, telefono, correo, instagram, facebook,
-      acepto_terminos, acepto_habeas_data, version_terminos, ip_registro
+      acepto_terminos, acepto_habeas_data, version_terminos, ip_registro,
+      campos_extra
     ) values (
       ${datos.nombre}, ${datos.descripcion}, ${datos.categoria_id},
       ${datos.direccion}, ${datos.barrio},
       ${datos.latitud}, ${datos.longitud},
       ${datos.whatsapp}, ${datos.telefono}, ${datos.correo},
       ${datos.instagram}, ${datos.facebook},
-      true, true, ${datos.version_terminos}, ${datos.ip_registro}
+      true, true, ${datos.version_terminos}, ${datos.ip_registro},
+      ${JSON.stringify(datos.campos_extra)}::jsonb
     )
     returning id
   `;

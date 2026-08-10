@@ -6,6 +6,7 @@ import {
   listarCategorias,
   contarAprobadosPorCategoria,
 } from '@/lib/db/portafolios.repo';
+import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
 import { enfoque } from '@/lib/content';
 import { MapaAliados } from '@/components/MapaAliados';
 import { TarjetaEmprendimiento } from './_components/TarjetaEmprendimiento';
@@ -36,10 +37,11 @@ export default async function AliadosPage({
 
   // Las tres consultas son independientes: en serie sumarían tres viajes a la
   // base antes del primer byte.
-  const [aliados, categorias, conteos] = await Promise.all([
+  const [aliados, categorias, conteos, definicionesCampos] = await Promise.all([
     listarAprobados(categoriaActiva),
     listarCategorias(),
     contarAprobadosPorCategoria(),
+    listarTodosLosCampos(),
   ]);
 
   const total = Object.values(conteos).reduce((a, b) => a + b, 0);
@@ -146,7 +148,12 @@ export default async function AliadosPage({
             ) : (
               <div className="mt-10">
                 {aliados.map((p, i) => (
-                  <TarjetaEmprendimiento key={p.id} portafolio={p} indice={i} />
+                  <TarjetaEmprendimiento
+                    key={p.id}
+                    portafolio={p}
+                    indice={i}
+                    definicionesCampos={definicionesCampos}
+                  />
                 ))}
               </div>
             )}

@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
+import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
+import { formatearCamposExtra } from '@/lib/camposExtra';
 
 /**
  * Ficha de un emprendimiento en el listado.
@@ -50,10 +52,14 @@ function Contacto({ portafolio }: { portafolio: Portafolio }) {
 export function TarjetaEmprendimiento({
   portafolio,
   indice,
+  definicionesCampos,
 }: {
   portafolio: Portafolio;
   indice: number;
+  definicionesCampos: DefinicionCampo[];
 }) {
+  const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
+
   return (
     <article
       id={portafolio.id}
@@ -95,6 +101,17 @@ export function TarjetaEmprendimiento({
           </p>
 
           <Contacto portafolio={portafolio} />
+
+          {camposExtra.length > 0 && (
+            <dl className="mt-4 flex flex-col gap-1">
+              {camposExtra.map((c) => (
+                <div key={c.etiqueta} className="flex gap-2 font-sans text-xs">
+                  <dt className="text-tinta/45">{c.etiqueta}:</dt>
+                  <dd className="text-tinta/70">{c.valor}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
 
         {portafolio.foto_url && (

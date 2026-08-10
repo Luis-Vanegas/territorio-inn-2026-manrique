@@ -9,6 +9,8 @@ import {
   type EstadoModeracion,
 } from '@/lib/actions/moderarPortafolio';
 import type { PortafolioAdmin } from '@/lib/db/portafolios.repo';
+import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
+import { formatearCamposExtra } from '@/lib/camposExtra';
 
 const ESTADO_INICIAL: EstadoModeracion = { estado: 'inicial' };
 
@@ -54,9 +56,16 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
   );
 }
 
-export function FichaModeracion({ portafolio }: { portafolio: PortafolioAdmin }) {
+export function FichaModeracion({
+  portafolio,
+  definicionesCampos,
+}: {
+  portafolio: PortafolioAdmin;
+  definicionesCampos: DefinicionCampo[];
+}) {
   const [estado, accion] = useFormState(moderarPortafolio, ESTADO_INICIAL);
   const [mostrarRechazo, setMostrarRechazo] = useState(false);
+  const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
 
   // Aprobado o rechazado, la ficha desaparece de la lista al revalidar.
   // Este mensaje cubre el instante entre la respuesta y el refresco.
@@ -107,6 +116,9 @@ export function FichaModeracion({ portafolio }: { portafolio: PortafolioAdmin })
                 timeStyle: 'short',
               })}
             />
+            {camposExtra.map((c) => (
+              <Dato key={c.etiqueta} etiqueta={c.etiqueta} valor={c.valor} />
+            ))}
           </dl>
         </div>
 

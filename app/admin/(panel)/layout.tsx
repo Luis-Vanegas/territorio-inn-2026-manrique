@@ -42,6 +42,12 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
             Estadísticas
           </Link>
           <Link
+            href="/admin/campos"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+          >
+            Campos
+          </Link>
+          <Link
             href="/aliados"
             target="_blank"
             className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota"

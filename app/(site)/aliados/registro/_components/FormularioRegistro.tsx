@@ -10,7 +10,9 @@ import {
   type EstadoRegistro,
 } from '@/lib/actions/registrarPortafolio';
 import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
+import { nombreCampoFormulario } from '@/lib/validation/camposPersonalizados.schema';
 import type { Categoria } from '@/lib/db/portafolios.repo';
+import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Posicion } from './SelectorUbicacionClient';
 
 const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
@@ -177,7 +179,13 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
 
 // ─── formulario ──────────────────────────────────────────────
 
-export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) {
+export function FormularioRegistro({
+  categorias,
+  camposPersonalizados,
+}: {
+  categorias: Categoria[];
+  camposPersonalizados: DefinicionCampo[];
+}) {
   const [estado, accion] = useFormState(registrarPortafolio, ESTADO_INICIAL);
 
   const [coords, setCoords] = useState<Posicion | null>(null);
@@ -201,6 +209,20 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
     [],
   );
 
+  // Uno por slug, solo para los campos personalizados marcados como
+  // obligatorios — igual que `llenos`, es orientación para la barra de
+  // progreso, no la validación real (esa vive en el server, contra la lista
+  // de campos activos en ese momento).
+  const [llenosPersonalizados, setLlenosPersonalizados] = useState<Record<string, boolean>>({});
+
+  const marcarPersonalizado = useCallback(
+    (slug: string, valor: boolean) =>
+      setLlenosPersonalizados((prev) =>
+        prev[slug] === valor ? prev : { ...prev, [slug]: valor },
+      ),
+    [],
+  );
+
   const alCambiarUbicacion = useCallback((p: Posicion | null, valida: boolean) => {
     setCoords(p);
     setUbicacionValida(valida);
@@ -208,6 +230,8 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
 
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
+
+  const camposRequeridos = camposPersonalizados.filter((c) => c.requerido);
 
   // Un solo array de requisitos: agregar o quitar un campo obligatorio ajusta
   // a la vez la lista de "falta esto" y el total de la barra de progreso.
@@ -219,8 +243,17 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
     [llenos.barrio, 'barrio'],
     [llenos.contacto, 'contacto'],
     [llenos.consentimiento, 'consentimiento'],
+    ...camposRequeridos.map(
+      (c) => [Boolean(llenosPersonalizados[c.slug]), c.etiqueta.toLowerCase()] as [boolean, string],
+    ),
   ];
   const faltantes = REQUISITOS.filter(([cumplido]) => !cumplido).map(([, nombre]) => nombre);
+
+  // Los campos personalizados van entre "Foto" y "Permisos". Si no hay
+  // ninguno activo, Permisos se queda en 05 — no tiene sentido reservar un
+  // número que ese día no existe.
+  const numeroCampos = '05';
+  const numeroPermisos = camposPersonalizados.length > 0 ? '06' : '05';
 
   if (estado.estado === 'ok') {
     return (
@@ -491,7 +524,91 @@ export function FormularioRegistro({ categorias }: { categorias: Categoria[] }) 
         {nombreFoto && <p className="font-mono text-xs text-tinta/50">{nombreFoto}</p>}
       </Seccion>
 
-      <Seccion numero="05" titulo="Permisos" completa={llenos.consentimiento}>
+      {camposPersonalizados.length > 0 && (
+        <Seccion numero={numeroCampos} titulo="Información adicional">
+          {camposPersonalizados.map((c) => {
+            const nombre = nombreCampoFormulario(c.slug);
+
+            if (c.tipo === 'si_no') {
+              return (
+                <label key={c.id} className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    name={nombre}
+                    className="mt-1 h-4 w-4 shrink-0 accent-terracota"
+                    onChange={(e) => marcarPersonalizado(c.slug, e.target.checked)}
+                  />
+                  <span className="font-sans text-sm text-tinta/75">
+                    {c.etiqueta}
+                    {!c.requerido && (
+                      <span className="ml-2 font-mono text-xs text-tinta/35">opcional</span>
+                    )}
+                  </span>
+                </label>
+              );
+            }
+
+            return (
+              <Campo
+                key={c.id}
+                id={nombre}
+                etiqueta={c.etiqueta}
+                ayuda={c.ayuda ?? undefined}
+                requerido={c.requerido}
+                errores={err(nombre)}
+              >
+                {(p) => {
+                  if (c.tipo === 'seleccion') {
+                    return (
+                      <select
+                        {...p}
+                        name={nombre}
+                        required={c.requerido}
+                        onChange={(e) => marcarPersonalizado(c.slug, e.target.value !== '')}
+                        className={claseInput}
+                      >
+                        <option value="">Elegí una…</option>
+                        {(c.opciones ?? []).map((op) => (
+                          <option key={op} value={op}>
+                            {op}
+                          </option>
+                        ))}
+                      </select>
+                    );
+                  }
+
+                  if (c.tipo === 'numero') {
+                    return (
+                      <input
+                        {...p}
+                        name={nombre}
+                        type="number"
+                        required={c.requerido}
+                        onChange={(e) => marcarPersonalizado(c.slug, e.target.value.trim() !== '')}
+                        className={claseInput}
+                      />
+                    );
+                  }
+
+                  return (
+                    <input
+                      {...p}
+                      name={nombre}
+                      type="text"
+                      required={c.requerido}
+                      maxLength={400}
+                      onChange={(e) => marcarPersonalizado(c.slug, e.target.value.trim() !== '')}
+                      className={claseInput}
+                    />
+                  );
+                }}
+              </Campo>
+            );
+          })}
+        </Seccion>
+      )}
+
+      <Seccion numero={numeroPermisos} titulo="Permisos" completa={llenos.consentimiento}>
         <div
           onChange={(e) => {
             const cont = e.currentTarget;
