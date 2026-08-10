@@ -17,6 +17,7 @@ export const equipo: MiembroEquipo[] = [
     iniciales: "LR",
     nombre: "Luis Rios Vanegas",
     programaInstitucion: "Ingeniería en Ciencia de Datos, en curso · ITM",
+    foto: "/equipo/fotoitm.jpeg",
   },
   {
     iniciales: "NA",
