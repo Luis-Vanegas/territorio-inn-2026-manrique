@@ -12,7 +12,7 @@ export default function TerminosPage() {
     <DocumentoLegal
       titulo="Términos y condiciones"
       version={VERSION_TERMINOS}
-      actualizado="enero de 2026"
+      actualizado="agosto de 2026"
     >
       <p>
         Estos términos regulan el registro y la publicación de emprendimientos en
@@ -26,9 +26,9 @@ export default function TerminosPage() {
           para representarlo.
         </li>
         <li>
-          Emprendimientos, talleres, oficios y servicios ubicados dentro de la
-          Comuna 3 — Manrique, Medellín. La ubicación se verifica contra el
-          límite oficial de la comuna.
+          El foco del proyecto es la Comuna 3 — Manrique, Medellín, pero durante
+          esta etapa de pruebas se acepta cualquier ubicación: el objetivo es
+          juntar datos reales para validar el funcionamiento de la vitrina.
         </li>
       </ul>
 

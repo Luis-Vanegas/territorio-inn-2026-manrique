@@ -7,7 +7,6 @@ import {
   desdeFormData,
   VERSION_TERMINOS,
 } from '@/lib/validation/portafolio.schema';
-import { estaDentroDeManrique } from '@/lib/geo/validarPunto';
 import { crearPortafolio, adjuntarFoto } from '@/lib/db/portafolios.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 import { subirFoto, validarArchivo, blobConfigurado } from '@/lib/blob/fotos';
@@ -24,12 +23,11 @@ export type EstadoRegistro =
  * hasta que un moderador lo apruebe.
  *
  * Orden de las verificaciones, de la más barata a la más cara:
- *   1. rate limit      — una query, corta el abuso antes de gastar nada más
- *   2. Zod             — en memoria
- *   3. point-in-polygon— en memoria, pero recorre el polígono
- *   4. archivo         — lee bytes
- *   5. insert          — escribe
- *   6. Blob + sharp    — lo más caro, y solo si todo lo anterior pasó
+ *   1. rate limit — una query, corta el abuso antes de gastar nada más
+ *   2. Zod        — en memoria
+ *   3. archivo    — lee bytes
+ *   4. insert     — escribe
+ *   5. Blob + sharp — lo más caro, y solo si todo lo anterior pasó
  */
 export async function registrarPortafolio(
   _anterior: EstadoRegistro,
@@ -57,15 +55,7 @@ export async function registrarPortafolio(
   }
   const datos = parsed.data;
 
-  // 3 · Geografía — el cliente ya avisó, pero el cliente se puede saltar con curl
-  if (!estaDentroDeManrique(datos.latitud, datos.longitud)) {
-    return {
-      estado: 'error',
-      errores: { latitud: ['La ubicación debe estar dentro de la Comuna 3 — Manrique'] },
-    };
-  }
-
-  // 4 · Archivo (opcional)
+  // 3 · Archivo (opcional)
   const archivo = formData.get('foto');
   const foto = archivo instanceof File && archivo.size > 0 ? archivo : null;
 
@@ -79,7 +69,7 @@ export async function registrarPortafolio(
     }
   }
 
-  // 4.5 · Campos que definió el admin — se re-consulta cuáles están activos
+  // 3.5 · Campos que definió el admin — se re-consulta cuáles están activos
   // ACÁ, en el server, en vez de confiar en una lista que mandó el cliente.
   // Si se confiara en el cliente, alguien podría mandar cualquier valor bajo
   // cualquier slug, incluida la clave de un campo ya desactivado.
@@ -91,7 +81,7 @@ export async function registrarPortafolio(
     return { estado: 'error', errores: erroresCamposExtra };
   }
 
-  // 5 · Insert
+  // 4 · Insert
   let id: string;
   try {
     id = await crearPortafolio({
@@ -119,7 +109,7 @@ export async function registrarPortafolio(
     };
   }
 
-  // 6 · Foto
+  // 5 · Foto
   // Si algo falla acá, el registro YA está guardado y no se pierde. Perder el
   // registro completo por una foto que no subió sería el peor resultado
   // posible: la persona llenó todo el formulario.

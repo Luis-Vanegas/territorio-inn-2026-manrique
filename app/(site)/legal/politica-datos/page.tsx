@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { VERSION_TERMINOS } from '@/lib/validation/portafolio.schema';
 import { DocumentoLegal } from '../_components/DocumentoLegal';
 
@@ -11,7 +12,7 @@ export default function PoliticaDatosPage() {
     <DocumentoLegal
       titulo="Política de tratamiento de datos personales"
       version={VERSION_TERMINOS}
-      actualizado="enero de 2026"
+      actualizado="agosto de 2026"
     >
       <p>
         Esta política describe cómo se recolectan, usan y protegen los datos
@@ -22,12 +23,18 @@ export default function PoliticaDatosPage() {
 
       <h2>01 · Responsable del tratamiento</h2>
       <p>
-        Instituto Tecnológico Metropolitano (ITM), en el marco del proyecto
-        Territorio INN 2026 — Presupuesto Participativo de la Comuna 3, Manrique,
-        Medellín.
+        El equipo estudiantil del proyecto Territorio INN 2026 — Reto #2: Empleo
+        y Desarrollo Económico, presentado en el marco del Presupuesto
+        Participativo de la Comuna 3, Manrique, Medellín. Es un proyecto
+        académico y no representa a ninguna institución.
       </p>
 
       <h2>02 · Datos que se recolectan</h2>
+      <p>
+        Se pide solo lo esencial para publicar el emprendimiento y permitir el
+        contacto — nunca documento de identidad, datos financieros ni
+        información sensible.
+      </p>
       <ul>
         <li>Nombre del emprendimiento y descripción de la actividad.</li>
         <li>Dirección, barrio y coordenadas geográficas del establecimiento.</li>
@@ -53,6 +60,11 @@ export default function PoliticaDatosPage() {
           Producir estadísticas agregadas y anónimas sobre la actividad económica
           del territorio.
         </li>
+        <li>
+          Fines estudiantiles y académicos: este proyecto se presenta como
+          ejercicio de un reto de Presupuesto Participativo, no como una
+          actividad comercial del equipo.
+        </li>
       </ul>
       <p>
         Los datos no se venden, ni se ceden a terceros con fines comerciales, ni
@@ -77,11 +89,11 @@ export default function PoliticaDatosPage() {
 
       <h2>06 · Cómo ejercerlos</h2>
       <p>
-        Escribiendo al canal de atención del proyecto, indicando el nombre del
-        emprendimiento y el código de registro entregado al inscribirse. La
-        solicitud se responde en los términos de ley.
+        Escribiendo al equipo del proyecto por el{' '}
+        <Link href="/contacto">formulario de contacto</Link>, indicando el
+        nombre del emprendimiento y el código de registro entregado al
+        inscribirse. La solicitud se responde en los términos de ley.
       </p>
-      {/* Pendiente: correo institucional definitivo, a definir con el ITM. */}
 
       <h2>07 · Conservación</h2>
       <p>

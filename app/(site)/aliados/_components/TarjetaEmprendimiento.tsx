@@ -115,13 +115,13 @@ export function TarjetaEmprendimiento({
         </div>
 
         {portafolio.foto_url && (
-          <div className="relative aspect-[4/3] w-full overflow-hidden bg-tinta/5 sm:w-52">
+          <div className="group relative aspect-[4/3] w-full overflow-hidden bg-tinta/5 sm:w-52">
             <Image
               src={portafolio.foto_url}
               alt={`Fotografía de ${portafolio.nombre}`}
               fill
               sizes="(max-width: 640px) 100vw, 208px"
-              className="object-cover"
+              className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           </div>
         )}

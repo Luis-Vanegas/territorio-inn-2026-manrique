@@ -6,12 +6,7 @@ import L from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
 
-import {
-  POLIGONO_MANRIQUE,
-  CENTRO_MANRIQUE,
-  LIMITES_MAPA,
-  ZOOM,
-} from '@/lib/geo/constantes';
+import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, ZOOM } from '@/lib/geo/constantes';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
 
@@ -51,11 +46,6 @@ export default function MapaAliadosClient({ portafolios, alSeleccionar }: Props)
       zoom={ZOOM.inicial}
       minZoom={ZOOM.minimo}
       maxZoom={ZOOM.maximo}
-      maxBounds={[
-        [LIMITES_MAPA[0][0], LIMITES_MAPA[0][1]],
-        [LIMITES_MAPA[1][0], LIMITES_MAPA[1][1]],
-      ]}
-      maxBoundsViscosity={0.8}
       scrollWheelZoom={false} // si no, la rueda secuestra el scroll de la página
       className="h-full w-full"
     >

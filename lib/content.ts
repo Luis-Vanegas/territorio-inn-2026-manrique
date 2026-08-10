@@ -5,7 +5,12 @@ import camaraComercio from "./data/camara-comercio-manrique.json";
 import alcaldiaManrique from "./data/alcaldia-manrique-2019.json";
 
 export interface Kpi {
+  /** Texto final, ya formateado — se usa como valor accesible (aria-label) y como fallback sin JS. */
   valor: string;
+  /** Magnitud cruda: la anima NumeroAnimado contando desde 0. */
+  numero: number;
+  decimales: number;
+  sufijo?: string;
   etiqueta: string;
   contexto: string;
 }
@@ -42,21 +47,32 @@ export const comuna = {
   kpis: [
     {
       valor: `${alcaldiaManrique.mercadoLaboral.tasaDesempleoComuna.toFixed(2).replace(".", ",")}%`,
+      numero: alcaldiaManrique.mercadoLaboral.tasaDesempleoComuna,
+      decimales: 2,
+      sufijo: "%",
       etiqueta: "Desempleo — Manrique",
       contexto: `Comuna 3 · Alcaldía de Medellín, GEIH ${alcaldiaManrique.periodo} — el dato comunal más reciente disponible.`,
     },
     {
       valor: `${daneGeih.tasaDesempleo.toFixed(1).replace(".", ",")}%`,
+      numero: daneGeih.tasaDesempleo,
+      decimales: 1,
+      sufijo: "%",
       etiqueta: "Desempleo — Antioquia",
       contexto: `Departamento · GEIH ${daneGeih.periodo} · DANE — más actual, pero ya no es específico de Manrique.`,
     },
     {
       valor: `${daneGeih.tasaInformalidad.toFixed(1).replace(".", ",")}%`,
+      numero: daneGeih.tasaInformalidad,
+      decimales: 1,
+      sufijo: "%",
       etiqueta: "Informalidad laboral",
       contexto: `Antioquia (depto.) · GEIH ${daneGeih.periodo} · DANE — no existe este dato a nivel Comuna 3.`,
     },
     {
       valor: camaraComercio.totalEmpresas.toLocaleString("es-CO"),
+      numero: camaraComercio.totalEmpresas,
+      decimales: 0,
       etiqueta: "Unidades productivas activas",
       contexto: `Comuna 3 - Manrique · Registro Mercantil ${camaraComercio.periodo} · Cámara de Comercio de Medellín.`,
     },
@@ -109,7 +125,6 @@ export const footer = {
   repo: "https://github.com/Luis-Vanegas/territorio-inn-2026-manrique",
   licencia: "MIT",
   logos: [
-    { src: "/logos/itm.svg", alt: "ITM" },
     { src: "/logos/alcaldia.svg", alt: "Alcaldía de Medellín" },
     { src: "/logos/pp-comuna3.svg", alt: "Presupuesto Participativo Comuna 3" },
   ] satisfies LogoInstitucional[],

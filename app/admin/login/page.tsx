@@ -27,7 +27,7 @@ export default function LoginPage() {
         </h1>
 
         <p className="mt-3 font-sans text-sm text-tinta/60">
-          Acceso para el equipo. Si no tenés credenciales, pedilas al equipo del ITM.
+          Acceso para el equipo. Si no tenés credenciales, pedilas al equipo del proyecto.
         </p>
 
         <FormularioLogin />

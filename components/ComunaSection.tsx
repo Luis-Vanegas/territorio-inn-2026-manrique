@@ -5,6 +5,7 @@
 
 import { comuna } from "@/lib/content";
 import { ScrollReveal } from "./ScrollReveal";
+import { NumeroAnimado } from "./NumeroAnimado";
 
 const DESPLAZAMIENTOS = ["lg:mt-0", "lg:mt-16", "lg:mt-4", "lg:mt-20"];
 
@@ -24,8 +25,12 @@ export function ComunaSection() {
             delay={indice * 0.1}
             className={DESPLAZAMIENTOS[indice]}
           >
-            <p className="font-mono text-5xl font-medium text-terracota sm:text-6xl">
-              {kpi.valor}
+            <p
+              role="text"
+              aria-label={kpi.valor}
+              className="font-mono text-5xl font-medium text-terracota sm:text-6xl"
+            >
+              <NumeroAnimado numero={kpi.numero} decimales={kpi.decimales} sufijo={kpi.sufijo} />
             </p>
             <p className="mt-3 font-sans text-base font-medium text-tinta">
               {kpi.etiqueta}
