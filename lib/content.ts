@@ -1,5 +1,9 @@
 // Todo el contenido editorial vive acá para no tocar los componentes al momento de llenar textos reales.
 
+import daneGeih from "./data/dane-geih.json";
+import camaraComercio from "./data/camara-comercio-manrique.json";
+import alcaldiaManrique from "./data/alcaldia-manrique-2019.json";
+
 export interface Kpi {
   valor: string;
   etiqueta: string;
@@ -11,6 +15,8 @@ export interface ModuloFuturo {
   slug: string;
   nombre: string;
   descripcion: string;
+  /** "activo": el módulo funciona de verdad. "proximamente": todavía es un stub. */
+  estado: "activo" | "proximamente";
 }
 
 export const hero = {
@@ -35,47 +41,61 @@ export const comuna = {
   titulo: "La Comuna 3 — Manrique",
   kpis: [
     {
-      // TODO: reemplazar con dato real de MEData (tasa de desempleo, Comuna 3)
-      valor: "—%",
-      etiqueta: "Tasa de desempleo",
-      contexto: "Dato pendiente de fuente oficial MEData.",
+      valor: `${alcaldiaManrique.mercadoLaboral.tasaDesempleoComuna.toFixed(2).replace(".", ",")}%`,
+      etiqueta: "Desempleo — Manrique",
+      contexto: `Comuna 3 · Alcaldía de Medellín, GEIH ${alcaldiaManrique.periodo} — el dato comunal más reciente disponible.`,
     },
     {
-      // TODO: reemplazar con dato real de MEData (informalidad laboral, Comuna 3)
-      valor: "—%",
+      valor: `${daneGeih.tasaDesempleo.toFixed(1).replace(".", ",")}%`,
+      etiqueta: "Desempleo — Antioquia",
+      contexto: `Departamento · GEIH ${daneGeih.periodo} · DANE — más actual, pero ya no es específico de Manrique.`,
+    },
+    {
+      valor: `${daneGeih.tasaInformalidad.toFixed(1).replace(".", ",")}%`,
       etiqueta: "Informalidad laboral",
-      contexto: "Dato pendiente de fuente oficial MEData.",
+      contexto: `Antioquia (depto.) · GEIH ${daneGeih.periodo} · DANE — no existe este dato a nivel Comuna 3.`,
     },
     {
-      // TODO: reemplazar con dato real de MEData (unidades productivas activas, Comuna 3)
-      valor: "—",
+      valor: camaraComercio.totalEmpresas.toLocaleString("es-CO"),
       etiqueta: "Unidades productivas activas",
-      contexto: "Dato pendiente de fuente oficial MEData.",
+      contexto: `Comuna 3 - Manrique · Registro Mercantil ${camaraComercio.periodo} · Cámara de Comercio de Medellín.`,
     },
   ] satisfies Kpi[],
 };
 
+export const empleo = {
+  numero: "01",
+  nombre: "Empleo",
+  titular: "Estos números existen. Los de Manrique están congelados en 2019.",
+  intro:
+    "La GEIH del DANE mide desempleo a nivel departamental cada mes — el dato de Antioquia de abajo es de mayo de 2026. Pero el último desempleo específico de Manrique que publicó la Alcaldía es de 2019: la ficha de caracterización de la comuna no se volvió a actualizar con este nivel de detalle desde entonces.",
+  brecha:
+    "Esa es la brecha que Territorio INN 2026 quiere cerrar: sin datos abiertos y actualizados a nivel de comuna, la reactivación económica de Manrique se sigue diseñando con una foto de hace seis años.",
+};
+
 export const enfoque = {
   titulo: "El enfoque",
-  nota: "[ Próximamente ]",
   modulos: [
     {
       numero: "01",
       slug: "empleo",
       nombre: "Empleo",
       descripcion: "Mapeo de oferta laboral y oficios activos en el territorio.",
+      estado: "activo",
     },
     {
       numero: "02",
       slug: "inventario-predictivo",
       nombre: "Inventario predictivo",
       descripcion: "Seguimiento de unidades productivas y su comportamiento en el tiempo.",
+      estado: "proximamente",
     },
     {
       numero: "03",
-      slug: "portafolios",
-      nombre: "Portafolios",
-      descripcion: "Vitrina digital para negocios y oficios locales.",
+      slug: "aliados",
+      nombre: "Aliados",
+      descripcion: "Negocios y oficios de Manrique, en el mapa y con contacto directo.",
+      estado: "activo",
     },
   ] satisfies ModuloFuturo[],
 };

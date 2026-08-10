@@ -29,3 +29,105 @@ body {
   padding-left: clamp(1.5rem, 5vw, 6rem);
   padding-right: clamp(1.5rem, 5vw, 6rem);
 }
+
+/* ── Leaflet ──────────────────────────────────────────────────
+   Leaflet trae su propio look (azul, sombras, bordes redondeados) que choca
+   con el sistema editorial. Se reescribe acá y no inline porque los nodos los
+   crea Leaflet por fuera de React: no hay dónde poner className. */
+
+.marcador-portafolio {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background-color: var(--color-terracota);
+  border: 2px solid var(--color-hueso);
+  /* Sin esto los puntos se pierden sobre el gris claro de las tiles. */
+  box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25);
+  transition: transform 120ms ease;
+}
+
+.leaflet-marker-icon:hover .marcador-portafolio {
+  transform: scale(1.35);
+}
+
+/* Punto de selección en el registro: más grande y con pulso, porque es el
+   elemento que la persona tiene que encontrar y arrastrar. */
+.marcador-seleccion {
+  width: 24px;
+  height: 24px;
+  border-width: 3px;
+  cursor: grab;
+  animation: pulso-marcador 2s ease-out infinite;
+}
+
+.marcador-seleccion:active {
+  cursor: grabbing;
+  animation: none;
+}
+
+@keyframes pulso-marcador {
+  0% {
+    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25), 0 0 0 0 rgb(197 90 60 / 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25), 0 0 0 14px rgb(197 90 60 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25), 0 0 0 0 rgb(197 90 60 / 0);
+  }
+}
+
+/* Respeta a quien pidió menos movimiento en el sistema operativo. */
+@media (prefers-reduced-motion: reduce) {
+  .marcador-seleccion {
+    animation: none;
+  }
+  .leaflet-marker-icon:hover .marcador-portafolio {
+    transform: none;
+  }
+}
+
+/* Foco visible con teclado: los marcadores son interactivos y navegables. */
+.leaflet-marker-icon:focus-visible {
+  outline: 2px solid var(--color-tinta);
+  outline-offset: 3px;
+}
+
+.leaflet-container {
+  background-color: var(--color-hueso);
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0; /* el sistema es editorial: esquinas rectas, sin cards */
+  box-shadow: none;
+  border: 1px solid rgb(26 26 26 / 0.15);
+  background-color: var(--color-hueso);
+}
+
+.leaflet-popup-content {
+  margin: 0.75rem 0.9rem;
+}
+
+.leaflet-popup-tip {
+  box-shadow: none;
+  border: 1px solid rgb(26 26 26 / 0.15);
+  background-color: var(--color-hueso);
+}
+
+.leaflet-popup-close-button {
+  color: rgb(26 26 26 / 0.4) !important;
+}
+
+.leaflet-control-attribution {
+  background-color: rgb(247 245 240 / 0.85) !important;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 10px;
+}
+
+.leaflet-bar a {
+  border-radius: 0 !important;
+  color: var(--color-tinta) !important;
+  border-color: rgb(26 26 26 / 0.15) !important;
+}

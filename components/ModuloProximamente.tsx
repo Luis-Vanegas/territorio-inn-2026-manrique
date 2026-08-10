@@ -1,4 +1,5 @@
-// Stub compartido por las 3 rutas de módulos futuros (/empleo, /inventario-predictivo, /portafolios).
+// Stub para módulos futuros que todavía no tienen funcionalidad real (hoy: /inventario-predictivo).
+// Empleo y Aliados ya dejaron de usar este componente porque ya funcionan de verdad.
 // Mismo lenguaje editorial que el resto del sitio: el objetivo es que la ruta exista como destino
 // real, no simular una funcionalidad que todavía no se construyó.
 

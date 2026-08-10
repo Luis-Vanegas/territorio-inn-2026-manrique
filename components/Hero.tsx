@@ -7,7 +7,10 @@ import { ScrollReveal } from "./ScrollReveal";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen overflow-hidden margen-editorial pt-32 pb-24 sm:pt-40">
+    <section className="relative min-h-screen overflow-hidden margen-editorial pt-12 pb-24 sm:pt-20">
+      {/* El padding-top bajó de pt-32/pt-40: el SiteHeader sticky ya ocupa
+          ~64-72px arriba, y sumar el padding viejo dejaba un salto enorme
+          antes del titular. */}
       <div className="relative z-10 grid grid-cols-1 gap-y-10 lg:grid-cols-12">
         <ScrollReveal className="lg:col-span-12">
           <span className="font-mono text-xs tracking-[0.2em] text-terracota">

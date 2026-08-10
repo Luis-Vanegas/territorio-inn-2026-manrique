@@ -1,0 +1,94 @@
+import 'server-only';
+import { sql } from './neon';
+
+/**
+ * Límite de registros por IP sobre la tabla intentos_registro.
+ *
+ * Por qué Postgres y no Upstash: el endpoint de registro ya escribe en la base
+ * en el mismo request. Sumar Redis agrega un servicio, una credencial y un
+ * punto de falla para ahorrar una query que ya está en el camino caliente.
+ * Si el volumen crece hasta que esta query moleste, se cambia — no antes.
+ *
+ * Limitación conocida: detrás de un NAT compartido (un café, una biblioteca,
+ * un colegio) varias personas comparten IP y comparten el cupo. Por eso el
+ * límite es holgado y el mensaje dice cuánto falta en vez de solo negar.
+ */
+
+const MAX_INTENTOS = 3;
+const VENTANA_MINUTOS = 10;
+
+export type ResultadoLimite =
+  | { permitido: true }
+  | { permitido: false; minutosRestantes: number };
+
+export async function verificarLimite(ip: string | null): Promise<ResultadoLimite> {
+  // Sin IP no se puede limitar. Se deja pasar en vez de bloquear a todos:
+  // negar por falta de un header rompe el formulario para usuarios legítimos
+  // detrás de proxies que no lo reenvían.
+  if (!ip) return { permitido: true };
+
+  const rows = (await sql`
+    select
+      count(*)::int as intentos,
+      min(creado_en) as mas_antiguo
+    from intentos_registro
+    where ip = ${ip}::inet
+      and creado_en > now() - make_interval(mins => ${VENTANA_MINUTOS})
+  `) as { intentos: number; mas_antiguo: string | null }[];
+
+  const fila = rows[0];
+  if (!fila || fila.intentos < MAX_INTENTOS) return { permitido: true };
+
+  // El cupo se libera cuando el intento más viejo sale de la ventana.
+  const liberaEn = fila.mas_antiguo
+    ? new Date(fila.mas_antiguo).getTime() + VENTANA_MINUTOS * 60_000
+    : Date.now();
+
+  return {
+    permitido: false,
+    minutosRestantes: Math.max(1, Math.ceil((liberaEn - Date.now()) / 60_000)),
+  };
+}
+
+/**
+ * Registra el intento. Se llama incluso cuando el registro después falla:
+ * si solo contáramos los exitosos, un atacante podría mandar payloads
+ * inválidos sin límite y saturar igual el endpoint y el Blob.
+ */
+export async function registrarIntento(ip: string | null): Promise<void> {
+  if (!ip) return;
+  await sql`insert into intentos_registro (ip) values (${ip}::inet)`;
+}
+
+/**
+ * Purga los intentos viejos. Se llama desde un cron de Vercel.
+ * Sin esto la tabla crece para siempre: cada registro deja una fila que ya
+ * no sirve para nada pasados 10 minutos.
+ */
+export async function purgarIntentos(): Promise<number> {
+  const rows = await sql`
+    delete from intentos_registro
+    where creado_en < now() - interval '1 day'
+    returning 1
+  `;
+  return rows.length;
+}
+
+/**
+ * Extrae la IP del cliente de los headers.
+ * En Vercel, x-forwarded-for llega como "cliente, proxy1, proxy2" y el primero
+ * es el real. Se valida el formato antes de usarlo: va directo a un cast ::inet
+ * y un valor basura tira error de Postgres en medio del registro.
+ */
+export function ipDesdeHeaders(headers: Headers): string | null {
+  const cruda =
+    headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    headers.get('x-real-ip')?.trim();
+
+  if (!cruda) return null;
+
+  const esIPv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(cruda);
+  const esIPv6 = /^[0-9a-f:]+$/i.test(cruda) && cruda.includes(':');
+
+  return esIPv4 || esIPv6 ? cruda : null;
+}
