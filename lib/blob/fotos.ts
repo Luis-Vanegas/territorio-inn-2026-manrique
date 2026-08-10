@@ -20,8 +20,17 @@ const CALIDAD_WEBP = 80;
 
 export type ResultadoFoto = { url: string; pathname: string };
 
+/**
+ * Vercel conecta un store de Blob de dos formas posibles:
+ *   - la vieja: copia un `BLOB_READ_WRITE_TOKEN` estático a las env vars.
+ *   - la nueva (la que usa este proyecto): autenticación por OIDC, donde
+ *     alcanza con `BLOB_STORE_ID` — el SDK toma el token de sesión de Vercel
+ *     automáticamente en runtime, sin ningún secreto largo que copiar a mano.
+ * Mirar solo la variable vieja hacía que esto reportara "no configurado"
+ * incluso con el store ya conectado y funcionando.
+ */
 export function blobConfigurado(): boolean {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 }
 
 export type ErrorFoto = 'tipo-no-permitido' | 'muy-grande' | 'corrupta';
