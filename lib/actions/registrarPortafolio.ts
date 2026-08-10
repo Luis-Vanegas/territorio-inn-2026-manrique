@@ -11,6 +11,8 @@ import { estaDentroDeManrique } from '@/lib/geo/validarPunto';
 import { crearPortafolio, adjuntarFoto } from '@/lib/db/portafolios.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 import { subirFoto, validarArchivo, blobConfigurado } from '@/lib/blob/fotos';
+import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
+import { extraerCamposPersonalizados } from '@/lib/validation/camposPersonalizados.schema';
 
 export type EstadoRegistro =
   | { estado: 'inicial' }
@@ -77,6 +79,18 @@ export async function registrarPortafolio(
     }
   }
 
+  // 4.5 · Campos que definió el admin — se re-consulta cuáles están activos
+  // ACÁ, en el server, en vez de confiar en una lista que mandó el cliente.
+  // Si se confiara en el cliente, alguien podría mandar cualquier valor bajo
+  // cualquier slug, incluida la clave de un campo ya desactivado.
+  const camposActivos = await listarCamposActivos();
+  const { valores: camposExtra, errores: erroresCamposExtra } =
+    extraerCamposPersonalizados(formData, camposActivos);
+
+  if (Object.keys(erroresCamposExtra).length > 0) {
+    return { estado: 'error', errores: erroresCamposExtra };
+  }
+
   // 5 · Insert
   let id: string;
   try {
@@ -95,6 +109,7 @@ export async function registrarPortafolio(
       facebook: datos.facebook,
       version_terminos: VERSION_TERMINOS,
       ip_registro: ip,
+      campos_extra: camposExtra,
     });
   } catch (error) {
     console.error('[registrarPortafolio] insert falló', error);

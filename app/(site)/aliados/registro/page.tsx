@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { listarCategorias } from '@/lib/db/portafolios.repo';
+import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
 import { FormularioRegistro } from './_components/FormularioRegistro';
 
 export const metadata: Metadata = {
@@ -15,7 +16,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function RegistroPage() {
-  const categorias = await listarCategorias();
+  const [categorias, camposPersonalizados] = await Promise.all([
+    listarCategorias(),
+    listarCamposActivos(),
+  ]);
 
   return (
     <main className="margen-editorial py-24 sm:py-32">
@@ -44,7 +48,7 @@ export default async function RegistroPage() {
         </ul>
       </header>
 
-      <FormularioRegistro categorias={categorias} />
+      <FormularioRegistro categorias={categorias} camposPersonalizados={camposPersonalizados} />
 
       <Link
         href="/aliados"

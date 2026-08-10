@@ -5,6 +5,7 @@ import {
   contarPorEstado,
   type EstadoPortafolio,
 } from '@/lib/db/portafolios.repo';
+import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
 import { FichaModeracion } from './_components/FichaModeracion';
 
 // La cola cambia con cada registro nuevo: no se cachea.
@@ -27,9 +28,10 @@ export default async function ModeracionPage({
     ? (solicitado as EstadoPortafolio)
     : 'pendiente';
 
-  const [registros, conteos] = await Promise.all([
+  const [registros, conteos, definicionesCampos] = await Promise.all([
     listarParaModerar(estadoActivo),
     contarPorEstado(),
+    listarTodosLosCampos(),
   ]);
 
   return (
@@ -72,7 +74,9 @@ export default async function ModeracionPage({
               : 'No hay registros en este estado.'}
           </p>
         ) : (
-          registros.map((r) => <FichaModeracion key={r.id} portafolio={r} />)
+          registros.map((r) => (
+            <FichaModeracion key={r.id} portafolio={r} definicionesCampos={definicionesCampos} />
+          ))
         )}
       </section>
     </main>
