@@ -81,6 +81,63 @@ export async function rankingInteracciones(dias = 30): Promise<FilaInteraccion[]
   return rows as FilaInteraccion[];
 }
 
+export type FilaDiaInteraccion = { dia: string; vistas: number; contactos: number };
+
+/**
+ * Serie diaria para el panel. Mismo criterio que `registrosPorDia`: los días
+ * sin una sola interacción se devuelven en cero en vez de faltar, porque un
+ * hueco en la serie también es información — dice que ese día nadie miró.
+ */
+export async function interaccionesPorDia(dias = 30): Promise<FilaDiaInteraccion[]> {
+  const rows = await sql`
+    select
+      to_char(d.dia, 'YYYY-MM-DD') as dia,
+      coalesce(sum(i.conteo) filter (where i.tipo = 'vista'), 0)::int    as vistas,
+      coalesce(sum(i.conteo) filter (where i.tipo = 'contacto'), 0)::int as contactos
+    from generate_series(
+      current_date - make_interval(days => ${dias - 1}),
+      current_date,
+      interval '1 day'
+    ) as d(dia)
+    left join interacciones_portafolio i on i.dia = d.dia::date
+    group by d.dia
+    order by d.dia
+  `;
+  return rows as FilaDiaInteraccion[];
+}
+
+export type FilaCruda = {
+  portafolio_id: string;
+  negocio: string;
+  dia: string;
+  tipo: TipoInteraccion;
+  conteo: number;
+};
+
+/**
+ * Datos crudos para exportar: una fila por negocio, día y tipo.
+ *
+ * Se exporta el detalle y no el resumen a propósito. Un CSV pre-agregado
+ * obliga a volver a pedirle al equipo otra exportación en cuanto la pregunta
+ * cambia ("¿y por semana?", "¿y solo alimentación?"). Con el detalle, una
+ * tabla dinámica responde todas esas preguntas sin tocar el código.
+ */
+export async function interaccionesCrudas(dias = 365): Promise<FilaCruda[]> {
+  const rows = await sql`
+    select
+      i.portafolio_id,
+      p.nombre                     as negocio,
+      to_char(i.dia, 'YYYY-MM-DD') as dia,
+      i.tipo,
+      i.conteo
+    from interacciones_portafolio i
+    join portafolios p on p.id = i.portafolio_id
+    where i.dia > current_date - make_interval(days => ${dias})
+    order by i.dia desc, p.nombre, i.tipo
+  `;
+  return rows as FilaCruda[];
+}
+
 export type TotalesInteraccion = { vistas: number; contactos: number };
 
 export async function totalesInteracciones(dias = 30): Promise<TotalesInteraccion> {

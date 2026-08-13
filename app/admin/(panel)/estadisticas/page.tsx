@@ -10,6 +10,7 @@ import {
 import {
   rankingInteracciones,
   totalesInteracciones,
+  interaccionesPorDia,
 } from '@/lib/db/interacciones.repo';
 
 export const dynamic = 'force-dynamic';
@@ -78,31 +79,61 @@ function Barras({
   );
 }
 
-function SerieDiaria({ filas }: { filas: { dia: string; total: number }[] }) {
+/**
+ * Serie diaria en barras. Si las filas traen `secundario`, la barra se apila:
+ * el bloque oscuro abajo es el subconjunto (contactos dentro de vistas).
+ *
+ * Apilado y no dos gráficos separados porque la pregunta es la proporción —
+ * "de los que miraron, cuántos escribieron" — y esa relación se lee de un
+ * vistazo cuando comparten la misma barra.
+ */
+function SerieDiaria({
+  filas,
+  etiqueta,
+  unidad = 'registros',
+  etiquetaSecundaria,
+}: {
+  filas: { dia: string; total: number; secundario?: number }[];
+  etiqueta: string;
+  unidad?: string;
+  etiquetaSecundaria?: string;
+}) {
   const max = Math.max(...filas.map((f) => f.total), 1);
   const hayDatos = filas.some((f) => f.total > 0);
 
   return (
     <div>
-      <div className="flex h-24 items-end gap-[3px]" role="img" aria-label="Registros por día en los últimos 30 días">
+      <div className="flex h-24 items-end gap-[3px]" role="img" aria-label={etiqueta}>
         {filas.map((f) => (
           <div
             key={f.dia}
-            className="flex-1 bg-terracota/85"
+            className="flex flex-1 flex-col justify-end"
             style={{
               // 2px de piso para que los días en cero sigan siendo una marca
               // visible: un hueco en la serie también dice algo.
               height: f.total === 0 ? '2px' : `${Math.max((f.total / max) * 100, 8)}%`,
               opacity: f.total === 0 ? 0.18 : 1,
             }}
-            title={`${f.dia}: ${f.total}`}
-          />
+            title={
+              f.secundario === undefined
+                ? `${f.dia}: ${f.total}`
+                : `${f.dia}: ${f.total} ${unidad}, ${f.secundario} ${etiquetaSecundaria ?? ''}`
+            }
+          >
+            <div className="w-full flex-1 bg-terracota/85" />
+            {f.secundario !== undefined && f.secundario > 0 && (
+              <div
+                className="w-full bg-tinta/70"
+                style={{ height: `${Math.min((f.secundario / f.total) * 100, 100)}%` }}
+              />
+            )}
+          </div>
         ))}
       </div>
 
       <div className="mt-2 flex justify-between font-mono text-[10px] text-tinta/35">
         <span>{filas[0]?.dia.slice(5)}</span>
-        <span>{hayDatos ? `máx ${max}/día` : 'sin registros aún'}</span>
+        <span>{hayDatos ? `máx ${max}/día` : `sin ${unidad} aún`}</span>
         <span>{filas[filas.length - 1]?.dia.slice(5)}</span>
       </div>
     </div>
@@ -110,7 +141,7 @@ function SerieDiaria({ filas }: { filas: { dia: string; total: number }[] }) {
 }
 
 export default async function EstadisticasPage() {
-  const [resumen, categorias, barrios, serie, moderadores, interes, totalesInteres] =
+  const [resumen, categorias, barrios, serie, moderadores, interes, totalesInteres, serieInteres] =
     await Promise.all([
       resumenGeneral(),
       porCategoria(),
@@ -119,6 +150,7 @@ export default async function EstadisticasPage() {
       porModerador(),
       rankingInteracciones(30),
       totalesInteracciones(30),
+      interaccionesPorDia(30),
     ]);
 
   const tasaAprobacion =
@@ -136,6 +168,29 @@ export default async function EstadisticasPage() {
         Datos de los registros del módulo. El tráfico del sitio —visitantes,
         páginas vistas, de dónde llegan— se mide aparte y de forma anónima.
       </p>
+
+      {/* Los CSV traen el DETALLE, no este resumen. Un panel responde las
+          preguntas que alguien previó; una tabla dinámica sobre el detalle
+          responde las que van a aparecer después. */}
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <a
+          href="/api/admin/exportar?conjunto=aliados"
+          download
+          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+        >
+          ↓ Aliados en CSV
+        </a>
+        <a
+          href="/api/admin/exportar?conjunto=interacciones"
+          download
+          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+        >
+          ↓ Interacciones por día en CSV
+        </a>
+        <span className="font-mono text-xs text-tinta/40">
+          Se abren en Excel · sin teléfonos ni correos
+        </span>
+      </div>
 
       <section className="mt-12">
         <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
@@ -184,7 +239,7 @@ export default async function EstadisticasPage() {
           02 · Registros por día
         </h2>
         <div className="mt-6 max-w-3xl">
-          <SerieDiaria filas={serie} />
+          <SerieDiaria filas={serie} etiqueta="Registros por día en los últimos 30 días" />
         </div>
       </section>
 
@@ -221,6 +276,28 @@ export default async function EstadisticasPage() {
             valor={interes.filter((f) => f.vistas === 0).length}
             etiqueta="Sin una sola vista"
             nota="publicados que nadie abrió"
+          />
+        </div>
+
+        <div className="mt-8 max-w-3xl">
+          <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-tinta/45">
+            Evolución diaria
+            <span className="ml-3 inline-flex items-center gap-1.5 normal-case tracking-normal text-tinta/40">
+              <span className="inline-block h-2 w-2 bg-terracota/85" aria-hidden="true" />
+              fichas abiertas
+              <span className="ml-2 inline-block h-2 w-2 bg-tinta/70" aria-hidden="true" />
+              de esas, las que contactaron
+            </span>
+          </p>
+          <SerieDiaria
+            filas={serieInteres.map((f) => ({
+              dia: f.dia,
+              total: f.vistas,
+              secundario: f.contactos,
+            }))}
+            etiqueta="Interacciones por día en los últimos 30 días"
+            unidad="vistas"
+            etiquetaSecundaria="contactos"
           />
         </div>
 
