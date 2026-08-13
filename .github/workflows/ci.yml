@@ -1,0 +1,37 @@
+# Verificación automática de cada PR y de cada push a main.
+#
+# Corre typecheck y lint, no build: `next build` necesita DATABASE_URL para
+# recolectar datos de página, y meter una credencial de producción en un
+# runner de CI para verificar que el TypeScript compila es un mal negocio.
+# Vercel ya hace el build real en cada deploy, con las variables que
+# corresponden — duplicarlo acá no agrega información.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # `npm ci` y no `npm install`: respeta el lockfile exacto. Si el lockfile
+      # está desactualizado, falla acá en vez de instalar otras versiones y
+      # dejar que el problema aparezca en producción.
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint

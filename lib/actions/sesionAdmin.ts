@@ -1,8 +1,9 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { autenticar, crearTokenSesion } from '@/lib/auth/admin';
+import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 
 export type EstadoSesion =
   | { estado: 'inicial' }
@@ -21,7 +22,24 @@ export async function iniciarSesion(
     return { estado: 'error', mensaje: 'Completá los dos campos.' };
   }
 
+  // El login es el único endpoint del sitio donde adivinar tiene premio, y los
+  // moderadores usan correos institucionales que cualquiera deduce. Sin esto,
+  // un diccionario corre sin techo: scrypt hace lento CADA intento, pero nada
+  // impide hacer un millón.
+  const ip = ipDesdeHeaders(headers());
+  const limite = await verificarLimite(ip, 'login');
+  if (!limite.permitido) {
+    return {
+      estado: 'error',
+      mensaje: `Demasiados intentos. Probá de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
+    };
+  }
+
   const ok = await autenticar(email, password);
+
+  // Solo cuentan los intentos fallidos: un moderador que entra bien no gasta
+  // cupo, así que trabajar normalmente nunca lo acerca al bloqueo.
+  if (!ok) await registrarIntento(ip, 'login');
 
   // Mensaje único para email inexistente y password incorrecto: distinguirlos
   // convierte el formulario en un verificador de qué correos son moderadores.

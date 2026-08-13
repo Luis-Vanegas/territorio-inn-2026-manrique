@@ -14,14 +14,33 @@ import { sql } from './neon';
  * límite es holgado y el mensaje dice cuánto falta en vez de solo negar.
  */
 
-const MAX_INTENTOS = 3;
-const VENTANA_MINUTOS = 10;
+export type OrigenIntento = 'registro' | 'login';
+
+/**
+ * Cupos por origen. Son distintos a propósito:
+ *
+ * - `registro`: publicar un negocio es una acción deliberada que nadie repite
+ *   diez veces seguidas. El cupo corta el scripteo sin molestar a nadie.
+ * - `login`: equivocarse de contraseña dos o tres veces es normal, y bloquear
+ *   al moderador que entra a aprobar registros es peor que el ataque que
+ *   evitamos. La ventana es más larga porque lo que se frena acá no es un
+ *   error humano sino un diccionario de miles de intentos.
+ */
+const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> = {
+  registro: { maximo: 3, ventanaMinutos: 10 },
+  login: { maximo: 8, ventanaMinutos: 15 },
+};
 
 export type ResultadoLimite =
   | { permitido: true }
   | { permitido: false; minutosRestantes: number };
 
-export async function verificarLimite(ip: string | null): Promise<ResultadoLimite> {
+export async function verificarLimite(
+  ip: string | null,
+  origen: OrigenIntento = 'registro',
+): Promise<ResultadoLimite> {
+  const { maximo: MAX_INTENTOS, ventanaMinutos: VENTANA_MINUTOS } = CUPOS[origen];
+
   // Sin IP no se puede limitar. Se deja pasar en vez de bloquear a todos:
   // negar por falta de un header rompe el formulario para usuarios legítimos
   // detrás de proxies que no lo reenvían.
@@ -33,6 +52,7 @@ export async function verificarLimite(ip: string | null): Promise<ResultadoLimit
       min(creado_en) as mas_antiguo
     from intentos_registro
     where ip = ${ip}::inet
+      and origen = ${origen}
       and creado_en > now() - make_interval(mins => ${VENTANA_MINUTOS})
   `) as { intentos: number; mas_antiguo: string | null }[];
 
@@ -55,9 +75,12 @@ export async function verificarLimite(ip: string | null): Promise<ResultadoLimit
  * si solo contáramos los exitosos, un atacante podría mandar payloads
  * inválidos sin límite y saturar igual el endpoint y el Blob.
  */
-export async function registrarIntento(ip: string | null): Promise<void> {
+export async function registrarIntento(
+  ip: string | null,
+  origen: OrigenIntento = 'registro',
+): Promise<void> {
   if (!ip) return;
-  await sql`insert into intentos_registro (ip) values (${ip}::inet)`;
+  await sql`insert into intentos_registro (ip, origen) values (${ip}::inet, ${origen})`;
 }
 
 /**
