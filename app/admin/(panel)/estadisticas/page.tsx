@@ -7,6 +7,10 @@ import {
   registrosPorDia,
   porModerador,
 } from '@/lib/db/estadisticas.repo';
+import {
+  rankingInteracciones,
+  totalesInteracciones,
+} from '@/lib/db/interacciones.repo';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,9 +38,11 @@ function Metrica({
 function Barras({
   filas,
   vacio,
+  sufijoSecundario = 'publicados',
 }: {
   filas: { etiqueta: string; valor: number; secundario?: number }[];
   vacio: string;
+  sufijoSecundario?: string;
 }) {
   if (filas.length === 0) {
     return <p className="font-sans text-sm text-tinta/50">{vacio}</p>;
@@ -53,7 +59,10 @@ function Barras({
             <span className="font-mono text-xs text-tinta/50">
               {f.valor}
               {f.secundario !== undefined && f.secundario !== f.valor && (
-                <span className="text-tinta/35"> · {f.secundario} publicados</span>
+                <span className="text-tinta/35">
+                  {' '}
+                  · {f.secundario} {sufijoSecundario}
+                </span>
               )}
             </span>
           </div>
@@ -101,13 +110,16 @@ function SerieDiaria({ filas }: { filas: { dia: string; total: number }[] }) {
 }
 
 export default async function EstadisticasPage() {
-  const [resumen, categorias, barrios, serie, moderadores] = await Promise.all([
-    resumenGeneral(),
-    porCategoria(),
-    porBarrio(),
-    registrosPorDia(30),
-    porModerador(),
-  ]);
+  const [resumen, categorias, barrios, serie, moderadores, interes, totalesInteres] =
+    await Promise.all([
+      resumenGeneral(),
+      porCategoria(),
+      porBarrio(),
+      registrosPorDia(30),
+      porModerador(),
+      rankingInteracciones(30),
+      totalesInteracciones(30),
+    ]);
 
   const tasaAprobacion =
     resumen.aprobados + resumen.rechazados > 0
@@ -176,10 +188,59 @@ export default async function EstadisticasPage() {
         </div>
       </section>
 
+      {/* Esto es lo que le sirve al aliado, no al equipo: es el número que
+          convierte "registrate en el mapa" de un favor en un argumento. */}
+      <section className="mt-16">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+          03 · Interés por negocio · últimos 30 días
+        </h2>
+
+        <p className="mt-4 max-w-2xl font-sans text-sm leading-relaxed text-tinta/60">
+          Cuánta gente abrió la ficha de cada negocio y cuánta tocó un contacto.
+          Se cuenta de forma agregada por día: no hay cookie, ni IP, ni forma de
+          saber si dos vistas son de la misma persona.
+        </p>
+
+        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
+          <Metrica valor={totalesInteres.vistas} etiqueta="Fichas abiertas" />
+          <Metrica
+            valor={totalesInteres.contactos}
+            etiqueta="Contactos tocados"
+            nota="WhatsApp, teléfono, correo o redes"
+          />
+          <Metrica
+            valor={
+              totalesInteres.vistas > 0
+                ? `${Math.round((totalesInteres.contactos / totalesInteres.vistas) * 100)}%`
+                : '—'
+            }
+            etiqueta="Pasan a contactar"
+            nota={totalesInteres.vistas === 0 ? 'sin datos aún' : 'de los que miran'}
+          />
+          <Metrica
+            valor={interes.filter((f) => f.vistas === 0).length}
+            etiqueta="Sin una sola vista"
+            nota="publicados que nadie abrió"
+          />
+        </div>
+
+        <div className="mt-8 max-w-2xl">
+          <Barras
+            vacio="Todavía nadie abrió una ficha. Los números aparecen apenas haya visitas."
+            sufijoSecundario="contactos"
+            filas={interes.map((f) => ({
+              etiqueta: f.nombre,
+              valor: f.vistas,
+              secundario: f.contactos,
+            }))}
+          />
+        </div>
+      </section>
+
       <div className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-2">
         <section>
           <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
-            03 · Por categoría
+            04 · Por categoría
           </h2>
           <div className="mt-6">
             <Barras
@@ -195,7 +256,7 @@ export default async function EstadisticasPage() {
 
         <section>
           <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
-            04 · Por barrio
+            05 · Por barrio
           </h2>
           <div className="mt-6">
             <Barras
@@ -209,7 +270,7 @@ export default async function EstadisticasPage() {
       {moderadores.length > 0 && (
         <section className="mt-16">
           <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
-            05 · Moderación por persona
+            06 · Moderación por persona
           </h2>
           <div className="mt-6 max-w-lg">
             <Barras
@@ -225,7 +286,7 @@ export default async function EstadisticasPage() {
 
       <section className="mt-16 max-w-2xl border-t border-tinta/12 pt-8">
         <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
-          06 · Tráfico del sitio
+          07 · Tráfico del sitio
         </h2>
 
         <p className="mt-4 font-sans text-sm leading-relaxed text-tinta/70">
