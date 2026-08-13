@@ -11,10 +11,13 @@ import { enfoque } from "@/lib/content";
 
 // Se genera de la misma fuente que EnfoqueSection: una sola lista de módulos,
 // no dos que se puedan desincronizar cuando se agregue o quite uno.
-const ENLACES = enfoque.modulos.map((m) => ({
-  href: `/${m.slug}`,
-  etiqueta: m.nombre,
-}));
+// El buzón se colgaba solo del footer, así que en la práctica no existía: nadie
+// baja hasta el pie de una página para buscar dónde escribir. Va último, después
+// de los módulos, porque es un canal de servicio y no una sección del proyecto.
+const ENLACES = [
+  ...enfoque.modulos.map((m) => ({ href: `/${m.slug}`, etiqueta: m.nombre })),
+  { href: '/contacto', etiqueta: 'Escribinos' },
+];
 
 export function SiteHeader() {
   return (
