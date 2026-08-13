@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
+import type { Coordenada } from '@/lib/geo/constantes';
 
 /**
  * Frontera de carga del mapa.
@@ -26,6 +27,8 @@ const MapaClient = dynamic(() => import('./MapaAliadosClient'), {
 export function MapaAliados(props: {
   portafolios: Portafolio[];
   alSeleccionar?: (id: string) => void;
+  ubicacionUsuario?: Coordenada | null;
+  seleccionado?: string | null;
 }) {
   return <MapaClient {...props} />;
 }

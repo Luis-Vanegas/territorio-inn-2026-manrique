@@ -51,6 +51,39 @@ body {
   transform: scale(1.35);
 }
 
+/* El negocio que se tocó en el mapa: crece y late para que la vista lo
+   encuentre después del flyTo, sin cambiar de color y romper el sistema. */
+.marcador-activo {
+  transform: scale(1.5);
+  animation: pulso-marcador 1.6s ease-out infinite;
+}
+
+/* Punto del visitante: tinta, no terracota. El acento del sistema identifica
+   a los negocios — si el visitante también fuera terracota, sería un negocio
+   más en el mapa. */
+.marcador-usuario {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background-color: var(--color-tinta);
+  border: 3px solid var(--color-hueso);
+  box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3);
+  animation: pulso-usuario 2.4s ease-out infinite;
+}
+
+@keyframes pulso-usuario {
+  0% {
+    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3), 0 0 0 0 rgb(26 26 26 / 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3), 0 0 0 18px rgb(26 26 26 / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3), 0 0 0 0 rgb(26 26 26 / 0);
+  }
+}
+
 /* Punto de selección en el registro: más grande y con pulso, porque es el
    elemento que la persona tiene que encontrar y arrastrar. */
 .marcador-seleccion {
@@ -80,7 +113,9 @@ body {
 
 /* Respeta a quien pidió menos movimiento en el sistema operativo. */
 @media (prefers-reduced-motion: reduce) {
-  .marcador-seleccion {
+  .marcador-seleccion,
+  .marcador-usuario,
+  .marcador-activo {
     animation: none;
   }
   .leaflet-marker-icon:hover .marcador-portafolio {

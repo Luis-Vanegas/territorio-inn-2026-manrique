@@ -8,8 +8,7 @@ import {
 } from '@/lib/db/portafolios.repo';
 import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
 import { enfoque } from '@/lib/content';
-import { MapaAliados } from '@/components/MapaAliados';
-import { TarjetaEmprendimiento } from './_components/TarjetaEmprendimiento';
+import { VitrinaAliados } from './_components/VitrinaAliados';
 import { FiltroCategorias } from './_components/FiltroCategorias';
 
 const modulo = enfoque.modulos.find((m) => m.slug === 'aliados')!;
@@ -98,43 +97,20 @@ export default async function AliadosPage({
       ) : (
         <>
           {/* El mapa es lo primero y lo más grande de la página: es el elemento
-              que hace tangible "esto existe de verdad", más que cualquier texto. */}
-          <section className="mt-14" aria-label="Mapa de negocios aliados">
-            <div className="flex flex-wrap items-baseline justify-between gap-3">
-              <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
-                Dónde están
-              </h2>
-              <span className="font-mono text-xs text-tinta/40">
-                {aliados.length} {aliados.length === 1 ? 'negocio' : 'negocios'} en el mapa
-              </span>
-            </div>
+              que hace tangible "esto existe de verdad", más que cualquier texto.
+              Mapa y listado van juntos en un solo componente de cliente porque
+              comparten estado: la ubicación del visitante y el punto tocado. */}
+          {aliados.length === 0 ? (
+            <section className="mt-20" aria-label="Listado de negocios aliados">
+              <div className="mt-5">
+                <FiltroCategorias
+                  categorias={categorias}
+                  conteos={conteos}
+                  activa={categoriaActiva}
+                  total={total}
+                />
+              </div>
 
-            <div className="mt-4 h-[460px] w-full overflow-hidden border border-tinta/12 sm:h-[600px] lg:h-[680px]">
-              <MapaAliados portafolios={aliados} />
-            </div>
-
-            <p className="mt-3 font-mono text-xs text-tinta/40">
-              Tocá un punto terracota para ver el negocio.
-            </p>
-          </section>
-
-          <section className="mt-20" aria-label="Listado de negocios aliados">
-            <div className="flex flex-wrap items-baseline justify-between gap-4">
-              <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
-                Quiénes son
-              </h2>
-            </div>
-
-            <div className="mt-5">
-              <FiltroCategorias
-                categorias={categorias}
-                conteos={conteos}
-                activa={categoriaActiva}
-                total={total}
-              />
-            </div>
-
-            {aliados.length === 0 ? (
               <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-tinta/60">
                 No hay negocios en {nombreCategoria ?? 'esa categoría'} por ahora.{' '}
                 <Link
@@ -145,19 +121,21 @@ export default async function AliadosPage({
                 </Link>
                 .
               </p>
-            ) : (
-              <div className="mt-10">
-                {aliados.map((p, i) => (
-                  <TarjetaEmprendimiento
-                    key={p.id}
-                    portafolio={p}
-                    indice={i}
-                    definicionesCampos={definicionesCampos}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
+            </section>
+          ) : (
+            <VitrinaAliados
+              aliados={aliados}
+              definicionesCampos={definicionesCampos}
+              filtro={
+                <FiltroCategorias
+                  categorias={categorias}
+                  conteos={conteos}
+                  activa={categoriaActiva}
+                  total={total}
+                />
+              }
+            />
+          )}
         </>
       )}
 
