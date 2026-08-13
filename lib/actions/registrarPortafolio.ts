@@ -118,7 +118,9 @@ export async function registrarPortafolio(
   if (foto) {
     if (!blobConfigurado()) {
       avisoFoto = 'El registro quedó guardado, pero la foto no se pudo subir.';
-      console.warn('[registrarPortafolio] BLOB_READ_WRITE_TOKEN sin configurar');
+      console.warn(
+        '[registrarPortafolio] store de Blob sin conectar: falta BLOB_READ_WRITE_TOKEN o BLOB_STORE_ID',
+      );
     } else {
       try {
         const subida = await subirFoto(foto, id);

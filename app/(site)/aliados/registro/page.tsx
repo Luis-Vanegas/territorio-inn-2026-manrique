@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import { listarCategorias } from '@/lib/db/portafolios.repo';
 import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
@@ -49,13 +48,6 @@ export default async function RegistroPage() {
       </header>
 
       <FormularioRegistro categorias={categorias} camposPersonalizados={camposPersonalizados} />
-
-      <Link
-        href="/aliados"
-        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
-      >
-        ← Volver al mapa
-      </Link>
     </main>
   );
 }

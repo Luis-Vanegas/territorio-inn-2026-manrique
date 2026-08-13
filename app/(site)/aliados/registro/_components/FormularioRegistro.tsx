@@ -266,17 +266,26 @@ export function FormularioRegistro({
           Listo. Ahora lo revisamos.
         </h2>
 
+        {/* Acá se mostraba el uuid del registro con un "guardá este código por
+            si necesitás consultarlo". No existe ninguna ruta donde consultarlo,
+            así que era una promesa que el sistema no podía cumplir — y un uuid
+            de 36 caracteres no es algo que una persona dicte por teléfono.
+            El identificador técnico se queda en la base, que es donde sirve.
+            Si alguna vez hace falta un código para humanos, va a ser una
+            columna aparte y corta, no la clave primaria. */}
         <p className="mt-4 font-sans leading-relaxed text-tinta/70">
           Tu negocio aparece en el mapa de Aliados apenas el equipo termine de
-          revisarlo. Guardá este código por si necesitás consultarlo:
-        </p>
-
-        <p className="mt-4 break-all border border-tinta/15 px-4 py-3 font-mono text-xs text-tinta/70">
-          {estado.id}
+          revisarlo. Si falta algo o hay que corregir un dato, te escribimos al
+          contacto que dejaste.
         </p>
 
         {estado.avisoFoto && (
-          <p className="mt-4 font-mono text-xs text-terracota">{estado.avisoFoto}</p>
+          <p className="mt-6 border-l-2 border-terracota bg-terracota/[0.06] py-3 pl-4 font-sans text-sm leading-relaxed text-tinta/75">
+            {estado.avisoFoto}{' '}
+            <span className="text-tinta/55">
+              Podés mandárnosla después por el mismo contacto y la agregamos.
+            </span>
+          </p>
         )}
 
         <Link
@@ -290,7 +299,8 @@ export function FormularioRegistro({
   }
 
   return (
-    <form action={accion} className="mt-14 flex flex-col gap-12">
+    <>
+      <form action={accion} className="mt-14 flex flex-col gap-12">
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
@@ -673,6 +683,14 @@ export function FormularioRegistro({
       </Seccion>
 
       <BarraEnvio faltantes={faltantes} total={REQUISITOS.length} />
-    </form>
+      </form>
+
+      <Link
+        href="/aliados"
+        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+      >
+        ← Volver al mapa
+      </Link>
+    </>
   );
 }
