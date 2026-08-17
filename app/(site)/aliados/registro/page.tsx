@@ -1,14 +1,18 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import { listarCategorias } from '@/lib/db/portafolios.repo';
 import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
+import { enfoque } from '@/lib/content';
 import { FormularioRegistro } from './_components/FormularioRegistro';
+
+// Aliados siempre está en enfoque.modulos (nunca se filtra), así que el find
+// nunca da undefined acá.
+const modulo = enfoque.modulos.find((m) => m.slug === 'aliados')!;
 
 export const metadata: Metadata = {
   title: 'Sumarme como aliado · Territorio INN 2026',
   description:
-    'Sumá tu negocio de la Comuna 3 — Manrique al mapa de Aliados del territorio.',
+    'Suma tu negocio de la Comuna 3 — Manrique al mapa de Aliados del territorio.',
 };
 
 // Las categorías salen de la base y casi nunca cambian, pero la página no debe
@@ -24,14 +28,14 @@ export default async function RegistroPage() {
   return (
     <main className="margen-editorial py-24 sm:py-32">
       <header className="max-w-3xl">
-        <span className="font-mono text-xs text-tinta/50">03 · Aliados</span>
+        <span className="font-mono text-xs text-tinta/50">{modulo.numero} · Aliados</span>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
-          Poné tu negocio en el mapa
+          Suma tu negocio al mapa
         </h1>
 
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
-          Si tenés un negocio, un taller o prestás un servicio en la Comuna 3,
+          Si tienes un negocio, un taller o prestas un servicio en la Comuna 3,
           este formulario lo suma al mapa público de Aliados.
         </p>
 
@@ -49,13 +53,6 @@ export default async function RegistroPage() {
       </header>
 
       <FormularioRegistro categorias={categorias} camposPersonalizados={camposPersonalizados} />
-
-      <Link
-        href="/aliados"
-        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
-      >
-        ← Volver al mapa
-      </Link>
     </main>
   );
 }

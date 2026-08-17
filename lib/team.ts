@@ -20,15 +20,15 @@ export const equipo: MiembroEquipo[] = [
     foto: "/equipo/fotoitm.jpeg",
   },
   {
-    iniciales: "NA",
-    nombre: "Nombre Apellido",
-    programaInstitucion: "Programa en curso",
-    rol: "Rol en el proyecto",
+    iniciales: "EM",
+    nombre: "Estefania Mesa Makiu",
+    programaInstitucion: "ITM",
+    foto: "/equipo/Estefania.jpeg",
   },
   {
-    iniciales: "NA",
-    nombre: "Nombre Apellido",
-    programaInstitucion: "Programa en curso",
-    rol: "Rol en el proyecto",
+    // ponytail: falta universidad y foto — el usuario las va a mandar después.
+    iniciales: "MJ",
+    nombre: "Maria Camila Jaramillo Zapata",
+    programaInstitucion: "Universidad por confirmar",
   },
 ];

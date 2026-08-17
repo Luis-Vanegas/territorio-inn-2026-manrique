@@ -3,12 +3,31 @@ import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
 import { formatearCamposExtra } from '@/lib/camposExtra';
+import { formatearDistancia } from '@/lib/geo/distancia';
+import { contar } from '@/lib/interacciones';
 
 /**
  * Ficha de un emprendimiento en el listado.
  * Sin sombras ni bordes redondeados: el sistema es editorial, la separación
  * la da una línea de 1px y el aire, no una card flotante.
  */
+
+/**
+ * `instagram`/`facebook` ya vienen como URL completa desde `normalizarRedSocial`
+ * (lib/validation/portafolio.schema.ts) — arma el link a mano acá duplicaba el
+ * dominio (`instagram.com/https://instagram.com/usuario`, roto). Se usa el
+ * valor guardado directo como href, y se deriva una etiqueta corta del path
+ * para no mostrar la URL entera.
+ */
+function enlaceRedSocial(valor: string, etiquetaGenerica: string): { etiqueta: string; href: string } {
+  const href = /^https?:\/\//i.test(valor) ? valor : `https://${valor}`;
+  try {
+    const usuario = new URL(href).pathname.replace(/^\/+|\/+$/g, '');
+    return { etiqueta: usuario ? `@${usuario}` : etiquetaGenerica, href };
+  } catch {
+    return { etiqueta: etiquetaGenerica, href };
+  }
+}
 
 function Contacto({ portafolio }: { portafolio: Portafolio }) {
   const enlaces: { etiqueta: string; href: string }[] = [];
@@ -23,10 +42,10 @@ function Contacto({ portafolio }: { portafolio: Portafolio }) {
     enlaces.push({ etiqueta: 'Correo', href: `mailto:${portafolio.correo}` });
   }
   if (portafolio.instagram) {
-    enlaces.push({
-      etiqueta: `@${portafolio.instagram}`,
-      href: `https://instagram.com/${portafolio.instagram}`,
-    });
+    enlaces.push(enlaceRedSocial(portafolio.instagram, 'Instagram'));
+  }
+  if (portafolio.facebook) {
+    enlaces.push(enlaceRedSocial(portafolio.facebook, 'Otra red'));
   }
 
   if (enlaces.length === 0) return null;
@@ -39,6 +58,9 @@ function Contacto({ portafolio }: { portafolio: Portafolio }) {
             href={e.href}
             target="_blank"
             rel="noopener noreferrer"
+            // Tocar un contacto es la señal que le importa al negocio: es
+            // alguien que dejó de mirar y decidió escribir.
+            onClick={() => contar(portafolio.id, 'contacto')}
             className="font-mono text-xs text-tinta/60 underline decoration-terracota/40 underline-offset-4 transition-colors hover:text-terracota"
           >
             {e.etiqueta}
@@ -53,17 +75,29 @@ export function TarjetaEmprendimiento({
   portafolio,
   indice,
   definicionesCampos,
+  distancia,
+  activo,
 }: {
   portafolio: Portafolio;
   indice: number;
   definicionesCampos: DefinicionCampo[];
+  /** Metros hasta el visitante. null si no compartió su ubicación. */
+  distancia?: number | null;
+  /** Resaltado porque se tocó su punto en el mapa. */
+  activo?: boolean;
 }) {
   const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
 
   return (
     <article
       id={portafolio.id}
-      className="grid grid-cols-1 gap-5 border-t border-tinta/12 py-8 sm:grid-cols-[auto_1fr] sm:gap-7"
+      // scroll-mt evita que el header fijo tape el título al saltar desde el mapa.
+      className={[
+        'grid scroll-mt-24 grid-cols-1 gap-5 border-t py-8 transition-colors duration-500 sm:grid-cols-[auto_1fr] sm:gap-7',
+        activo
+          ? 'border-terracota bg-terracota/[0.05]'
+          : 'border-tinta/12',
+      ].join(' ')}
     >
       {/* La numeración en mono es la convención del sitio: "lo medido" se
           separa de "lo narrado". Ver docs/decisiones-diseno.md. */}
@@ -76,9 +110,20 @@ export function TarjetaEmprendimiento({
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_auto] sm:gap-8">
         <div className="min-w-0">
-          <span className="font-mono text-[11px] uppercase tracking-wider text-terracota">
-            {portafolio.categoria_nombre}
-          </span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-terracota">
+              {portafolio.categoria_nombre}
+            </span>
+
+            {/* La distancia es la respuesta a "¿esto me queda cerca?", que es
+                la única pregunta que se hace alguien parado en la calle. */}
+            {typeof distancia === 'number' && (
+              <span className="inline-flex items-center gap-1 bg-terracota/10 px-2 py-0.5 font-mono text-[11px] text-terracota">
+                <span aria-hidden="true">◎</span>
+                {formatearDistancia(distancia)}
+              </span>
+            )}
+          </div>
 
           <h3 className="mt-2 font-display text-2xl font-medium leading-tight text-tinta sm:text-3xl">
             {portafolio.nombre}

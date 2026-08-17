@@ -118,6 +118,61 @@ export async function registrosPorDia(dias = 30): Promise<FilaDia[]> {
   return rows as FilaDia[];
 }
 
+export type FilaExportAliado = {
+  id: string;
+  nombre: string;
+  categoria: string;
+  barrio: string;
+  direccion: string;
+  latitud: number;
+  longitud: number;
+  estado: string;
+  tiene_foto: boolean;
+  creado_en: string;
+  moderado_en: string | null;
+  horas_hasta_moderacion: number | null;
+  vistas: number;
+  contactos: number;
+};
+
+/**
+ * Una fila por aliado, con sus métricas ya cruzadas, para analizar fuera del
+ * panel (Excel, R, SPSS).
+ *
+ * NO incluye whatsapp, teléfono, correo ni `ip_registro`. Los tres primeros
+ * son públicos en el sitio y el último es dato personal declarado bajo Ley
+ * 1581 — pero un CSV se descarga, se manda por correo y termina en el Drive
+ * de alguien. Un archivo que circula tiene que llevar lo mínimo que responda
+ * la pregunta, y para un análisis estadístico ningún teléfono hace falta.
+ */
+export async function exportarAliados(): Promise<FilaExportAliado[]> {
+  const rows = await sql`
+    select
+      p.id,
+      p.nombre,
+      c.nombre                        as categoria,
+      p.barrio,
+      p.direccion,
+      p.latitud::float8               as latitud,
+      p.longitud::float8              as longitud,
+      p.estado::text                  as estado,
+      (p.foto_url is not null)        as tiene_foto,
+      to_char(p.creado_en, 'YYYY-MM-DD HH24:MI') as creado_en,
+      to_char(p.moderado_en, 'YYYY-MM-DD HH24:MI') as moderado_en,
+      round(
+        extract(epoch from (p.moderado_en - p.creado_en)) / 3600
+      )::int                          as horas_hasta_moderacion,
+      coalesce(sum(i.conteo) filter (where i.tipo = 'vista'), 0)::int    as vistas,
+      coalesce(sum(i.conteo) filter (where i.tipo = 'contacto'), 0)::int as contactos
+    from portafolios p
+    join categorias c on c.id = p.categoria_id
+    left join interacciones_portafolio i on i.portafolio_id = p.id
+    group by p.id, c.nombre
+    order by p.creado_en desc
+  `;
+  return rows as FilaExportAliado[];
+}
+
 export type FilaModerador = { moderado_por: string; total: number };
 
 export async function porModerador(): Promise<FilaModerador[]> {

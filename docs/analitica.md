@@ -29,6 +29,57 @@ select date_trunc('day', creado_en) as dia, count(*)
 from portafolios group by 1 order by 1 desc;
 ```
 
+## Interacciones con cada aliado (datos propios)
+
+Vercel Analytics mide el sitio. Esto mide **cada negocio**, que es otra
+pregunta: no "cuánta gente entró a /aliados" sino "a quién fueron a ver".
+
+Tabla `interacciones_portafolio`, una fila por negocio por día por tipo:
+
+| Tipo | Se cuenta cuando |
+|---|---|
+| `vista` | alguien abre la ficha de un negocio desde el mapa |
+| `contacto` | alguien toca su WhatsApp, teléfono, correo o red social |
+
+**La distinción es el punto.** Mirar es ruido, escribir es señal. Cien vistas
+sin un solo contacto dicen que la ficha no convence; diez vistas con cinco
+contactos dicen que ese negocio funciona. Un solo número no dice ninguna de las
+dos cosas.
+
+Se ve en `/admin/estadisticas`, sección **03 · Interés por negocio**, con el
+ranking completo, el porcentaje que pasa de mirar a contactar, y cuántos
+negocios publicados no recibieron una sola visita — que es tan accionable como
+saber cuál es el más visto.
+
+### Por qué esto NO necesita consentimiento
+
+Bajo Ley 1581 hay que pedir permiso para tratar **datos personales**: los que
+identifican o hacen identificable a una persona. Un contador agregado no lo es,
+y acá la propiedad está garantizada por el esquema, no por una promesa:
+
+- No se guarda IP, ni cookie, ni identificador de sesión, ni user agent.
+- **No existe una tabla de eventos individuales.** El `insert` es un upsert que
+  suma 1 a un contador. El dato individual nunca llega a escribirse.
+- Por lo tanto es imposible reconstruir el recorrido de una persona, aunque
+  alguien con acceso total a la base quisiera hacerlo.
+
+La diferencia con lo que sí requeriría consentimiento:
+
+| Pregunta | ¿Necesita permiso? |
+|---|---|
+| "La ficha de X se abrió 40 veces esta semana" | **No.** Es un agregado |
+| "Esta persona vio X, después Y, después Z" | **Sí.** Eso es perfilado |
+
+### La ubicación del visitante tampoco se guarda
+
+El botón "ver los que tengo cerca" usa `navigator.geolocation`. Esa coordenada
+**nunca sale del navegador**: se usa en memoria para ordenar la lista por
+distancia y no se envía a ningún endpoint ni se persiste en ningún lado.
+
+Además el permiso no se pide al cargar la página, sino cuando la persona toca
+el botón — que además explica para qué es. Un permiso que salta solo se deniega
+por reflejo.
+
 ## Qué NO mide, y por qué
 
 No mide **quién** entra. No hay cookies, ni `localStorage`, ni huella de

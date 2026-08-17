@@ -89,31 +89,41 @@ export const empleo = {
     "Esa es la brecha que Territorio INN 2026 quiere cerrar: sin datos abiertos y actualizados a nivel de comuna, la reactivación económica de Manrique se sigue diseñando con una foto de hace seis años.",
 };
 
+// El módulo de inventario predictivo todavía no tiene datos reales detrás — se
+// muestra solo si el flag está prendido. Mientras está apagado, Empleo y
+// Aliados se renumeran automáticamente por posición en vez de tener el "01" y
+// el "03" escritos a mano, para que no queden desincronizados del listado real.
+const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
+
+const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
+  {
+    slug: "empleo",
+    nombre: "Empleo",
+    descripcion: "Mapeo de oferta laboral y oficios activos en el territorio.",
+    estado: "activo",
+  },
+  {
+    slug: "inventario-predictivo",
+    nombre: "Inventario predictivo",
+    descripcion: "Seguimiento de unidades productivas y su comportamiento en el tiempo.",
+    estado: "proximamente",
+  },
+  {
+    slug: "aliados",
+    nombre: "Aliados",
+    descripcion: "Negocios y oficios de Manrique, en el mapa y con contacto directo.",
+    estado: "activo",
+  },
+];
+
 export const enfoque = {
   titulo: "El enfoque",
-  modulos: [
-    {
-      numero: "01",
-      slug: "empleo",
-      nombre: "Empleo",
-      descripcion: "Mapeo de oferta laboral y oficios activos en el territorio.",
-      estado: "activo",
-    },
-    {
-      numero: "02",
-      slug: "inventario-predictivo",
-      nombre: "Inventario predictivo",
-      descripcion: "Seguimiento de unidades productivas y su comportamiento en el tiempo.",
-      estado: "proximamente",
-    },
-    {
-      numero: "03",
-      slug: "aliados",
-      nombre: "Aliados",
-      descripcion: "Negocios y oficios de Manrique, en el mapa y con contacto directo.",
-      estado: "activo",
-    },
-  ] satisfies ModuloFuturo[],
+  modulos: MODULOS_BASE.filter(
+    (m) => INVENTARIO_ACTIVO || m.slug !== "inventario-predictivo",
+  ).map((m, indice) => ({
+    ...m,
+    numero: String(indice + 1).padStart(2, "0"),
+  })) satisfies ModuloFuturo[],
 };
 
 export interface LogoInstitucional {
@@ -122,7 +132,9 @@ export interface LogoInstitucional {
 }
 
 export const footer = {
-  repo: "https://github.com/Luis-Vanegas/territorio-inn-2026-manrique",
+  // Sin NEXT_PUBLIC_REPO_URL el link no se muestra — no todos los despliegues
+  // de este código quieren apuntar al repo público de referencia.
+  repo: process.env.NEXT_PUBLIC_REPO_URL,
   licencia: "MIT",
   logos: [
     { src: "/logos/alcaldia.svg", alt: "Alcaldía de Medellín" },

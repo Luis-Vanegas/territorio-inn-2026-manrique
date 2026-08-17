@@ -16,19 +16,21 @@ export function Footer() {
       </div>
 
       <div className="mt-14 flex flex-col gap-6 border-t border-hueso/20 pt-8 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-[0.15em] text-hueso/50">
-            Repositorio
-          </p>
-          <a
-            href={footer.repo}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota"
-          >
-            {footer.repo.replace("https://", "")}
-          </a>
-        </div>
+        {footer.repo && (
+          <div>
+            <p className="font-mono text-xs uppercase tracking-[0.15em] text-hueso/50">
+              Repositorio
+            </p>
+            <a
+              href={footer.repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota"
+            >
+              {footer.repo.replace("https://", "")}
+            </a>
+          </div>
+        )}
 
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.15em] text-hueso/50">Créditos</p>
