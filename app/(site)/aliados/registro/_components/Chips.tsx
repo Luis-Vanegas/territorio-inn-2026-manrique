@@ -23,21 +23,30 @@ const claseChip =
 
 type Opcion = { valor: string; etiqueta: string };
 
+/** Lo que `Campo` le pasa a sus hijos — mismo contrato que un input suelto. */
+type PropsCampo = {
+  id?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: true;
+};
+
 export function ChipsUnica({
   name,
   opciones,
   valor,
   alCambiar,
   requerido,
+  id,
+  ...aria
 }: {
   name: string;
   opciones: Opcion[];
   valor: string;
   alCambiar: (v: string) => void;
   requerido?: boolean;
-}) {
+} & PropsCampo) {
   return (
-    <div className="flex flex-wrap gap-2" role="radiogroup">
+    <div id={id} className="flex flex-wrap gap-2" role="radiogroup" {...aria}>
       {opciones.map((op) => (
         <label key={op.valor} className="relative">
           <input
@@ -61,12 +70,14 @@ export function ChipsMultiple({
   opciones,
   valores,
   alCambiar,
+  id,
+  ...aria
 }: {
   name: string;
   opciones: Opcion[];
   valores: string[];
   alCambiar: (v: string[]) => void;
-}) {
+} & PropsCampo) {
   const alternar = (valor: string, marcado: boolean) => {
     if (marcado) {
       alCambiar(valores.includes(valor) ? valores : [...valores, valor]);
@@ -76,7 +87,7 @@ export function ChipsMultiple({
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div id={id} className="flex flex-wrap gap-2" role="group" {...aria}>
       {opciones.map((op) => (
         <label key={op.valor} className="relative">
           <input

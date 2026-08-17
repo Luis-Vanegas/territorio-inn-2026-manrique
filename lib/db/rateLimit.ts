@@ -122,8 +122,16 @@ export function ipDesdeHeaders(headers: Headers): string | null {
   return esIPv4 || esIPv6 ? cruda : null;
 }
 
-/** Hash de la IP para `aliados_consentimiento.ip_hash` — nunca se guarda en claro ahí. */
+/**
+ * Hash de la IP para `aliados_consentimiento.ip_hash` — nunca se guarda en
+ * claro ahí. SHA-256 solo, sin sal, no alcanza: IPv4 son ~4.300 millones de
+ * valores, un espacio chico para fuerza bruta o una rainbow table. El pepper
+ * (variable de entorno, nunca en el código ni en la base) hace que invertir
+ * el hash sin conocerlo sea inviable — no hace falta que sea secreto por
+ * usuario, alcanza con que no esté en el mismo lugar que el hash resultante.
+ */
 export function hashIp(ip: string | null): string | null {
   if (!ip) return null;
-  return createHash('sha256').update(ip).digest('hex');
+  const pepper = process.env.IP_HASH_PEPPER ?? '';
+  return createHash('sha256').update(ip + pepper).digest('hex');
 }

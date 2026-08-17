@@ -386,8 +386,9 @@ function FormularioEdicion({
         </Campo>
 
         <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
-          {() => (
+          {(p) => (
             <ChipsUnica
+              {...p}
               name="categoria_id"
               opciones={categorias.map((c) => ({ valor: c.id, etiqueta: c.nombre }))}
               valor={categoriaId}
@@ -522,8 +523,9 @@ function FormularioEdicion({
         ayuda="Opcional, pero ayuda a que la gente sepa qué esperar antes de escribirte."
       >
         <Campo id="horario" etiqueta="¿Cuándo atendés?">
-          {() => (
+          {(p) => (
             <ChipsMultiple
+              {...p}
               name="horario"
               opciones={OPCIONES_HORARIO_UI}
               valores={horario}
@@ -533,8 +535,9 @@ function FormularioEdicion({
         </Campo>
 
         <Campo id="medios_pago" etiqueta="¿Cómo te pagan?">
-          {() => (
+          {(p) => (
             <ChipsMultiple
+              {...p}
               name="medios_pago"
               opciones={OPCIONES_MEDIOS_PAGO_UI}
               valores={mediosPago}

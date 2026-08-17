@@ -497,8 +497,9 @@ export function FormularioRegistro({
         </Campo>
 
         <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
-          {() => (
+          {(p) => (
             <ChipsUnica
+              {...p}
               name="categoria_id"
               opciones={categorias.map((c) => ({ valor: c.id, etiqueta: c.nombre }))}
               valor={categoriaId}
@@ -571,8 +572,9 @@ export function FormularioRegistro({
         </Campo>
 
         <Campo id="tipo_negocio" etiqueta="¿Cómo describirías tu negocio?" requerido errores={err('tipo_negocio')}>
-          {() => (
+          {(p) => (
             <ChipsUnica
+              {...p}
               name="tipo_negocio"
               opciones={OPCIONES_TIPO_NEGOCIO_UI}
               valor={tipoNegocio}
@@ -597,8 +599,9 @@ export function FormularioRegistro({
         )}
 
         <Campo id="formalidad" etiqueta="¿Tenés RUT o Cámara de Comercio?">
-          {() => (
+          {(p) => (
             <ChipsUnica
+              {...p}
               name="formalidad"
               opciones={OPCIONES_FORMALIDAD_UI}
               valor={formalidad}
@@ -614,8 +617,9 @@ export function FormularioRegistro({
           requerido
           errores={err('mayor_dolor')}
         >
-          {() => (
+          {(p) => (
             <ChipsMultiple
+              {...p}
               name="mayor_dolor"
               opciones={OPCIONES_MAYOR_DOLOR_UI}
               valores={mayorDolor}
@@ -738,8 +742,9 @@ export function FormularioRegistro({
         {mostrarMasInfo && (
           <>
             <Campo id="horario" etiqueta="¿Cuándo atendés?">
-              {() => (
+              {(p) => (
                 <ChipsMultiple
+                  {...p}
                   name="horario"
                   opciones={OPCIONES_HORARIO_UI}
                   valores={horario}
@@ -749,8 +754,9 @@ export function FormularioRegistro({
             </Campo>
 
             <Campo id="medios_pago" etiqueta="¿Cómo te pagan?">
-              {() => (
+              {(p) => (
                 <ChipsMultiple
+                  {...p}
                   name="medios_pago"
                   opciones={OPCIONES_MEDIOS_PAGO_UI}
                   valores={mediosPago}
