@@ -688,7 +688,7 @@ export function EstadoAliado({
       <div className="mt-8 flex flex-col gap-4">
         {fotoFallo && !borrado && (
           <p role="alert" className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta">
-            Tu negocio quedó guardado, pero la foto no se pudo subir. Subila de nuevo más abajo, en "Una foto".
+            Tu negocio quedó guardado, pero la foto no se pudo subir. Subila de nuevo más abajo, en la sección Una foto.
           </p>
         )}
 
