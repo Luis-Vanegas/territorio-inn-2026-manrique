@@ -73,16 +73,11 @@ const OPCIONES_FORMALIDAD_UI = [
 ];
 
 const OPCIONES_MAYOR_DOLOR_UI = [
-  { valor: 'cuentas_ganancia', etiqueta: 'Llevar las cuentas, las ventas del día y saber si hay ganancias reales' },
-  { valor: 'inventario_vencimientos', etiqueta: 'Controlar el inventario: saber qué hay, qué falta y qué se vence' },
-  { valor: 'clientes_redes', etiqueta: 'Conseguir nuevos clientes y manejar la publicidad o redes sociales' },
-  { valor: 'cobros_facturas', etiqueta: 'Cobrar, organizar las facturas o manejar los fiados' },
-  { valor: 'costos_arriendo', etiqueta: 'Costos y arriendo' },
-  { valor: 'proveedores', etiqueta: 'Proveedores' },
-  { valor: 'acceso_credito', etiqueta: 'Acceso a crédito' },
-  { valor: 'atender_solo', etiqueta: 'Atender el negocio yo solo' },
-  { valor: 'todo_bajo_control', etiqueta: 'Todo lo tengo bajo control por ahora' },
-  { valor: 'otro', etiqueta: 'Otro' },
+  { valor: 'cuentas_ganancia', etiqueta: 'Llevar las cuentas, las ventas del día y saber si hay ganancias reales.' },
+  { valor: 'inventario_vencimientos', etiqueta: 'Controlar el inventario (saber qué hay, qué falta y qué se vence).' },
+  { valor: 'clientes_redes', etiqueta: 'Conseguir nuevos clientes y manejar la publicidad o redes sociales.' },
+  { valor: 'cobros_facturas', etiqueta: 'Cobrar, organizar las facturas o manejar los fiados.' },
+  { valor: 'todo_bajo_control', etiqueta: 'Todo lo tengo bajo control por ahora.' },
 ];
 
 const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
@@ -429,7 +424,7 @@ export function FormularioRegistro({
       <Seccion
         numero="01"
         titulo="¿Dónde queda tu negocio?"
-        ayuda="Tocá el botón para usar el GPS de tu celular, o marcá el punto en el mapa."
+        ayuda="Toca el botón para usar el GPS de tu celular, o marca el punto en el mapa."
         completa={Boolean(coords && ubicacionValida && llenos.direccion && llenos.barrio)}
         ancho="completo"
       >
@@ -469,7 +464,7 @@ export function FormularioRegistro({
                 valor={barrio}
                 esOtro={barrioEsOtro}
                 alCambiar={alCambiarBarrio}
-                placeholderOtro="Escribí el barrio"
+                placeholderOtro="Escribe el barrio"
               />
             )}
           </Campo>
@@ -530,8 +525,8 @@ export function FormularioRegistro({
 
         <Campo
           id="descripcion"
-          etiqueta="¿Qué hacés?"
-          ayuda="Contá en pocas líneas qué vendés o qué servicio prestás. Hasta 400 caracteres."
+          etiqueta="Cuéntanos, ¿a qué te dedicas?"
+          ayuda="Cuéntanos en pocas líneas qué vendes o qué servicio prestas. Hasta 400 caracteres."
           errores={err('descripcion')}
         >
           {(p) => (
@@ -598,7 +593,7 @@ export function FormularioRegistro({
           </Campo>
         )}
 
-        <Campo id="formalidad" etiqueta="¿Tenés RUT o Cámara de Comercio?">
+        <Campo id="formalidad" etiqueta="¿Tienes RUT o Cámara de Comercio?">
           {(p) => (
             <ChipsUnica
               {...p}
@@ -612,8 +607,8 @@ export function FormularioRegistro({
 
         <Campo
           id="mayor_dolor"
-          etiqueta="¿Qué es lo que más te complica del negocio?"
-          ayuda="Elegí hasta 2."
+          etiqueta="De las siguientes tareas del día a día, ¿cuál sientes que te quita más tiempo o te genera más dolores de cabeza?"
+          ayuda="Elige hasta 2."
           requerido
           errores={err('mayor_dolor')}
         >
@@ -628,20 +623,22 @@ export function FormularioRegistro({
           )}
         </Campo>
 
-        {mayorDolor.includes('otro') && (
-          <Campo id="mayor_dolor_otro" etiqueta="Contanos cuál" errores={err('mayor_dolor_otro')}>
-            {(p) => (
-              <input
-                {...p}
-                name="mayor_dolor_otro"
-                type="text"
-                maxLength={200}
-                placeholder="Contanos cuál"
-                className={claseInput}
-              />
-            )}
-          </Campo>
-        )}
+        <Campo
+          id="necesidad_crecer"
+          etiqueta="Pensando en el futuro: ¿qué crees que le hace falta a tu negocio hoy para crecer más, organizarse mejor o dar el siguiente paso?"
+          ayuda="¡Cuéntanos con confianza! Esta información es clave para nuestra investigación sobre las necesidades reales del sector."
+          errores={err('necesidad_crecer')}
+        >
+          {(p) => (
+            <textarea
+              {...p}
+              name="necesidad_crecer"
+              rows={4}
+              maxLength={500}
+              className={`${claseInput} resize-y`}
+            />
+          )}
+        </Campo>
       </Seccion>
 
       <Seccion
@@ -741,7 +738,7 @@ export function FormularioRegistro({
 
         {mostrarMasInfo && (
           <>
-            <Campo id="horario" etiqueta="¿Cuándo atendés?">
+            <Campo id="horario" etiqueta="¿Cuándo atiendes?">
               {(p) => (
                 <ChipsMultiple
                   {...p}
@@ -800,7 +797,7 @@ export function FormularioRegistro({
                 // Se avisa antes de enviar: subir 8 MB para que el server los
                 // rechace gasta los datos del celular de la persona.
                 if (f && f.size > TAMANO_MAX_FOTO) {
-                  setNombreFoto(`"${f.name}" pesa más de 5 MB — elegí otra`);
+                  setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
                   e.target.value = '';
                   return;
                 }
@@ -857,7 +854,7 @@ export function FormularioRegistro({
                         onChange={(e) => marcarPersonalizado(c.slug, e.target.value !== '')}
                         className={claseInput}
                       >
-                        <option value="">Elegí una…</option>
+                        <option value="">Elige una…</option>
                         {(c.opciones ?? []).map((op) => (
                           <option key={op} value={op}>
                             {op}

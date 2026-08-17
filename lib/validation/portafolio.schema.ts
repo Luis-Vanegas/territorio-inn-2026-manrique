@@ -41,17 +41,14 @@ export const OPCIONES_FORMALIDAD = [
   'no_tengo',
   'prefiero_no_decir',
 ] as const;
+// v2 (redacción del cliente, 2026-08-17): se acorta de 10 opciones a 5 —
+// el cliente había preguntado si la lista original era muy larga.
 export const OPCIONES_MAYOR_DOLOR = [
   'cuentas_ganancia',
   'inventario_vencimientos',
   'clientes_redes',
   'cobros_facturas',
-  'costos_arriendo',
-  'proveedores',
-  'acceso_credito',
-  'atender_solo',
   'todo_bajo_control',
-  'otro',
 ] as const;
 
 /**
@@ -144,7 +141,9 @@ const camposPortafolio = z
     mayor_dolor: z
       .array(z.enum(OPCIONES_MAYOR_DOLOR))
       .min(1, 'Elegí al menos una opción'),
-    mayor_dolor_otro: opcional(z.string().trim().max(200, 'Máximo 200 caracteres')),
+    // Pregunta 7 de la redacción del cliente: abierta, opcional, nunca se
+    // publica — igual que el resto de investigación.
+    necesidad_crecer: opcional(z.string().trim().max(500, 'Máximo 500 caracteres')),
 
     acepto_terminos: z.literal(true, {
       error: 'Debés aceptar los términos y condiciones',
@@ -182,7 +181,7 @@ export const actualizarPortafolioSchema = camposPortafolio.omit({
   tipo_negocio_detalle: true,
   formalidad: true,
   mayor_dolor: true,
-  mayor_dolor_otro: true,
+  necesidad_crecer: true,
   acepto_terminos: true,
   acepto_habeas_data: true,
 });
@@ -223,7 +222,7 @@ export function desdeFormData(formData: FormData) {
     tipo_negocio_detalle: texto('tipo_negocio_detalle'),
     formalidad: texto('formalidad'),
     mayor_dolor: formData.getAll('mayor_dolor').map(String),
-    mayor_dolor_otro: texto('mayor_dolor_otro'),
+    necesidad_crecer: texto('necesidad_crecer'),
     acepto_terminos: formData.get('acepto_terminos') === 'on',
     acepto_habeas_data: formData.get('acepto_habeas_data') === 'on',
   };

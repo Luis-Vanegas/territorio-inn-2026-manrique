@@ -205,15 +205,15 @@ export async function guardarInvestigacion(datos: {
   tipo_negocio_detalle: string | null;
   formalidad: string | null;
   mayor_dolor: string[];
-  mayor_dolor_otro: string | null;
+  necesidad_crecer: string | null;
 }): Promise<void> {
   await sql`
     insert into aliados_investigacion (
       portafolio_id, nombre_dueno, tipo_negocio, tipo_negocio_detalle,
-      formalidad, mayor_dolor, mayor_dolor_otro
+      formalidad, mayor_dolor, necesidad_crecer
     ) values (
       ${datos.portafolio_id}, ${datos.nombre_dueno}, ${datos.tipo_negocio}, ${datos.tipo_negocio_detalle},
-      ${datos.formalidad}, ${datos.mayor_dolor}::text[], ${datos.mayor_dolor_otro}
+      ${datos.formalidad}, ${datos.mayor_dolor}::text[], ${datos.necesidad_crecer}
     )
   `;
 }

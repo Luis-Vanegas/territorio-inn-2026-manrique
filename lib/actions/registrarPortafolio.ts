@@ -181,7 +181,7 @@ export async function registrarPortafolio(
       tipo_negocio_detalle: datos.tipo_negocio_detalle,
       formalidad: datos.formalidad,
       mayor_dolor: datos.mayor_dolor,
-      mayor_dolor_otro: datos.mayor_dolor_otro,
+      necesidad_crecer: datos.necesidad_crecer,
     });
   } catch (error) {
     console.error('[registrarPortafolio] guardado de investigación falló', error);

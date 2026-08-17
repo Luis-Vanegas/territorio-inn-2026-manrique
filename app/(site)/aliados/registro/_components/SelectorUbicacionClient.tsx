@@ -141,7 +141,7 @@ export default function SelectorUbicacionClient({
         </button>
 
         <span className="font-mono text-xs text-tinta/40">
-          o tocá el mapa donde queda tu negocio
+          o toca el mapa donde queda tu negocio
         </span>
       </div>
 

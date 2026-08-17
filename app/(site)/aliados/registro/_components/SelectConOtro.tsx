@@ -79,7 +79,7 @@ export function SelectConOtro({
       }}
       className={claseInput}
     >
-      <option value="">Elegí un barrio…</option>
+      <option value="">Elige un barrio…</option>
       {opciones.map((op) => (
         <option key={op} value={op}>
           {op}
