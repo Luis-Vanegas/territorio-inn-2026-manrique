@@ -14,6 +14,76 @@ import { nombreCampoFormulario } from '@/lib/validation/camposPersonalizados.sch
 import type { Categoria } from '@/lib/db/portafolios.repo';
 import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Posicion } from './SelectorUbicacionClient';
+import { ChipsUnica, ChipsMultiple } from './Chips';
+import { SelectConOtro } from './SelectConOtro';
+
+// ─── opciones de los chips ───────────────────────────────────
+// Los `value` (name="horario" / "medios_pago" / "tipo_negocio" / "formalidad"
+// / "mayor_dolor") tienen que calzar exacto con lo que espera `desdeFormData`
+// en el schema.
+
+const BARRIOS_COMUNA_3 = [
+  'El Raizal',
+  'El Pomar',
+  'La Salle',
+  'Las Granjas',
+  'Santa Inés',
+  'Campo Valdés No. 1',
+  'San José de la Cima No. 1',
+  'San José de la Cima No. 2',
+  'La Cruz',
+  'Oriente',
+  'Versalles No. 1',
+  'Versalles No. 2',
+  'Manrique Oriental',
+  'Manrique Central No. 2',
+  'María Cano - Carambolas',
+];
+
+const OPCIONES_HORARIO_UI = [
+  { valor: 'mananas', etiqueta: 'Mañanas' },
+  { valor: 'tardes', etiqueta: 'Tardes' },
+  { valor: 'noches', etiqueta: 'Noches' },
+  { valor: 'fines_semana', etiqueta: 'Fines de semana' },
+  { valor: 'bajo_pedido', etiqueta: 'Bajo pedido o cita' },
+];
+
+const OPCIONES_MEDIOS_PAGO_UI = [
+  { valor: 'efectivo', etiqueta: 'Efectivo' },
+  { valor: 'nequi', etiqueta: 'Nequi' },
+  { valor: 'daviplata', etiqueta: 'Daviplata' },
+  { valor: 'transferencia', etiqueta: 'Transferencia' },
+  { valor: 'datafono', etiqueta: 'Datáfono' },
+];
+
+// ─── investigación (privado, opcional, nunca se publica) ──────
+
+const OPCIONES_TIPO_NEGOCIO_UI = [
+  { valor: 'emprendimiento', etiqueta: 'Emprendimiento' },
+  { valor: 'micronegocio', etiqueta: 'Micronegocio' },
+  { valor: 'local', etiqueta: 'Local establecido' },
+  { valor: 'otro', etiqueta: 'Otro' },
+];
+
+const OPCIONES_FORMALIDAD_UI = [
+  { valor: 'rut_camara', etiqueta: 'Tengo RUT o Cámara de Comercio' },
+  { valor: 'en_tramite', etiqueta: 'Estoy en trámite' },
+  { valor: 'no_tengo', etiqueta: 'No tengo' },
+  { valor: 'prefiero_no_decir', etiqueta: 'Prefiero no decir' },
+];
+
+const OPCIONES_MAYOR_DOLOR_UI = [
+  { valor: 'cuentas_ganancia', etiqueta: 'Llevar las cuentas, las ventas del día y saber si hay ganancias reales' },
+  { valor: 'inventario_vencimientos', etiqueta: 'Controlar el inventario: saber qué hay, qué falta y qué se vence' },
+  { valor: 'clientes_redes', etiqueta: 'Conseguir nuevos clientes y manejar la publicidad o redes sociales' },
+  { valor: 'cobros_facturas', etiqueta: 'Cobrar, organizar las facturas o manejar los fiados' },
+  { valor: 'costos_arriendo', etiqueta: 'Costos y arriendo' },
+  { valor: 'proveedores', etiqueta: 'Proveedores' },
+  { valor: 'acceso_credito', etiqueta: 'Acceso a crédito' },
+  { valor: 'atender_solo', etiqueta: 'Atender el negocio yo solo' },
+  { valor: 'todo_bajo_control', etiqueta: 'Todo lo tengo bajo control por ahora' },
+  { valor: 'otro', etiqueta: 'Otro' },
+];
 
 const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
   ssr: false,
@@ -109,12 +179,12 @@ function Campo({
       </label>
 
       {ayuda && (
-        <p id={idAyuda} className="mt-1 font-sans text-xs text-tinta/50">
+        <p id={idAyuda} className="mt-1.5 font-sans text-sm leading-snug text-tinta/55">
           {ayuda}
         </p>
       )}
 
-      <div className="mt-2">
+      <div className="mt-2.5">
         {children({
           id,
           ...(describedBy ? { 'aria-describedby': describedBy } : {}),
@@ -123,7 +193,7 @@ function Campo({
       </div>
 
       {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-xs text-terracota">
+        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota">
           {errores[0]}
         </p>
       ) : null}
@@ -188,9 +258,33 @@ export function FormularioRegistro({
 }) {
   const [estado, accion] = useFormState(registrarPortafolio, ESTADO_INICIAL);
 
+  // Marca de tiempo de cuándo se abrió el formulario, para el chequeo de
+  // tiempo mínimo de llenado en el server (anti-bot).
+  const [iniciadoEn] = useState(() => Date.now());
+
   const [coords, setCoords] = useState<Posicion | null>(null);
   const [ubicacionValida, setUbicacionValida] = useState(false);
   const [nombreFoto, setNombreFoto] = useState<string | null>(null);
+
+  const [categoriaId, setCategoriaId] = useState('');
+  const [barrio, setBarrio] = useState('');
+  const [barrioEsOtro, setBarrioEsOtro] = useState(false);
+  const [horario, setHorario] = useState<string[]>([]);
+  const [mediosPago, setMediosPago] = useState<string[]>([]);
+
+  // Toggles de bloques colapsados: simples booleanos, sin animación — lo
+  // importante es que sea claro que hay más campos ahí atrás. Se pueden
+  // volver a cerrar (no es una revelación de una sola vía): el botón
+  // alterna el mismo booleano en cada click.
+  const [mostrarOtraRed, setMostrarOtraRed] = useState(false);
+  const [mostrarMasInfo, setMostrarMasInfo] = useState(false);
+
+  // Investigación — va a aliados_investigacion, no a portafolios, y nunca se
+  // publica. tipo_negocio y mayor_dolor son obligatorios a pedido del
+  // cliente; el resto (nombre del dueño, formalidad) se queda opcional.
+  const [tipoNegocio, setTipoNegocio] = useState('');
+  const [formalidad, setFormalidad] = useState('');
+  const [mayorDolor, setMayorDolor] = useState<string[]>([]);
 
   // Espejo liviano de lo obligatorio, solo para la barra de progreso.
   // La validación de verdad vive en Zod y en la base — esto es orientación.
@@ -228,17 +322,57 @@ export function FormularioRegistro({
     setUbicacionValida(valida);
   }, []);
 
+  const alCambiarBarrio = useCallback(
+    (v: string, esOtro: boolean) => {
+      setBarrio(v);
+      setBarrioEsOtro(esOtro);
+      marcar('barrio', v.trim().length >= 2);
+    },
+    [marcar],
+  );
+
+  // Máximo 2 elegidas, y "todo bajo control" es excluyente: marcarla suelta
+  // cualquier otra, y marcar cualquier otra estando ella activa la suelta a
+  // ella. Mismo patrón que se usaba para "Toda la comuna" en cobertura.
+  const alCambiarMayorDolor = useCallback(
+    (nuevos: string[]) => {
+      const teniaTodo = mayorDolor.includes('todo_bajo_control');
+      const tieneTodo = nuevos.includes('todo_bajo_control');
+
+      if (tieneTodo && !teniaTodo) {
+        setMayorDolor(['todo_bajo_control']);
+        return;
+      }
+
+      if (teniaTodo && nuevos.length > 1) {
+        setMayorDolor(nuevos.filter((v) => v !== 'todo_bajo_control'));
+        return;
+      }
+
+      if (nuevos.length > 2) {
+        // Ya había 2 marcadas: se ignora el intento de marcar una tercera.
+        return;
+      }
+
+      setMayorDolor(nuevos);
+    },
+    [mayorDolor],
+  );
+
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
 
   const camposRequeridos = camposPersonalizados.filter((c) => c.requerido);
 
-  // Un solo array de requisitos: agregar o quitar un campo obligatorio ajusta
-  // a la vez la lista de "falta esto" y el total de la barra de progreso.
+  // Dirección, barrio y ubicación son siempre obligatorios — sin condición
+  // según cómo atiende el negocio (eso ya no existe: ver nota en la
+  // sección 01 sobre por qué se sacó tipo_presencia).
   const REQUISITOS: [boolean, string][] = [
     [Boolean(coords && ubicacionValida), 'ubicación'],
     [llenos.nombre, 'nombre'],
     [llenos.categoria, 'categoría'],
+    [tipoNegocio !== '', 'tipo de negocio'],
+    [mayorDolor.length > 0, 'qué te complica'],
     [llenos.direccion, 'dirección'],
     [llenos.barrio, 'barrio'],
     [llenos.contacto, 'contacto'],
@@ -249,58 +383,32 @@ export function FormularioRegistro({
   ];
   const faltantes = REQUISITOS.filter(([cumplido]) => !cumplido).map(([, nombre]) => nombre);
 
-  // Los campos personalizados van entre "Foto" y "Permisos". Si no hay
-  // ninguno activo, Permisos se queda en 05 — no tiene sentido reservar un
-  // número que ese día no existe.
-  const numeroCampos = '05';
-  const numeroPermisos = camposPersonalizados.length > 0 ? '06' : '05';
+  // Investigación ahora es fija, entre "Tu negocio" y "Contacto" (el cliente
+  // la quiere "de las primeras a responder"), así que su número y los de
+  // Contacto/Horario/Foto quedan hardcodeados en el JSX como 01 y 02. Los
+  // campos personalizados van entre "Foto" y "Permisos". Si no hay ninguno
+  // activo, Permisos ocupa el número que Foto no usó — no tiene sentido
+  // reservar un número que ese día no existe.
+  const numeroCampos = '07';
+  const numeroPermisos = camposPersonalizados.length > 0 ? '08' : '07';
 
-  if (estado.estado === 'ok') {
-    return (
-      <div className="mt-16 max-w-xl border-t border-tinta/12 pt-10">
-        <span className="font-mono text-xs uppercase tracking-wider text-terracota">
-          Registro recibido
-        </span>
-
-        <h2 className="mt-3 font-display text-3xl font-medium leading-tight text-tinta">
-          Listo. Ahora lo revisamos.
-        </h2>
-
-        {/* Acá se mostraba el uuid del registro con un "guardá este código por
-            si necesitás consultarlo". No existe ninguna ruta donde consultarlo,
-            así que era una promesa que el sistema no podía cumplir — y un uuid
-            de 36 caracteres no es algo que una persona dicte por teléfono.
-            El identificador técnico se queda en la base, que es donde sirve.
-            Si alguna vez hace falta un código para humanos, va a ser una
-            columna aparte y corta, no la clave primaria. */}
-        <p className="mt-4 font-sans leading-relaxed text-tinta/70">
-          Tu negocio aparece en el mapa de Aliados apenas el equipo termine de
-          revisarlo. Si falta algo o hay que corregir un dato, te escribimos al
-          contacto que dejaste.
-        </p>
-
-        {estado.avisoFoto && (
-          <p className="mt-6 border-l-2 border-terracota bg-terracota/[0.06] py-3 pl-4 font-sans text-sm leading-relaxed text-tinta/75">
-            {estado.avisoFoto}{' '}
-            <span className="text-tinta/55">
-              Podés mandárnosla después por el mismo contacto y la agregamos.
-            </span>
-          </p>
-        )}
-
-        <Link
-          href="/aliados"
-          className="mt-8 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
-        >
-          ← Ver el mapa
-        </Link>
-      </div>
-    );
-  }
-
+  // Un registro exitoso hace redirect() del lado del server a
+  // /aliados/estado/[token] — no hay estado 'ok' que mostrar acá.
   return (
     <>
       <form action={accion} className="mt-14 flex flex-col gap-12">
+      {/* Honeypot + tiempo mínimo de llenado: anti-bot silencioso, no le
+          agrega fricción a una persona real. */}
+      <input
+        type="text"
+        name="sitio_web"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}
+      />
+      <input type="hidden" name="iniciado_en" value={iniciadoEn} />
+
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
@@ -312,12 +420,17 @@ export function FormularioRegistro({
 
       {/* La ubicación va primero: es lo que distingue a esta vitrina de una
           lista de negocios, y es el paso que más se abandona si aparece al
-          final, después de diez campos de texto. */}
+          final, después de diez campos de texto.
+
+          Antes había acá un ChipsUnica de "cómo atendés" (tipo_presencia)
+          que condicionaba si mapa/dirección/barrio eran obligatorios. El
+          cliente probó esa versión y pidió sacarla — esa info no le servía.
+          Vuelven a ser siempre obligatorios, como en el diseño original. */}
       <Seccion
         numero="01"
         titulo="¿Dónde queda tu negocio?"
-        ayuda="Tocá el botón para usar el GPS de tu celular, o marcá el punto en el mapa. Tiene que estar dentro de la Comuna 3."
-        completa={Boolean(coords && ubicacionValida)}
+        ayuda="Tocá el botón para usar el GPS de tu celular, o marcá el punto en el mapa."
+        completa={Boolean(coords && ubicacionValida && llenos.direccion && llenos.barrio)}
         ancho="completo"
       >
         <SelectorUbicacion valorInicial={coords} alCambiar={alCambiarUbicacion} />
@@ -349,15 +462,14 @@ export function FormularioRegistro({
 
           <Campo id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
             {(p) => (
-              <input
+              <SelectConOtro
                 {...p}
                 name="barrio"
-                type="text"
-                required
-                maxLength={80}
-                placeholder="Manrique Central"
-                onChange={(e) => marcar('barrio', e.target.value.trim().length >= 2)}
-                className={claseInput}
+                opciones={BARRIOS_COMUNA_3}
+                valor={barrio}
+                esOtro={barrioEsOtro}
+                alCambiar={alCambiarBarrio}
+                placeholderOtro="Escribí el barrio"
               />
             )}
           </Campo>
@@ -385,23 +497,35 @@ export function FormularioRegistro({
         </Campo>
 
         <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
-          {(p) => (
-            <select
-              {...p}
+          {() => (
+            <ChipsUnica
               name="categoria_id"
-              required
-              onChange={(e) => marcar('categoria', e.target.value !== '')}
-              className={claseInput}
-            >
-              <option value="">Elegí una…</option>
-              {categorias.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
+              opciones={categorias.map((c) => ({ valor: c.id, etiqueta: c.nombre }))}
+              valor={categoriaId}
+              alCambiar={(v) => {
+                setCategoriaId(v);
+                marcar('categoria', v !== '');
+              }}
+              requerido
+            />
           )}
         </Campo>
+
+        {categoriaId === 'otros' && (
+          <Campo id="categoria_otra" etiqueta="¿Qué tipo de negocio es?" requerido errores={err('categoria_otra')}>
+            {(p) => (
+              <input
+                {...p}
+                name="categoria_otra"
+                type="text"
+                required
+                maxLength={60}
+                placeholder="Ej: taller de bicicletas"
+                className={claseInput}
+              />
+            )}
+          </Campo>
+        )}
 
         <Campo
           id="descripcion"
@@ -422,47 +546,117 @@ export function FormularioRegistro({
         </Campo>
       </Seccion>
 
+      {/* Preguntas que nunca se publican — van a aliados_investigacion, una
+          tabla privada, para el estudio del proyecto sobre los negocios de
+          Manrique. Se movió más arriba y ya no está colapsada: el cliente la
+          quiere de las primeras a responder, no algo que se descubre al
+          final del formulario. */}
       <Seccion
         numero="03"
+        titulo="Para el proyecto de investigación"
+        ayuda="Estas últimas nos ayudan a entender mejor los negocios de Manrique para el proyecto de investigación. Nunca se publica."
+        completa={tipoNegocio !== '' && mayorDolor.length > 0}
+      >
+        <Campo id="nombre_dueno" etiqueta="Nombre del dueño o representante" ayuda="Privado — no se publica, es solo para nuestro estudio." errores={err('nombre_dueno')}>
+          {(p) => (
+            <input
+              {...p}
+              name="nombre_dueno"
+              type="text"
+              maxLength={80}
+              placeholder="Nombre completo"
+              className={claseInput}
+            />
+          )}
+        </Campo>
+
+        <Campo id="tipo_negocio" etiqueta="¿Cómo describirías tu negocio?" requerido errores={err('tipo_negocio')}>
+          {() => (
+            <ChipsUnica
+              name="tipo_negocio"
+              opciones={OPCIONES_TIPO_NEGOCIO_UI}
+              valor={tipoNegocio}
+              alCambiar={setTipoNegocio}
+              requerido
+            />
+          )}
+        </Campo>
+
+        {tipoNegocio === 'otro' && (
+          <Campo id="tipo_negocio_detalle" etiqueta="¿Cuál?" errores={err('tipo_negocio_detalle')}>
+            {(p) => (
+              <input
+                {...p}
+                name="tipo_negocio_detalle"
+                type="text"
+                maxLength={80}
+                className={claseInput}
+              />
+            )}
+          </Campo>
+        )}
+
+        <Campo id="formalidad" etiqueta="¿Tenés RUT o Cámara de Comercio?">
+          {() => (
+            <ChipsUnica
+              name="formalidad"
+              opciones={OPCIONES_FORMALIDAD_UI}
+              valor={formalidad}
+              alCambiar={setFormalidad}
+            />
+          )}
+        </Campo>
+
+        <Campo
+          id="mayor_dolor"
+          etiqueta="¿Qué es lo que más te complica del negocio?"
+          ayuda="Elegí hasta 2."
+          requerido
+          errores={err('mayor_dolor')}
+        >
+          {() => (
+            <ChipsMultiple
+              name="mayor_dolor"
+              opciones={OPCIONES_MAYOR_DOLOR_UI}
+              valores={mayorDolor}
+              alCambiar={alCambiarMayorDolor}
+            />
+          )}
+        </Campo>
+
+        {mayorDolor.includes('otro') && (
+          <Campo id="mayor_dolor_otro" etiqueta="Contanos cuál" errores={err('mayor_dolor_otro')}>
+            {(p) => (
+              <input
+                {...p}
+                name="mayor_dolor_otro"
+                type="text"
+                maxLength={200}
+                placeholder="Contanos cuál"
+                className={claseInput}
+              />
+            )}
+          </Campo>
+        )}
+      </Seccion>
+
+      <Seccion
+        numero="04"
         titulo="¿Cómo te contactan?"
-        ayuda="Completá al menos uno. Es lo que va a ver la gente para escribirte."
+        ayuda="El WhatsApp es obligatorio — es el canal que usa la gente para escribirte. Los demás son opcionales."
         completa={llenos.contacto}
       >
-        {/* Un solo onChange sobre el contenedor: escuchar los cinco inputs por
-            separado sería el mismo chequeo repetido cinco veces. */}
-        <div
-          className="flex flex-col gap-6"
-          onChange={(e) => {
-            const cont = e.currentTarget;
-            const hayAlguno = ['whatsapp', 'telefono', 'correo', 'instagram', 'facebook'].some(
-              (n) =>
-                (cont.querySelector(`[name="${n}"]`) as HTMLInputElement | null)?.value
-                  .trim() !== '',
-            );
-            marcar('contacto', hayAlguno);
-          }}
-        >
-          <Campo id="whatsapp" etiqueta="WhatsApp" errores={err('whatsapp')}>
+        <div className="flex flex-col gap-6">
+          <Campo id="whatsapp" etiqueta="WhatsApp" requerido errores={err('whatsapp')}>
             {(p) => (
               <input
                 {...p}
                 name="whatsapp"
                 type="tel"
                 inputMode="tel"
+                required
                 placeholder="300 123 4567"
-                className={claseInput}
-              />
-            )}
-          </Campo>
-
-          <Campo id="telefono" etiqueta="Teléfono fijo" errores={err('telefono')}>
-            {(p) => (
-              <input
-                {...p}
-                name="telefono"
-                type="tel"
-                inputMode="tel"
-                placeholder="604 123 4567"
+                onChange={(e) => marcar('contacto', e.target.value.trim() !== '')}
                 className={claseInput}
               />
             )}
@@ -480,7 +674,12 @@ export function FormularioRegistro({
             )}
           </Campo>
 
-          <Campo id="instagram" etiqueta="Instagram" errores={err('instagram')}>
+          <Campo
+            id="instagram"
+            etiqueta="Instagram"
+            ayuda="Usuario, @usuario o el link — como te resulte más fácil."
+            errores={err('instagram')}
+          >
             {(p) => (
               <input
                 {...p}
@@ -492,21 +691,96 @@ export function FormularioRegistro({
             )}
           </Campo>
 
-          <Campo id="facebook" etiqueta="Facebook" errores={err('facebook')}>
-            {(p) => (
-              <input
-                {...p}
-                name="facebook"
-                type="text"
-                placeholder="facebook.com/minegocio"
-                className={claseInput}
-              />
-            )}
-          </Campo>
+          <button
+            type="button"
+            onClick={() => setMostrarOtraRed((v) => !v)}
+            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+          >
+            {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
+          </button>
+
+          {mostrarOtraRed && (
+            <Campo
+              id="facebook"
+              etiqueta="Otra red o página"
+              ayuda="Facebook, TikTok, sitio web — usuario, @usuario o el link."
+              errores={err('facebook')}
+            >
+              {(p) => (
+                <input
+                  {...p}
+                  name="facebook"
+                  type="text"
+                  placeholder="facebook.com/minegocio"
+                  className={claseInput}
+                />
+              )}
+            </Campo>
+          )}
         </div>
       </Seccion>
 
-      <Seccion numero="04" titulo="Una foto" ayuda="Ayuda muchísimo a que te encuentren. JPG, PNG o WebP, hasta 5 MB.">
+      <Seccion
+        numero="05"
+        titulo="Horario y medios de pago"
+        ayuda="Opcional, pero ayuda a que la gente sepa qué esperar antes de escribirte."
+      >
+        <button
+          type="button"
+          onClick={() => setMostrarMasInfo((v) => !v)}
+          className="self-start font-mono text-xs text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+        >
+          {mostrarMasInfo
+            ? '− Ocultar'
+            : '+ Agregar más información sobre tu negocio (opcional)'}
+        </button>
+
+        {mostrarMasInfo && (
+          <>
+            <Campo id="horario" etiqueta="¿Cuándo atendés?">
+              {() => (
+                <ChipsMultiple
+                  name="horario"
+                  opciones={OPCIONES_HORARIO_UI}
+                  valores={horario}
+                  alCambiar={setHorario}
+                />
+              )}
+            </Campo>
+
+            <Campo id="medios_pago" etiqueta="¿Cómo te pagan?">
+              {() => (
+                <ChipsMultiple
+                  name="medios_pago"
+                  opciones={OPCIONES_MEDIOS_PAGO_UI}
+                  valores={mediosPago}
+                  alCambiar={setMediosPago}
+                />
+              )}
+            </Campo>
+
+            <Campo
+              id="punto_referencia"
+              etiqueta="Punto de referencia"
+              ayuda="Algo fácil de reconocer cerca del lugar."
+              errores={err('punto_referencia')}
+            >
+              {(p) => (
+                <input
+                  {...p}
+                  name="punto_referencia"
+                  type="text"
+                  maxLength={120}
+                  placeholder="Frente a la cancha de La Cruz"
+                  className={claseInput}
+                />
+              )}
+            </Campo>
+          </>
+        )}
+      </Seccion>
+
+      <Seccion numero="06" titulo="Una foto" ayuda="Ayuda muchísimo a que te encuentren. JPG, PNG o WebP, hasta 5 MB.">
         <Campo id="foto" etiqueta="Fotografía del negocio" errores={err('foto')}>
           {(p) => (
             <input

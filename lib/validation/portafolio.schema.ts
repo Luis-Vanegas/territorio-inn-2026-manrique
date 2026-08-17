@@ -17,6 +17,43 @@ export const VERSION_TERMINOS = '2026-08-v2';
 export const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export const TAMANO_MAX_FOTO = 5 * 1024 * 1024;
 
+export const OPCIONES_HORARIO = [
+  'mananas',
+  'tardes',
+  'noches',
+  'fines_semana',
+  'bajo_pedido',
+] as const;
+export const OPCIONES_MEDIOS_PAGO = [
+  'efectivo',
+  'nequi',
+  'daviplata',
+  'transferencia',
+  'datafono',
+] as const;
+
+// ─── Investigación (privado — nunca se publica, va a aliados_investigacion) ───
+
+export const OPCIONES_TIPO_NEGOCIO = ['emprendimiento', 'micronegocio', 'local', 'otro'] as const;
+export const OPCIONES_FORMALIDAD = [
+  'rut_camara',
+  'en_tramite',
+  'no_tengo',
+  'prefiero_no_decir',
+] as const;
+export const OPCIONES_MAYOR_DOLOR = [
+  'cuentas_ganancia',
+  'inventario_vencimientos',
+  'clientes_redes',
+  'cobros_facturas',
+  'costos_arriendo',
+  'proveedores',
+  'acceso_credito',
+  'atender_solo',
+  'todo_bajo_control',
+  'otro',
+] as const;
+
 /**
  * Acepta formatos colombianos: "3001234567", "300 123 4567", "+57 300 1234567",
  * "604 1234567". Se guarda como lo escribió la persona; normalizar acá haría
@@ -31,7 +68,23 @@ const telefonoColombiano = z
 const opcional = <T extends z.ZodTypeAny>(schema: T) =>
   z.union([schema, z.literal('')]).transform((v) => (v === '' ? null : v));
 
-export const portafolioSchema = z
+/**
+ * "@usuario", "usuario", "instagram.com/usuario" o una URL completa: todo
+ * termina en una URL usable en un href. Si ya parece una URL, se respeta tal
+ * cual (evita convertir un link a una publicación puntual en el perfil).
+ */
+const normalizarRedSocial = (dominio: string) => (valor: string) => {
+  const limpio = valor.trim();
+  if (!limpio || /^https?:\/\//i.test(limpio)) return limpio;
+  const sinArroba = limpio.replace(/^@/, '').replace(/^\/+/, '');
+  if (sinArroba.toLowerCase().startsWith(dominio)) return `https://${sinArroba}`;
+  return `https://${dominio}/${sinArroba}`;
+};
+
+// Objeto base, separado del `.refine()` de abajo: así `actualizarPortafolioSchema`
+// puede hacer `.omit()` sobre los campos que no aplican a una edición (nada de
+// investigación, nada de re-aceptar consentimiento) sin duplicar cada campo.
+const camposPortafolio = z
   .object({
     nombre: z
       .string()
@@ -42,18 +95,21 @@ export const portafolioSchema = z
     descripcion: opcional(z.string().trim().max(400, 'Máximo 400 caracteres')),
 
     categoria_id: z.string().min(1, 'Elegí una categoría'),
+    // Solo se usa cuando categoria_id = 'otros'. Separado de descripcion:
+    // un "qué categoría sos" corto, no un texto libre largo.
+    categoria_otra: opcional(z.string().trim().max(60, 'Máximo 60 caracteres')),
 
     direccion: z
       .string()
       .trim()
       .min(5, 'Escribí la dirección completa')
       .max(200, 'Máximo 200 caracteres'),
-
     barrio: z
       .string()
       .trim()
       .min(2, 'Indicá el barrio')
       .max(80, 'Máximo 80 caracteres'),
+    punto_referencia: opcional(z.string().trim().max(120, 'Máximo 120 caracteres')),
 
     // Rango real de coordenadas válidas, no acotado a Manrique: el registro
     // acepta cualquier punto del mundo mientras se junta volumen de prueba.
@@ -61,19 +117,34 @@ export const portafolioSchema = z
       .number({ error: 'Marcá la ubicación en el mapa' })
       .min(-90, 'Latitud inválida')
       .max(90, 'Latitud inválida'),
-
     longitud: z
       .number({ error: 'Marcá la ubicación en el mapa' })
       .min(-180, 'Longitud inválida')
       .max(180, 'Longitud inválida'),
 
-    whatsapp: opcional(telefonoColombiano),
-    telefono: opcional(telefonoColombiano),
+    // El canal real de contacto: obligatorio, no "uno de cinco". Sin teléfono
+    // fijo: a pedido explícito, nadie en Manrique lo usa como canal real.
+    whatsapp: telefonoColombiano,
     correo: opcional(z.email('Correo inválido')),
-    instagram: opcional(
-      z.string().trim().max(60).transform((v) => v.replace(/^@/, '')),
-    ),
-    facebook: opcional(z.string().trim().max(120)),
+    instagram: opcional(z.string().trim().max(80).transform(normalizarRedSocial('instagram.com'))),
+    // Genérico a propósito: reemplaza el campo fijo de Facebook — cualquier
+    // otra red o página, oculta en la UI hasta que la persona la pida.
+    facebook: opcional(z.string().trim().max(120).transform(normalizarRedSocial('facebook.com'))),
+
+    horario: z.array(z.enum(OPCIONES_HORARIO)).optional().default([]),
+    medios_pago: z.array(z.enum(OPCIONES_MEDIOS_PAGO)).optional().default([]),
+
+    // Investigación — nunca se publica (va a aliados_investigacion, no a
+    // portafolios). tipo_negocio y mayor_dolor pasan a obligatorios a pedido
+    // explícito: el resto (nombre del dueño, formalidad) se queda opcional.
+    nombre_dueno: opcional(z.string().trim().max(80, 'Máximo 80 caracteres')),
+    tipo_negocio: z.enum(OPCIONES_TIPO_NEGOCIO, { error: 'Elegí una opción' }),
+    tipo_negocio_detalle: opcional(z.string().trim().max(80, 'Máximo 80 caracteres')),
+    formalidad: opcional(z.enum(OPCIONES_FORMALIDAD)),
+    mayor_dolor: z
+      .array(z.enum(OPCIONES_MAYOR_DOLOR))
+      .min(1, 'Elegí al menos una opción'),
+    mayor_dolor_otro: opcional(z.string().trim().max(200, 'Máximo 200 caracteres')),
 
     acepto_terminos: z.literal(true, {
       error: 'Debés aceptar los términos y condiciones',
@@ -81,16 +152,42 @@ export const portafolioSchema = z
     acepto_habeas_data: z.literal(true, {
       error: 'Debés autorizar el tratamiento de datos',
     }),
+  });
+
+export const portafolioSchema = camposPortafolio
+  .refine((d) => d.mayor_dolor.length <= 2, {
+    message: 'Elegí como máximo 2',
+    path: ['mayor_dolor'],
   })
   .refine(
-    (d) => Boolean(d.whatsapp || d.telefono || d.correo || d.instagram || d.facebook),
+    (d) => !(d.mayor_dolor.includes('todo_bajo_control') && d.mayor_dolor.length > 1),
     {
-      message: 'Dejá al menos una forma de que te contacten',
-      path: ['whatsapp'],
+      message: '"Todo bajo control" no se combina con otra opción',
+      path: ['mayor_dolor'],
     },
   );
 
 export type PortafolioInput = z.infer<typeof portafolioSchema>;
+
+/**
+ * Para /aliados/estado/[token]: la persona corrige los datos de su propio
+ * negocio, ya publicado o pendiente. Sin campos de investigación (esos no se
+ * vuelven a preguntar) ni de consentimiento (ya lo dio al registrarse; volver
+ * a pedirlo en cada corrección de una coma sería fricción sin sentido legal
+ * — el consentimiento cubre el tratamiento de los datos, no cada valor puntual).
+ */
+export const actualizarPortafolioSchema = camposPortafolio.omit({
+  nombre_dueno: true,
+  tipo_negocio: true,
+  tipo_negocio_detalle: true,
+  formalidad: true,
+  mayor_dolor: true,
+  mayor_dolor_otro: true,
+  acepto_terminos: true,
+  acepto_habeas_data: true,
+});
+
+export type ActualizarPortafolioInput = z.infer<typeof actualizarPortafolioSchema>;
 
 /**
  * Arma el objeto a validar desde el FormData de la server action.
@@ -109,16 +206,54 @@ export function desdeFormData(formData: FormData) {
     nombre: texto('nombre'),
     descripcion: texto('descripcion'),
     categoria_id: texto('categoria_id'),
+    categoria_otra: texto('categoria_otra'),
     direccion: texto('direccion'),
     barrio: texto('barrio'),
+    punto_referencia: texto('punto_referencia'),
     latitud: numero('latitud'),
     longitud: numero('longitud'),
     whatsapp: texto('whatsapp'),
-    telefono: texto('telefono'),
     correo: texto('correo'),
     instagram: texto('instagram'),
     facebook: texto('facebook'),
+    horario: formData.getAll('horario').map(String),
+    medios_pago: formData.getAll('medios_pago').map(String),
+    nombre_dueno: texto('nombre_dueno'),
+    tipo_negocio: texto('tipo_negocio'),
+    tipo_negocio_detalle: texto('tipo_negocio_detalle'),
+    formalidad: texto('formalidad'),
+    mayor_dolor: formData.getAll('mayor_dolor').map(String),
+    mayor_dolor_otro: texto('mayor_dolor_otro'),
     acepto_terminos: formData.get('acepto_terminos') === 'on',
     acepto_habeas_data: formData.get('acepto_habeas_data') === 'on',
+  };
+}
+
+/** Igual que `desdeFormData`, pero solo los campos que `actualizarPortafolioSchema` valida. */
+export function desdeFormDataEdicion(formData: FormData) {
+  const texto = (k: string) => (formData.get(k) ?? '').toString();
+  const numero = (k: string) => {
+    const v = formData.get(k);
+    if (v === null || v === '') return undefined;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : undefined;
+  };
+
+  return {
+    nombre: texto('nombre'),
+    descripcion: texto('descripcion'),
+    categoria_id: texto('categoria_id'),
+    categoria_otra: texto('categoria_otra'),
+    direccion: texto('direccion'),
+    barrio: texto('barrio'),
+    punto_referencia: texto('punto_referencia'),
+    latitud: numero('latitud'),
+    longitud: numero('longitud'),
+    whatsapp: texto('whatsapp'),
+    correo: texto('correo'),
+    instagram: texto('instagram'),
+    facebook: texto('facebook'),
+    horario: formData.getAll('horario').map(String),
+    medios_pago: formData.getAll('medios_pago').map(String),
   };
 }

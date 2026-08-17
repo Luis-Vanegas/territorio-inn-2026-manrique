@@ -10,6 +10,7 @@
 
 import Link from "next/link";
 import { listarAprobados, contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
+import { enfoque } from "@/lib/content";
 import { MapaAliados } from "./MapaAliados";
 import { ScrollReveal } from "./ScrollReveal";
 
@@ -22,6 +23,9 @@ export async function AliadosDestacado() {
   ]);
 
   const total = Object.values(conteos).reduce((a, b) => a + b, 0);
+  // Aliados siempre está en enfoque.modulos (nunca se filtra), así que el find
+  // nunca da undefined acá.
+  const modulo = enfoque.modulos.find((m) => m.slug === "aliados")!;
 
   return (
     <section className="margen-editorial py-20 sm:py-28" aria-label="Aliados">
@@ -29,7 +33,7 @@ export async function AliadosDestacado() {
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota">
             <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />
-            03 · Aliados · en vivo
+            {modulo.numero} · Aliados · en vivo
           </span>
 
           {total > 0 && (

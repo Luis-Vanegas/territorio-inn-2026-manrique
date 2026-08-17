@@ -2,7 +2,12 @@ import type { Metadata } from 'next';
 
 import { listarCategorias } from '@/lib/db/portafolios.repo';
 import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
+import { enfoque } from '@/lib/content';
 import { FormularioRegistro } from './_components/FormularioRegistro';
+
+// Aliados siempre está en enfoque.modulos (nunca se filtra), así que el find
+// nunca da undefined acá.
+const modulo = enfoque.modulos.find((m) => m.slug === 'aliados')!;
 
 export const metadata: Metadata = {
   title: 'Sumarme como aliado · Territorio INN 2026',
@@ -23,7 +28,7 @@ export default async function RegistroPage() {
   return (
     <main className="margen-editorial py-24 sm:py-32">
       <header className="max-w-3xl">
-        <span className="font-mono text-xs text-tinta/50">03 · Aliados</span>
+        <span className="font-mono text-xs text-tinta/50">{modulo.numero} · Aliados</span>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
           Poné tu negocio en el mapa

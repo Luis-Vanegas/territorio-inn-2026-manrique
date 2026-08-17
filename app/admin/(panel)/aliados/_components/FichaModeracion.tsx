@@ -43,6 +43,21 @@ function Boton({
   );
 }
 
+const ETIQUETA_HORARIO: Record<string, string> = {
+  mananas: 'Mañanas',
+  tardes: 'Tardes',
+  noches: 'Noches',
+  fines_semana: 'Fines de semana',
+  bajo_pedido: 'Bajo pedido o cita',
+};
+const ETIQUETA_MEDIO_PAGO: Record<string, string> = {
+  efectivo: 'Efectivo',
+  nequi: 'Nequi',
+  daviplata: 'Daviplata',
+  transferencia: 'Transferencia',
+  datafono: 'Datáfono',
+};
+
 /** Solo los campos con valor: una lista con cinco "—" no informa nada. */
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
   if (!valor) return null;
@@ -100,15 +115,33 @@ export function FichaModeracion({
           <dl className="mt-5 flex flex-col gap-1.5">
             <Dato etiqueta="Dirección" valor={portafolio.direccion} />
             <Dato etiqueta="Barrio" valor={portafolio.barrio} />
+            <Dato etiqueta="Referencia" valor={portafolio.punto_referencia} />
             <Dato
               etiqueta="Coords"
               valor={`${portafolio.latitud.toFixed(6)}, ${portafolio.longitud.toFixed(6)}`}
             />
+            <Dato etiqueta="Otra categoría" valor={portafolio.categoria_otra} />
             <Dato etiqueta="WhatsApp" valor={portafolio.whatsapp} />
             <Dato etiqueta="Teléfono" valor={portafolio.telefono} />
             <Dato etiqueta="Correo" valor={portafolio.correo} />
             <Dato etiqueta="Instagram" valor={portafolio.instagram} />
             <Dato etiqueta="Facebook" valor={portafolio.facebook} />
+            <Dato
+              etiqueta="Horario"
+              valor={
+                portafolio.horario.length > 0
+                  ? portafolio.horario.map((h) => ETIQUETA_HORARIO[h] ?? h).join(', ')
+                  : null
+              }
+            />
+            <Dato
+              etiqueta="Pagos"
+              valor={
+                portafolio.medios_pago.length > 0
+                  ? portafolio.medios_pago.map((m) => ETIQUETA_MEDIO_PAGO[m] ?? m).join(', ')
+                  : null
+              }
+            />
             <Dato
               etiqueta="Recibido"
               valor={new Date(portafolio.creado_en).toLocaleString('es-CO', {

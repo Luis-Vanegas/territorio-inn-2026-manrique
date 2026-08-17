@@ -76,9 +76,7 @@ export function VitrinaAliados({
   const listados = useMemo(() => {
     const conDistancia = aliados.map((p) => ({
       portafolio: p,
-      distancia: ubicacion
-        ? distanciaMetros(ubicacion, [p.latitud, p.longitud])
-        : null,
+      distancia: ubicacion ? distanciaMetros(ubicacion, [p.latitud, p.longitud]) : null,
     }));
 
     if (!ubicacion) return conDistancia;

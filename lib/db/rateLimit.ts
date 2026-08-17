@@ -1,4 +1,5 @@
 import 'server-only';
+import { createHash } from 'node:crypto';
 import { sql } from './neon';
 
 /**
@@ -14,7 +15,7 @@ import { sql } from './neon';
  * límite es holgado y el mensaje dice cuánto falta en vez de solo negar.
  */
 
-export type OrigenIntento = 'registro' | 'login';
+export type OrigenIntento = 'registro' | 'login' | 'estado';
 
 /**
  * Cupos por origen. Son distintos a propósito:
@@ -25,10 +26,15 @@ export type OrigenIntento = 'registro' | 'login';
  *   al moderador que entra a aprobar registros es peor que el ataque que
  *   evitamos. La ventana es más larga porque lo que se frena acá no es un
  *   error humano sino un diccionario de miles de intentos.
+ * - `estado`: editar o pedir el borrado desde /aliados/estado/[token]. Cupo
+ *   parecido a registro — corregir un dato no es algo que se repita muchas
+ *   veces en 10 minutos, y esto protege la ruta de intentos automatizados de
+ *   adivinar un token válido (aunque el UUID en sí ya lo hace inviable).
  */
 const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> = {
   registro: { maximo: 3, ventanaMinutos: 10 },
   login: { maximo: 8, ventanaMinutos: 15 },
+  estado: { maximo: 6, ventanaMinutos: 10 },
 };
 
 export type ResultadoLimite =
@@ -114,4 +120,10 @@ export function ipDesdeHeaders(headers: Headers): string | null {
   const esIPv6 = /^[0-9a-f:]+$/i.test(cruda) && cruda.includes(':');
 
   return esIPv4 || esIPv6 ? cruda : null;
+}
+
+/** Hash de la IP para `aliados_consentimiento.ip_hash` — nunca se guarda en claro ahí. */
+export function hashIp(ip: string | null): string | null {
+  if (!ip) return null;
+  return createHash('sha256').update(ip).digest('hex');
 }

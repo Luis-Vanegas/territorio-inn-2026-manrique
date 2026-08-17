@@ -12,6 +12,23 @@ import { contar } from '@/lib/interacciones';
  * la da una línea de 1px y el aire, no una card flotante.
  */
 
+/**
+ * `instagram`/`facebook` ya vienen como URL completa desde `normalizarRedSocial`
+ * (lib/validation/portafolio.schema.ts) — arma el link a mano acá duplicaba el
+ * dominio (`instagram.com/https://instagram.com/usuario`, roto). Se usa el
+ * valor guardado directo como href, y se deriva una etiqueta corta del path
+ * para no mostrar la URL entera.
+ */
+function enlaceRedSocial(valor: string, etiquetaGenerica: string): { etiqueta: string; href: string } {
+  const href = /^https?:\/\//i.test(valor) ? valor : `https://${valor}`;
+  try {
+    const usuario = new URL(href).pathname.replace(/^\/+|\/+$/g, '');
+    return { etiqueta: usuario ? `@${usuario}` : etiquetaGenerica, href };
+  } catch {
+    return { etiqueta: etiquetaGenerica, href };
+  }
+}
+
 function Contacto({ portafolio }: { portafolio: Portafolio }) {
   const enlaces: { etiqueta: string; href: string }[] = [];
 
@@ -25,18 +42,10 @@ function Contacto({ portafolio }: { portafolio: Portafolio }) {
     enlaces.push({ etiqueta: 'Correo', href: `mailto:${portafolio.correo}` });
   }
   if (portafolio.instagram) {
-    enlaces.push({
-      etiqueta: `@${portafolio.instagram}`,
-      href: `https://instagram.com/${portafolio.instagram}`,
-    });
+    enlaces.push(enlaceRedSocial(portafolio.instagram, 'Instagram'));
   }
-  // Facebook se pide en el registro y se guarda en la base, pero no se estaba
-  // mostrando: el negocio llenaba un campo que nadie llegaba a ver nunca.
   if (portafolio.facebook) {
-    enlaces.push({
-      etiqueta: 'Facebook',
-      href: `https://facebook.com/${portafolio.facebook}`,
-    });
+    enlaces.push(enlaceRedSocial(portafolio.facebook, 'Otra red'));
   }
 
   if (enlaces.length === 0) return null;
