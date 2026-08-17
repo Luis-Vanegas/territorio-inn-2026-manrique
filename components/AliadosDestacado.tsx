@@ -46,7 +46,7 @@ export async function AliadosDestacado() {
         <h2 className="mt-4 max-w-2xl font-display text-4xl font-medium leading-[1.02] text-tinta sm:text-6xl">
           {total > 0
             ? "Los negocios de Manrique, con nombre y dirección."
-            : "Poné tu negocio en el mapa de Manrique."}
+            : "Suma tu negocio al mapa de Manrique."}
         </h2>
 
         <p className="mt-5 max-w-lg font-sans text-lg leading-relaxed text-tinta/70">

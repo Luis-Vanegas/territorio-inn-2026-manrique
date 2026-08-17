@@ -17,7 +17,7 @@ import { enfoque } from "@/lib/content";
 const ENLACES = [
   { href: '/', etiqueta: 'Inicio' },
   ...enfoque.modulos.map((m) => ({ href: `/${m.slug}`, etiqueta: m.nombre })),
-  { href: '/contacto', etiqueta: 'Escribinos' },
+  { href: '/contacto', etiqueta: 'Escríbenos' },
 ];
 
 export function SiteHeader() {

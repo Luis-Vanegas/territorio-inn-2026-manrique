@@ -45,7 +45,7 @@ export function Footer() {
             href="/contacto"
             className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota"
           >
-            Escribinos
+            Escríbenos
           </Link>
         </div>
 
