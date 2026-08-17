@@ -15,6 +15,7 @@ import { enfoque } from "@/lib/content";
 // baja hasta el pie de una página para buscar dónde escribir. Va último, después
 // de los módulos, porque es un canal de servicio y no una sección del proyecto.
 const ENLACES = [
+  { href: '/', etiqueta: 'Inicio' },
   ...enfoque.modulos.map((m) => ({ href: `/${m.slug}`, etiqueta: m.nombre })),
   { href: '/contacto', etiqueta: 'Escribinos' },
 ];

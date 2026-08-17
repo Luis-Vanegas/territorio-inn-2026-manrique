@@ -22,13 +22,13 @@ export const equipo: MiembroEquipo[] = [
   {
     iniciales: "EM",
     nombre: "Estefania Mesa Makiu",
-    programaInstitucion: "ITM",
+    programaInstitucion: "Ingeniería de Diseño Industrial, en curso · ITM",
     foto: "/equipo/Estefania.jpeg",
   },
   {
-    // ponytail: falta universidad y foto — el usuario las va a mandar después.
+    // ponytail: falta la foto — el usuario la va a mandar después.
     iniciales: "MJ",
     nombre: "Maria Camila Jaramillo Zapata",
-    programaInstitucion: "Universidad por confirmar",
+    programaInstitucion: "Negocios Internacionales, en curso · Tecnológico de Antioquia",
   },
 ];
