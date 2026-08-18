@@ -219,9 +219,11 @@ export async function registrarPortafolio(
   // El panel de moderación tiene que ver el registro nuevo sin esperar cache.
   revalidatePath('/admin/aliados');
 
-  // La confirmación ya no es un mensaje en la misma página: es la página de
-  // estado, con el link que la persona guarda para consultar o corregir su
-  // registro después. redirect() corta la ejecución acá — no hay código
-  // después de esto que dependa de un `return`.
-  redirect(`/aliados/estado/${token_publico}${fotoFallo ? '?foto=error' : ''}`);
+  // La confirmación ya no es la página de estado: es un modal en el inicio.
+  // El token viaja en la query porque sigue siendo la única credencial para
+  // llegar a /aliados/estado/[token] — el modal lo muestra y ahí la persona
+  // lo guarda (copiar o WhatsApp) antes de que se pierda. redirect() corta
+  // la ejecución acá — no hay código después de esto que dependa de un
+  // `return`.
+  redirect(`/?registrado=${token_publico}${fotoFallo ? '&foto=error' : ''}`);
 }
