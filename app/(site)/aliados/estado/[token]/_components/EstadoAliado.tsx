@@ -13,7 +13,7 @@ import {
 import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
 import type { Categoria, PortafolioAdmin } from '@/lib/db/portafolios.repo';
 import type { Posicion } from '@/app/(site)/aliados/registro/_components/SelectorUbicacionClient';
-import { ChipsUnica, ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
+import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
 import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
 
 // Misma lista que FormularioRegistro.tsx — copiada, no importada, para no
@@ -387,14 +387,21 @@ function FormularioEdicion({
 
         <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
           {(p) => (
-            <ChipsUnica
+            <select
               {...p}
               name="categoria_id"
-              opciones={categorias.map((c) => ({ valor: c.id, etiqueta: c.nombre }))}
-              valor={categoriaId}
-              alCambiar={setCategoriaId}
-              requerido
-            />
+              required
+              value={categoriaId}
+              onChange={(e) => setCategoriaId(e.target.value)}
+              className={claseInput}
+            >
+              <option value="">Elige una…</option>
+              {categorias.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
           )}
         </Campo>
 
@@ -587,7 +594,6 @@ function FormularioEdicion({
               name="foto"
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              capture="environment"
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f && f.size > TAMANO_MAX_FOTO) {

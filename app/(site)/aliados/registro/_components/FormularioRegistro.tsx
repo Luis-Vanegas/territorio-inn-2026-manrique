@@ -108,32 +108,43 @@ function Seccion({
   ancho?: 'angosto' | 'completo';
   children: React.ReactNode;
 }) {
+  // Antes solo el ✓ chiquito del título marcaba una sección completa — con la
+  // paleta plana del sitio (hueso/tinta/terracota, sin verdes de "éxito") eso
+  // se pierde de vista. Ahora la sección entera se resalta con el mismo
+  // patrón de borde + fondo tenue que ya usa la página de estado para
+  // "Publicado" / "Pendiente" — la misma señal, reutilizada, no una nueva.
   return (
     <fieldset className="border-t border-tinta/12 pt-8">
       <legend className="sr-only">{titulo}</legend>
 
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-mono text-xs text-tinta/35">{numero}</span>
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
-          {titulo}
-        </h2>
-        {completa && (
-          <span className="font-mono text-xs text-terracota" aria-label="completo">
-            ✓
-          </span>
-        )}
-      </div>
-
-      {ayuda && (
-        <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/55">
-          {ayuda}
-        </p>
-      )}
-
       <div
-        className={`mt-6 flex flex-col gap-6 ${ancho === 'angosto' ? 'max-w-xl' : ''}`}
+        className={[
+          'transition-colors',
+          ancho === 'angosto' ? 'max-w-xl' : '',
+          completa
+            ? 'border-l-2 border-terracota bg-terracota/[0.03] py-3 pl-3 -ml-3 sm:pl-4 sm:-ml-4'
+            : '',
+        ].join(' ')}
       >
-        {children}
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="font-mono text-xs text-tinta/35">{numero}</span>
+          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
+            {titulo}
+          </h2>
+          {completa && (
+            <span className="font-mono text-xs text-terracota" aria-label="completo">
+              ✓ completo
+            </span>
+          )}
+        </div>
+
+        {ayuda && (
+          <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/55">
+            {ayuda}
+          </p>
+        )}
+
+        <div className="mt-6 flex flex-col gap-6">{children}</div>
       </div>
     </fieldset>
   );
@@ -493,17 +504,24 @@ export function FormularioRegistro({
 
         <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
           {(p) => (
-            <ChipsUnica
+            <select
               {...p}
               name="categoria_id"
-              opciones={categorias.map((c) => ({ valor: c.id, etiqueta: c.nombre }))}
-              valor={categoriaId}
-              alCambiar={(v) => {
-                setCategoriaId(v);
-                marcar('categoria', v !== '');
+              required
+              value={categoriaId}
+              onChange={(e) => {
+                setCategoriaId(e.target.value);
+                marcar('categoria', e.target.value !== '');
               }}
-              requerido
-            />
+              className={claseInput}
+            >
+              <option value="">Elige una…</option>
+              {categorias.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre}
+                </option>
+              ))}
+            </select>
           )}
         </Campo>
 
@@ -791,7 +809,6 @@ export function FormularioRegistro({
               name="foto"
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              capture="environment" // en celular abre la cámara directamente
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 // Se avisa antes de enviar: subir 8 MB para que el server los
