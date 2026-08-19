@@ -26,7 +26,7 @@ export async function iniciarSesion(
   // moderadores usan correos institucionales que cualquiera deduce. Sin esto,
   // un diccionario corre sin techo: scrypt hace lento CADA intento, pero nada
   // impide hacer un millón.
-  const ip = ipDesdeHeaders(headers());
+  const ip = ipDesdeHeaders(await headers());
   const limite = await verificarLimite(ip, 'login');
   if (!limite.permitido) {
     return {
@@ -47,7 +47,7 @@ export async function iniciarSesion(
     return { estado: 'error', mensaje: 'Credenciales incorrectas.' };
   }
 
-  cookies().set('admin_session', crearTokenSesion(email.toLowerCase()), {
+  (await cookies()).set('admin_session', crearTokenSesion(email.toLowerCase()), {
     httpOnly: true,                                   // fuera del alcance de JS
     secure: process.env.NODE_ENV === 'production',    // en local no hay HTTPS
     sameSite: 'lax',                                  // corta CSRF desde otros sitios
@@ -59,6 +59,6 @@ export async function iniciarSesion(
 }
 
 export async function cerrarSesion(): Promise<void> {
-  cookies().delete('admin_session');
+  (await cookies()).delete('admin_session');
   redirect('/admin/login');
 }

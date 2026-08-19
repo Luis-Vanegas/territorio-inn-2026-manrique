@@ -22,13 +22,16 @@ export default async function EstadoAliadoPage({
   params,
   searchParams,
 }: {
-  params: { token: string };
-  searchParams: { foto?: string };
+  params: Promise<{ token: string }>;
+  searchParams: Promise<{ foto?: string }>;
 }) {
-  if (!FORMATO_UUID.test(params.token)) notFound();
+  const { token } = await params;
+  const { foto } = await searchParams;
+
+  if (!FORMATO_UUID.test(token)) notFound();
 
   const [portafolio, categorias] = await Promise.all([
-    obtenerPorToken(params.token),
+    obtenerPorToken(token),
     listarCategorias(),
   ]);
 
@@ -38,9 +41,9 @@ export default async function EstadoAliadoPage({
     <main className="margen-editorial py-24 sm:py-32">
       <EstadoAliado
         portafolio={portafolio}
-        token={params.token}
+        token={token}
         categorias={categorias}
-        fotoFallo={searchParams.foto === 'error'}
+        fotoFallo={foto === 'error'}
       />
     </main>
   );

@@ -21,7 +21,7 @@ const CONJUNTOS = ['aliados', 'interacciones'] as const;
 type Conjunto = (typeof CONJUNTOS)[number];
 
 export async function GET(request: Request) {
-  const sesion = verificarSesion();
+  const sesion = await verificarSesion();
   if (!sesion) return new NextResponse(null, { status: 401 });
 
   const pedido = new URL(request.url).searchParams.get('conjunto') ?? 'aliados';

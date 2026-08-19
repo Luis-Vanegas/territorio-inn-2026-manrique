@@ -11,15 +11,17 @@ import { cerrarSesion } from '@/lib/actions/sesionAdmin';
  * como /admin/aliados. Sirve para que este layout envuelva solo lo que hay
  * que proteger, dejando /admin/login por fuera.
  *
- * Acá y no en middleware.ts: en Next 14 el middleware corre en Edge Runtime,
- * donde no existen node:crypto ni cookies() de next/headers — justo lo que
- * verificarSesion() necesita. Este layout corre en Node.
+ * Acá y no en middleware.ts: se decidió así cuando el middleware era Edge-only
+ * (Next 14), donde no existen node:crypto ni cookies() de next/headers — justo
+ * lo que verificarSesion() necesita. Este layout corre en Node. Desde Next 16
+ * el middleware ya soporta Node, pero mover el guard no cambiaría nada: lo que
+ * de verdad protege es que cada action revalide, como dice el párrafo de abajo.
  *
  * Esto protege la NAVEGACIÓN. Cada server action revalida la sesión por su
  * cuenta, porque una action es un endpoint HTTP invocable sin pasar por acá.
  */
-export default function PanelLayout({ children }: { children: React.ReactNode }) {
-  const sesion = verificarSesion();
+export default async function PanelLayout({ children }: { children: React.ReactNode }) {
+  const sesion = await verificarSesion();
 
   if (!sesion) {
     redirect('/admin/login');

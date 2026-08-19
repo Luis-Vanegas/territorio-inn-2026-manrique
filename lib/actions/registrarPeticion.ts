@@ -25,7 +25,7 @@ export async function registrarPeticion(
   _anterior: EstadoPeticion,
   formData: FormData,
 ): Promise<EstadoPeticion> {
-  const ip = ipDesdeHeaders(headers());
+  const ip = ipDesdeHeaders(await headers());
 
   const limite = await verificarLimite(ip);
   if (!limite.permitido) {

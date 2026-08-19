@@ -37,9 +37,11 @@ Todo lo demás es lectura pública o está detrás de la sesión de moderación.
 
 ## Autorización
 
-El guard vive en `app/admin/(panel)/layout.tsx`, no en `middleware.ts`. En
-Next 14 el middleware corre en Edge Runtime, donde no existen `node:crypto` ni
-`cookies()` de `next/headers` — justo lo que `verificarSesion()` necesita.
+El guard vive en `app/admin/(panel)/layout.tsx`, no en `middleware.ts`. Se
+decidió así cuando el middleware era Edge-only (Next 14), donde no existen
+`node:crypto` ni `cookies()` de `next/headers` — justo lo que
+`verificarSesion()` necesita. Desde Next 16 el middleware ya soporta Node, pero
+el guard sigue donde está: mover la verificación no agregaría seguridad.
 
 **Cada server action revalida la sesión por su cuenta.** El layout protege la
 navegación; una server action es un endpoint HTTP invocable sin pasar por

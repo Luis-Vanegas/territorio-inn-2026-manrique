@@ -22,7 +22,7 @@ export async function moderarPortafolio(
   _anterior: EstadoModeracion,
   formData: FormData,
 ): Promise<EstadoModeracion> {
-  const sesion = verificarSesion();
+  const sesion = await verificarSesion();
   if (!sesion) {
     return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
   }

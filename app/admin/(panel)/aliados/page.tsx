@@ -21,9 +21,9 @@ const ESTADOS: { id: EstadoPortafolio; etiqueta: string }[] = [
 export default async function ModeracionPage({
   searchParams,
 }: {
-  searchParams: { estado?: string };
+  searchParams: Promise<{ estado?: string }>;
 }) {
-  const solicitado = searchParams.estado;
+  const solicitado = (await searchParams).estado;
   const estadoActivo: EstadoPortafolio = ESTADOS.some((e) => e.id === solicitado)
     ? (solicitado as EstadoPortafolio)
     : 'pendiente';

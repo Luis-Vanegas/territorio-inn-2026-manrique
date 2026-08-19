@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function LoginPage() {
+export default async function LoginPage() {
   // Con sesión activa no tiene sentido mostrar el login.
-  if (verificarSesion()) {
+  if (await verificarSesion()) {
     redirect('/admin/aliados');
   }
 

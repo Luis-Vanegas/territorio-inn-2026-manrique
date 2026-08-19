@@ -41,7 +41,7 @@ export async function crearCampoAction(
   _anterior: EstadoCampo,
   formData: FormData,
 ): Promise<EstadoCampo> {
-  const sesion = verificarSesion();
+  const sesion = await verificarSesion();
   if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
 
   const parsed = definicionCampoSchema.safeParse(datosDesdeForm(formData));
@@ -90,7 +90,7 @@ export async function editarCampoAction(
   _anterior: EstadoCampo,
   formData: FormData,
 ): Promise<EstadoCampo> {
-  const sesion = verificarSesion();
+  const sesion = await verificarSesion();
   if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
 
   const id = String(formData.get('id') ?? '');
@@ -128,7 +128,7 @@ export async function editarCampoAction(
 
 /** Activar/desactivar es una acción de un clic — no necesita useFormState. */
 export async function cambiarActivoCampoAction(formData: FormData): Promise<void> {
-  const sesion = verificarSesion();
+  const sesion = await verificarSesion();
   if (!sesion) return;
 
   const id = String(formData.get('id') ?? '');

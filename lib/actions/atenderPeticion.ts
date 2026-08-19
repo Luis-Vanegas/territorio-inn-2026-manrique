@@ -15,7 +15,7 @@ export async function atenderPeticion(
   _anterior: EstadoAtencion,
   formData: FormData,
 ): Promise<EstadoAtencion> {
-  const sesion = verificarSesion();
+  const sesion = await verificarSesion();
   if (!sesion) {
     return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
   }

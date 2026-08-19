@@ -47,7 +47,7 @@ export async function registrarPortafolio(
   _anterior: EstadoRegistro,
   formData: FormData,
 ): Promise<EstadoRegistro> {
-  const ip = ipDesdeHeaders(headers());
+  const ip = ipDesdeHeaders(await headers());
 
   // 1 · Rate limit
   const limite = await verificarLimite(ip);
@@ -164,7 +164,7 @@ export async function registrarPortafolio(
       acepto_habeas_data: true,
       version_politica: VERSION_TERMINOS,
       ip_hash: hashIp(ip),
-      user_agent: headers().get('user-agent'),
+      user_agent: (await headers()).get('user-agent'),
     });
   } catch (error) {
     console.error('[registrarPortafolio] registro de consentimiento falló', error);

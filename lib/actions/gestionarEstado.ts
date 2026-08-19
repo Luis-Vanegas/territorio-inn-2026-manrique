@@ -35,7 +35,7 @@ export async function actualizarPortafolio(
   _anterior: EstadoEdicion,
   formData: FormData,
 ): Promise<EstadoEdicion> {
-  const ip = ipDesdeHeaders(headers());
+  const ip = ipDesdeHeaders(await headers());
 
   const limite = await verificarLimite(ip, 'estado');
   if (!limite.permitido) {
@@ -138,7 +138,7 @@ export async function actualizarPortafolio(
  * imagen de un negocio que ya pidió salir.
  */
 export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
-  const ip = ipDesdeHeaders(headers());
+  const ip = ipDesdeHeaders(await headers());
 
   const limite = await verificarLimite(ip, 'estado');
   if (!limite.permitido) {

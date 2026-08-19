@@ -14,9 +14,9 @@ const ESTADOS: { id: EstadoPeticion; etiqueta: string }[] = [
 export default async function PeticionesPage({
   searchParams,
 }: {
-  searchParams: { estado?: string };
+  searchParams: Promise<{ estado?: string }>;
 }) {
-  const solicitado = searchParams.estado;
+  const solicitado = (await searchParams).estado;
   const estadoActivo: EstadoPeticion = ESTADOS.some((e) => e.id === solicitado)
     ? (solicitado as EstadoPeticion)
     : 'nueva';

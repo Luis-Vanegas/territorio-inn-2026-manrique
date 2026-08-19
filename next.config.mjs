@@ -45,7 +45,14 @@ const cabecerasSeguridad = [
 ];
 
 const nextConfig = {
-  reactStrictMode: true,
+  // Apagado a propósito desde el upgrade a Next 16: bajo Strict Mode, el
+  // remontaje de control que hace React en dev llega a `<MapContainer>`
+  // (react-leaflet) como un "reappear" en vez de un unmount/mount limpio, y
+  // Leaflet tira "Map container is already initialized" — bug abierto y sin
+  // resolver en react-leaflet (github.com/PaulLeCam/react-leaflet#1069,
+  // #1133), no algo arreglable desde este código. Solo afecta al dev server:
+  // en producción React nunca duplica efectos, con o sin este flag.
+  reactStrictMode: false,
   images: {
     // Las fotos de los portafolios viven en Vercel Blob, en un subdominio que
     // depende del store. Sin esta entrada, next/image rechaza la URL en runtime.

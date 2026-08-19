@@ -30,9 +30,9 @@ export const dynamic = 'force-dynamic';
 export default async function AliadosPage({
   searchParams,
 }: {
-  searchParams: { categoria?: string };
+  searchParams: Promise<{ categoria?: string }>;
 }) {
-  const categoriaActiva = searchParams.categoria;
+  const categoriaActiva = (await searchParams).categoria;
 
   // Las tres consultas son independientes: en serie sumarían tres viajes a la
   // base antes del primer byte.

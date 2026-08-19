@@ -4,8 +4,11 @@ import crypto from 'node:crypto';
 import { sql } from '@/lib/db/neon';
 
 // Corre solo en Node (Server Components / Server Actions), nunca en Edge.
-// Por eso la protección de /admin vive en app/admin/layout.tsx y NO en middleware.ts:
-// en Next 14 el middleware es Edge-only, donde node:crypto y cookies() no existen.
+// Por eso la protección de /admin vive en app/admin/layout.tsx y NO en
+// middleware.ts: se decidió así cuando el middleware era Edge-only (Next 14) y
+// ahí no existen node:crypto ni cookies(). Desde Next 16 el middleware ya puede
+// correr en Node, pero el guard sigue acá a propósito — moverlo no agregaría
+// seguridad, porque toda server action revalida la sesión por su cuenta igual.
 
 const DURACION_SESION = 8 * 60 * 60 * 1000; // 8 horas
 
@@ -53,8 +56,8 @@ export function crearTokenSesion(email: string): string {
   return `${payloadB64}.${firma}`;
 }
 
-export function verificarSesion(): { email: string } | null {
-  const token = cookies().get('admin_session')?.value;
+export async function verificarSesion(): Promise<{ email: string } | null> {
+  const token = (await cookies()).get('admin_session')?.value;
   if (!token) return null;
 
   const [payloadB64, firma] = token.split('.');

@@ -35,6 +35,9 @@ export function ModalRegistroExitoso() {
 
   useEffect(() => {
     if (!datos) return;
+    // window solo existe tras montar; leerlo en el cuerpo del componente da
+    // mismatch de hidratación (ver comentario de `origin` más arriba).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setOrigin(window.location.origin);
     router.replace('/', { scroll: false });
   }, [datos, router]);
