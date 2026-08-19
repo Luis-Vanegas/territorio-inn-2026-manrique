@@ -96,7 +96,7 @@ export function ModalRegistroExitoso() {
           </p>
         )}
 
-        <p className="mt-5 font-mono text-xs uppercase tracking-wide text-tinta/50">
+        <p className="mt-5 font-mono text-xs uppercase tracking-wide text-tinta/65">
           Guardá este link — es la única forma de editarlo o borrarlo después
         </p>
 
@@ -105,7 +105,7 @@ export function ModalRegistroExitoso() {
             readOnly
             value={urlEstado}
             onFocus={(e) => e.target.select()}
-            className="min-w-0 flex-1 border border-tinta/20 bg-transparent px-3 py-2 font-mono text-xs text-tinta"
+            className="min-w-0 flex-1 border border-tinta/55 bg-transparent px-3 py-2 font-mono text-xs text-tinta"
           />
           <button
             type="button"
@@ -137,7 +137,7 @@ export function ModalRegistroExitoso() {
           <button
             type="button"
             onClick={() => setAbierto(false)}
-            className="font-mono text-sm text-tinta/50 hover:text-tinta"
+            className="font-mono text-sm text-tinta/65 hover:text-tinta"
           >
             Cerrar
           </button>

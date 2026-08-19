@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import { Hero } from "@/components/Hero";
 import { AliadosDestacado } from "@/components/AliadosDestacado";
+import { GaleriaAliados } from "@/components/GaleriaAliados";
 import { RetoSection } from "@/components/RetoSection";
-import { ComunaSection } from "@/components/ComunaSection";
+import { MetricasSection } from "@/components/MetricasSection";
 import { EquipoSection } from "@/components/EquipoSection";
 import { EnfoqueSection } from "@/components/EnfoqueSection";
 import { Footer } from "@/components/Footer";
@@ -26,8 +27,9 @@ export default function Home() {
           institucionales: es el punto de conversión del sitio, tiene que ser
           lo primero que alguien ve al bajar. */}
       <AliadosDestacado />
+      <GaleriaAliados />
       <RetoSection />
-      <ComunaSection />
+      <MetricasSection />
       <EquipoSection />
       <EnfoqueSection />
       <Footer />

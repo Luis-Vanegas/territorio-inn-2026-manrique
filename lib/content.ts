@@ -1,9 +1,5 @@
 // Todo el contenido editorial vive acá para no tocar los componentes al momento de llenar textos reales.
 
-import daneGeih from "./data/dane-geih.json";
-import camaraComercio from "./data/camara-comercio-manrique.json";
-import alcaldiaManrique from "./data/alcaldia-manrique-2019.json";
-
 export interface Kpi {
   /** Texto final, ya formateado — se usa como valor accesible (aria-label) y como fallback sin JS. */
   valor: string;
@@ -42,66 +38,13 @@ export const reto = {
     "“Acá el trabajo existe, lo que no existe es el dato que lo cuente.”",
 };
 
-export const comuna = {
-  titulo: "La Comuna 3 — Manrique",
-  kpis: [
-    {
-      valor: `${alcaldiaManrique.mercadoLaboral.tasaDesempleoComuna.toFixed(2).replace(".", ",")}%`,
-      numero: alcaldiaManrique.mercadoLaboral.tasaDesempleoComuna,
-      decimales: 2,
-      sufijo: "%",
-      etiqueta: "Desempleo — Manrique",
-      contexto: `Comuna 3 · Alcaldía de Medellín, GEIH ${alcaldiaManrique.periodo} — el dato comunal más reciente disponible.`,
-    },
-    {
-      valor: `${daneGeih.tasaDesempleo.toFixed(1).replace(".", ",")}%`,
-      numero: daneGeih.tasaDesempleo,
-      decimales: 1,
-      sufijo: "%",
-      etiqueta: "Desempleo — Antioquia",
-      contexto: `Departamento · GEIH ${daneGeih.periodo} · DANE — más actual, pero ya no es específico de Manrique.`,
-    },
-    {
-      valor: `${daneGeih.tasaInformalidad.toFixed(1).replace(".", ",")}%`,
-      numero: daneGeih.tasaInformalidad,
-      decimales: 1,
-      sufijo: "%",
-      etiqueta: "Informalidad laboral",
-      contexto: `Antioquia (depto.) · GEIH ${daneGeih.periodo} · DANE — no existe este dato a nivel Comuna 3.`,
-    },
-    {
-      valor: camaraComercio.totalEmpresas.toLocaleString("es-CO"),
-      numero: camaraComercio.totalEmpresas,
-      decimales: 0,
-      etiqueta: "Unidades productivas activas",
-      contexto: `Comuna 3 - Manrique · Registro Mercantil ${camaraComercio.periodo} · Cámara de Comercio de Medellín.`,
-    },
-  ] satisfies Kpi[],
-};
-
-export const empleo = {
-  numero: "01",
-  nombre: "Empleo",
-  titular: "Estos números existen. Los de Manrique están congelados en 2019.",
-  intro:
-    "La GEIH del DANE mide desempleo a nivel departamental cada mes — el dato de Antioquia de abajo es de mayo de 2026. Pero el último desempleo específico de Manrique que publicó la Alcaldía es de 2019: la ficha de caracterización de la comuna no se volvió a actualizar con este nivel de detalle desde entonces.",
-  brecha:
-    "Esa es la brecha que Territorio INN 2026 quiere cerrar: sin datos abiertos y actualizados a nivel de comuna, la reactivación económica de Manrique se sigue diseñando con una foto de hace seis años.",
-};
-
 // El módulo de inventario predictivo todavía no tiene datos reales detrás — se
-// muestra solo si el flag está prendido. Mientras está apagado, Empleo y
-// Aliados se renumeran automáticamente por posición en vez de tener el "01" y
-// el "03" escritos a mano, para que no queden desincronizados del listado real.
+// muestra solo si el flag está prendido. Mientras está apagado, Aliados se
+// renumera automáticamente por posición en vez de tener el número escrito a
+// mano, para que no quede desincronizado del listado real.
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
 
 const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
-  {
-    slug: "empleo",
-    nombre: "Empleo",
-    descripcion: "Mapeo de oferta laboral y oficios activos en el territorio.",
-    estado: "activo",
-  },
   {
     slug: "inventario-predictivo",
     nombre: "Inventario predictivo",

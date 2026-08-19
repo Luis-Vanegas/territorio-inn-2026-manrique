@@ -15,6 +15,10 @@ const config: Config = {
         hueso: "#F7F5F0",
         tinta: "#1A1A1A",
         terracota: "#C55A3C",
+        // Misma terracota, luminancia bajada hasta cruzar 4.5:1 sobre hueso (WCAG AA).
+        // Ver docs/sistema-diseno-a11y.md sección 0. Uso: texto/fills con texto encima,
+        // nunca bordes o iconos sueltos (ahí terracota sola ya cumple 3:1).
+        "terracota-texto": "#A34B33",
       },
       fontFamily: {
         display: ["var(--font-fraunces)", "serif"],

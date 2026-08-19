@@ -129,6 +129,15 @@ body {
   outline-offset: 3px;
 }
 
+/* Anillo de foco global — doble capa (outline + box-shadow) para que se vea
+   igual de bien sobre hueso que sobre tinta. Solo con teclado (:focus-visible),
+   nunca al hacer clic con mouse. */
+:where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-terracota);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--color-hueso);
+}
+
 .leaflet-container {
   background-color: var(--color-hueso);
   font-family: var(--font-geist-sans), sans-serif;
