@@ -38,6 +38,12 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             Moderación
           </Link>
           <Link
+            href="/admin/servicios"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+          >
+            Servicios
+          </Link>
+          <Link
             href="/admin/estadisticas"
             className="font-mono text-xs text-tinta/55 hover:text-terracota"
           >

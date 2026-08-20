@@ -44,6 +44,12 @@ export const reto = {
 // mano, para que no quede desincronizado del listado real.
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
 
+// Servicios arranca apagado a propósito: se prende en preproducción para
+// revisarlo, y recién después en producción. Mismo mecanismo que inventario —
+// con el flag apagado la ruta devuelve 404 real y no aparece en el menú, así
+// que no hay forma de llegar a un módulo a medio revisar desde el sitio vivo.
+const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === "true";
+
 const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
     slug: "inventario-predictivo",
@@ -57,12 +63,21 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
     descripcion: "Negocios y oficios de Manrique, en el mapa y con contacto directo.",
     estado: "activo",
   },
+  {
+    slug: "servicios",
+    nombre: "Servicios",
+    descripcion:
+      "Personas que prestan su oficio a domicilio y se desplazan por la comuna.",
+    estado: "activo",
+  },
 ];
 
 export const enfoque = {
   titulo: "El enfoque",
   modulos: MODULOS_BASE.filter(
-    (m) => INVENTARIO_ACTIVO || m.slug !== "inventario-predictivo",
+    (m) =>
+      (INVENTARIO_ACTIVO || m.slug !== "inventario-predictivo") &&
+      (SERVICIOS_ACTIVO || m.slug !== "servicios"),
   ).map((m, indice) => ({
     ...m,
     numero: String(indice + 1).padStart(2, "0"),

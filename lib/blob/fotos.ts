@@ -53,6 +53,7 @@ export function validarArchivo(file: File): ErrorFoto | null {
 export async function subirFoto(
   file: File,
   portafolioId: string,
+  carpeta: 'portafolios' | 'servicios' = 'portafolios',
 ): Promise<ResultadoFoto | null> {
   const buffer = Buffer.from(await file.arrayBuffer());
 
@@ -69,7 +70,7 @@ export async function subirFoto(
 
   // El id es un uuid generado por la base, así que el pathname es único sin
   // sufijo aleatorio. Predecible además permite sobrescribir al reemplazar la foto.
-  const pathname = `portafolios/${portafolioId}.webp`;
+  const pathname = `${carpeta}/${portafolioId}.webp`;
 
   const blob = await put(pathname, optimizada, {
     access: 'public',
