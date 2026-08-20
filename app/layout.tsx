@@ -29,7 +29,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className={`${fraunces.variable} ${jetbrainsMono.variable} ${GeistSans.variable}`}>
+    // suppressHydrationWarning va acá y solo acá: extensiones como LanguageTool
+    // o Grammarly inyectan atributos en <html> (data-lt-installed, etc.) antes
+    // de que React hidrate, y eso dispara un warning que no es del código ni se
+    // puede evitar desde el server. Solo silencia los atributos de ESTE nodo —
+    // <body> y todo el árbol de adentro se siguen verificando igual.
+    <html
+      lang="es"
+      className={`${fraunces.variable} ${jetbrainsMono.variable} ${GeistSans.variable}`}
+      // El scroll suave lo define styles/globals.css. Declararlo acá también es
+      // lo que pide Next 16 para no aplicarlo en los cambios de ruta: sin esto,
+      // navegar entre páginas anima el salto al tope y se ve como un tirón.
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+    >
       <body>
         {children}
 
