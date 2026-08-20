@@ -12,8 +12,22 @@ import type { TipoInteraccion } from '@/lib/db/interacciones.repo';
  * Si falla, se pierde un número — no se le rompe la navegación a nadie.
  */
 export function contar(id: string, tipo: TipoInteraccion): void {
-  const cuerpo = JSON.stringify({ id, tipo });
+  enviar(JSON.stringify({ id, tipo }));
+}
 
+/**
+ * Avisa que alguien abrió una página del sitio público.
+ *
+ * Cuenta páginas abiertas, no personas: no hay identificador de ningún tipo,
+ * así que dos cargas de la misma persona son dos. Esa imprecisión es el precio
+ * de no poner un banner de cookies encima de una vitrina de barrio, y está
+ * asumida a propósito — el número se rotula como lo que es.
+ */
+export function contarVisita(): void {
+  enviar(JSON.stringify({ tipo: 'sitio' }));
+}
+
+function enviar(cuerpo: string): void {
   try {
     if (navigator.sendBeacon?.('/api/interacciones', cuerpo)) return;
 

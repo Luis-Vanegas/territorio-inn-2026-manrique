@@ -12,6 +12,7 @@ import {
   totalesInteracciones,
   interaccionesPorDia,
 } from '@/lib/db/interacciones.repo';
+import { totalVisitas } from '@/lib/db/visitas.repo';
 
 export const dynamic = 'force-dynamic';
 
@@ -141,17 +142,27 @@ function SerieDiaria({
 }
 
 export default async function EstadisticasPage() {
-  const [resumen, categorias, barrios, serie, moderadores, interes, totalesInteres, serieInteres] =
-    await Promise.all([
-      resumenGeneral(),
-      porCategoria(),
-      porBarrio(),
-      registrosPorDia(30),
-      porModerador(),
-      rankingInteracciones(30),
-      totalesInteracciones(30),
-      interaccionesPorDia(30),
-    ]);
+  const [
+    resumen,
+    categorias,
+    barrios,
+    serie,
+    moderadores,
+    interes,
+    totalesInteres,
+    serieInteres,
+    visitas,
+  ] = await Promise.all([
+    resumenGeneral(),
+    porCategoria(),
+    porBarrio(),
+    registrosPorDia(30),
+    porModerador(),
+    rankingInteracciones(30),
+    totalesInteracciones(30),
+    interaccionesPorDia(30),
+    totalVisitas(30),
+  ]);
 
   const tasaAprobacion =
     resumen.aprobados + resumen.rechazados > 0
@@ -366,15 +377,25 @@ export default async function EstadisticasPage() {
           07 · Tráfico del sitio
         </h2>
 
-        <p className="mt-4 font-sans text-sm leading-relaxed text-tinta/70">
-          Visitantes, páginas vistas, de dónde llega la gente y qué tan rápido
-          carga el sitio se miden con Vercel Analytics, que no usa cookies ni
-          identifica personas. Por eso el sitio no necesita banner de
-          consentimiento y no entra en conflicto con la política de habeas data.
+        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3">
+          <Metrica
+            valor={visitas}
+            etiqueta="Páginas abiertas · 30 días"
+            nota="Contador propio, anónimo. Es el número que se muestra en el home."
+          />
+        </div>
+
+        <p className="mt-6 font-sans text-sm leading-relaxed text-tinta/70">
+          Ese contador dice cuántas páginas se abrieron, no cuántas personas
+          distintas entraron: no hay cookie ni identificador que persista entre
+          visitas, así que dos cargas de la misma persona son dos. La precisión
+          que falta es el precio de no pedir consentimiento, y está asumida.
         </p>
 
         <p className="mt-4 font-sans text-sm leading-relaxed text-tinta/70">
-          Esos números se consultan en el dashboard de Vercel, pestañas{' '}
+          Para visitantes únicos, de dónde llega la gente y qué tan rápido carga
+          el sitio está Vercel Analytics, que tampoco usa cookies ni identifica
+          personas. Se consulta en el dashboard de Vercel, pestañas{' '}
           <span className="font-mono text-xs">Analytics</span> y{' '}
           <span className="font-mono text-xs">Speed Insights</span> del proyecto.
         </p>

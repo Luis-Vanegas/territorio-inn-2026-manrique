@@ -1,24 +1,26 @@
 // Métricas del proyecto — reemplaza a ComunaSection (desempleo/informalidad, datos
-// congelados en 2019 y sin nivel de detalle comunal). Estos 3 números son reales,
-// del propio sitio, actualizados en cada carga: negocios registrados y el
-// contador de interacciones anónimas que ya existía para el panel de admin
-// (lib/db/interacciones.repo.ts). Mismo lenguaje visual que tenía la sección
-// anterior — JetBrains Mono gigante, terracota, altura escalonada — para no
-// romper el ritmo del home.
+// congelados en 2019 y sin nivel de detalle comunal). Estos 2 números son reales,
+// del propio sitio, actualizados en cada carga.
+//
+// Por qué dos y no tres: los contactos iniciados (WhatsApp, correo o red social
+// tocados desde una ficha) salieron de acá a propósito. Es una métrica de
+// diagnóstico interno, no de vitrina — un "0 contactos" en la portada le dice al
+// visitante que el sitio no sirve, y además es información comercial de los
+// negocios. Sigue completa en /admin/estadisticas, sección 03.
 
 import { contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
-import { totalesInteracciones } from "@/lib/db/interacciones.repo";
+import { totalVisitas } from "@/lib/db/visitas.repo";
 import type { Kpi } from "@/lib/content";
 import { ScrollReveal } from "./ScrollReveal";
 import { NumeroAnimado } from "./NumeroAnimado";
 
-const DESPLAZAMIENTOS = ["lg:mt-0", "lg:mt-10", "lg:mt-4"];
+const DESPLAZAMIENTOS = ["lg:mt-0", "lg:mt-10"];
 const DIAS = 30;
 
 export async function MetricasSection() {
-  const [conteos, interacciones] = await Promise.all([
+  const [conteos, visitas] = await Promise.all([
     contarAprobadosPorCategoria(),
-    totalesInteracciones(DIAS),
+    totalVisitas(DIAS),
   ]);
 
   const negocios = Object.values(conteos).reduce((a, b) => a + b, 0);
@@ -32,18 +34,11 @@ export async function MetricasSection() {
       contexto: "Aprobados y visibles en el mapa de Aliados, ahora mismo.",
     },
     {
-      valor: interacciones.vistas.toLocaleString("es-CO"),
-      numero: interacciones.vistas,
+      valor: visitas.toLocaleString("es-CO"),
+      numero: visitas,
       decimales: 0,
-      etiqueta: "Fichas de negocio vistas",
-      contexto: `Últimos ${DIAS} días · conteo anónimo, sin cookies.`,
-    },
-    {
-      valor: interacciones.contactos.toLocaleString("es-CO"),
-      numero: interacciones.contactos,
-      decimales: 0,
-      etiqueta: "Contactos iniciados",
-      contexto: `Últimos ${DIAS} días · WhatsApp, correo o red social tocados desde una ficha.`,
+      etiqueta: "Visitas al sitio",
+      contexto: `Páginas abiertas en los últimos ${DIAS} días · conteo anónimo, sin cookies.`,
     },
   ];
 
@@ -55,7 +50,7 @@ export async function MetricasSection() {
         </h2>
       </ScrollReveal>
 
-      <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-3">
+      <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2">
         {kpis.map((kpi, indice) => (
           <ScrollReveal
             key={kpi.etiqueta}

@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader";
+import { ContadorVisitas } from "@/components/ContadorVisitas";
 
 /**
  * Layout del sitio público: home, Empleo, Inventario predictivo, Aliados y
@@ -9,6 +10,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <ContadorVisitas />
       <SiteHeader />
       {children}
     </>
