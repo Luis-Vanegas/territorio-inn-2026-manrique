@@ -15,7 +15,7 @@
     "db:estado": "node scripts/migrar.mjs --estado",
     "db:admin": "node scripts/crear-admin.mjs",
     "geo:extraer": "node scripts/extraer-manrique.mjs",
-    "verificar": "node scripts/verificar-geo.mjs && node scripts/verificar-constraints.mjs && node scripts/verificar-campos-personalizados.mjs"
+    "verificar": "node scripts/verificar-geo.mjs && node scripts/verificar-constraints.mjs && node scripts/verificar-campos-personalizados.mjs && node --experimental-strip-types scripts/verificar-entorno.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

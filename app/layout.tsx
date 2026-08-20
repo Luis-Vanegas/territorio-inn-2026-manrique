@@ -3,6 +3,8 @@ import { Fraunces, JetBrains_Mono } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { IndicadorEntorno } from "@/components/IndicadorEntorno";
+import { entornoDesde } from "@/lib/entorno";
 import "@/styles/globals.css";
 
 // Fraunces variable con optical sizing activo: el mismo archivo se ajusta de titular (140px) a texto de apoyo.
@@ -45,6 +47,11 @@ export default function RootLayout({
     >
       <body>
         {children}
+
+        {/* Va en el layout raíz y no en (site): el panel de moderación es
+            justamente donde confundir preproducción con producción hace daño.
+            En producción no se renderiza — devuelve null. */}
+        <IndicadorEntorno entorno={entornoDesde(process.env.VERCEL_ENV)} />
 
         {/* Analítica sin cookies ni identificadores persistentes: cuenta visitas
             y páginas, no personas. Por eso no requiere banner de consentimiento
