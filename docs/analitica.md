@@ -29,6 +29,49 @@ select date_trunc('day', creado_en) as dia, count(*)
 from portafolios group by 1 order by 1 desc;
 ```
 
+## Visitas al sitio (dato propio)
+
+Vercel Analytics no se puede leer desde el servidor sin la API del plan Pro, y
+el home muestra "Visitas al sitio" como número público: un dato de la vitrina
+no puede depender de un plan de hosting. Por eso hay un contador propio.
+
+Tabla `visitas_sitio`, una fila por día:
+
+| Columna | Qué guarda |
+|---|---|
+| `dia` | la fecha, y nada más |
+| `conteo` | cuántas páginas se abrieron ese día |
+
+Se dispara desde `components/ContadorVisitas.tsx`, montado en el layout de
+`(site)` — así que **no cuenta `/admin`**. El disparo es del lado del cliente y
+no en el render del servidor a propósito: los bots que no ejecutan JavaScript
+quedan afuera y un prefetch de Next no infla el número.
+
+**Cuenta páginas abiertas, no personas.** No hay cookie ni identificador que
+persista entre visitas, así que dos cargas de la misma persona son dos. Esa
+imprecisión es el precio de no poner un banner de consentimiento encima de una
+vitrina de barrio, y por eso el número se rotula como lo que es. Para visitantes
+únicos está Vercel Analytics.
+
+Mismo modelo de privacidad que las interacciones: el `insert` es un upsert que
+suma 1 a un contador. No existe tabla de eventos, no se guarda IP, ruta, sesión
+ni user agent. Es un agregado, no un dato personal bajo Ley 1581.
+
+## Qué se muestra en público y qué no
+
+El home muestra **dos** números: negocios registrados y visitas al sitio. Los
+contactos iniciados (WhatsApp, correo o red social tocados desde una ficha)
+salieron de la portada a propósito, por dos razones:
+
+1. **Es una métrica de diagnóstico, no de vitrina.** Un "0 contactos" en la
+   portada le está diciendo al visitante que en el sitio nadie contacta a nadie.
+2. **Es información comercial de los negocios.** Cuántos contactos genera el
+   ecosistema es dato de gestión interna.
+
+Todo lo demás —vistas por ficha, contactos, ranking, tasa de mirar→contactar,
+negocios sin una sola visita— sigue completo en `/admin/estadisticas`, que está
+detrás de sesión y excluido de buscadores.
+
 ## Interacciones con cada aliado (datos propios)
 
 Vercel Analytics mide el sitio. Esto mide **cada negocio**, que es otra
