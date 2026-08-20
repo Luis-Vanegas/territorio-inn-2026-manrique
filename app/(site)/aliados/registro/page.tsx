@@ -10,7 +10,7 @@ import { FormularioRegistro } from './_components/FormularioRegistro';
 const modulo = enfoque.modulos.find((m) => m.slug === 'aliados')!;
 
 export const metadata: Metadata = {
-  title: 'Sumarme como aliado · Territorio INN 2026',
+  title: 'Sumarme como aliado · Constelaciones',
   description:
     'Suma tu negocio de la Comuna 3 — Manrique al mapa de Aliados del territorio.',
 };

@@ -1,6 +1,6 @@
-# Territorio INN 2026 — Manrique
+# Constelaciones — Manrique
 
-Landing pública de la propuesta **Territorio INN 2026** para la Comuna 3 de Medellín (Manrique), presentada en el marco de la convocatoria de **Presupuesto Participativo Comuna 3 + Instituto Tecnológico Metropolitano (ITM)**.
+Landing pública de la propuesta **Constelaciones** para la Comuna 3 de Medellín (Manrique), presentada en el marco de la convocatoria de **Presupuesto Participativo Comuna 3 + Instituto Tecnológico Metropolitano (ITM)**.
 
 Reto escogido: **#2 — Empleo y Desarrollo Económico**.
 

@@ -14,7 +14,7 @@ import { FiltroCategorias } from './_components/FiltroCategorias';
 const modulo = enfoque.modulos.find((m) => m.slug === 'aliados')!;
 
 export const metadata: Metadata = {
-  title: `${modulo.nombre} · Territorio INN 2026`,
+  title: `${modulo.nombre} · Constelaciones`,
   description:
     'Aliados: el mapa de negocios y oficios de la Comuna 3 — Manrique, Medellín. Registro gratuito con revisión previa.',
 };
@@ -143,7 +143,7 @@ export default async function AliadosPage({
         href="/#enfoque"
         className="mt-24 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
       >
-        ← Volver a Territorio INN 2026
+        ← Volver a Constelaciones
       </Link>
     </main>
   );

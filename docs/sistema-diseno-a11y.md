@@ -1,4 +1,4 @@
-# Sistema de diseño y accesibilidad · Territorio INN 2026 (Manrique, Comuna 3)
+# Sistema de diseño y accesibilidad · Constelaciones (Manrique, Comuna 3)
 
 Este documento adapta el sistema de accesibilidad, movimiento y componentes a lo que **ya existe** en este repo: paleta editorial de 3 colores (`tailwind.config.ts`), breakpoints custom (`sm 640 / lg 1024 / xl 1440`, sin `md`), Fraunces + Geist Sans + JetBrains Mono, mapa en Leaflet, y componentes reales (`ModalRegistroExitoso`, `ScrollReveal`, `FiltroCategorias`, `FormularioRegistro`). No es un doc genérico: cada número de contraste está calculado sobre los colores exactos de `[tailwind.config.ts](tailwind.config.ts)`, y cada regla de movimiento se compara contra el código que ya corre en `[components/](components/)`.
 

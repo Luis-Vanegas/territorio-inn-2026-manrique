@@ -25,8 +25,8 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-tinta/10 bg-hueso/90 backdrop-blur">
       <div className="margen-editorial flex h-16 items-center justify-between gap-4 sm:h-[4.5rem]">
         <Link href="/" className="flex flex-col leading-none">
-          <span className="font-display text-lg font-medium text-tinta">
-            Territorio INN
+          <span className="font-display text-lg font-medium tracking-wide text-tinta">
+            CONSTELACIONES
           </span>
           <span className="font-mono text-[10px] tracking-[0.15em] text-tinta/45">
             COMUNA 3 · MANRIQUE

@@ -20,7 +20,7 @@ export default async function LoginPage() {
   return (
     <main className="margen-editorial flex min-h-screen flex-col justify-center py-24">
       <div className="w-full max-w-sm">
-        <span className="font-mono text-xs text-tinta/50">Territorio INN 2026</span>
+        <span className="font-mono text-xs text-tinta/50">Constelaciones</span>
 
         <h1 className="mt-3 font-display text-4xl font-medium leading-tight text-tinta">
           Moderación

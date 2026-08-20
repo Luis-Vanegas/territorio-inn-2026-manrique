@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Moderación · Territorio INN 2026',
+  title: 'Moderación · Constelaciones',
   // El panel no se indexa ni aparece en buscadores.
   robots: { index: false, follow: false },
 };

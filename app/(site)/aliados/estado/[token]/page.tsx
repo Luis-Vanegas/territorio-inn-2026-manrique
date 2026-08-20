@@ -8,7 +8,7 @@ import { EstadoAliado } from './_components/EstadoAliado';
 // seguirse desde un buscador — es un link privado, igual de sensible que un
 // magic link de login.
 export const metadata: Metadata = {
-  title: 'Tu registro · Territorio INN 2026',
+  title: 'Tu registro · Constelaciones',
   robots: { index: false, follow: false },
 };
 

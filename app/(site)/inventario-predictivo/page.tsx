@@ -9,8 +9,8 @@ import { enfoque } from "@/lib/content";
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
 
 export const metadata: Metadata = INVENTARIO_ACTIVO
-  ? { title: "Inventario predictivo · Territorio INN 2026" }
-  : { title: "Territorio INN 2026", robots: { index: false, follow: false } };
+  ? { title: "Inventario predictivo · Constelaciones" }
+  : { title: "Constelaciones", robots: { index: false, follow: false } };
 
 export default function InventarioPredictivoPage() {
   if (!INVENTARIO_ACTIVO) notFound();

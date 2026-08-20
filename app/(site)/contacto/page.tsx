@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { FormularioContacto } from './_components/FormularioContacto';
 
 export const metadata: Metadata = {
-  title: 'Contacto · Territorio INN 2026',
-  description: 'Escribile al equipo de Territorio INN 2026 — Comuna 3, Manrique.',
+  title: 'Contacto · Constelaciones',
+  description: 'Escribile al equipo de Constelaciones — Comuna 3, Manrique.',
 };
 
 export default function ContactoPage() {

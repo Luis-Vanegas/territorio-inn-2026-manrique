@@ -27,7 +27,7 @@ export function ModuloProximamente({ modulo }: ModuloProximamenteProps) {
         href="/#enfoque"
         className="mt-16 inline-block w-fit font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
       >
-        ← Volver a Territorio INN 2026
+        ← Volver a Constelaciones
       </Link>
     </main>
   );
