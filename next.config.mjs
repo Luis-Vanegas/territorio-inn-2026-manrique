@@ -62,7 +62,22 @@ const nextConfig = {
         hostname: '**.public.blob.vercel-storage.com',
         pathname: '/portafolios/**',
       },
+      {
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+        pathname: '/servicios/**',
+      },
     ],
+    // Solo AVIF y WebP, y en pocos anchos: cada combinación de ancho×formato
+    // es una transformación facturable en Vercel y una entrada más de cache.
+    // Los anchos declarados cubren los `sizes` que el sitio usa de verdad
+    // (208px en tarjeta, 100vw en móvil) — pedir la escalera completa por
+    // defecto genera variantes que nadie llega a solicitar.
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 828, 1080, 1200],
+    imageSizes: [128, 208, 384],
+    // Las fotos son inmutables por id: si cambia, cambia el id del registro.
+    minimumCacheTTL: 60 * 60 * 24 * 365,
   },
   async headers() {
     return [{ source: '/:path*', headers: cabecerasSeguridad }];
