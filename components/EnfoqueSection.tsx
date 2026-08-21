@@ -10,14 +10,14 @@ import { ScrollReveal } from "./ScrollReveal";
 
 export function EnfoqueSection() {
   return (
-    <section id="enfoque" className="margen-editorial py-24 sm:py-32">
+    <section id="enfoque" className="seccion">
       <ScrollReveal>
         <h2 className="font-display text-6xl font-medium leading-[0.95] text-tinta sm:text-7xl">
           {enfoque.titulo}
         </h2>
       </ScrollReveal>
 
-      <div className="mt-16 divide-y divide-tinta/15 border-t border-tinta/15">
+      <div className="mt-10 divide-y divide-tinta/15 border-t border-tinta/15">
         {enfoque.modulos.map((modulo, indice) => (
           <ScrollReveal key={modulo.numero} delay={indice * 0.1}>
             <Link

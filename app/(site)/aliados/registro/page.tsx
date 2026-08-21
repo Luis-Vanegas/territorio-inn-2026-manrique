@@ -26,7 +26,7 @@ export default async function RegistroPage() {
   ]);
 
   return (
-    <main className="margen-editorial py-24 sm:py-32">
+    <main className="seccion">
       <header className="max-w-3xl">
         <span className="font-mono text-xs text-tinta/50">{modulo.numero} · Aliados</span>
 

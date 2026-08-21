@@ -47,7 +47,7 @@ export default async function AliadosPage({
   const nombreCategoria = categorias.find((c) => c.id === categoriaActiva)?.nombre;
 
   return (
-    <main className="margen-editorial py-16 sm:py-24">
+    <main className="seccion">
       <header className="max-w-3xl">
         <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota">
           <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />

@@ -38,7 +38,7 @@ export default async function EstadoAliadoPage({
   if (!portafolio) notFound();
 
   return (
-    <main className="margen-editorial py-24 sm:py-32">
+    <main className="seccion">
       <EstadoAliado
         portafolio={portafolio}
         token={token}

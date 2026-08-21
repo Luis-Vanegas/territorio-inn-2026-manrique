@@ -23,7 +23,7 @@ export async function GaleriaAliados() {
   if (conFoto.length === 0) return null;
 
   return (
-    <section className="margen-editorial py-20 sm:py-28" aria-label="Galería de negocios aliados">
+    <section className="seccion" aria-label="Galería de negocios aliados">
       <ScrollReveal>
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <h2 className="font-display text-4xl font-medium leading-[0.95] text-tinta sm:text-5xl">
@@ -38,7 +38,7 @@ export async function GaleriaAliados() {
         </div>
       </ScrollReveal>
 
-      <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {conFoto.map((portafolio, indice) => (
           <ScrollReveal key={portafolio.id} delay={Math.min(indice, 4) * 0.06}>
             <Link
@@ -49,7 +49,7 @@ export async function GaleriaAliados() {
                 src={portafolio.foto_url!}
                 alt={`Fotografía de ${portafolio.nombre}`}
                 fill
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 17vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />
               <span className="absolute inset-x-0 bottom-0 bg-tinta/70 px-2.5 py-2 font-mono text-[11px] text-hueso opacity-0 transition-opacity group-hover:opacity-100">

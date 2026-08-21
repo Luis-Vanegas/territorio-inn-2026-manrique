@@ -7,6 +7,12 @@
   --color-hueso: #f7f5f0;
   --color-tinta: #1a1a1a;
   --color-terracota: #c55a3c;
+
+  /* Ritmo del sitio en un solo lugar. Antes cada seccion repetia su propio
+     `py-24 sm:py-32` y los valores se fueron desincronizando entre modulos:
+     tocar el aire vertical de la home significaba editar ocho archivos. */
+  --margen-editorial: clamp(1.5rem, 5vw, 6rem);
+  --ritmo-seccion: clamp(3rem, 4.5vw, 5rem);
 }
 
 * {
@@ -26,8 +32,13 @@ body {
 
 /* Margen editorial compartido: los titulares "rompen" contra este límite, no contra el viewport. */
 .margen-editorial {
-  padding-left: clamp(1.5rem, 5vw, 6rem);
-  padding-right: clamp(1.5rem, 5vw, 6rem);
+  padding-inline: var(--margen-editorial);
+}
+
+/* Toda seccion de pagina: margen editorial + ritmo vertical unificado. */
+.seccion {
+  padding-inline: var(--margen-editorial);
+  padding-block: var(--ritmo-seccion);
 }
 
 /* ── Leaflet ──────────────────────────────────────────────────

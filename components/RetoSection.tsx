@@ -6,7 +6,7 @@ import { ScrollReveal } from "./ScrollReveal";
 
 export function RetoSection() {
   return (
-    <section className="margen-editorial py-24 sm:py-32">
+    <section className="seccion">
       <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:gap-x-8">
         <ScrollReveal className="lg:col-span-4">
           <h2 className="font-display text-6xl font-medium leading-[0.95] text-tinta sm:text-7xl">
@@ -23,7 +23,7 @@ export function RetoSection() {
             ))}
           </ScrollReveal>
 
-          <ScrollReveal delay={0.2} className="mt-14 border-l-2 border-terracota pl-6">
+          <ScrollReveal delay={0.2} className="mt-10 border-l-2 border-terracota pl-6">
             <p className="font-display text-3xl italic leading-snug text-terracota sm:text-4xl">
               {reto.cita}
             </p>

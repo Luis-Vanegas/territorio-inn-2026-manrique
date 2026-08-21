@@ -11,57 +11,62 @@ import { ScrollReveal } from "./ScrollReveal";
 
 export function EquipoSection() {
   return (
-    <section className="margen-editorial py-24 sm:py-32">
-      <ScrollReveal>
-        <h2 className="font-display text-6xl font-medium leading-[0.95] text-tinta sm:text-7xl">
-          El equipo
-        </h2>
-      </ScrollReveal>
+    <section className="seccion">
+      <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:gap-x-10">
+        <ScrollReveal className="lg:col-span-3">
+          <h2 className="font-display text-6xl font-medium leading-[0.95] text-tinta sm:text-7xl">
+            El equipo
+          </h2>
+        </ScrollReveal>
 
-      <div className="mt-16 grid grid-cols-1 gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
-        {equipo.map((miembro, indice) => (
-          <ScrollReveal
-            key={`${miembro.nombre}-${indice}`}
-            delay={indice * 0.1}
-            className="border-t-2 border-terracota pt-6"
-          >
-            <span className="font-mono text-xs text-tinta/50">
-              {String(indice + 1).padStart(2, "0")}
-            </span>
+        {/* Las fichas arrancan en la columna 4: el título deja de comerse una
+            fila entera propia y el aire horizontal de las pantallas anchas se
+            usa en vez de quedar vacío al costado del "El equipo". */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:col-span-9 lg:grid-cols-3">
+          {equipo.map((miembro, indice) => (
+            <ScrollReveal
+              key={`${miembro.nombre}-${indice}`}
+              delay={indice * 0.1}
+              className="border-t-2 border-terracota pt-6"
+            >
+              <span className="font-mono text-xs text-tinta/50">
+                {String(indice + 1).padStart(2, "0")}
+              </span>
 
-            {miembro.foto ? (
-              <div className="group relative mt-4 aspect-[4/5] w-full overflow-hidden bg-tinta/5">
-                <Image
-                  src={miembro.foto}
-                  alt={miembro.nombre}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                />
-              </div>
-            ) : (
-              // Mismo formato y tamaño que la foto real: así una ficha sin
-              // foto todavía no rompe la alineación de la grilla con las que
-              // ya la tienen cargada.
-              <div
-                aria-hidden
-                className="mt-4 flex aspect-[4/5] w-full items-center justify-center bg-terracota font-mono text-6xl text-hueso"
-              >
-                {miembro.iniciales}
-              </div>
-            )}
+              {miembro.foto ? (
+                <div className="group relative mt-4 aspect-[4/5] w-full overflow-hidden bg-tinta/5">
+                  <Image
+                    src={miembro.foto}
+                    alt={miembro.nombre}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                  />
+                </div>
+              ) : (
+                // Mismo formato y tamaño que la foto real: así una ficha sin
+                // foto todavía no rompe la alineación de la grilla con las que
+                // ya la tienen cargada.
+                <div
+                  aria-hidden
+                  className="mt-4 flex aspect-[4/5] w-full items-center justify-center bg-terracota font-mono text-6xl text-hueso"
+                >
+                  {miembro.iniciales}
+                </div>
+              )}
 
-            <p className="mt-5 font-display text-2xl font-medium text-tinta">
-              {miembro.nombre}
-            </p>
-            <p className="mt-1 font-sans text-sm text-tinta/70">
-              {miembro.programaInstitucion}
-            </p>
-            {miembro.rol && (
-              <p className="mt-1 font-mono text-xs text-terracota">{miembro.rol}</p>
-            )}
-          </ScrollReveal>
-        ))}
+              <p className="mt-5 font-display text-2xl font-medium text-tinta">
+                {miembro.nombre}
+              </p>
+              <p className="mt-1 font-sans text-sm text-tinta/70">
+                {miembro.programaInstitucion}
+              </p>
+              {miembro.rol && (
+                <p className="mt-1 font-mono text-xs text-terracota">{miembro.rol}</p>
+              )}
+            </ScrollReveal>
+          ))}
+        </div>
       </div>
     </section>
   );

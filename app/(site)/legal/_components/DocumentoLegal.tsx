@@ -29,7 +29,7 @@ export function DocumentoLegal({
   children: React.ReactNode;
 }) {
   return (
-    <main className="margen-editorial py-24">
+    <main className="seccion">
       <article className="max-w-2xl">
         <span className="font-mono text-xs text-tinta/50">
           {version} · actualizado {actualizado}

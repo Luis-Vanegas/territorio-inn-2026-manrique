@@ -26,7 +26,7 @@ export default async function RegistroServicioPage() {
   const categorias = await listarCategorias();
 
   return (
-    <main className="margen-editorial py-24 sm:py-32">
+    <main className="seccion">
       <header className="max-w-3xl">
         <span className="font-mono text-xs text-tinta/50">Servicios</span>
 

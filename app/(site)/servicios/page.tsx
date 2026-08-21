@@ -27,7 +27,7 @@ export default async function ServiciosPage() {
   const servicios = await listarServiciosAprobados();
 
   return (
-    <main className="margen-editorial py-24 sm:py-32">
+    <main className="seccion">
       <header className="max-w-3xl">
         <span className="font-mono text-xs text-tinta/50">Servicios</span>
 
