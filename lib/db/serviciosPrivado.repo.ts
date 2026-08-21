@@ -28,6 +28,11 @@ import { sql } from './neon';
 
 export type CaracterizacionServicio = {
   servicio_id: string;
+  // Nombre completo, reservado — mismo criterio que la foto (ver migración
+  // 024). Lo público es solo primer nombre + primer apellido, calculado en
+  // lib/validation/servicio.schema.ts::nombrePublico().
+  nombres: string;
+  apellidos: string;
   correo: string | null;
   ingreso_principal: boolean | null;
   horas_semana: number | null;
@@ -45,11 +50,12 @@ export async function guardarCaracterizacion(
 ): Promise<void> {
   await sql`
     insert into servicios_privado (
-      servicio_id, correo, ingreso_principal, horas_semana,
+      servicio_id, nombres, apellidos, correo, ingreso_principal, horas_semana,
       como_consigue_clientes, mayor_dificultad, herramientas_propias,
       formacion, tiene_arl, necesita, sale_de_comuna, ip_registro
     ) values (
-      ${datos.servicio_id}, ${datos.correo}, ${datos.ingreso_principal}, ${datos.horas_semana},
+      ${datos.servicio_id}, ${datos.nombres}, ${datos.apellidos},
+      ${datos.correo}, ${datos.ingreso_principal}, ${datos.horas_semana},
       ${datos.como_consigue_clientes}, ${datos.mayor_dificultad}, ${datos.herramientas_propias},
       ${datos.formacion}, ${datos.tiene_arl}, ${datos.necesita}, ${datos.sale_de_comuna},
       ${datos.ip_registro}
@@ -75,25 +81,37 @@ export async function adjuntarFoto(
   `;
 }
 
+export type DatoReservado = {
+  foto_url: string | null;
+  nombres: string;
+  apellidos: string;
+};
+
 /**
- * Fotos de un lote de servicios, para que el panel de moderación pueda
- * mostrarlas. Devuelve un Map porque la pregunta que hace el llamador es
- * "¿hay foto para este id, y cuál es?" — no una lista de filas.
+ * Foto y nombre completo de un lote de servicios, para que el panel de
+ * moderación pueda mostrarlos. Las dos cosas viajan juntas porque sirven al
+ * mismo propósito — identificar a la persona si hace falta — y porque es la
+ * única pantalla del sitio donde un humano ve cualquiera de las dos.
+ *
+ * Devuelve un Map porque la pregunta que hace el llamador es "¿qué hay para
+ * este id?" — no una lista de filas que hay que volver a indexar.
  *
  * Vive acá y no en `servicios.repo.ts` a propósito: el repositorio público
  * nunca toca `servicios_privado`, ni siquiera para el panel de admin. El
  * panel arma la relación en memoria con el resultado de las dos consultas.
  */
-export async function fotosPorId(servicioIds: string[]): Promise<Map<string, string>> {
+export async function datosReservadosPorId(
+  servicioIds: string[],
+): Promise<Map<string, DatoReservado>> {
   if (servicioIds.length === 0) return new Map();
 
   const rows = (await sql`
-    select servicio_id, foto_url
+    select servicio_id, foto_url, nombres, apellidos
     from servicios_privado
-    where servicio_id = any(${servicioIds}) and foto_url is not null
-  `) as { servicio_id: string; foto_url: string }[];
+    where servicio_id = any(${servicioIds})
+  `) as (DatoReservado & { servicio_id: string })[];
 
-  return new Map(rows.map((r) => [r.servicio_id, r.foto_url]));
+  return new Map(rows.map((r) => [r.servicio_id, r]));
 }
 
 /**

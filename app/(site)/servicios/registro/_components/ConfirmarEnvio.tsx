@@ -30,6 +30,11 @@ import { useFormStatus } from 'react-dom';
  * "control no enfocable"— así que `required` no bloquearía nada. Sin esto, la
  * persona enviaría sin autorizar, Zod lo rechazaría en el servidor y el error
  * aparecería en un paso donde la casilla ni siquiera está a la vista.
+ *
+ * No repite acá el detalle de qué se publica y qué no: eso ya está en
+ * /legal/servicios, completo, y mantener dos copias del mismo texto en dos
+ * lugares es la forma más segura de que se desactualicen entre sí. El diálogo
+ * enlaza a esa página en vez de resumirla.
  */
 export function ConfirmarEnvio() {
   const dialogo = useRef<HTMLDialogElement>(null);
@@ -63,48 +68,17 @@ export function ConfirmarEnvio() {
           </h2>
 
           <p className="mt-4 font-sans text-sm leading-relaxed text-tinta/75">
-            Antes de enviar, leé qué pasa con lo que nos diste:
+            Antes de publicarte, asegurate de haber leído qué se hace con tus
+            datos:{' '}
+            <Link
+              href="/legal/servicios"
+              target="_blank"
+              className="text-terracota underline decoration-terracota underline-offset-2"
+            >
+              términos y tratamiento de datos del módulo Servicios
+            </Link>
+            .
           </p>
-
-          <ul className="mt-4 flex list-disc flex-col gap-2 pl-4 font-sans text-sm leading-relaxed text-tinta/80">
-            <li>
-              <strong className="font-medium text-tinta">
-                Tu nombre, tu oficio, tu experiencia, los barrios donde atendés
-                y tu teléfono quedan públicos
-              </strong>{' '}
-              en internet, para que la gente pueda encontrarte y contactarte.
-            </li>
-            <li>
-              Tu foto <strong className="font-medium text-tinta">nunca se publica</strong>.
-              La guardamos en privado únicamente para poder identificarte si
-              llega a haber un problema — es lo que respalda el compromiso que
-              estás por aceptar.
-            </li>
-            <li>
-              El resto de tus respuestas —tu correo y todo lo que contestaste en
-              el paso 4— tampoco se publica y se usa{' '}
-              <strong className="font-medium text-tinta">únicamente</strong> para
-              la investigación de este proyecto.
-            </li>
-            <li>
-              Tus datos personales{' '}
-              <strong className="font-medium text-tinta">
-                no se usan para ninguna otra finalidad, no se comparten con
-                terceros y no se venden
-              </strong>
-              . No salen de este proyecto.
-            </li>
-            <li>
-              Nunca te pedimos tu documento ni tu dirección, y no los guardamos.
-            </li>
-            <li>
-              Podés{' '}
-              <strong className="font-medium text-tinta">
-                corregir o borrar todo cuando quieras
-              </strong>
-              , con el enlace privado que te damos apenas envíes.
-            </li>
-          </ul>
 
           {/* El checkbox va acá adentro, en el mismo gesto que la confirmación:
               es lo que la base exige para poder guardar la caracterización. */}
@@ -117,16 +91,8 @@ export function ConfirmarEnvio() {
               className="mt-1 accent-terracota"
             />
             <span>
-              Estoy seguro. Autorizo que mis datos se usen para la investigación
-              de este proyecto, con los límites que acabo de leer y los{' '}
-              <Link
-                href="/legal/servicios"
-                target="_blank"
-                className="underline decoration-terracota underline-offset-2"
-              >
-                términos completos
-              </Link>
-              .
+              Leí los términos y autorizo que mis datos se usen para la
+              investigación de este proyecto, con los límites explicados ahí.
             </span>
           </label>
 

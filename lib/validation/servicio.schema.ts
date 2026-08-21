@@ -43,13 +43,23 @@ const opcional = <T extends z.ZodTypeAny>(schema: T) =>
 
 export const servicioSchema = z
   .object({
-    // ── Público ──────────────────────────────────────────────
-    nombre: z
+    // ── Identidad ────────────────────────────────────────────
+    // El nombre completo se pide siempre, pero es reservado — vive en
+    // servicios_privado, mismo criterio que la foto: sirve para identificar a
+    // la persona si hace falta, no para la ficha pública. Lo que se publica es
+    // `nombrePublico()`, calculado más abajo.
+    nombres: z
       .string()
       .trim()
-      .min(2, 'Escribí tu nombre')
-      .max(80, 'Máximo 80 caracteres'),
+      .min(2, 'Escribí tus nombres')
+      .max(60, 'Máximo 60 caracteres'),
+    apellidos: z
+      .string()
+      .trim()
+      .min(2, 'Escribí tus apellidos')
+      .max(60, 'Máximo 60 caracteres'),
 
+    // ── Público ──────────────────────────────────────────────
     categoria_id: z.string().trim().min(1, 'Elegí un oficio'),
     categoria_otra: opcional(z.string().trim().max(60)),
 
@@ -115,6 +125,19 @@ export const servicioSchema = z
 
 export type DatosServicio = z.infer<typeof servicioSchema>;
 
+/**
+ * Primer nombre + primer apellido, para la ficha pública. Se calcula acá y no
+ * en el cliente ni en SQL: es la única función que decide qué parte del
+ * nombre completo sale a la luz, y conviene que sea una sola.
+ *
+ * Toma la primera palabra tal cual la escribió la persona — no reordena ni
+ * capitaliza, para no inventar una versión de su nombre que ella no escribió.
+ */
+export function nombrePublico(nombres: string, apellidos: string): string {
+  const primero = (s: string) => s.trim().split(/\s+/)[0] ?? '';
+  return `${primero(nombres)} ${primero(apellidos)}`.trim();
+}
+
 /** FormData → objeto plano, antes de Zod. Mismo patrón que portafolio.schema. */
 export function desdeFormData(formData: FormData) {
   const texto = (k: string) => (formData.get(k) ?? '').toString();
@@ -132,7 +155,8 @@ export function desdeFormData(formData: FormData) {
   };
 
   return {
-    nombre: texto('nombre'),
+    nombres: texto('nombres'),
+    apellidos: texto('apellidos'),
     categoria_id: texto('categoria_id'),
     categoria_otra: texto('categoria_otra'),
     descripcion: texto('descripcion'),

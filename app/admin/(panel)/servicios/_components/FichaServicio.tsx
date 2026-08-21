@@ -4,6 +4,7 @@ import { useActionState, useState } from 'react';
 import Image from 'next/image';
 
 import type { ServicioPendiente } from '@/lib/db/servicios.repo';
+import type { DatoReservado } from '@/lib/db/serviciosPrivado.repo';
 import {
   moderarServicioAction,
   type EstadoModeracionServicio,
@@ -13,11 +14,11 @@ const INICIAL: EstadoModeracionServicio = { estado: 'inicial' };
 
 export function FichaServicio({
   servicio,
-  fotoUrl,
+  reservado,
 }: {
   servicio: ServicioPendiente;
-  /** Viene de `servicios_privado`, no de `servicio` — ver page.tsx. */
-  fotoUrl: string | null;
+  /** Foto y nombre completo, de `servicios_privado` — ver page.tsx. */
+  reservado: DatoReservado | null;
 }) {
   const [estadoMod, accionMod] = useActionState(moderarServicioAction, INICIAL);
   const [rechazando, setRechazando] = useState(false);
@@ -26,9 +27,9 @@ export function FichaServicio({
     <article className="border-t border-tinta/12 py-8">
       <div className="flex gap-5">
         <div>
-          {fotoUrl ? (
+          {reservado?.foto_url ? (
             <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-tinta/5">
-              <Image src={fotoUrl} alt="" fill sizes="96px" className="object-cover" />
+              <Image src={reservado.foto_url} alt="" fill sizes="96px" className="object-cover" />
             </div>
           ) : (
             <div className="flex h-24 w-24 shrink-0 items-center justify-center bg-tinta/5 font-mono text-xs text-tinta/40">
@@ -44,6 +45,16 @@ export function FichaServicio({
 
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-2xl font-medium text-tinta">{servicio.nombre}</h3>
+
+          {/* Nombre completo: solo acá, nunca en la vitrina pública. Es lo
+              que permite identificar a la persona si hay un reporte. */}
+          {reservado && (
+            <p className="mt-0.5 font-mono text-xs text-tinta/45">
+              {reservado.nombres} {reservado.apellidos}{' '}
+              <span className="text-tinta/30">· nombre completo, privado</span>
+            </p>
+          )}
+
           <p className="mt-1 font-mono text-xs text-terracota">
             {servicio.categoria_id === 'otros' && servicio.categoria_otra
               ? servicio.categoria_otra

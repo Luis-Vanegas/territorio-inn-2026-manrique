@@ -47,28 +47,26 @@ export default async function RegistroServicioPage() {
             Qué queda público
           </p>
           <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
-            Tu nombre, tu oficio, qué hacés, tus años de experiencia, los
-            barrios donde atendés y tu teléfono.
+            Tu primer nombre y tu primer apellido, tu oficio, qué hacés, tus
+            años de experiencia, los barrios donde atendés y tu teléfono.
           </p>
           <p className="mt-3 font-mono text-xs uppercase tracking-wider text-tinta/65">
             Qué no
           </p>
           <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
-            Tu dirección — <strong className="font-medium text-tinta">no te la pedimos</strong>.
-            Tampoco tu documento. Tu foto (si la subís), tu correo y las
-            respuestas del último paso son solo para el equipo del proyecto y
-            no se publican nunca. La foto no busca darte más visibilidad: sirve
-            para poder identificarte si llega a haber un problema.
+            Tu nombre completo y tu foto — te los pedimos siempre, pero no se
+            publican en ningún lado: sirven solo para poder identificarte si
+            llega a haber un problema. Tu dirección{' '}
+            <strong className="font-medium text-tinta">no te la pedimos</strong>.
+            Tampoco tu documento. El correo y las respuestas del último paso son
+            solo para el equipo del proyecto y no se publican nunca.
           </p>
         </div>
 
         <p className="mt-6 font-sans text-sm leading-relaxed text-tinta/60">
           Antes de publicarse, un moderador revisa cada registro.{' '}
-          <Link
-            href="/legal/politica-datos"
-            className="text-terracota underline underline-offset-2"
-          >
-            Cómo tratamos tus datos
+          <Link href="/legal/servicios" className="text-terracota underline underline-offset-2">
+            Términos y tratamiento de datos de este módulo
           </Link>
           .
         </p>

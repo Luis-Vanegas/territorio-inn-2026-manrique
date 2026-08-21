@@ -53,7 +53,7 @@ export default function TerminosServiciosPage() {
         Únicamente lo esencial para que alguien pueda encontrarte y contactarte:
       </p>
       <ul>
-        <li>Tu nombre.</li>
+        <li>Tu primer nombre y tu primer apellido — no tu nombre completo.</li>
         <li>Tu oficio y la descripción de lo que hacés.</li>
         <li>Tus años de experiencia.</li>
         <li>Los barrios donde atendés.</li>
@@ -67,8 +67,12 @@ export default function TerminosServiciosPage() {
       <h2>03 · Qué NO se publica nunca</h2>
       <ul>
         <li>
-          Tu fotografía, si decidís subirla. Nunca aparece en tu ficha ni en
-          ningún lugar visible del sitio.
+          Tu nombre completo. Te pedimos nombres y apellidos en el formulario,
+          pero en tu ficha pública solo aparece el primero de cada uno.
+        </li>
+        <li>
+          Tu fotografía. La pedimos siempre — es obligatoria — pero nunca
+          aparece en tu ficha ni en ningún lugar visible del sitio.
         </li>
         <li>
           Tu correo electrónico. Lo usamos solo para avisarte del estado de tu
@@ -87,11 +91,12 @@ export default function TerminosServiciosPage() {
         personas no tienen ARL», nunca «esta persona no tiene».
       </p>
       <p>
-        La foto tiene un propósito distinto al resto de tus datos: no busca
-        darte más visibilidad. La guardamos para poder identificarte si llega a
-        haber un problema con el servicio que prestaste, y como respaldo del
-        compromiso de conducta que aceptás en el punto 07. Solo el equipo del
-        proyecto puede verla, y únicamente para atender un reporte.
+        Tu nombre completo y tu foto tienen un propósito distinto al resto de
+        tus datos: no buscan darte más visibilidad. Los guardamos para poder
+        identificarte si llega a haber un problema con el servicio que
+        prestaste, y como respaldo del compromiso de conducta que aceptás en
+        el punto 07. Solo el equipo del proyecto puede verlos, y únicamente
+        para atender un reporte.
       </p>
 
       <h2>04 · Qué NO te pedimos</h2>
@@ -138,9 +143,9 @@ export default function TerminosServiciosPage() {
         contrata.
       </p>
       <p>
-        Tu foto, si la subiste, queda guardada en privado como respaldo de este
-        compromiso: no es una vitrina, es la forma en que el equipo puede saber
-        con quién está tratando si algo sale mal.
+        Tu nombre completo y tu foto quedan guardados en privado como respaldo
+        de este compromiso: no son una vitrina, son la forma en que el equipo
+        puede saber con quién está tratando si algo sale mal.
       </p>
       <p>
         Ese compromiso es lo que se muestra en tu ficha pública. No es una

@@ -71,7 +71,7 @@ camino.
 
 | Campo | Por qué es público |
 |---|---|
-| Nombre | Quien entra a una casa no puede ser anónimo |
+| Primer nombre + primer apellido | Alcanza para saber a quién se contacta, sin exponer la identidad completa |
 | Oficio | Reusa la taxonomía de `categorias` — la misma que los negocios |
 | Qué hace exactamente | "Reparo lavadoras y neveras, hago diagnóstico a domicilio" |
 | Años de experiencia | Señal de oficio |
@@ -81,20 +81,28 @@ camino.
 
 ### Privado — solo el equipo del proyecto
 
-**Foto de la persona**, si decide subirla · correo electrónico · cómo consigue
-clientes hoy · mayor dificultad para conseguir trabajo · si es su ingreso
-principal o complementario · horas disponibles por semana · si tiene
-herramientas propias · formación en el oficio (SENA / empírico / ninguna) · si
-tiene ARL o seguridad social · qué necesita para trabajar mejor · si puede
-salir de la comuna · IP de registro · consentimientos y versión aceptada.
+**Nombre completo (nombres y apellidos) y foto de la persona** · correo
+electrónico · cómo consigue clientes hoy · mayor dificultad para conseguir
+trabajo · si es su ingreso principal o complementario · horas disponibles por
+semana · si tiene herramientas propias · formación en el oficio (SENA /
+empírico / ninguna) · si tiene ARL o seguridad social · qué necesita para
+trabajar mejor · si puede salir de la comuna · IP de registro · consentimientos
+y versión aceptada.
 
-**La foto es un caso aparte, y vale la pena explicarlo.** No es un elemento de
-confianza pública como podría serlo en otro directorio — es lo opuesto: es el
-mecanismo para poder identificar a la persona si llega a haber un problema, y
-el respaldo del compromiso de conducta que acepta al registrarse. Por eso vive
-en `servicios_privado` desde la migración 023 (antes vivía en la tabla
-pública) y la única pantalla del sitio donde un humano la ve es
-`/admin/servicios`, durante la moderación.
+**El nombre completo y la foto son un caso aparte, y comparten la misma
+lógica.** No son elementos de confianza pública como podrían serlo en otro
+directorio — son lo opuesto: el mecanismo para poder identificar a la persona
+si llega a haber un problema, y el respaldo del compromiso de conducta que
+acepta al registrarse. Los dos son **obligatorios** —se piden siempre, no son
+opcionales— y los dos viven en `servicios_privado` (nombre desde la migración
+024, foto desde la 023), nunca en la tabla pública. La única pantalla del
+sitio donde un humano los ve es `/admin/servicios`, durante la moderación.
+
+Lo que sí se publica del nombre es una versión reducida, calculada por el
+servidor y no por la persona: `nombrePublico()` en
+`lib/validation/servicio.schema.ts` toma la primera palabra de "nombres" y la
+primera de "apellidos", tal cual las escribió — sin reordenar ni capitalizar,
+para no inventar una versión del nombre que la persona no escribió.
 
 ### Nunca se guarda — ni pública ni privadamente
 
@@ -135,13 +143,13 @@ los límites de uso, el compromiso de conducta y el derecho a borrarlo todo.
 El consentimiento se da en tres actos, y ninguno se puede saltar:
 
 1. **Casilla de términos** — declara haber leído `/legal/servicios`.
-2. **Casilla de tratamiento de datos** — declara entender que nombre, oficio y
-   teléfono quedan públicos en internet, y que la foto (si la sube) no.
-3. **Confirmación en `<dialog>`** — antes de enviar se abre un diálogo que
-   repite en concreto qué se publica, qué no —incluida la foto, explícita como
-   privada—, y los límites (no se usa para otra finalidad, no se comparte, no
-   se vende). El botón de enviar está deshabilitado hasta marcar la casilla de
-   autorización.
+2. **Casilla de tratamiento de datos** — declara entender que su primer nombre
+   y primer apellido, oficio y teléfono quedan públicos en internet, y que su
+   nombre completo y su foto no.
+3. **Confirmación en `<dialog>`** — antes de enviar se abre un diálogo corto
+   que enlaza a `/legal/servicios` en vez de repetir el detalle ahí adentro
+   (dos copias del mismo texto en dos lugares se desincronizan sin falta). El
+   botón de enviar está deshabilitado hasta marcar la casilla de autorización.
 
 El tercero existe porque publicar el nombre y el teléfono de una persona no
 puede pasar por inercia de tanto tocar «siguiente».
@@ -153,6 +161,41 @@ estado, no por atributo.
 
 En la base, `acepto_investigacion` es `not null` con `CHECK`: sin autorización
 no hay fila, y por lo tanto tampoco hay caracterización guardada.
+
+### El otro reset: React 19 borra el formulario al terminar la acción
+
+Aparte del bug del Stepper (ver más abajo), hay un segundo mecanismo, distinto
+y documentado por React: **al terminar cualquier acción de formulario —éxito
+o error— React resetea los campos no controlados**. Antes de arreglarlo, una
+persona que se olvidaba de elegir la foto (ahora obligatoria) perdía las
+cuatro pantallas enteras al reintentar.
+
+La solución, en `registrarServicio.ts` y `FormularioServicio.tsx`:
+
+1. La acción devuelve `valores` (lo tipeado, vía `desdeFormData`) en cada
+   respuesta de error — la foto queda afuera a propósito: un input de archivo
+   no se puede repoblar por API del navegador, así que esa siempre hay que
+   volver a elegirla.
+2. El formulario lleva un contador `intentoId` que sube en cada respuesta
+   nueva del servidor, y cada campo usa `key={`campo-${intentoId}`}` junto con
+   `defaultValue`/`defaultChecked={valoresPrevios.campo}`. La key fuerza a
+   React a **remontar** el nodo con el valor correcto — sin la key, `defaultValue`
+   solo se aplica al montar, y un campo que no cambia de identidad simplemente
+   ignora el valor nuevo.
+3. **Caso aparte: `categoria_id`.** Es el único campo controlado (`useState`,
+   necesario para mostrar "¿Cuál?" cuando elige "otros"). Un `<select>`
+   controlado no tiene un "valor por defecto" nativo, así que el reset de
+   React lo manda al primer `<option>` — y como el `onChange` nunca se
+   disparó, el estado de React en memoria sigue diciendo lo de antes, así que
+   React no nota el desfasaje y no lo corrige. Solución: se volvió **no
+   controlado también** (`defaultValue` + la misma `key={intentoId}`),
+   dejando `categoria` (el estado) solo para la lógica de mostrar/ocultar el
+   campo "otro".
+
+Verificado en el navegador, paso por paso: llenar los 4 pasos, enviar sin
+foto a propósito, confirmar que el error solo señala la foto y que los ocho
+campos restantes —incluido el `<select>` de oficio— siguen con lo que la
+persona escribió.
 
 ## 5 · Arquitectura de seguridad
 
@@ -169,12 +212,14 @@ La seguridad es una propiedad del **esquema**, no una promesa en un documento
    se hace en `lib/db/interacciones.repo.ts`.
 4. **Sin columnas de ubicación.** No hay `latitud`, `longitud` ni `direccion`
    que puedan filtrarse, porque no existen.
-5. **Foto reservada y sin metadatos.** Vive en `servicios_privado`, nunca en
-   la tabla pública (migración 023) — el repositorio público (`servicios.repo.ts`)
-   no la nombra en ningún lado, así que no hay consulta que pueda filtrarla por
-   error. `lib/blob/fotos.ts` además procesa con `sharp` sin `withMetadata()`,
-   lo que descarta el EXIF completo — incluidas las coordenadas GPS que agregan
-   las cámaras de celular.
+5. **Foto y nombre completo, reservados y obligatorios.** Los dos viven en
+   `servicios_privado`, nunca en la tabla pública (migraciones 023 y 024) — el
+   repositorio público (`servicios.repo.ts`) no los nombra en ningún lado, así
+   que no hay consulta que pueda filtrarlos por error. Son obligatorios y no
+   opcionales: sin ellos, `registrarServicio` rechaza el envío antes de
+   escribir nada. `lib/blob/fotos.ts` además procesa la foto con `sharp` sin
+   `withMetadata()`, lo que descarta el EXIF completo — incluidas las
+   coordenadas GPS que agregan las cámaras de celular.
 6. **Exportación CSV limitada.** El export de servicios nunca incluye la tabla
    privada, igual que el de aliados hoy excluye teléfonos y correos.
 7. **Teléfono tras un clic.** Se publica detrás de un botón "Mostrar número"
@@ -208,11 +253,19 @@ hace falta.
 Va en el layout raíz y no en `(site)`, porque el panel de moderación es
 precisamente donde confundir los dos entornos hace daño.
 
-## 7 · Decisiones pendientes
+## 7 · Decisiones ya tomadas
 
-- **¿El apellido completo es público, o nombre y primer apellido?**
-- **Qué preguntas de caracterización pide el equipo del reto** — la lista de
-  la sección 2 es una propuesta, no está validada con ellos.
+- **Nombre completo**: se pide siempre (nombres y apellidos, dos campos), vive
+  reservado en `servicios_privado`. Lo público es primer nombre + primer
+  apellido, calculado por el servidor.
+- **Foto**: obligatoria, no opcional. Reservada, con el mismo propósito que el
+  nombre completo — identificar a la persona si hace falta.
+- **Preguntas de caracterización** (sección 2, privado): siguen siendo una
+  propuesta sujeta a cambios del equipo del reto, pero se usan tal cual están
+  mientras tanto — no bloquean el lanzamiento.
+
+## 8 · Decisiones pendientes
+
 - Los otros dos documentos legales (`/legal/terminos` y
   `/legal/politica-datos`) siguen mostrando el aviso de «borrador técnico
   pendiente de revisión jurídica». El de Servicios no lo muestra. Si ese aviso

@@ -2,7 +2,7 @@ import { listarServiciosPendientes } from '@/lib/db/servicios.repo';
 import {
   resumenCaracterizacion,
   dificultadesFrecuentes,
-  fotosPorId,
+  datosReservadosPorId,
 } from '@/lib/db/serviciosPrivado.repo';
 import { FichaServicio } from './_components/FichaServicio';
 
@@ -15,12 +15,12 @@ export default async function AdminServiciosPage() {
     dificultadesFrecuentes(),
   ]);
 
-  // La foto es un dato reservado (ver lib/db/serviciosPrivado.repo.ts): el
-  // listado público de pendientes no la trae, así que se busca aparte y se
-  // relaciona acá por id. Es la única pantalla donde un humano la ve —
-  // durante la revisión, para poder identificar a la persona si más adelante
-  // hace falta.
-  const fotos = await fotosPorId(pendientes.map((s) => s.id));
+  // La foto y el nombre completo son datos reservados (ver
+  // lib/db/serviciosPrivado.repo.ts): el listado público de pendientes no los
+  // trae, así que se buscan aparte y se relacionan acá por id. Es la única
+  // pantalla donde un humano los ve — durante la revisión, para poder
+  // identificar a la persona si más adelante hace falta.
+  const reservados = await datosReservadosPorId(pendientes.map((s) => s.id));
 
   return (
     <main className="margen-editorial py-16">
@@ -46,7 +46,7 @@ export default async function AdminServiciosPage() {
             </p>
           ) : (
             pendientes.map((s) => (
-              <FichaServicio key={s.id} servicio={s} fotoUrl={fotos.get(s.id) ?? null} />
+              <FichaServicio key={s.id} servicio={s} reservado={reservados.get(s.id) ?? null} />
             ))
           )}
         </div>
