@@ -7,6 +7,7 @@
 // el 100% del caso de uso.
 
 import Link from "next/link";
+import Image from "next/image";
 import { enfoque } from "@/lib/content";
 
 // Se genera de la misma fuente que EnfoqueSection: una sola lista de módulos,
@@ -24,12 +25,22 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-tinta/10 bg-hueso/90 backdrop-blur">
       <div className="margen-editorial flex h-16 items-center justify-between gap-4 sm:h-[4.5rem]">
-        <Link href="/" className="flex flex-col leading-none">
-          <span className="font-display text-lg font-medium tracking-wide text-tinta">
-            CONSTELACIONES
-          </span>
-          <span className="font-mono text-[10px] tracking-[0.15em] text-tinta/45">
-            COMUNA 3 · MANRIQUE
+        <Link href="/" className="flex items-center gap-2.5">
+          <Image
+            src="/logos/isotipo_app.png"
+            alt=""
+            width={32}
+            height={32}
+            priority
+            className="h-8 w-8 shrink-0"
+          />
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-lg font-medium tracking-wide text-tinta">
+              CONSTELACIONES
+            </span>
+            <span className="font-mono text-[10px] tracking-[0.15em] text-tinta/45">
+              COMUNA 3 · MANRIQUE
+            </span>
           </span>
         </Link>
 

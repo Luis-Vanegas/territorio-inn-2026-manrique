@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   title: "Constelaciones · Manrique",
   description:
     "Propuesta para la Comuna 3 de Medellín — Presupuesto Participativo Comuna 3. Reto: Empleo y Desarrollo Económico.",
+  // Se referencia el archivo en public/logos/ en vez de duplicarlo como
+  // app/icon.png: un solo origen para el isotipo, acá y en el header.
+  icons: { icon: "/logos/isotipo_app.png" },
 };
 
 export default function RootLayout({
