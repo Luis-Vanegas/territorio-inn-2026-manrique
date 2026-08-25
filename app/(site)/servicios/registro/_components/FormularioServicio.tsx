@@ -209,7 +209,7 @@ export function FormularioServicio({
   const pasos: Paso[] = useMemo(
     () => [
       {
-        titulo: 'Qué sabés hacer',
+        titulo: 'Qué sabes hacer',
         ayuda: 'Esto es lo que va a leer quien necesita tu servicio.',
         contenido: (
           <div className="flex flex-col gap-8">
@@ -255,7 +255,7 @@ export function FormularioServicio({
                 onChange={(e) => setCategoria(e.target.value)}
                 className={claseInput}
               >
-                <option value="">Elegí uno…</option>
+                <option value="">Elige uno…</option>
                 {categorias.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nombre}
@@ -277,7 +277,7 @@ export function FormularioServicio({
             )}
 
             <Campo
-              etiqueta="¿Qué hacés exactamente?"
+              etiqueta="¿Qué haces exactamente?"
               ayuda="Mientras más concreto, más confianza genera. Ej: “Reparo lavadoras y neveras, hago diagnóstico a domicilio sin costo.”"
               errores={errores.descripcion}
             >
@@ -307,9 +307,9 @@ export function FormularioServicio({
         ),
       },
       {
-        titulo: 'Dónde atendés',
+        titulo: 'Dónde atiendes',
         ayuda:
-          'Elegí los barrios a los que podés ir. No te pedimos tu dirección: no la guardamos ni la publicamos.',
+          'Elige los barrios a los que puedes ir. No te pedimos tu dirección: no la guardamos ni la publicamos.',
         contenido: (
           <div>
             <div className="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
@@ -402,7 +402,7 @@ export function FormularioServicio({
               />
             </Campo>
 
-            <Campo etiqueta="¿Cómo conseguís clientes hoy?">
+            <Campo etiqueta="¿Cómo consigues clientes hoy?">
               <select
                 key={`como_consigue_clientes-${intentoId}`}
                 name="como_consigue_clientes"
@@ -437,30 +437,30 @@ export function FormularioServicio({
             <TriEstado
               key={`ingreso_principal-${intentoId}`}
               nombre="ingreso_principal"
-              etiqueta="¿De esto vivís principalmente?"
+              etiqueta="¿De esto vives principalmente?"
               valorPrevio={valoresPrevios.ingreso_principal}
             />
             <TriEstado
               key={`herramientas_propias-${intentoId}`}
               nombre="herramientas_propias"
-              etiqueta="¿Tenés herramientas propias?"
+              etiqueta="¿Tienes herramientas propias?"
               valorPrevio={valoresPrevios.herramientas_propias}
             />
             <TriEstado
               key={`tiene_arl-${intentoId}`}
               nombre="tiene_arl"
-              etiqueta="¿Tenés ARL o seguridad social?"
+              etiqueta="¿Tienes ARL o seguridad social?"
               valorPrevio={valoresPrevios.tiene_arl}
             />
             <TriEstado
               key={`sale_de_comuna-${intentoId}`}
               nombre="sale_de_comuna"
-              etiqueta="¿Podés salir de la Comuna 3?"
+              etiqueta="¿Puedes salir de la Comuna 3?"
               valorPrevio={valoresPrevios.sale_de_comuna}
             />
 
             <fieldset>
-              <legend className={claseEtiqueta}>¿Qué necesitás para trabajar mejor?</legend>
+              <legend className={claseEtiqueta}>¿Qué necesitas para trabajar mejor?</legend>
               <div className="mt-3 flex flex-wrap gap-x-6 gap-y-3">
                 {OPCIONES_NECESITA.map((o) => (
                   <label
