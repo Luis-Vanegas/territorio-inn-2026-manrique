@@ -18,7 +18,9 @@ ambos agentes repliquen un patrón que ya no existe.
 - Zod para validación de datos
 - Neon (Postgres serverless) como base de datos
 - Vercel Blob para almacenamiento de archivos (fotos)
-- Node >= 20.9.0
+- Node >= 20.9.0 — el paquete es ESM (`"type": "module"` en package.json).
+  No hay ningún `.js` en el repo: config y scripts son `.mjs`, el resto `.ts`/`.tsx`.
+  Si agregás un archivo `.js`, va a interpretarse como ESM, no como CommonJS.
 
 ## Idioma del código
 
