@@ -1,0 +1,103 @@
+# Tareas del proyecto
+## 🟢 Para Antigravity (rápidas, mecánicas, acotadas)
+
+### Unificar el registro a "tú" en todo el texto visible (eliminar voseo)
+
+El sitio mezcla dos registros: "tú" (ya mayoritario, 14 archivos) y voseo
+rioplatense/paisa ("podés", "tenés", "vos") colado en otros 17. Objetivo:
+que todo quede en "tú" — consistente y sin sonar argentino.
+
+**Tabla de conversión** (aplicar según el verbo de cada frase):
+- podés → puedes · tenés → tienes · querés → quieres · sos → eres
+- hacés → haces · sabés → sabes · necesitás → necesitas · arreglás → arreglas
+- atendés → atiendes · vendés → vendes · prestás → prestas · debés → debes
+- Contanos → Cuéntanos · Contame → Cuéntame · Contá → Cuenta
+- Elegí → Elige · registrá → registra · pedilas → pídelas · publicá → publica
+- Escribí → Escribe · Guardá → Guarda · Marcá → Marca · Completá → Completa
+- vos → tú (como pronombre)
+- "dejaste", "diste", "te equivocaste", "aceptaste" → **no tocar**, son idénticas en tú y vos
+
+⚠️ Nota de Claude Code: la primera pasada de este audit (grep por
+terminación "-és" acentuada) se comió las formas imperativas con pronombre
+pegado ("Guardá", "Marcá", "Escribí", "Debés") y algunas líneas sueltas. La
+lista de abajo ya está completa con una segunda pasada más ancha — si vas a
+seguir el checklist, es esta versión, no una copia vieja que hayas guardado
+en tu contexto.
+
+**No tocar** comentarios de código (`// ...`, `/* ... */`, JSDoc) — son para
+devs, no los lee ningún vecino. Solo texto que renderiza en el navegador:
+JSX, placeholders, mensajes de error de Zod, `confirm()`.
+
+Un checkbox por archivo, commit chico por archivo al terminar:
+
+- [x] `app/admin/login/page.tsx` (línea ~30): "Si no tenés credenciales, pedilas al equipo del proyecto." → "Si no tienes credenciales, pídelas al equipo del proyecto."
+- [x] `app/(site)/contacto/page.tsx` (línea ~18): "¿Tenés un caso puntual...?" → "¿Tienes un caso puntual...?"
+- [x] `app/(site)/contacto/_components/FormularioContacto.tsx`:
+  - línea ~88: `placeholder="300 123 4567 o vos@correo.com"` → `placeholder="300 123 4567 o nombre@correo.com"` (el "vos@" como ejemplo de email no tiene sentido en ningún registro, es un descuido)
+  - línea ~108: `placeholder="Contanos tu caso o petición."` → `placeholder="Cuéntanos tu caso o petición."`
+- [x] `app/(site)/aliados/_components/VitrinaAliados.tsx` (línea ~31): "No diste permiso de ubicación. Podés activarlo..." → "...Puedes activarlo..." (dejar "diste" como está)
+- [x] `app/(site)/legal/servicios/page.tsx` — líneas ~30, ~57, ~59, ~83-84, ~129, ~162, ~165, ~168, ~173: aplicar la tabla de conversión en cada una (podés→puedes, hacés→haces, tenés→tienes, necesitás→necesitas, atendés→atiendes, vos→tú)
+- [x] `app/(site)/aliados/estado/[token]/_components/EstadoAliado.tsx` — líneas ~195, ~258, ~365, ~427, ~428, ~532, ~634, ~650: "querés"→"quieres", "registrá"→"registra", "hacés"→"haces", "tenés"→"tienes", "Guardá"→"Guarda", "Escribí"→"Escribe", "Contá"→"Cuenta", "vendés"→"vendes", "prestás"→"prestas", "atendés"→"atiendes" (dejar "te equivocaste" como está)
+- [x] `app/(site)/servicios/registro/page.tsx` — líneas ~15, ~38, ~50, ~51: "prestás"→"prestas", "publicá"→"publica", "arreglás"→"arreglas", "hacés"→"haces", "atendés"→"atiendes"
+- [x] `app/(site)/legal/politica-datos/page.tsx` (línea ~84): "podés"→"puedes"
+- [x] `app/(site)/legal/terminos/page.tsx` (línea ~82): "Podés"→"Puedes"
+- [x] `app/(site)/aliados/registro/_components/SelectorUbicacionClient.tsx` — líneas ~91, ~111, ~113: "Marcá"→"Marca" (x2), "Podés"→"Puedes" (dejar "diste" como está)
+- [x] `app/(site)/servicios/registro/_components/FormularioServicio.tsx` — líneas ~212, ~280, ~310, ~312, ~446, ~452, ~458: "sabés"→"sabes", "hacés"→"haces", "atendés"→"atiendes", "Elegí"→"Elige", "podés"→"puedes", "Tenés"→"Tienes"
+- [x] `app/(site)/servicios/registro/_components/ConfirmarEnvio.tsx` (línea ~110): "Marcá"→"Marca"
+- [x] `app/(site)/aliados/page.tsx` (línea ~87): "tenés"→"tienes"
+- [x] `components/ModalRegistroExitoso.tsx` — líneas ~57, ~95, ~100: "Guardá"→"Guarda" (x2), "podés"→"puedes"
+- [x] `lib/validation/peticion.schema.ts` (línea ~19): mensaje de error "Contanos..."→"Cuéntanos..."
+- [x] `lib/validation/servicio.schema.ts` — líneas ~54, ~59, ~71, ~82, ~93, ~106, ~108, ~111, ~122: "Escribí"→"Escribe" (x3), "Contá"→"Cuenta", "hacés"→"haces", "Elegí"→"Elige", "atendés"→"atiendes", "Contanos"→"Cuéntanos", "Tenés"→"Tienes" (x3)
+- [x] `lib/validation/portafolio.schema.ts` — líneas ~102, ~114, ~118, ~149, ~152: "Escribí"→"Escribe", "Marcá"→"Marca" (x2), "Debés"→"Debes" (x2)
+- [x] `lib/actions/sesionAdmin.ts` (línea ~22): "Completá"→"Completa"
+- [x] `lib/actions/moderarPortafolio.ts` (línea ~45): "Escribí"→"Escribe"
+- [x] `lib/actions/moderarServicio.ts` (línea ~37): "Escribí"→"Escribe"
+
+Al terminar todos: correr `npm run lint` y `npm run typecheck` para confirmar
+que no se rompió nada (son solo strings, no debería haber impacto).
+
+## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
+
+Hecho el 2026-08-25 (todo en `main`, desplegado y verificado en vivo):
+
+- [x] Ritmo vertical de la home unificado en tokens CSS (`--margen-editorial`,
+      `--ritmo-seccion`, clase `.seccion`). Home: 6225px → 4394px.
+- [x] `app/error.tsx` y `app/not-found.tsx` — la home es `force-dynamic` y
+      consulta Neon 3 veces; sin boundary, un `fetch failed` la tumbaba con la
+      pantalla default de Next.
+- [x] SEO: `sitemap.ts`, `robots.ts`, `opengraph-image.tsx`, `metadataBase`.
+- [x] `hashIp()` falla cerrado sin `IP_HASH_PEPPER` (antes `?? ''` lo apagaba
+      en silencio) y `CRON_SECRET` se compara con `timingSafeEqual`.
+- [x] `.github/workflows/ci.yml` — typecheck + lint + verificar-geo.
+- [x] Rama `dev` en Neon (`br-long-lake-ay0jaw5y`) para dejar de trabajar
+      contra producción desde local.
+
+## 🔴 Bloqueado — necesita a Luis (cuentas, no código)
+
+- [ ] **Facturación de GitHub.** Actions está bloqueado a nivel cuenta
+      ("your account is locked due to a billing issue"), así que el CI nunca
+      llega a correr. El repo es público, o sea que Actions sería gratis: el
+      bloqueo no lo causa este proyecto. Hasta que se destrabe, la única red es
+      `npm run typecheck && npm run lint` a mano.
+- [ ] **Pegar la connection string de la rama `dev` en `.env.local`.** La rama
+      ya existe; mientras el `.env.local` siga apuntando a `main`, no protege
+      de nada.
+
+## 🟡 Decisión de producto pendiente
+
+- [ ] **Las 4 opciones huérfanas de `mayor_dolor`.** El CHECK de la migración
+      019 admite 9 valores (`costos_arriendo`, `proveedores`, `acceso_credito`,
+      `atender_solo`, `otro`) y la app usa 5. La columna `mayor_dolor_otro`
+      existe y no la escribe nadie. ¿El cliente las quiso y se cayeron, o se
+      descartaron a propósito? Según la respuesta: se cablean en la UI, o se
+      limpia el esquema con una migración nueva. No es un bug — la base es el
+      límite exterior, no la fuente de verdad.
+
+## ⚪ Anotado, no urgente
+
+- [ ] **Content-Security-Policy.** Sigue siendo el punto 1 de "lo que falta"
+      en `docs/seguridad.md`. Pide nonces por request y probarla contra el
+      sitio real (tiles de CARTO, fotos del Blob, estilos inline de Next).
+- [ ] **Merge de `fix-voseo-registro`.** 20 commits locales, sin pushear.
+      Contiene todo `main` más la limpieza de voseo. Mientras no se mergee, el
+      texto con voseo sigue vivo en producción.
