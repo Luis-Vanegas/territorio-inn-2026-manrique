@@ -11,7 +11,10 @@ import { ScrollReveal } from "./ScrollReveal";
 
 export function EquipoSection() {
   return (
-    <section className="seccion">
+    // id="equipo": el README y los enlaces externos apuntan acá. Mismo criterio
+    // que EnfoqueSection — una sección a la que se enlaza desde afuera necesita
+    // un ancla estable, no depender del orden en que quedó en la página.
+    <section id="equipo" className="seccion">
       <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:gap-x-10">
         <ScrollReveal className="lg:col-span-3">
           <h2 className="font-display text-6xl font-medium leading-[0.95] text-tinta sm:text-7xl">
