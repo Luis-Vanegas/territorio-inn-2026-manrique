@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { IndicadorEntorno } from "@/components/IndicadorEntorno";
 import { entornoDesde } from "@/lib/entorno";
+import { urlSitio } from "@/lib/sitio";
 import "@/styles/globals.css";
 
 // Fraunces variable con optical sizing activo: el mismo archivo se ajusta de titular (140px) a texto de apoyo.
@@ -19,13 +20,35 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
+const DESCRIPCION =
+  "Propuesta para la Comuna 3 de Medellín — Presupuesto Participativo Comuna 3. Reto: Empleo y Desarrollo Económico.";
+
 export const metadata: Metadata = {
+  // Sin metadataBase, Next resuelve las URLs relativas de Open Graph contra
+  // localhost y las tarjetas compartidas apuntan a una máquina que no existe.
+  metadataBase: new URL(urlSitio()),
   title: "Constelaciones · Manrique",
-  description:
-    "Propuesta para la Comuna 3 de Medellín — Presupuesto Participativo Comuna 3. Reto: Empleo y Desarrollo Económico.",
+  description: DESCRIPCION,
   // Se referencia el archivo en public/logos/ en vez de duplicarlo como
   // app/icon.png: un solo origen para el isotipo, acá y en el header.
   icons: { icon: "/logos/isotipo_app.png" },
+  // La imagen no se declara acá: `app/opengraph-image.tsx` se engancha solo,
+  // y declararla además a mano generaría dos etiquetas og:image compitiendo.
+  openGraph: {
+    type: "website",
+    locale: "es_CO",
+    siteName: "Constelaciones",
+    title: "Constelaciones · Manrique",
+    description: DESCRIPCION,
+    url: "/",
+  },
+  // summary_large_image lo respetan también WhatsApp y Telegram, que es donde
+  // este link se comparte de verdad.
+  twitter: {
+    card: "summary_large_image",
+    title: "Constelaciones · Manrique",
+    description: DESCRIPCION,
+  },
 };
 
 export default function RootLayout({
