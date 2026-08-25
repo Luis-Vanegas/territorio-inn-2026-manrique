@@ -84,7 +84,7 @@ export default async function AliadosPage({
             revisión antes de aparecer en el mapa.
           </p>
           <p className="mt-3 max-w-md font-sans text-tinta/60">
-            Si tenés un negocio en la Comuna 3,{' '}
+            Si tienes un negocio en la Comuna 3,{' '}
             <Link
               href="/aliados/registro"
               className="underline decoration-terracota underline-offset-4 hover:text-terracota"
