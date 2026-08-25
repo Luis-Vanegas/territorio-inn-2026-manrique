@@ -129,9 +129,23 @@ export function ipDesdeHeaders(headers: Headers): string | null {
  * (variable de entorno, nunca en el código ni en la base) hace que invertir
  * el hash sin conocerlo sea inviable — no hace falta que sea secreto por
  * usuario, alcanza con que no esté en el mismo lugar que el hash resultante.
+ *
+ * Si falta el pepper se devuelve `null` y no se guarda nada. Antes había un
+ * `?? ''` que dejaba pasar el SHA-256 pelado: el fix se desactivaba solo, en
+ * silencio, si alguien olvidaba la variable en Vercel, y la base terminaba con
+ * IPs reversibles mientras la migración 011 seguía prometiendo lo contrario.
+ * Mismo criterio que `/api/cron/purgar`: falta la variable, se falla cerrado.
+ * La columna es nullable, así que un consentimiento sin `ip_hash` se registra
+ * igual — se pierde un dato de auditoría, no el registro de la persona.
  */
 export function hashIp(ip: string | null): string | null {
   if (!ip) return null;
-  const pepper = process.env.IP_HASH_PEPPER ?? '';
+
+  const pepper = process.env.IP_HASH_PEPPER;
+  if (!pepper) {
+    console.error('[hashIp] falta IP_HASH_PEPPER — no se guarda ip_hash');
+    return null;
+  }
+
   return createHash('sha256').update(ip + pepper).digest('hex');
 }
