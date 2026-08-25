@@ -10,13 +10,13 @@ export const peticionSchema = z.object({
   contacto: z
     .string()
     .trim()
-    .min(3, 'Dejá un correo, teléfono o WhatsApp para responderte')
+    .min(3, 'Deja un correo, teléfono o WhatsApp para responderte')
     .max(120, 'Máximo 120 caracteres'),
 
   mensaje: z
     .string()
     .trim()
-    .min(10, 'Contanos un poco más — al menos 10 caracteres')
+    .min(10, 'Cuéntanos un poco más — al menos 10 caracteres')
     .max(1000, 'Máximo 1000 caracteres'),
 });
 
