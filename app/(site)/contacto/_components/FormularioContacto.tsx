@@ -85,7 +85,7 @@ export function FormularioContacto() {
           type="text"
           required
           maxLength={120}
-          placeholder="300 123 4567 o vos@correo.com"
+          placeholder="300 123 4567 o nombre@correo.com"
           aria-invalid={err('contacto') ? true : undefined}
           className={`mt-2 ${claseInput}`}
         />
@@ -105,7 +105,7 @@ export function FormularioContacto() {
           required
           minLength={10}
           maxLength={1000}
-          placeholder="Contanos tu caso o petición."
+          placeholder="Cuéntanos tu caso o petición."
           aria-invalid={err('mensaje') ? true : undefined}
           className={`mt-2 resize-y ${claseInput}`}
         />
