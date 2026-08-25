@@ -28,8 +28,8 @@ type EstadoGeo = 'inicial' | 'pidiendo' | 'listo' | 'denegado' | 'error';
 const MENSAJE_GEO: Record<Exclude<EstadoGeo, 'inicial' | 'listo'>, string> = {
   pidiendo: 'Buscando dónde estás…',
   denegado:
-    'No diste permiso de ubicación. Podés activarlo desde el candado de la barra de direcciones.',
-  error: 'No pudimos ubicarte. Probá de nuevo o revisá el GPS del dispositivo.',
+    'No diste permiso de ubicación. Puedes activarlo desde el candado de la barra de direcciones.',
+  error: 'No pudimos ubicarte. Prueba de nuevo o revisa el GPS del dispositivo.',
 };
 
 export function VitrinaAliados({
@@ -166,7 +166,7 @@ export function VitrinaAliados({
         </div>
 
         <p className="mt-3 font-mono text-xs text-tinta/40">
-          Tocá un punto terracota para ver el negocio en la lista.
+          Toca un punto terracota para ver el negocio en la lista.
         </p>
       </section>
 
