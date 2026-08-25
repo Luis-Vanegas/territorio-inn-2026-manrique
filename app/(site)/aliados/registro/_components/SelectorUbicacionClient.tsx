@@ -88,7 +88,7 @@ export default function SelectorUbicacionClient({
     if (!('geolocation' in navigator)) {
       setGeo({
         fase: 'error',
-        mensaje: 'Tu navegador no permite compartir la ubicación. Marcá el punto en el mapa.',
+        mensaje: 'Tu navegador no permite compartir la ubicación. Marca el punto en el mapa.',
       });
       return;
     }
@@ -108,9 +108,9 @@ export default function SelectorUbicacionClient({
       },
       (error) => {
         const mensajes: Record<number, string> = {
-          1: 'No nos diste permiso para ver tu ubicación. Podés marcarla en el mapa.',
-          2: 'No pudimos determinar tu ubicación. Marcala en el mapa.',
-          3: 'La búsqueda tardó demasiado. Marcá el punto en el mapa.',
+          1: 'No nos diste permiso para ver tu ubicación. Puedes marcarla en el mapa.',
+          2: 'No pudimos determinar tu ubicación. Márcala en el mapa.',
+          3: 'La búsqueda tardó demasiado. Marca el punto en el mapa.',
         };
         setGeo({
           fase: 'error',
@@ -243,7 +243,7 @@ export default function SelectorUbicacionClient({
               {posicion.precision && posicion.precision > 25
                 ? `precisión ±${Math.round(posicion.precision)} m — `
                 : ''}
-              arrastrá el punto para afinarlo
+              arrastra el punto para afinarlo
             </p>
           </>
         )}

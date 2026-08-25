@@ -81,7 +81,7 @@ export default function PoliticaDatosPage() {
 
       <h2>05 · Derechos del titular</h2>
       <p>
-        Como titular de los datos podés conocer, actualizar, rectificar y
+        Como titular de los datos puedes conocer, actualizar, rectificar y
         suprimir tu información; solicitar prueba de la autorización otorgada;
         ser informado sobre el uso dado a tus datos; presentar quejas ante la
         Superintendencia de Industria y Comercio; y revocar la autorización.

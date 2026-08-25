@@ -12,7 +12,7 @@ export const metadata: Metadata = SERVICIOS_ACTIVO
   ? {
       title: 'Ofrecer mi servicio · Constelaciones',
       description:
-        'Si prestás un servicio a domicilio en la Comuna 3 — Manrique, publicá tu oficio.',
+        'Si prestas un servicio a domicilio en la Comuna 3 — Manrique, publica tu oficio.',
     }
   : { title: 'Constelaciones', robots: { index: false, follow: false } };
 
@@ -31,11 +31,11 @@ export default async function RegistroServicioPage() {
         <span className="font-mono text-xs text-tinta/50">Servicios</span>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
-          Ofrecé tu servicio
+          Ofrece tu servicio
         </h1>
 
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
-          Si arreglás electrodomésticos, hacés limpieza, instalaciones o
+          Si arreglas electrodomésticos, haces limpieza, instalaciones o
           cualquier oficio yendo hasta donde está el cliente, este formulario
           te publica para que la gente de la comuna te encuentre.
         </p>
@@ -47,8 +47,8 @@ export default async function RegistroServicioPage() {
             Qué queda público
           </p>
           <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
-            Tu primer nombre y tu primer apellido, tu oficio, qué hacés, tus
-            años de experiencia, los barrios donde atendés y tu teléfono.
+            Tu primer nombre y tu primer apellido, tu oficio, qué haces, tus
+            años de experiencia, los barrios donde atiendes y tu teléfono.
           </p>
           <p className="mt-3 font-mono text-xs uppercase tracking-wider text-tinta/65">
             Qué no

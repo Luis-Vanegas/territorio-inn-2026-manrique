@@ -24,7 +24,7 @@ export async function moderarPortafolio(
 ): Promise<EstadoModeracion> {
   const sesion = await verificarSesion();
   if (!sesion) {
-    return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
+    return { estado: 'error', mensaje: 'Tu sesión venció. Vuelve a entrar.' };
   }
 
   const id = String(formData.get('id') ?? '');
@@ -42,7 +42,7 @@ export async function moderarPortafolio(
   if (accion === 'rechazar' && motivo.length < 10) {
     return {
       estado: 'error',
-      mensaje: 'Escribí un motivo de al menos 10 caracteres: el emprendedor lo va a leer.',
+      mensaje: 'Escribe un motivo de al menos 10 caracteres: el emprendedor lo va a leer.',
     };
   }
 
@@ -61,7 +61,7 @@ export async function moderarPortafolio(
     if (!cambió) {
       return {
         estado: 'error',
-        mensaje: 'Ese registro ya estaba en ese estado. Refrescá la lista.',
+        mensaje: 'Ese registro ya estaba en ese estado. Refresca la lista.',
       };
     }
 
@@ -80,7 +80,7 @@ export async function moderarPortafolio(
     }
   } catch (error) {
     console.error('[moderarPortafolio] falló', error);
-    return { estado: 'error', mensaje: 'No se pudo aplicar el cambio. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No se pudo aplicar el cambio. Intenta de nuevo.' };
   }
 
   revalidatePath('/admin/aliados');

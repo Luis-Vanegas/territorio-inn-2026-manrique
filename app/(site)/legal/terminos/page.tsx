@@ -79,7 +79,7 @@ export default function TerminosPage() {
 
       <h2>08 · Retiro</h2>
       <p>
-        Podés solicitar el retiro de tu emprendimiento en cualquier momento por
+        Puedes solicitar el retiro de tu emprendimiento en cualquier momento por
         el canal de atención indicado en la{' '}
         <Link href="/legal/politica-datos">política de tratamiento de datos</Link>.
       </p>

@@ -68,7 +68,7 @@ export function ConfirmarEnvio() {
           </h2>
 
           <p className="mt-4 font-sans text-sm leading-relaxed text-tinta/75">
-            Antes de publicarte, asegurate de haber leído qué se hace con tus
+            Antes de publicarte, asegúrate de haber leído qué se hace con tus
             datos:{' '}
             <Link
               href="/legal/servicios"
@@ -107,7 +107,7 @@ export function ConfirmarEnvio() {
             <button
               type="submit"
               disabled={!autorizado || pending}
-              title={autorizado ? undefined : 'Marcá la casilla para poder enviar'}
+              title={autorizado ? undefined : 'Marca la casilla para poder enviar'}
               className="min-h-11 border border-terracota bg-terracota px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {pending ? 'Enviando…' : 'Sí, publicar mi servicio'}

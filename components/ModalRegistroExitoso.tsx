@@ -54,7 +54,7 @@ export function ModalRegistroExitoso() {
   if (!datos || !abierto) return null;
 
   const urlEstado = `${origin}/aliados/estado/${datos.token}`;
-  const mensajeWhatsapp = `Guardá este enlace para ver o corregir su registro: ${urlEstado}`;
+  const mensajeWhatsapp = `Guarda este enlace para ver o corregir su registro: ${urlEstado}`;
   const hrefWhatsapp = `https://wa.me/?text=${encodeURIComponent(mensajeWhatsapp)}`;
 
   const copiarLink = async () => {
@@ -92,12 +92,12 @@ export function ModalRegistroExitoso() {
 
         {datos.fotoFallo && (
           <p role="alert" className="mt-3 border-l-2 border-terracota bg-terracota/[0.04] px-3 py-2.5 font-sans text-sm leading-relaxed text-tinta">
-            La foto no se pudo subir — podés agregarla más tarde desde el link de abajo.
+            La foto no se pudo subir — puedes agregarla más tarde desde el link de abajo.
           </p>
         )}
 
         <p className="mt-5 font-mono text-xs uppercase tracking-wide text-tinta/65">
-          Guardá este link — es la única forma de editarlo o borrarlo después
+          Guarda este link — es la única forma de editarlo o borrarlo después
         </p>
 
         <div className="mt-2 flex flex-col gap-2 sm:flex-row">

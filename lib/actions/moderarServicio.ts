@@ -21,7 +21,7 @@ export async function moderarServicioAction(
   formData: FormData,
 ): Promise<EstadoModeracionServicio> {
   const sesion = await verificarSesion();
-  if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
+  if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Vuelve a entrar.' };
 
   const id = String(formData.get('id') ?? '');
   const accion = String(formData.get('accion') ?? '');
@@ -34,7 +34,7 @@ export async function moderarServicioAction(
   if (accion === 'rechazar' && motivo.length < 10) {
     return {
       estado: 'error',
-      mensaje: 'Escribí un motivo de al menos 10 caracteres: la persona lo va a leer.',
+      mensaje: 'Escribe un motivo de al menos 10 caracteres: la persona lo va a leer.',
     };
   }
 
