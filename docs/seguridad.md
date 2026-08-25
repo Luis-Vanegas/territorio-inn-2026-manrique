@@ -86,6 +86,14 @@ son holgados y el mensaje dice cuánto falta en vez de solo negar.
 La tabla se purga con un cron diario (`vercel.json` → `/api/cron/purgar`,
 protegido con `CRON_SECRET`). Sin eso crece para siempre.
 
+> **Verificado el 2026-08-25: `CRON_SECRET` no estaba cargada en producción.**
+> El endpoint falla cerrado (503) cuando la variable no existe, así que la purga
+> diaria nunca llegó a correr y `intentos_registro` viene creciendo desde el
+> primer despliegue. Se detectó sondeando `GET /api/cron/purgar` sin
+> credenciales: **503 significa que falta el secreto, 401 que está bien puesto.**
+> Esa sonda es la forma barata de verificarlo sin entrar al panel de Vercel, y
+> conviene repetirla después de cada cambio de entorno.
+
 ## Cabeceras HTTP
 
 Configuradas en `next.config.mjs` para todas las rutas:
