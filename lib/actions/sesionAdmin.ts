@@ -19,7 +19,7 @@ export async function iniciarSesion(
   const password = String(formData.get('password') ?? '');
 
   if (!email || !password) {
-    return { estado: 'error', mensaje: 'Completá los dos campos.' };
+    return { estado: 'error', mensaje: 'Completa los dos campos.' };
   }
 
   // El login es el único endpoint del sitio donde adivinar tiene premio, y los
@@ -31,7 +31,7 @@ export async function iniciarSesion(
   if (!limite.permitido) {
     return {
       estado: 'error',
-      mensaje: `Demasiados intentos. Probá de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
+      mensaje: `Demasiados intentos. Prueba de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
     };
   }
 
