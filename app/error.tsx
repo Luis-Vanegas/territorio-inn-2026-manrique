@@ -45,7 +45,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
       <p className="mt-6 max-w-lg font-sans text-lg leading-relaxed text-tinta/70">
         No es algo que hayas hecho mal. Casi siempre es la base de datos
-        tardando en responder — probá de nuevo en unos segundos.
+        tardando en responder — prueba de nuevo en unos segundos.
       </p>
 
       <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
