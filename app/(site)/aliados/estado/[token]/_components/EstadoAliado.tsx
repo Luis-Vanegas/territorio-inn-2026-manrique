@@ -192,7 +192,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
       <div className="border-l-2 border-tinta/20 bg-tinta/[0.03] px-5 py-4">
         <p className="font-mono text-sm text-tinta/70">Este registro está borrado.</p>
         <p className="mt-1 font-sans text-sm text-tinta/55">
-          Si te equivocaste o querés volver a aparecer en el mapa, registrá tu negocio de nuevo.
+          Si te equivocaste o quieres volver a aparecer en el mapa, registra tu negocio de nuevo.
         </p>
         <Link
           href="/aliados/registro"
@@ -231,7 +231,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
           </p>
         )}
         <p className="mt-2 font-sans text-sm text-tinta/60">
-          Corregí lo que haga falta en el formulario de abajo y guardá — lo volvemos a revisar.
+          Corrige lo que haga falta en el formulario de abajo y guarda — lo volvemos a revisar.
         </p>
       </div>
     );
@@ -255,7 +255,7 @@ function GuardarEnlace({ nombre }: { nombre: string }) {
 
   if (!url) return null;
 
-  const mensaje = `Guardá este enlace para ver o corregir el registro de ${nombre}: ${url}`;
+  const mensaje = `Guarda este enlace para ver o corregir el registro de ${nombre}: ${url}`;
   const href = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
 
   return (
@@ -362,7 +362,7 @@ function FormularioEdicion({
                 valor={barrio}
                 esOtro={barrioEsOtro}
                 alCambiar={alCambiarBarrio}
-                placeholderOtro="Escribí el barrio"
+                placeholderOtro="Escribe el barrio"
               />
             )}
           </Campo>
@@ -424,8 +424,8 @@ function FormularioEdicion({
 
         <Campo
           id="descripcion"
-          etiqueta="¿Qué hacés?"
-          ayuda="Contá en pocas líneas qué vendés o qué servicio prestás. Hasta 400 caracteres."
+          etiqueta="¿Qué haces?"
+          ayuda="Cuenta en pocas líneas qué vendes o qué servicio prestas. Hasta 400 caracteres."
           errores={err('descripcion')}
         >
           {(p) => (
@@ -529,7 +529,7 @@ function FormularioEdicion({
         titulo="Horario y medios de pago"
         ayuda="Opcional, pero ayuda a que la gente sepa qué esperar antes de escribirte."
       >
-        <Campo id="horario" etiqueta="¿Cuándo atendés?">
+        <Campo id="horario" etiqueta="¿Cuándo atiendes?">
           {(p) => (
             <ChipsMultiple
               {...p}
@@ -631,7 +631,7 @@ function BorrarNegocio({
   const [borrando, setBorrando] = useState(false);
 
   const handleBorrar = useCallback(async () => {
-    if (!window.confirm('¿Seguro que querés borrar tu negocio del directorio?')) return;
+    if (!window.confirm('¿Seguro que quieres borrar tu negocio del directorio?')) return;
 
     setBorrando(true);
     const resultado = await borrarPortafolio(token);
@@ -647,7 +647,7 @@ function BorrarNegocio({
       </h2>
       <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/55">
         Esto saca tu negocio del directorio y del mapa. No se puede deshacer — si más adelante
-        querés volver a aparecer, tenés que registrarte de nuevo.
+        quieres volver a aparecer, tienes que registrarte de nuevo.
       </p>
 
       {estado.estado === 'error' && (
