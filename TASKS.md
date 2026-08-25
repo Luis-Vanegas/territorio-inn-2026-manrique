@@ -79,9 +79,9 @@ Hecho el 2026-08-25 (todo en `main`, desplegado y verificado en vivo):
       llega a correr. El repo es público, o sea que Actions sería gratis: el
       bloqueo no lo causa este proyecto. Hasta que se destrabe, la única red es
       `npm run typecheck && npm run lint` a mano.
-- [ ] **Pegar la connection string de la rama `dev` en `.env.local`.** La rama
-      ya existe; mientras el `.env.local` siga apuntando a `main`, no protege
-      de nada.
+- [x] ~~Pegar la connection string de la rama `dev` en `.env.local`.~~ Hecho:
+      `npm run verificar` corrió contra `dev` (51 s de CPU y +49 KB en esa rama,
+      `main` intacta). Producción ya no se toca desde local.
 
 ## 🟡 Decisión de producto pendiente
 
@@ -98,6 +98,13 @@ Hecho el 2026-08-25 (todo en `main`, desplegado y verificado en vivo):
 - [ ] **Content-Security-Policy.** Sigue siendo el punto 1 de "lo que falta"
       en `docs/seguridad.md`. Pide nonces por request y probarla contra el
       sitio real (tiles de CARTO, fotos del Blob, estilos inline de Next).
-- [ ] **Merge de `fix-voseo-registro`.** 20 commits locales, sin pushear.
-      Contiene todo `main` más la limpieza de voseo. Mientras no se mergee, el
-      texto con voseo sigue vivo en producción.
+- [x] ~~Merge de `fix-voseo-registro`.~~ Mergeada sin conflictos (93 líneas
+      cambiadas, 93 borradas). El checklist se había comido 4 mensajes en
+      `camposPersonalizados` y en el aviso de foto fallida; corregidos aparte.
+      Barrido por patrón sobre `app/`, `components/` y `lib/`: cero voseo en
+      texto visible.
+
+- [ ] **Proteger la rama `main` de Neon.** Está con `protected: false`. Es un
+      checkbox en la consola y bloquea operaciones destructivas accidentales.
+      La retención de historial es de 6 h: ese es todo el margen para un
+      point-in-time restore.
