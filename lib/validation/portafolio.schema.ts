@@ -91,7 +91,7 @@ const camposPortafolio = z
 
     descripcion: opcional(z.string().trim().max(400, 'Máximo 400 caracteres')),
 
-    categoria_id: z.string().min(1, 'Elegí una categoría'),
+    categoria_id: z.string().min(1, 'Elige una categoría'),
     // Solo se usa cuando categoria_id = 'otros'. Separado de descripcion:
     // un "qué categoría sos" corto, no un texto libre largo.
     categoria_otra: opcional(z.string().trim().max(60, 'Máximo 60 caracteres')),
@@ -99,23 +99,23 @@ const camposPortafolio = z
     direccion: z
       .string()
       .trim()
-      .min(5, 'Escribí la dirección completa')
+      .min(5, 'Escribe la dirección completa')
       .max(200, 'Máximo 200 caracteres'),
     barrio: z
       .string()
       .trim()
-      .min(2, 'Indicá el barrio')
+      .min(2, 'Indica el barrio')
       .max(80, 'Máximo 80 caracteres'),
     punto_referencia: opcional(z.string().trim().max(120, 'Máximo 120 caracteres')),
 
     // Rango real de coordenadas válidas, no acotado a Manrique: el registro
     // acepta cualquier punto del mundo mientras se junta volumen de prueba.
     latitud: z
-      .number({ error: 'Marcá la ubicación en el mapa' })
+      .number({ error: 'Marca la ubicación en el mapa' })
       .min(-90, 'Latitud inválida')
       .max(90, 'Latitud inválida'),
     longitud: z
-      .number({ error: 'Marcá la ubicación en el mapa' })
+      .number({ error: 'Marca la ubicación en el mapa' })
       .min(-180, 'Longitud inválida')
       .max(180, 'Longitud inválida'),
 
@@ -135,27 +135,27 @@ const camposPortafolio = z
     // portafolios). tipo_negocio y mayor_dolor pasan a obligatorios a pedido
     // explícito: el resto (nombre del dueño, formalidad) se queda opcional.
     nombre_dueno: opcional(z.string().trim().max(80, 'Máximo 80 caracteres')),
-    tipo_negocio: z.enum(OPCIONES_TIPO_NEGOCIO, { error: 'Elegí una opción' }),
+    tipo_negocio: z.enum(OPCIONES_TIPO_NEGOCIO, { error: 'Elige una opción' }),
     tipo_negocio_detalle: opcional(z.string().trim().max(80, 'Máximo 80 caracteres')),
     formalidad: opcional(z.enum(OPCIONES_FORMALIDAD)),
     mayor_dolor: z
       .array(z.enum(OPCIONES_MAYOR_DOLOR))
-      .min(1, 'Elegí al menos una opción'),
+      .min(1, 'Elige al menos una opción'),
     // Pregunta 7 de la redacción del cliente: abierta, opcional, nunca se
     // publica — igual que el resto de investigación.
     necesidad_crecer: opcional(z.string().trim().max(500, 'Máximo 500 caracteres')),
 
     acepto_terminos: z.literal(true, {
-      error: 'Debés aceptar los términos y condiciones',
+      error: 'Debes aceptar los términos y condiciones',
     }),
     acepto_habeas_data: z.literal(true, {
-      error: 'Debés autorizar el tratamiento de datos',
+      error: 'Debes autorizar el tratamiento de datos',
     }),
   });
 
 export const portafolioSchema = camposPortafolio
   .refine((d) => d.mayor_dolor.length <= 2, {
-    message: 'Elegí como máximo 2',
+    message: 'Elige como máximo 2',
     path: ['mayor_dolor'],
   })
   .refine(
