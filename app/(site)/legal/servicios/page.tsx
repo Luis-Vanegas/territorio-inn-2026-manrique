@@ -27,7 +27,7 @@ export default function TerminosServiciosPage() {
       <p>
         Este documento explica qué es Constelaciones, qué datos te pedimos en el
         módulo <strong>Servicios</strong>, cuáles se publican, cuáles no, y qué
-        podés hacer con ellos en cualquier momento. Está escrito para que se
+        puedes hacer con ellos en cualquier momento. Está escrito para que se
         entienda leyéndolo una vez.
       </p>
 
@@ -54,9 +54,9 @@ export default function TerminosServiciosPage() {
       </p>
       <ul>
         <li>Tu primer nombre y tu primer apellido — no tu nombre completo.</li>
-        <li>Tu oficio y la descripción de lo que hacés.</li>
+        <li>Tu oficio y la descripción de lo que haces.</li>
         <li>Tus años de experiencia.</li>
-        <li>Los barrios donde atendés.</li>
+        <li>Los barrios donde atiendes.</li>
         <li>Tu teléfono de contacto.</li>
       </ul>
       <p>
@@ -79,9 +79,9 @@ export default function TerminosServiciosPage() {
           registro.
         </li>
         <li>
-          Todas las respuestas del último paso del formulario: si de esto vivís,
-          qué te dificulta conseguir trabajo, si tenés herramientas, tu
-          formación, si tenés ARL y qué necesitás para trabajar mejor.
+          Todas las respuestas del último paso del formulario: si de esto vives,
+          qué te dificulta conseguir trabajo, si tienes herramientas, tu
+          formación, si tienes ARL y qué necesitas para trabajar mejor.
         </li>
       </ul>
       <p>
@@ -94,7 +94,7 @@ export default function TerminosServiciosPage() {
         Tu nombre completo y tu foto tienen un propósito distinto al resto de
         tus datos: no buscan darte más visibilidad. Los guardamos para poder
         identificarte si llega a haber un problema con el servicio que
-        prestaste, y como respaldo del compromiso de conducta que aceptás en
+        prestaste, y como respaldo del compromiso de conducta que aceptas en
         el punto 07. Solo el equipo del proyecto puede verlos, y únicamente
         para atender un reporte.
       </p>
@@ -126,7 +126,7 @@ export default function TerminosServiciosPage() {
 
       <h2>06 · Tu autorización</h2>
       <p>
-        Antes de enviar el formulario tenés que marcar las casillas de
+        Antes de enviar el formulario tienes que marcar las casillas de
         aceptación y confirmar en una última pantalla que estás seguro. Esa
         confirmación es tu autorización, conforme a la Ley 1581 de 2012 de
         Colombia, y queda registrada con la fecha y la versión de este documento
@@ -137,7 +137,7 @@ export default function TerminosServiciosPage() {
       <h2>07 · Tu compromiso</h2>
       <p>
         Como vas a prestar un servicio en la casa de otra persona, al
-        registrarte aceptás también un compromiso de conducta: identificarte al
+        registrarte aceptas también un compromiso de conducta: identificarte al
         llegar, acordar el precio y el alcance antes de empezar, no ingresar a
         áreas que no te autorizaron y respetar la propiedad de quien te
         contrata.
@@ -159,18 +159,18 @@ export default function TerminosServiciosPage() {
         Es un <strong>directorio</strong>. No te emplea, no te contrata, no
         interviene en los pagos, no certifica tu competencia técnica y no
         responde por los servicios que acuerdes con un cliente. La relación es
-        directa entre vos y la persona que te contacta.
+        directa entre tú y la persona que te contacta.
       </p>
 
-      <h2>09 · Podés borrarlo todo cuando quieras</h2>
+      <h2>09 · Puedes borrarlo todo cuando quieras</h2>
       <p>
         Apenas envíes el registro te damos un <strong>enlace privado</strong>.
-        Con ese enlace, sin contraseña ni trámite, podés ver tu ficha,
-        corregirla o eliminarla por completo en cualquier momento. Guardalo: es
+        Con ese enlace, sin contraseña ni trámite, puedes ver tu ficha,
+        corregirla o eliminarla por completo en cualquier momento. Guárdalo: es
         la única llave, y no la tenemos duplicada.
       </p>
       <p>
-        También podés escribirnos por el{' '}
+        También puedes escribirnos por el{' '}
         <Link href="/contacto">formulario de contacto</Link> para conocer,
         actualizar, rectificar o suprimir tu información, pedir prueba de la
         autorización que diste, o revocarla.
