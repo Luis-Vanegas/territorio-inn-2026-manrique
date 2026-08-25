@@ -51,16 +51,16 @@ export const servicioSchema = z
     nombres: z
       .string()
       .trim()
-      .min(2, 'Escribí tus nombres')
+      .min(2, 'Escribe tus nombres')
       .max(60, 'Máximo 60 caracteres'),
     apellidos: z
       .string()
       .trim()
-      .min(2, 'Escribí tus apellidos')
+      .min(2, 'Escribe tus apellidos')
       .max(60, 'Máximo 60 caracteres'),
 
     // ── Público ──────────────────────────────────────────────
-    categoria_id: z.string().trim().min(1, 'Elegí un oficio'),
+    categoria_id: z.string().trim().min(1, 'Elige un oficio'),
     categoria_otra: opcional(z.string().trim().max(60)),
 
     // Mínimo real de 20: "arreglo cosas" no le sirve a nadie para decidir a
@@ -68,18 +68,18 @@ export const servicioSchema = z
     descripcion: z
       .string()
       .trim()
-      .min(20, 'Contá con detalle qué hacés — mínimo 20 caracteres')
+      .min(20, 'Cuenta con detalle qué haces — mínimo 20 caracteres')
       .max(400, 'Máximo 400 caracteres'),
 
     anos_experiencia: z
-      .number({ message: 'Indicá tus años de experiencia' })
+      .number({ message: 'Indica tus años de experiencia' })
       .int('Tiene que ser un número entero')
       .min(0)
       .max(70, '¿Seguro? Máximo 70 años'),
 
     cobertura: z
       .array(z.string().trim().min(1))
-      .min(1, 'Elegí al menos un barrio donde atendés')
+      .min(1, 'Elige al menos un barrio donde atiendes')
       .max(25, 'Máximo 25 barrios'),
 
     telefono: telefonoColombiano,
@@ -90,7 +90,7 @@ export const servicioSchema = z
     mayor_dificultad: z
       .string()
       .trim()
-      .min(3, 'Contanos qué te dificulta conseguir trabajo')
+      .min(3, 'Cuéntanos qué te dificulta conseguir trabajo')
       .max(300, 'Máximo 300 caracteres'),
 
     ingreso_principal: z.boolean().nullable().default(null),
@@ -103,12 +103,12 @@ export const servicioSchema = z
     sale_de_comuna: z.boolean().nullable().default(null),
 
     // ── Consentimiento ───────────────────────────────────────
-    acepto_terminos: z.literal(true, { message: 'Tenés que aceptar los términos' }),
+    acepto_terminos: z.literal(true, { message: 'Tienes que aceptar los términos' }),
     acepto_habeas_data: z.literal(true, {
-      message: 'Tenés que autorizar el tratamiento de datos',
+      message: 'Tienes que autorizar el tratamiento de datos',
     }),
     acepto_codigo_conducta: z.literal(true, {
-      message: 'Tenés que aceptar el código de conducta para publicarte',
+      message: 'Tienes que aceptar el código de conducta para publicarte',
     }),
     // Autorización específica: sin esto el proyecto no puede guardar la
     // caracterización laboral, así que no es un checkbox más — es la condición
@@ -119,7 +119,7 @@ export const servicioSchema = z
   })
   // "Otro" oficio sin escribir cuál deja una ficha inútil en la vitrina.
   .refine((d) => d.categoria_id !== 'otros' || Boolean(d.categoria_otra), {
-    message: 'Escribí cuál es tu oficio',
+    message: 'Escribe cuál es tu oficio',
     path: ['categoria_otra'],
   });
 
