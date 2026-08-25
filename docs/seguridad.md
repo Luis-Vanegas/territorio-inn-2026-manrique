@@ -104,6 +104,13 @@ Ver `docs/analitica.md` para el detalle. En resumen:
 
 - Se guarda `ip_registro` en `portafolios` y `peticiones`. Es dato personal,
   está declarado en `/legal/politica-datos` y tiene consentimiento expreso.
+- `aliados_consentimiento.ip_hash` se calcula con `sha256(ip + IP_HASH_PEPPER)`.
+  **Si la variable falta, `hashIp()` devuelve `null` y no se guarda nada.** Antes
+  tenía un `?? ''` que caía al SHA-256 pelado en silencio: el espacio de IPv4 son
+  ~4.300 millones de valores, así que sin pepper el hash se invierte con una
+  rainbow table y la promesa de la migración 011 quedaba incumplida sin que nadie
+  se enterara. Mismo criterio que `/api/cron/purgar`: falta el secreto, se falla
+  cerrado. **`IP_HASH_PEPPER` es obligatoria en producción.**
 - **No hay cookies de seguimiento, ni `localStorage`, ni huella de navegador.**
   El único cookie del sitio es la sesión de moderación.
 - El contador de interacciones es agregado por día: no existe forma de
@@ -111,6 +118,18 @@ Ver `docs/analitica.md` para el detalle. En resumen:
   guarda.
 - La ubicación del visitante (`navigator.geolocation`) **nunca sale del
   navegador**. Se usa para ordenar la lista y no se envía a ningún endpoint.
+
+## Integración continua
+
+`.github/workflows/ci.yml` corre en cada push a `main` y en cada PR:
+`typecheck`, `lint` y `verificar-geo`. Existía `npm run verificar` y no lo
+corría nadie — un script que depende de que alguien se acuerde no es una red de
+seguridad.
+
+`verificar-constraints` y `verificar-campos-personalizados` quedan **fuera** de
+CI a propósito: consultan Neon, y darle a CI una credencial de base para leer un
+esquema es más superficie de la que ese chequeo justifica. Se corren a mano
+antes de un release, junto con las migraciones.
 
 ## Lo que falta
 

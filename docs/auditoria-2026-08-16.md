@@ -296,3 +296,34 @@ ya generó una inconsistencia real (ver "otro" inalcanzable en la sección 1).
 No se encontraron vulnerabilidades de severidad alta (SQL injection, auth
 bypass, RCE, XSS). Los dos hallazgos 🔴 son bugs de producto, no de
 seguridad: enlaces rotos y falta de feedback al usuario.
+
+---
+
+## Estado al 2026-08-25
+
+Re-verificado contra el código, no contra la memoria. Se agrega acá en vez de
+editar la tabla de arriba: la auditoría es un registro de un momento, y
+reescribirla borraría el rastro de qué se encontró y cuándo.
+
+| # | Estado | Evidencia |
+|---|---|---|
+| 1 | ✅ Cerrado | `TarjetaEmprendimiento.tsx` usa el valor guardado como `href` |
+| 2 | ✅ Cerrado | `?foto=error` + aviso en `EstadoAliado.tsx` y `ModalRegistroExitoso.tsx` |
+| 3 | ✅ Cerrado | pepper agregado y, desde hoy, fallando cerrado (`rateLimit.ts`) |
+| 8 | ✅ Cerrado | `Chips.tsx` acepta y reenvía `aria-describedby`/`aria-invalid` |
+| 9 | ✅ Cerrado | `timingSafeEqual` en `app/api/cron/purgar/route.ts` |
+| 4, 5, 7, 10 | ⏸️ Abiertos | marcados "Opcional"/"No urgente", sin cambios |
+
+**El hallazgo 6 se retira: el diagnóstico era incorrecto.** Decía que el schema
+aceptaba `'otro'` en `mayor_dolor` y la UI no lo ofrecía. Hoy `OPCIONES_MAYOR_DOLOR`
+(Zod) tiene exactamente las mismas 5 opciones que `OPCIONES_MAYOR_DOLOR_UI` — no
+incluye `'otro'`. Aplicación y UI están de acuerdo.
+
+Lo que sí queda es residuo de esquema: el CHECK de la migración 019 admite 9
+valores (`costos_arriendo`, `proveedores`, `acceso_credito`, `atender_solo`,
+`otro`) y la columna `mayor_dolor_otro` existe sin que nada la escriba. Una
+restricción de base más amplia que la aplicación no es un bug — la base es el
+límite exterior, no la fuente de verdad — pero **hay que decidir** si esas
+opciones se van a ofrecer o si la columna se elimina en una migración nueva.
+Adivinar qué quiso el cliente en un cuestionario de investigación no es
+trabajo de una auditoría.
