@@ -128,7 +128,7 @@ export async function actualizarPortafolio(
 
   return {
     estado: 'ok',
-    mensaje: fotoFallo ? `${base} La foto no se pudo subir — probá de nuevo.` : base,
+    mensaje: fotoFallo ? `${base} La foto no se pudo subir — prueba de nuevo.` : base,
   };
 }
 

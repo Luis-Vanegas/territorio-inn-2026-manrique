@@ -24,7 +24,7 @@ const TIPOS = ['texto', 'numero', 'si_no', 'seleccion'] as const;
 export const definicionCampoSchema = z
   .object({
     etiqueta: z.string().trim().min(2, 'Mínimo 2 caracteres').max(80, 'Máximo 80 caracteres'),
-    tipo: z.enum(TIPOS, { error: 'Elegí un tipo de campo' }),
+    tipo: z.enum(TIPOS, { error: 'Elige un tipo de campo' }),
     opciones: z.array(z.string().trim().min(1)).optional(),
     requerido: z.boolean(),
     ayuda: z
@@ -110,7 +110,7 @@ export function extraerCamposPersonalizados(
       case 'seleccion': {
         const opciones = def.opciones ?? [];
         if (!opciones.includes(texto)) {
-          errores[campoForm] = [`Elegí una opción válida para ${def.etiqueta}`];
+          errores[campoForm] = [`Elige una opción válida para ${def.etiqueta}`];
           break;
         }
         valores[def.slug] = texto;

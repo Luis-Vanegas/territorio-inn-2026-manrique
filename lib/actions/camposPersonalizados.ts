@@ -74,7 +74,7 @@ export async function crearCampoAction(
     if (error instanceof Error && error.message.includes('definiciones_campo_slug_key')) {
       return {
         estado: 'error',
-        errores: { etiqueta: ['Ya existe un campo con un nombre muy parecido — probá algo más específico'] },
+        errores: { etiqueta: ['Ya existe un campo con un nombre muy parecido — prueba algo más específico'] },
       };
     }
     console.error('[crearCampoAction]', error);
