@@ -43,6 +43,27 @@ export const OPCIONES_FORMALIDAD = [
 ] as const;
 // v2 (redacción del cliente, 2026-08-17): se acorta de 10 opciones a 5 —
 // el cliente había preguntado si la lista original era muy larga.
+/**
+ * Cinco opciones, no las diez originales: el cliente reescribió la pregunta 6 con
+ * su propio texto y la acortó (commit 78710f9). No es una lista a medio terminar.
+ *
+ * ── Por qué el CHECK de la base admite más valores que esta lista ──
+ *
+ * La migración 019 acepta nueve (`costos_arriendo`, `proveedores`,
+ * `acceso_credito`, `atender_solo`, `otro` además de estos cinco) y eso es
+ * correcto: hay respuestas reales guardadas con las opciones viejas —dos vecinos
+ * eligieron `proveedores` antes del recorte— y una restricción no puede dejar de
+ * admitir lo que la tabla ya contiene.
+ *
+ * **No escribas una migración que angoste ese CHECK a estos cinco valores.** Falla
+ * contra esas filas, y "arreglarlo" borrando respuestas de una investigación no es
+ * una opción. La base es el límite exterior; esta lista es lo que la app ofrece hoy.
+ * Que sean distintos es el diseño, no un bug.
+ *
+ * `mayor_dolor_otro` quedó sin usar por el mismo recorte (cero filas la tienen).
+ * Se deja: es una columna vacía y nullable, y borrarla obliga a tocar producción
+ * para ganar nada.
+ */
 export const OPCIONES_MAYOR_DOLOR = [
   'cuentas_ganancia',
   'inventario_vencimientos',

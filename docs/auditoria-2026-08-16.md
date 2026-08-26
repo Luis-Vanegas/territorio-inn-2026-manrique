@@ -319,11 +319,22 @@ aceptaba `'otro'` en `mayor_dolor` y la UI no lo ofrecía. Hoy `OPCIONES_MAYOR_D
 (Zod) tiene exactamente las mismas 5 opciones que `OPCIONES_MAYOR_DOLOR_UI` — no
 incluye `'otro'`. Aplicación y UI están de acuerdo.
 
-Lo que sí queda es residuo de esquema: el CHECK de la migración 019 admite 9
-valores (`costos_arriendo`, `proveedores`, `acceso_credito`, `atender_solo`,
-`otro`) y la columna `mayor_dolor_otro` existe sin que nada la escriba. Una
-restricción de base más amplia que la aplicación no es un bug — la base es el
-límite exterior, no la fuente de verdad — pero **hay que decidir** si esas
-opciones se van a ofrecer o si la columna se elimina en una migración nueva.
-Adivinar qué quiso el cliente en un cuestionario de investigación no es
-trabajo de una auditoría.
+**Y no hay decisión pendiente: el historial ya la contiene.** El commit 78710f9
+dice que las preguntas 6 y 7 se reescribieron *"con el texto del cliente: la 6 se
+acorta de 10 a 5 opciones"*. El recorte fue deliberado y del propio cliente.
+
+Queda la pregunta de si limpiar el esquema, y la respuesta es **no**. Consultando
+producción: dos filas de `aliados_investigacion` tienen `proveedores` en
+`mayor_dolor` — respuestas reales, dadas antes del recorte. Una migración que
+angoste el CHECK a los cinco valores actuales **falla contra esas filas**, y la
+única forma de forzarla sería borrar respuestas de una investigación con
+personas. La restricción amplia no es residuo: es lo que permite que la tabla
+siga conteniendo lo que ya contiene.
+
+`mayor_dolor_otro` sí está vacía (cero filas), pero borrarla obliga a tocar
+producción para no ganar nada. Se deja documentada en el schema.
+
+**Dato para el equipo, no para el código:** de 6 respuestas, 2 eligieron
+`proveedores` — un tercio. El cuestionario actual ya no puede capturar eso.
+Si el diagnóstico de proveedores importa, es una conversación con el cliente
+sobre la pregunta 6, no un cambio técnico.

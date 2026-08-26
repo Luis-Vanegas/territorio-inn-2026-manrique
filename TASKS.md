@@ -80,15 +80,23 @@ Hecho el 2026-08-25 (todo en `main`, desplegado y verificado en vivo):
       `npm run verificar` corrió contra `dev` (51 s de CPU y +49 KB en esa rama,
       `main` intacta). Producción ya no se toca desde local.
 
-## 🟡 Decisión de producto pendiente
+## 🟡 Decisión de producto — cerrada
 
-- [ ] **Las 4 opciones huérfanas de `mayor_dolor`.** El CHECK de la migración
-      019 admite 9 valores (`costos_arriendo`, `proveedores`, `acceso_credito`,
-      `atender_solo`, `otro`) y la app usa 5. La columna `mayor_dolor_otro`
-      existe y no la escribe nadie. ¿El cliente las quiso y se cayeron, o se
-      descartaron a propósito? Según la respuesta: se cablean en la UI, o se
-      limpia el esquema con una migración nueva. No es un bug — la base es el
-      límite exterior, no la fuente de verdad.
+- [x] ~~Las 4 opciones huérfanas de `mayor_dolor`.~~ **No había decisión que
+      tomar**: el commit `78710f9` dice que las preguntas 6 y 7 se reescribieron
+      "con el texto del cliente: la 6 se acorta de 10 a 5 opciones". El recorte
+      fue deliberado y del cliente.
+
+      Y el esquema **no se limpia**: dos filas de `aliados_investigacion` tienen
+      `proveedores` en `mayor_dolor` — respuestas reales anteriores al recorte.
+      Angostar el CHECK falla contra ellas, y forzarlo significaría borrar
+      respuestas de una investigación con personas. Documentado en el schema
+      para que nadie lo reintente.
+
+- [ ] **Conversación con el cliente, no técnica:** de 6 respuestas, 2 eligieron
+      `proveedores` (un tercio). El cuestionario actual ya no puede capturar
+      eso. Si el diagnóstico de proveedores importa para la investigación, hay
+      que revisar la pregunta 6 con el cliente.
 
 ## ⚪ Anotado, no urgente
 
