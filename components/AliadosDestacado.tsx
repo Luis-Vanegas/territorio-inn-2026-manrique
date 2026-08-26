@@ -50,7 +50,7 @@ export async function AliadosDestacado() {
           <h2 className="mt-4 max-w-2xl font-display text-4xl font-medium leading-[1.02] text-tinta sm:text-6xl">
             {total > 0
               ? "Los negocios de Manrique, con nombre y dirección."
-              : "Suma tu negocio al mapa de Manrique."}
+              : "¿Tienes un negocio o un oficio en Manrique?"}
           </h2>
 
           <p className="mt-5 max-w-lg font-sans text-lg leading-relaxed text-tinta/70">
@@ -64,7 +64,7 @@ export async function AliadosDestacado() {
               href="/aliados/registro"
               className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota"
             >
-              Registrar mi negocio →
+              Sumar mi negocio →
             </Link>
 
             {total > 0 && (

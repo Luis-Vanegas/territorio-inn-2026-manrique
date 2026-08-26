@@ -6,6 +6,7 @@
 // entre el subtítulo y el borde inferior, y el mapa se recortaba contra la esquina. Ahora el mapa es
 // una celda más de la grilla: la sección mide lo que mide su contenido y el aire desaparece solo.
 
+import Link from "next/link";
 import { hero } from "@/lib/content";
 import { MapaManrique } from "./MapaManrique";
 import { ScrollReveal } from "./ScrollReveal";
@@ -31,6 +32,32 @@ export function Hero() {
             <p className="mt-8 max-w-md font-sans text-lg leading-relaxed text-tinta/80">
               {hero.subtitulo}
             </p>
+          </ScrollReveal>
+
+          {/* Bifurcación de intención: negocio vs servicio, buscar vs ofrecer
+              son 4 caminos reales con rutas propias — no un único CTA que
+              asume que todo el mundo llega a registrar algo. Chips de una
+              línea con flex-wrap en vez de un grid 2x2 de cards: se acomodan
+              solos según el ancho disponible, sin quedar enormes en mobile. */}
+          <ScrollReveal delay={0.45}>
+            <div className="mt-10 flex flex-wrap gap-2.5">
+              {hero.ctas.map((cta) => (
+                <Link
+                  key={cta.href}
+                  href={cta.href}
+                  className={
+                    cta.tipo === "ofrecer"
+                      ? "group inline-flex items-center gap-1.5 border border-terracota bg-terracota px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota"
+                      : "group inline-flex items-center gap-1.5 border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta transition-colors hover:border-terracota hover:text-terracota"
+                  }
+                >
+                  {cta.etiqueta}
+                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </Link>
+              ))}
+            </div>
           </ScrollReveal>
         </div>
 

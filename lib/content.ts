@@ -20,11 +20,31 @@ export interface ModuloFuturo {
   estado: "activo" | "proximamente";
 }
 
+// Servicios arranca apagado a propósito: se prende en preproducción para
+// revisarlo, y recién después en producción. Con el flag apagado la ruta
+// devuelve 404 real, así que el Hero tampoco puede ofrecer ese camino —
+// mismo flag que usa el menú (SiteHeader) vía enfoque.modulos.
+const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === "true";
+
 export const hero = {
   etiqueta: "COMUNA 3 · MEDELLÍN · 2026",
-  titular: "Manrique trabaja. Faltan los datos que lo cuenten.",
+  titular: "¿Buscas un negocio o servicio en Manrique? ¿O tienes uno para ofrecer?",
   subtitulo:
     "Una propuesta de datos abiertos para entender y fortalecer el empleo en Manrique.",
+  // Bifurcación de intención: Aliados (negocios con dirección en el mapa) y
+  // Servicios (oficios a domicilio) son módulos distintos con rutas propias
+  // de búsqueda y de registro — el Hero tiene que separar los 4 caminos, no
+  // mandar todo a Aliados como si fuera uno solo.
+  ctas: [
+    { tipo: "buscar" as const, etiqueta: "Busco un negocio", href: "/aliados" },
+    ...(SERVICIOS_ACTIVO
+      ? [{ tipo: "buscar" as const, etiqueta: "Busco un servicio a domicilio", href: "/servicios" }]
+      : []),
+    { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/aliados/registro" },
+    ...(SERVICIOS_ACTIVO
+      ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco un servicio a domicilio", href: "/servicios/registro" }]
+      : []),
+  ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
 };
 
 export const reto = {
@@ -43,12 +63,6 @@ export const reto = {
 // renumera automáticamente por posición en vez de tener el número escrito a
 // mano, para que no quede desincronizado del listado real.
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
-
-// Servicios arranca apagado a propósito: se prende en preproducción para
-// revisarlo, y recién después en producción. Mismo mecanismo que inventario —
-// con el flag apagado la ruta devuelve 404 real y no aparece en el menú, así
-// que no hay forma de llegar a un módulo a medio revisar desde el sitio vivo.
-const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === "true";
 
 const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {

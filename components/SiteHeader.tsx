@@ -64,7 +64,7 @@ export function SiteHeader() {
           href="/aliados/registro"
           className="hidden shrink-0 border border-terracota bg-terracota px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota lg:inline-block"
         >
-          Registrar mi negocio →
+          Sumar mi negocio →
         </Link>
 
         {/* Mobile: <details> nativo, cero JavaScript */}
@@ -94,7 +94,7 @@ export function SiteHeader() {
               href="/aliados/registro"
               className="mt-1 border border-terracota bg-terracota px-3 py-2.5 text-center font-mono text-xs text-hueso"
             >
-              Registrar mi negocio →
+              Sumar mi negocio →
             </Link>
           </nav>
         </details>
