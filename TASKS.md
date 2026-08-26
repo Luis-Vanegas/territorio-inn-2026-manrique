@@ -68,17 +68,14 @@ Hecho el 2026-08-25 (todo en `main`, desplegado y verificado en vivo):
 - [x] SEO: `sitemap.ts`, `robots.ts`, `opengraph-image.tsx`, `metadataBase`.
 - [x] `hashIp()` falla cerrado sin `IP_HASH_PEPPER` (antes `?? ''` lo apagaba
       en silencio) y `CRON_SECRET` se compara con `timingSafeEqual`.
-- [x] `.github/workflows/ci.yml` — typecheck + lint + verificar-geo.
+- [x] ~~`.github/workflows/ci.yml`~~ — se agregó y se quitó: la cuenta tiene un
+      presupuesto de $0 sobre Actions y ningún job arrancaba. La verificación
+      queda a mano: `npm run typecheck && npm run lint && npm run verificar`.
 - [x] Rama `dev` en Neon (`br-long-lake-ay0jaw5y`) para dejar de trabajar
       contra producción desde local.
 
 ## 🔴 Bloqueado — necesita a Luis (cuentas, no código)
 
-- [ ] **Facturación de GitHub.** Actions está bloqueado a nivel cuenta
-      ("your account is locked due to a billing issue"), así que el CI nunca
-      llega a correr. El repo es público, o sea que Actions sería gratis: el
-      bloqueo no lo causa este proyecto. Hasta que se destrabe, la única red es
-      `npm run typecheck && npm run lint` a mano.
 - [x] ~~Pegar la connection string de la rama `dev` en `.env.local`.~~ Hecho:
       `npm run verificar` corrió contra `dev` (51 s de CPU y +49 KB en esa rama,
       `main` intacta). Producción ya no se toca desde local.

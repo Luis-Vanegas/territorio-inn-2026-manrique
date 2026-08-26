@@ -127,17 +127,24 @@ Ver `docs/analitica.md` para el detalle. En resumen:
 - La ubicación del visitante (`navigator.geolocation`) **nunca sale del
   navegador**. Se usa para ordenar la lista y no se envía a ningún endpoint.
 
-## Integración continua
+## Verificación antes de publicar
 
-`.github/workflows/ci.yml` corre en cada push a `main` y en cada PR:
-`typecheck`, `lint` y `verificar-geo`. Existía `npm run verificar` y no lo
-corría nadie — un script que depende de que alguien se acuerde no es una red de
-seguridad.
+No hay CI. Se probó con GitHub Actions y se sacó: la cuenta tenía un presupuesto
+de $0 con "stop usage" sobre el producto Actions, así que ningún job llegaba a
+arrancar y cada push quedaba con una X roja que no informaba nada. Un CI que
+nunca corre es peor que no tenerlo, porque da una señal falsa.
 
-`verificar-constraints` y `verificar-campos-personalizados` quedan **fuera** de
-CI a propósito: consultan Neon, y darle a CI una credencial de base para leer un
-esquema es más superficie de la que ese chequeo justifica. Se corren a mano
-antes de un release, junto con las migraciones.
+La verificación es a mano, antes de pushear:
+
+```bash
+npm run typecheck && npm run lint && npm run verificar
+```
+
+`npm run verificar` necesita `DATABASE_URL`: corre contra la rama de desarrollo
+de Neon, nunca contra producción.
+
+Si algún día se reactiva Actions, en repos públicos es gratis e ilimitado — lo
+único que hay que hacer es sacar el presupuesto de $0 que lo bloquea.
 
 ## Lo que falta
 
