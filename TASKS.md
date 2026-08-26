@@ -109,6 +109,59 @@ Hecho el 2026-08-25 (todo en `main`, desplegado y verificado en vivo):
       Barrido por patrón sobre `app/`, `components/` y `lib/`: cero voseo en
       texto visible.
 
+- [x] ~~Proteger la rama `main` de Neon.~~ **No se puede en el plan Free**: la
+      función "protected branches" es de planes pagos (Launch en adelante).
+      Verificado contra la documentación de Neon y contra la API — `main` sigue
+      en `protected: false` y no hay forma de cambiarlo sin pagar.
+
+      No hace falta: proteger la rama es un candado contra borrarla entera, y
+      ese nunca fue el riesgo. El riesgo era correr migraciones contra los datos
+      reales desde local, y eso ya lo cierra la rama `dev`.
+
+      **Para migrar contra producción, no edites `.env.local`.** `migrar.mjs`
+      corta en la línea 40 si `DATABASE_URL` ya viene del entorno, así que una
+      variable inline le gana al archivo y desaparece al terminar:
+
+      ```powershell
+      $env:DATABASE_URL="<string-de-main>"; npm run db:migrar; Remove-Item Env:DATABASE_URL
+      ```
+
+      Así no queda nada que "acordarse de volver a poner".
+
+- [ ] **Reevaluar el plan cuando crezca el volumen.** Free retiene 6 h de
+      historial: ese es todo el margen para un point-in-time restore. Con 7
+      negocios alcanza; con cientos, no. Launch sube a 30 días y habilita
+      proteger la rama.
+
+## 🟡 Decisión de producto — cerrada
+
+- [x] ~~Las 4 opciones huérfanas de `mayor_dolor`.~~ **No había decisión que
+      tomar**: el commit `78710f9` dice que las preguntas 6 y 7 se reescribieron
+      "con el texto del cliente: la 6 se acorta de 10 a 5 opciones". El recorte
+      fue deliberado y del cliente.
+
+      Y el esquema **no se limpia**: dos filas de `aliados_investigacion` tienen
+      `proveedores` en `mayor_dolor` — respuestas reales anteriores al recorte.
+      Angostar el CHECK falla contra ellas, y forzarlo significaría borrar
+      respuestas de una investigación con personas. Documentado en el schema
+      para que nadie lo reintente.
+
+- [ ] **Conversación con el cliente, no técnica:** de 6 respuestas, 2 eligieron
+      `proveedores` (un tercio). El cuestionario actual ya no puede capturar
+      eso. Si el diagnóstico de proveedores importa para la investigación, hay
+      que revisar la pregunta 6 con el cliente.
+
+## ⚪ Anotado, no urgente
+
+- [ ] **Content-Security-Policy.** Sigue siendo el punto 1 de "lo que falta"
+      en `docs/seguridad.md`. Pide nonces por request y probarla contra el
+      sitio real (tiles de CARTO, fotos del Blob, estilos inline de Next).
+- [x] ~~Merge de `fix-voseo-registro`.~~ Mergeada sin conflictos (93 líneas
+      cambiadas, 93 borradas). El checklist se había comido 4 mensajes en
+      `camposPersonalizados` y en el aviso de foto fallida; corregidos aparte.
+      Barrido por patrón sobre `app/`, `components/` y `lib/`: cero voseo en
+      texto visible.
+
 - [ ] **Proteger la rama `main` de Neon.** Está con `protected: false`. Es un
       checkbox en la consola y bloquea operaciones destructivas accidentales.
       La retención de historial es de 6 h: ese es todo el margen para un
