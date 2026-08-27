@@ -44,6 +44,12 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             Servicios
           </Link>
           <Link
+            href="/admin/empleo"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+          >
+            Empleo
+          </Link>
+          <Link
             href="/admin/estadisticas"
             className="font-mono text-xs text-tinta/55 hover:text-terracota"
           >

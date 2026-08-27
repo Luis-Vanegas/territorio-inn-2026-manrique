@@ -16,6 +16,7 @@ import { urlSitio } from '@/lib/sitio';
 // Mismos flags que usa lib/content.ts. Con el flag apagado la ruta devuelve un
 // 404 real, así que listarla sería mandar al buscador contra una página muerta.
 const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === 'true';
+const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === 'true';
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === 'true';
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -34,6 +35,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
           { ruta: '/servicios', prioridad: 0.9 },
           { ruta: '/servicios/registro', prioridad: 0.8 },
           { ruta: '/legal/servicios', prioridad: 0.3 },
+        ]
+      : []),
+    ...(EMPLEO_ACTIVO
+      ? [
+          { ruta: '/empleo', prioridad: 0.9 },
+          { ruta: '/empleo/registro', prioridad: 0.8 },
+          { ruta: '/legal/empleo', prioridad: 0.3 },
         ]
       : []),
     ...(INVENTARIO_ACTIVO ? [{ ruta: '/inventario-predictivo', prioridad: 0.4 }] : []),

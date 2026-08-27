@@ -64,6 +64,10 @@ export const reto = {
 // mano, para que no quede desincronizado del listado real.
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
 
+// Mismo mecanismo que Servicios: arranca apagado, se prende primero en
+// preproducción para revisarlo.
+const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
+
 const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
     slug: "inventario-predictivo",
@@ -84,6 +88,12 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
       "Personas que prestan su oficio a domicilio y se desplazan por la comuna.",
     estado: "activo",
   },
+  {
+    slug: "empleo",
+    nombre: "Empleo",
+    descripcion: "Vecinos de Manrique buscando trabajo, con contacto directo.",
+    estado: "activo",
+  },
 ];
 
 export const enfoque = {
@@ -91,7 +101,8 @@ export const enfoque = {
   modulos: MODULOS_BASE.filter(
     (m) =>
       (INVENTARIO_ACTIVO || m.slug !== "inventario-predictivo") &&
-      (SERVICIOS_ACTIVO || m.slug !== "servicios"),
+      (SERVICIOS_ACTIVO || m.slug !== "servicios") &&
+      (EMPLEO_ACTIVO || m.slug !== "empleo"),
   ).map((m, indice) => ({
     ...m,
     numero: String(indice + 1).padStart(2, "0"),
