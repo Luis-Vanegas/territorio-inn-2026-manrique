@@ -11,7 +11,7 @@
 import Link from "next/link";
 import { listarAprobados, contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
 import { enfoque } from "@/lib/content";
-import { MapaAliados } from "./MapaAliados";
+import { MapaAliadosDestacado } from "./MapaAliadosDestacado";
 import { ScrollReveal } from "./ScrollReveal";
 
 const MAXIMO_EN_MAPA = 30;
@@ -79,11 +79,7 @@ export async function AliadosDestacado() {
         </ScrollReveal>
 
         <ScrollReveal delay={0.15} className="lg:col-span-7">
-          {/* Leaflet necesita una altura explícita en píxeles: sin esto el
-              contenedor colapsa a 0 y el mapa no se ve. */}
-          <div className="h-[380px] w-full overflow-hidden border border-tinta/12 sm:h-[460px] lg:h-[520px]">
-            <MapaAliados portafolios={aliados.slice(0, MAXIMO_EN_MAPA)} />
-          </div>
+          <MapaAliadosDestacado portafolios={aliados.slice(0, MAXIMO_EN_MAPA)} />
 
           {total === 0 && (
             <p className="mt-3 font-mono text-xs text-tinta/40">
