@@ -122,11 +122,93 @@ body {
   }
 }
 
+/* ── Mapa ilustrativo del inicio (components/MapaManrique.tsx) ──
+   Regla que ordena todo este bloque: el estado NATURAL de cada elemento es el FINAL (visible, trazo
+   completo). Las animaciones solo lo revelan, con `animation-fill-mode: both` para sostener el
+   estado de partida durante el delay. Así, si algo impide que corran —reduced-motion, un navegador
+   viejo, CSS que llega tarde— el mapa se ve entero en vez de quedar invisible. */
+
+.mapa-contorno {
+  /* Con pathLength=1 en el SVG, el path entero es un solo guion: animar el offset lo dibuja. */
+  stroke-dasharray: 1;
+  animation: mapa-trazar 1.8s ease-in-out both;
+}
+
+@keyframes mapa-trazar {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Crecen desde Manrique Central en vez de dibujarse: el dasharray ya está ocupado por el punteado. */
+.mapa-radios {
+  opacity: 0.5;
+  transform-origin: 300px 300px;
+  animation: mapa-irradiar 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.9s both;
+}
+
+@keyframes mapa-irradiar {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+}
+
+/* Entrada escalonada de los barrios: `--i` lo pone el componente por posición en la lista. */
+.mapa-barrio {
+  animation: mapa-barrio-entra 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(1.5s + var(--i, 0) * 0.1s);
+}
+
+@keyframes mapa-barrio-entra {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Latido del centro (Manrique Central). Anima las propiedades geométricas del SVG (`r` es propiedad
+   CSS en SVG2), no box-shadow: un <circle> no tiene caja. */
+.pulso-centro-mapa {
+  animation: pulso-centro-mapa 2.6s ease-out infinite;
+  animation-delay: 2.1s;
+}
+
+@keyframes pulso-centro-mapa {
+  0% {
+    r: 5;
+    opacity: 0.45;
+  }
+  70% {
+    r: 18;
+    opacity: 0;
+  }
+  100% {
+    r: 18;
+    opacity: 0;
+  }
+}
+
 /* Respeta a quien pidió menos movimiento en el sistema operativo. */
 @media (prefers-reduced-motion: reduce) {
   .marcador-seleccion,
   .marcador-usuario,
-  .marcador-activo {
+  .marcador-activo,
+  .pulso-centro-mapa,
+  .mapa-contorno,
+  .mapa-radios,
+  .mapa-barrio {
     animation: none;
   }
   .leaflet-marker-icon:hover .marcador-portafolio {
