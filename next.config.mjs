@@ -45,6 +45,20 @@ const cabecerasSeguridad = [
 ];
 
 const nextConfig = {
+  experimental: {
+    serverActions: {
+      // El default de Next son 1 MB, y todo el sitio promete fotos de hasta 5 MB
+      // (`TAMANO_MAX_FOTO` en lib/validation/portafolio.schema.ts). Sin esta línea
+      // cualquier foto de celular —2 a 6 MB— se estrellaba con un 413 "Body exceeded
+      // 1 MB limit" DESPUÉS de que la persona llenó el formulario entero, y la
+      // pantalla de error le echaba la culpa a la base de datos.
+      //
+      // El límite cuenta el body crudo, incluido lo que multipart/form-data suma en
+      // boundaries y metadatos de cada campo, así que va por encima de los 5 MB del
+      // archivo para dejar margen.
+      bodySizeLimit: '6mb',
+    },
+  },
   // Apagado a propósito desde el upgrade a Next 16: bajo Strict Mode, el
   // remontaje de control que hace React en dev llega a `<MapContainer>`
   // (react-leaflet) como un "reappear" en vez de un unmount/mount limpio, y

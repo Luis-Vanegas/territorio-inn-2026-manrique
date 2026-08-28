@@ -15,6 +15,8 @@ import {
   OPCIONES_FORMACION,
   OPCIONES_NECESITA,
 } from '@/lib/validation/servicio.schema';
+import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
+import { comprimirImagen, pesoLegible } from '@/lib/imagen/comprimir';
 
 const ESTADO_INICIAL: EstadoRegistroServicio = { estado: 'inicial' };
 
@@ -161,6 +163,9 @@ export function FormularioServicio({
   const [paso, setPaso] = useState(0);
   const [categoria, setCategoria] = useState('');
   const [iniciadoEn] = useState(() => Date.now());
+  // Aviso de la foto elegida: sin esto, un archivo demasiado grande solo se
+  // descubría al enviar, y el error volvía como una pantalla genérica.
+  const [nombreFoto, setNombreFoto] = useState<string | null>(null);
 
   const errores = useMemo(
     () => (estado.estado === 'error' ? (estado.errores ?? {}) : {}),
@@ -369,15 +374,53 @@ export function FormularioServicio({
 
             <Campo
               etiqueta="Una foto tuya (privada, obligatoria)"
-              ayuda="No se publica en ningún lado ni se muestra en tu ficha. La pedimos siempre para poder identificarte si llega a haber un problema — es lo que respalda el compromiso que aceptás en el último paso. JPG, PNG o WebP, hasta 5 MB."
+              ayuda="No se publica en ningún lado ni se muestra en tu ficha. La pedimos siempre para poder identificarte si llega a haber un problema — es lo que respalda el compromiso que aceptas en el último paso. JPG, PNG o WebP, hasta 5 MB."
               errores={errores.foto}
             >
               <input
                 name="foto"
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
+                onChange={async (e) => {
+                  // `e.target` se guarda ANTES del await: después de un punto de
+                  // suspensión React ya limpió `currentTarget`.
+                  const input = e.target;
+                  const f = input.files?.[0];
+
+                  if (!f) {
+                    setNombreFoto(null);
+                    return;
+                  }
+
+                  // Se avisa antes de enviar: subir una foto que el servidor va a
+                  // rechazar gasta los datos del celular de la persona al pedo.
+                  if (f.size > TAMANO_MAX_FOTO) {
+                    setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
+                    input.value = '';
+                    return;
+                  }
+
+                  setNombreFoto(`${f.name} · optimizando…`);
+
+                  // Se reemplaza el archivo del input por la versión liviana: es
+                  // lo que efectivamente viaja al enviar el formulario.
+                  const optimizada = await comprimirImagen(f);
+                  if (optimizada !== f) {
+                    const dt = new DataTransfer();
+                    dt.items.add(optimizada);
+                    input.files = dt.files;
+                    setNombreFoto(
+                      `${f.name} · ${pesoLegible(f.size)} → ${pesoLegible(optimizada.size)}`,
+                    );
+                  } else {
+                    setNombreFoto(`${f.name} · ${pesoLegible(f.size)}`);
+                  }
+                }}
                 className="font-sans text-sm text-tinta/70 file:mr-3 file:border file:border-tinta/20 file:bg-transparent file:px-3 file:py-1.5 file:font-mono file:text-xs file:text-tinta/70"
               />
+              {nombreFoto && (
+                <p className="mt-2 font-mono text-xs text-tinta/50">{nombreFoto}</p>
+              )}
             </Campo>
           </div>
         ),
@@ -544,12 +587,39 @@ export function FormularioServicio({
                 </span>
               </label>
               <Error mensajes={errores.acepto_habeas_data} />
+
+              {/* Este checkbox FALTABA, y era lo que impedía guardar: el schema lo
+                  exige con `z.literal(true)`, así que sin él `desdeFormData` leía
+                  `null`, la validación fallaba siempre y —como tampoco había dónde
+                  pintar su error— el formulario volvía al paso 4 sin decir nada.
+                  Nadie podía registrarse.
+
+                  Se agrega el campo en vez de sacar el requisito del schema porque
+                  `crearServicio` guarda `acepto_investigacion = true` en la base:
+                  sin una casilla real que la persona marque, esa fila afirmaría un
+                  consentimiento que nunca dio. */}
+              <label className="flex items-start gap-2.5 font-sans text-sm text-tinta">
+                <input
+                  key={`acepto_investigacion-${intentoId}`}
+                  type="checkbox"
+                  name="acepto_investigacion"
+                  defaultChecked={Boolean(valoresPrevios.acepto_investigacion)}
+                  className="mt-1 accent-terracota"
+                />
+                <span>
+                  Autorizo que las respuestas de este último paso se usen en la{' '}
+                  <strong className="font-medium">investigación del proyecto</strong>
+                  , siempre en forma de totales y nunca publicadas junto a mi
+                  nombre.
+                </span>
+              </label>
+              <Error mensajes={errores.acepto_investigacion} />
             </div>
           </div>
         ),
       },
     ],
-    [categorias, categoria, errores, valoresPrevios, intentoId],
+    [categorias, categoria, errores, valoresPrevios, intentoId, nombreFoto],
   );
 
   const ultimo = paso === pasos.length - 1;
