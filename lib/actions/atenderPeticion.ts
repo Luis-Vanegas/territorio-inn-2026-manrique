@@ -17,7 +17,7 @@ export async function atenderPeticion(
 ): Promise<EstadoAtencion> {
   const sesion = await verificarSesion();
   if (!sesion) {
-    return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
+    return { estado: 'error', mensaje: 'Tu sesión venció. Vuelve a entrar.' };
   }
 
   const id = String(formData.get('id') ?? '');
