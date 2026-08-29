@@ -45,6 +45,16 @@ export const hero = {
       ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco un servicio a domicilio", href: "/servicios/registro" }]
       : []),
   ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
+  // Los cuatro caminos se agrupaban solo por color, y el color era el único
+  // portador del significado "buscar" vs "ofrecer" — falla WCAG 1.4.1: quien
+  // no distingue los dos tonos ve cuatro botones sueltos sin relación. El
+  // encabezado de cada grupo pone esa lógica en texto; el color pasa a ser
+  // refuerzo. Orden a propósito: buscar primero, que es lo que hace la
+  // mayoría de quien llega.
+  gruposCta: [
+    { tipo: "buscar" as const, titulo: "Estoy buscando" },
+    { tipo: "ofrecer" as const, titulo: "Tengo algo para ofrecer" },
+  ],
 };
 
 export const reto = {

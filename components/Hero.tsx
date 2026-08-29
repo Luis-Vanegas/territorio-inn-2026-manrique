@@ -36,27 +36,47 @@ export function Hero() {
 
           {/* Bifurcación de intención: negocio vs servicio, buscar vs ofrecer
               son 4 caminos reales con rutas propias — no un único CTA que
-              asume que todo el mundo llega a registrar algo. Chips de una
-              línea con flex-wrap en vez de un grid 2x2 de cards: se acomodan
-              solos según el ancho disponible, sin quedar enormes en mobile. */}
+              asume que todo el mundo llega a registrar algo.
+
+              Iban los cuatro en una fila con flex-wrap, agrupados solo por
+              color. Eso dejaba la lógica "buscar vs ofrecer" viviendo
+              únicamente en el matiz (WCAG 1.4.1) y, peor, hacía que cuatro
+              botones del mismo peso compitieran entre sí: cuando todo llama
+              la atención, nada la llama. Ahora son dos bloques con encabezado
+              de texto — el agrupamiento se comunica por posición y por
+              palabra, y el color solo refuerza. */}
           <ScrollReveal delay={0.45}>
-            <div className="mt-10 flex flex-wrap gap-2.5">
-              {hero.ctas.map((cta) => (
-                <Link
-                  key={cta.href}
-                  href={cta.href}
-                  className={
-                    cta.tipo === "ofrecer"
-                      ? "group inline-flex items-center gap-1.5 border border-terracota bg-terracota px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota"
-                      : "group inline-flex items-center gap-1.5 border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta transition-colors hover:border-terracota hover:text-terracota"
-                  }
-                >
-                  {cta.etiqueta}
-                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-                    →
-                  </span>
-                </Link>
-              ))}
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 sm:gap-10">
+              {hero.gruposCta.map((grupo) => {
+                const ctas = hero.ctas.filter((c) => c.tipo === grupo.tipo);
+                if (ctas.length === 0) return null;
+
+                return (
+                  <div key={grupo.tipo}>
+                    <h2 className="font-mono text-sm uppercase tracking-[0.15em] text-tinta/65">
+                      {grupo.titulo}
+                    </h2>
+                    <div className="mt-3 flex flex-col items-start gap-2">
+                      {ctas.map((cta) => (
+                        <Link
+                          key={cta.href}
+                          href={cta.href}
+                          className={
+                            cta.tipo === "buscar"
+                              ? "group inline-flex min-h-[44px] items-center gap-1.5 border border-terracota-texto bg-terracota-texto px-4 py-2 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+                              : "group inline-flex min-h-[44px] items-center gap-1.5 border border-tinta/55 px-4 py-2 font-mono text-sm text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+                          }
+                        >
+                          {cta.etiqueta}
+                          <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                            →
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </ScrollReveal>
         </div>
