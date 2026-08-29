@@ -42,8 +42,8 @@ const FOTOS: [Foto, ...Foto[]] = [
     src: '/fotos/casas-de-colores.jpg',
     ancho: 720,
     alto: 480,
-    alt: 'Casas pintadas de colores vivos escalonadas en la ladera de una montaña, junto a un río sobre el que se forma un arcoíris.',
-    pie: 'Casas de colores en la ladera',
+    alt: 'Casas de Manrique pintadas de colores vivos, escalonadas sobre la ladera, con un arcoíris formándose sobre el agua en primer plano.',
+    pie: 'Las casas pintadas de Manrique',
   },
 ];
 

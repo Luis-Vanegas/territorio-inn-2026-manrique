@@ -16,28 +16,11 @@ import type { Posicion } from '@/app/(site)/aliados/registro/_components/Selecto
 import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
 import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
 import { CampoFormulario } from '@/components/CampoFormulario';
+import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 
 // Misma lista que FormularioRegistro.tsx — copiada, no importada, para no
 // acoplar dos rutas hermanas que solo comparten estos 15 nombres por
 // coincidencia geográfica, no por dependencia real.
-const BARRIOS_COMUNA_3 = [
-  'El Raizal',
-  'El Pomar',
-  'La Salle',
-  'Las Granjas',
-  'Santa Inés',
-  'Campo Valdés No. 1',
-  'San José de la Cima No. 1',
-  'San José de la Cima No. 2',
-  'La Cruz',
-  'Oriente',
-  'Versalles No. 1',
-  'Versalles No. 2',
-  'Manrique Oriental',
-  'Manrique Central No. 2',
-  'María Cano - Carambolas',
-];
-
 const OPCIONES_HORARIO_UI = [
   { valor: 'mananas', etiqueta: 'Mañanas' },
   { valor: 'tardes', etiqueta: 'Tardes' },

@@ -17,29 +17,12 @@ import type { Posicion } from './SelectorUbicacionClient';
 import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
 import { CampoFormulario } from '@/components/CampoFormulario';
+import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 
 // ─── opciones de los chips ───────────────────────────────────
 // Los `value` (name="horario" / "medios_pago" / "tipo_negocio" / "formalidad"
 // / "mayor_dolor") tienen que calzar exacto con lo que espera `desdeFormData`
 // en el schema.
-
-const BARRIOS_COMUNA_3 = [
-  'El Raizal',
-  'El Pomar',
-  'La Salle',
-  'Las Granjas',
-  'Santa Inés',
-  'Campo Valdés No. 1',
-  'San José de la Cima No. 1',
-  'San José de la Cima No. 2',
-  'La Cruz',
-  'Oriente',
-  'Versalles No. 1',
-  'Versalles No. 2',
-  'Manrique Oriental',
-  'Manrique Central No. 2',
-  'María Cano - Carambolas',
-];
 
 const OPCIONES_HORARIO_UI = [
   { valor: 'mananas', etiqueta: 'Mañanas' },
