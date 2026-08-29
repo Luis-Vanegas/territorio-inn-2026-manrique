@@ -356,7 +356,7 @@ export function FormularioRegistro({
           lista de negocios, y es el paso que más se abandona si aparece al
           final, después de diez campos de texto.
 
-          Antes había acá un ChipsUnica de "cómo atendés" (tipo_presencia)
+          Antes había acá un ChipsUnica de "cómo atiendes" (tipo_presencia)
           que condicionaba si mapa/dirección/barrio eran obligatorios. El
           cliente probó esa versión y pidió sacarla — esa info no le servía.
           Vuelven a ser siempre obligatorios, como en el diseño original. */}

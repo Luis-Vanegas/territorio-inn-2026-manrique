@@ -31,6 +31,18 @@ vecinos de la Comuna 3 en Medellín, no suena bien en rioplatense ni en paisa
 informal. Si escribís una frase nueva y dudás, usá la conjugación de "tú"
 (puedes, tienes, quieres, haces) y listo.
 
+Esto lo verifica `scripts/verificar-voseo.mjs`, que corre dentro de
+`npm run verificar` y falla si encuentra voseo en texto visible. **Correlo en
+vez de revisar a ojo**: el voseo se coló tres veces y las tres alguien había
+"verificado a mano" con una lista de verbos escrita de memoria. El script
+busca el patrón —tilde en la última sílaba, que es lo que distingue al voseo
+del "tú"— y no una lista, así que encuentra formas que nadie previó. Si marca
+un falso positivo (un pretérito como «aprendí», o «estás», que se escribe
+igual en los dos registros), se agrega a `CORRIENTES` con un comentario.
+
+Los comentarios de código quedan en rioplatense a propósito: los lee el
+equipo, no los vecinos. El script los ignora.
+
 Todo el código de dominio va en **español**: nombres de funciones, tipos,
 variables, rutas de `app/`, mensajes de error al usuario. Ejemplos reales:
 `registrarPeticion`, `crearPeticion`, `marcarAtendida`, `EstadoPeticion`,

@@ -287,7 +287,7 @@ export function FormularioServicio({
                     name="categoria_otra"
                     defaultValue={valoresPrevios.categoria_otra ?? ''}
                     className={claseInput}
-                    placeholder="Escribilo"
+                    placeholder="Escríbelo"
                   />
                 )}
               </CampoFormulario>

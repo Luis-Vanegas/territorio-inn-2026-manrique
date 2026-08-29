@@ -251,7 +251,7 @@ function FormularioEdicion({
       <Seccion
         numero="01"
         titulo="¿Dónde queda tu negocio?"
-        ayuda="Tocá el botón para usar el GPS de tu celular, o marcá el punto en el mapa."
+        ayuda="Toca el botón para usar el GPS de tu celular, o marca el punto en el mapa."
         ancho="completo"
       >
         <SelectorUbicacion valorInicial={coords} alCambiar={alCambiarUbicacion} />
@@ -525,7 +525,7 @@ function FormularioEdicion({
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f && f.size > TAMANO_MAX_FOTO) {
-                  setNombreFoto(`"${f.name}" pesa más de 5 MB — elegí otra`);
+                  setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
                   e.target.value = '';
                   return;
                 }
