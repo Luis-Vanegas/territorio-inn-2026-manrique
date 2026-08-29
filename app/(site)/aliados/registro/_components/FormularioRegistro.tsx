@@ -132,7 +132,7 @@ function Seccion({
             {titulo}
           </h2>
           {completa && (
-            <span className="font-mono text-xs text-terracota" aria-label="completo">
+            <span className="font-mono text-xs text-terracota-texto" aria-label="completo">
               ✓ completo
             </span>
           )}
@@ -199,7 +199,7 @@ function Campo({
       </div>
 
       {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota">
+        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota-texto">
           {errores[0]}
         </p>
       ) : null}
@@ -232,7 +232,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
       <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
         <p className="font-mono text-xs text-tinta/50">
           {listo ? (
-            <span className="text-terracota">✓ Todo listo para enviar</span>
+            <span className="text-terracota-texto">✓ Todo listo para enviar</span>
           ) : (
             <>
               <span className="text-tinta">{porcentaje}%</span> completado · falta{' '}
@@ -244,7 +244,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
         <button
           type="submit"
           disabled={pending}
-          className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota disabled:cursor-not-allowed disabled:opacity-50"
+          className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? 'Enviando…' : 'Enviar registro →'}
         </button>
@@ -418,7 +418,7 @@ export function FormularioRegistro({
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota"
+          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota-texto"
         >
           {estado.mensaje}
         </p>
@@ -445,7 +445,7 @@ export function FormularioRegistro({
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
 
         {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-terracota">
+          <p className="font-mono text-xs text-terracota-texto">
             {err('latitud')?.[0] ?? err('longitud')?.[0]}
           </p>
         )}
@@ -713,7 +713,7 @@ export function FormularioRegistro({
           <button
             type="button"
             onClick={() => setMostrarOtraRed((v) => !v)}
-            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
           >
             {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
           </button>
@@ -747,7 +747,7 @@ export function FormularioRegistro({
         <button
           type="button"
           onClick={() => setMostrarMasInfo((v) => !v)}
-          className="self-start font-mono text-xs text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+          className="self-start font-mono text-xs text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
         >
           {mostrarMasInfo
             ? '− Ocultar'
@@ -820,7 +820,7 @@ export function FormularioRegistro({
                 }
                 setNombreFoto(f ? f.name : null);
               }}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
             />
           )}
         </Campo>
@@ -937,7 +937,7 @@ export function FormularioRegistro({
               <Link
                 href="/legal/terminos"
                 target="_blank"
-                className="underline decoration-terracota underline-offset-4 hover:text-terracota"
+                className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
               >
                 términos y condiciones
               </Link>
@@ -945,7 +945,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_terminos') && (
-            <p className="font-mono text-xs text-terracota">{err('acepto_terminos')![0]}</p>
+            <p className="font-mono text-xs text-terracota-texto">{err('acepto_terminos')![0]}</p>
           )}
 
           <label className="flex items-start gap-3">
@@ -961,7 +961,7 @@ export function FormularioRegistro({
               <Link
                 href="/legal/politica-datos"
                 target="_blank"
-                className="underline decoration-terracota underline-offset-4 hover:text-terracota"
+                className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
               >
                 política de tratamiento de datos
               </Link>
@@ -969,7 +969,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_habeas_data') && (
-            <p className="font-mono text-xs text-terracota">
+            <p className="font-mono text-xs text-terracota-texto">
               {err('acepto_habeas_data')![0]}
             </p>
           )}
@@ -981,7 +981,7 @@ export function FormularioRegistro({
 
       <Link
         href="/aliados"
-        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
       >
         ← Volver al mapa
       </Link>

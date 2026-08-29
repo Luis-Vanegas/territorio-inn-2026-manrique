@@ -92,7 +92,7 @@ const claseEtiqueta = 'block font-mono text-xs uppercase tracking-wider text-tin
 function Error({ mensajes }: { mensajes?: string[] }) {
   if (!mensajes?.length) return null;
   return (
-    <p role="alert" className="mt-2 font-sans text-xs text-terracota">
+    <p role="alert" className="mt-2 font-sans text-xs text-terracota-texto">
       {mensajes[0]}
     </p>
   );
@@ -563,7 +563,7 @@ export function FormularioServicio({
                   <Link
                     href="/legal/servicios"
                     target="_blank"
-                    className="text-terracota underline underline-offset-2"
+                    className="text-terracota-texto underline underline-offset-2"
                   >
                     términos del módulo Servicios
                   </Link>{' '}
@@ -663,7 +663,7 @@ export function FormularioServicio({
               <button
                 type="button"
                 onClick={() => setPaso((p) => Math.min(pasos.length - 1, p + 1))}
-                className="min-h-11 border border-tinta/25 px-6 py-2.5 font-mono text-sm text-tinta transition-colors hover:border-terracota hover:text-terracota"
+                className="min-h-11 border border-tinta/25 px-6 py-2.5 font-mono text-sm text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
               >
                 Siguiente →
               </button>

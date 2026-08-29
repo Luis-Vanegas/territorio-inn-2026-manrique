@@ -40,7 +40,7 @@ export function DocumentoLegal({
         </h1>
 
         {avisoBorrador && (
-          <p className="mt-6 border border-terracota/40 bg-terracota/5 px-4 py-3 font-mono text-xs leading-relaxed text-terracota">
+          <p className="mt-6 border border-terracota/40 bg-terracota/5 px-4 py-3 font-mono text-xs leading-relaxed text-terracota-texto">
             Borrador técnico, redactado por el equipo del proyecto. Pendiente de
             revisión jurídica antes de su publicación definitiva.
           </p>
@@ -52,7 +52,7 @@ export function DocumentoLegal({
 
         <Link
           href={volverA.href}
-          className="mt-16 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+          className="mt-16 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
         >
           {volverA.texto}
         </Link>

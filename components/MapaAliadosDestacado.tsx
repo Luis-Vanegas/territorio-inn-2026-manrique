@@ -64,7 +64,7 @@ export function MapaAliadosDestacado({ portafolios }: { portafolios: Portafolio[
         <button
           type="button"
           onClick={reintentar}
-          className="mt-3 inline-flex items-center gap-2 border border-tinta/20 px-3 py-1.5 font-mono text-xs text-tinta/60 transition-colors hover:border-terracota hover:text-terracota"
+          className="mt-3 inline-flex items-center gap-2 border border-tinta/20 px-3 py-1.5 font-mono text-xs text-tinta/60 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
         >
           <span aria-hidden="true">◎</span>
           Ver los que tengo cerca

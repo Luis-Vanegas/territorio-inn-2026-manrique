@@ -47,7 +47,7 @@ export function ConfirmarEnvio() {
         type="button"
         disabled={pending}
         onClick={() => dialogo.current?.showModal()}
-        className="min-h-11 border border-terracota bg-terracota px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="min-h-11 border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {pending ? 'Enviando…' : 'Revisar y enviar'}
       </button>
@@ -58,7 +58,7 @@ export function ConfirmarEnvio() {
         className="w-[min(32rem,calc(100vw-2rem))] border border-tinta/15 bg-hueso p-0 text-tinta backdrop:bg-tinta/40 backdrop:backdrop-blur-sm"
       >
         <div className="p-6 sm:p-8">
-          <span className="font-mono text-xs text-terracota">Último paso</span>
+          <span className="font-mono text-xs text-terracota-texto">Último paso</span>
 
           <h2
             id="confirmar-titulo"
@@ -73,7 +73,7 @@ export function ConfirmarEnvio() {
             <Link
               href="/legal/servicios"
               target="_blank"
-              className="text-terracota underline decoration-terracota underline-offset-2"
+              className="text-terracota-texto underline decoration-terracota underline-offset-2"
             >
               términos y tratamiento de datos del módulo Servicios
             </Link>
@@ -108,7 +108,7 @@ export function ConfirmarEnvio() {
               type="submit"
               disabled={!autorizado || pending}
               title={autorizado ? undefined : 'Marca la casilla para poder enviar'}
-              className="min-h-11 border border-terracota bg-terracota px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-11 border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {pending ? 'Enviando…' : 'Sí, publicar mi servicio'}
             </button>

@@ -35,7 +35,7 @@ export async function AliadosDestacado() {
       <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:items-center lg:gap-x-10">
         <ScrollReveal className="lg:col-span-5">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
-            <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota">
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota-texto">
               <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />
               {modulo.numero} · Aliados · en vivo
             </span>
@@ -62,7 +62,7 @@ export async function AliadosDestacado() {
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
               href="/aliados/registro"
-              className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota"
+              className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
             >
               Sumar mi negocio →
             </Link>
@@ -70,7 +70,7 @@ export async function AliadosDestacado() {
             {total > 0 && (
               <Link
                 href="/aliados"
-                className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+                className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
               >
                 Ver el mapa completo
               </Link>

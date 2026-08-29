@@ -69,7 +69,7 @@ export function Stepper({
                   <span
                     className={`font-mono text-xs tabular-nums transition-colors ${
                       esActual
-                        ? 'text-terracota'
+                        ? 'text-terracota-texto'
                         : yaPaso
                           ? 'text-tinta/65'
                           : 'text-tinta/35'

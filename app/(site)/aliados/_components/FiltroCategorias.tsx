@@ -30,10 +30,10 @@ export function FiltroCategorias({
     [
       'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-mono text-xs transition-colors',
       seleccionada
-        // bg-terracota + text-hueso da 3.93:1 — falla AA en text-xs (WCAG pide 4.5:1).
+        // bg-terracota-texto + text-hueso da 3.93:1 — falla AA en text-xs (WCAG pide 4.5:1).
         // terracota-texto es la misma terracota calibrada para texto/fills (5.34:1).
         ? 'border-terracota-texto bg-terracota-texto text-hueso'
-        : 'border-tinta/15 text-tinta/65 hover:border-terracota hover:text-terracota',
+        : 'border-tinta/15 text-tinta/65 hover:border-terracota-texto hover:text-terracota-texto',
     ].join(' ');
 
   return (

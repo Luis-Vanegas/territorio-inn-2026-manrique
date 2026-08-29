@@ -158,7 +158,7 @@ function Campo({
       </div>
 
       {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota">
+        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota-texto">
           {errores[0]}
         </p>
       ) : null}
@@ -177,7 +177,7 @@ function BotonGuardar() {
     <button
       type="submit"
       disabled={pending}
-      className="min-h-11 border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota disabled:cursor-not-allowed disabled:opacity-50"
+      className="min-h-11 border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Guardando…' : 'Guardar cambios'}
     </button>
@@ -196,7 +196,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
         </p>
         <Link
           href="/aliados/registro"
-          className="mt-3 inline-block font-mono text-sm text-terracota underline decoration-terracota underline-offset-4 hover:text-terracota/80"
+          className="mt-3 inline-block font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4 hover:text-terracota-texto/80"
         >
           Registrar de nuevo →
         </Link>
@@ -207,13 +207,13 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
   if (portafolio.estado === 'aprobado') {
     return (
       <div className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4">
-        <p className="font-mono text-sm text-terracota">¡Publicado!</p>
+        <p className="font-mono text-sm text-terracota-texto">¡Publicado!</p>
         <p className="mt-1 font-sans text-sm text-tinta/70">
           Tu negocio ya está en el mapa de Aliados.
         </p>
         <Link
           href="/aliados"
-          className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-terracota underline-offset-4 hover:text-terracota"
+          className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
         >
           Verlo en el mapa →
         </Link>
@@ -224,7 +224,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
   if (portafolio.estado === 'rechazado') {
     return (
       <div className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4">
-        <p className="font-mono text-sm text-terracota">No lo pudimos publicar todavía</p>
+        <p className="font-mono text-sm text-terracota-texto">No lo pudimos publicar todavía</p>
         {portafolio.motivo_rechazo && (
           <p className="mt-2 font-sans text-sm leading-relaxed text-tinta">
             {portafolio.motivo_rechazo}
@@ -263,7 +263,7 @@ function GuardarEnlace({ nombre }: { nombre: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
     >
       <span aria-hidden="true">↗</span>
       Guardar este enlace por WhatsApp
@@ -314,7 +314,7 @@ function FormularioEdicion({
       {estado.estado !== 'inicial' && estado.mensaje && (
         <p
           role="alert"
-          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota"
+          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota-texto"
         >
           {estado.mensaje}
         </p>
@@ -332,7 +332,7 @@ function FormularioEdicion({
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
 
         {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-terracota">
+          <p className="font-mono text-xs text-terracota-texto">
             {err('latitud')?.[0] ?? err('longitud')?.[0]}
           </p>
         )}
@@ -497,7 +497,7 @@ function FormularioEdicion({
           <button
             type="button"
             onClick={() => setMostrarOtraRed((v) => !v)}
-            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
           >
             {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
           </button>
@@ -603,7 +603,7 @@ function FormularioEdicion({
                 }
                 setNombreFoto(f ? f.name : null);
               }}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
             />
           )}
         </Campo>
@@ -651,7 +651,7 @@ function BorrarNegocio({
       </p>
 
       {estado.estado === 'error' && (
-        <p role="alert" className="mt-3 font-mono text-sm text-terracota">
+        <p role="alert" className="mt-3 font-mono text-sm text-terracota-texto">
           {estado.mensaje}
         </p>
       )}
@@ -660,7 +660,7 @@ function BorrarNegocio({
         type="button"
         onClick={handleBorrar}
         disabled={borrando}
-        className="mt-4 min-h-11 border border-terracota px-5 py-2.5 font-mono text-sm text-terracota transition-colors hover:bg-terracota hover:text-hueso disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-4 min-h-11 border border-terracota-texto px-5 py-2.5 font-mono text-sm text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso disabled:cursor-not-allowed disabled:opacity-50"
       >
         {borrando ? 'Borrando…' : 'Borrar mi negocio'}
       </button>
@@ -703,10 +703,10 @@ export function EstadoAliado({
 
         {borrado ? (
           <div className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4">
-            <p className="font-mono text-sm text-terracota">Tu negocio se borró del directorio.</p>
+            <p className="font-mono text-sm text-terracota-texto">Tu negocio se borró del directorio.</p>
             <Link
               href="/aliados"
-              className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-terracota underline-offset-4 hover:text-terracota"
+              className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
             >
               Volver al mapa →
             </Link>
@@ -727,7 +727,7 @@ export function EstadoAliado({
 
       <Link
         href="/aliados"
-        className="mt-16 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+        className="mt-16 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
       >
         ← Volver al mapa
       </Link>

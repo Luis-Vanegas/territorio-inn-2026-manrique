@@ -52,7 +52,7 @@ export function EquipoSection() {
                 // ya la tienen cargada.
                 <div
                   aria-hidden
-                  className="mt-4 flex aspect-[4/5] w-full items-center justify-center bg-terracota font-mono text-6xl text-hueso"
+                  className="mt-4 flex aspect-[4/5] w-full items-center justify-center bg-terracota-texto font-mono text-6xl text-hueso"
                 >
                   {miembro.iniciales}
                 </div>
@@ -65,7 +65,7 @@ export function EquipoSection() {
                 {miembro.programaInstitucion}
               </p>
               {miembro.rol && (
-                <p className="mt-1 font-mono text-xs text-terracota">{miembro.rol}</p>
+                <p className="mt-1 font-mono text-xs text-terracota-texto">{miembro.rol}</p>
               )}
             </ScrollReveal>
           ))}

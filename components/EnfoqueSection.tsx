@@ -27,7 +27,7 @@ export function EnfoqueSection() {
               }`}
             >
               <span className="font-mono text-sm text-tinta/50">{modulo.numero}</span>
-              <p className="font-display text-3xl font-medium text-tinta transition-transform group-hover:translate-x-2 group-hover:text-terracota sm:w-72">
+              <p className="font-display text-3xl font-medium text-tinta transition-transform group-hover:translate-x-2 group-hover:text-terracota-texto sm:w-72">
                 {modulo.nombre}
               </p>
               <p className="max-w-md font-sans text-base text-tinta/70">
@@ -39,13 +39,13 @@ export function EnfoqueSection() {
                   [ Próximamente ]
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota sm:ml-auto">
+                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota-texto sm:ml-auto">
                   <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />
                   en vivo
                 </span>
               )}
 
-              <span className="font-mono text-sm text-terracota opacity-0 transition-opacity group-hover:opacity-100 sm:ml-4">
+              <span className="font-mono text-sm text-terracota-texto opacity-0 transition-opacity group-hover:opacity-100 sm:ml-4">
                 →
               </span>
             </Link>

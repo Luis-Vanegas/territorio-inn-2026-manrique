@@ -27,7 +27,7 @@ function Compromiso({ fecha }: { fecha: string }) {
   return (
     <span
       title="Entregó sus datos y aceptó el compromiso de conducta. El proyecto no verifica identidad ni antecedentes."
-      className="inline-flex items-center gap-1.5 border border-terracota/40 px-2 py-1 font-mono text-[11px] text-terracota"
+      className="inline-flex items-center gap-1.5 border border-terracota/40 px-2 py-1 font-mono text-[11px] text-terracota-texto"
     >
       ✓ Aceptó el compromiso · {fecha}
     </span>
@@ -48,7 +48,7 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
       <button
         type="button"
         onClick={() => setVisible(true)}
-        className="min-h-11 border border-tinta/25 px-4 py-2 font-mono text-xs text-tinta transition-colors hover:border-terracota hover:text-terracota"
+        className="min-h-11 border border-tinta/25 px-4 py-2 font-mono text-xs text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
       >
         Mostrar teléfono
       </button>
@@ -61,7 +61,7 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
         href={enlaceWhatsapp(telefono)}
         target="_blank"
         rel="noopener noreferrer"
-        className="min-h-11 border border-terracota px-4 py-2 font-mono text-xs text-terracota transition-colors hover:bg-terracota hover:text-hueso"
+        className="min-h-11 border border-terracota-texto px-4 py-2 font-mono text-xs text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso"
       >
         WhatsApp a {nombre.split(' ')[0]}
       </a>
@@ -96,7 +96,7 @@ function Ficha({ servicio }: { servicio: Servicio }) {
             <Compromiso fecha={servicio.creado_en} />
           </div>
 
-          <p className="mt-1 font-mono text-xs text-terracota">
+          <p className="mt-1 font-mono text-xs text-terracota-texto">
             {oficio}
             <span className="text-tinta/45">
               {' · '}

@@ -190,7 +190,7 @@ export default function MapaAliadosClient({
           }
         >
           <Popup minWidth={200}>
-            <span className="block font-mono text-[10px] uppercase tracking-wide text-terracota">
+            <span className="block font-mono text-[10px] uppercase tracking-wide text-terracota-texto">
               {p.categoria_nombre}
             </span>
             <strong className="mt-1 block font-display text-base font-medium text-tinta">
@@ -213,7 +213,7 @@ export default function MapaAliadosClient({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => contar(p.id, 'contacto')}
-                className="mt-2 inline-block font-mono text-xs text-terracota underline decoration-terracota/40 underline-offset-4 hover:text-tinta"
+                className="mt-2 inline-block font-mono text-xs text-terracota-texto underline decoration-terracota/40 underline-offset-4 hover:text-tinta"
               >
                 Escribir por WhatsApp →
               </a>

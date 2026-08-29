@@ -33,7 +33,7 @@ const claseEtiqueta = 'block font-mono text-xs uppercase tracking-wider text-tin
 function Error({ mensajes }: { mensajes?: string[] }) {
   if (!mensajes?.length) return null;
   return (
-    <p role="alert" className="mt-2 font-sans text-xs text-terracota">
+    <p role="alert" className="mt-2 font-sans text-xs text-terracota-texto">
       {mensajes[0]}
     </p>
   );
@@ -228,7 +228,7 @@ export function FormularioCandidato() {
               <Link
                 href="/legal/empleo"
                 target="_blank"
-                className="text-terracota underline underline-offset-2"
+                className="text-terracota-texto underline underline-offset-2"
               >
                 términos del módulo Empleo
               </Link>{' '}
@@ -256,7 +256,7 @@ export function FormularioCandidato() {
 
         <button
           type="submit"
-          className="min-h-11 self-start border border-terracota bg-terracota px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
+          className="min-h-11 self-start border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
         >
           Publicarme →
         </button>

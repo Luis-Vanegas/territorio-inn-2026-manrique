@@ -17,7 +17,7 @@ export function Hero() {
       <div className="grid grid-cols-1 items-center gap-y-12 lg:grid-cols-12 lg:gap-x-10">
         <div className="lg:col-span-7">
           <ScrollReveal>
-            <span className="font-mono text-xs tracking-[0.2em] text-terracota">
+            <span className="font-mono text-xs tracking-[0.2em] text-terracota-texto">
               {hero.etiqueta}
             </span>
           </ScrollReveal>

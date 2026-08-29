@@ -41,13 +41,13 @@ export default async function RegistroPage() {
 
         <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-2 font-mono text-xs text-tinta/55">
           <li>
-            <span className="text-terracota">·</span> Toma menos de 3 minutos
+            <span className="text-terracota-texto">·</span> Toma menos de 3 minutos
           </li>
           <li>
-            <span className="text-terracota">·</span> Es gratis
+            <span className="text-terracota-texto">·</span> Es gratis
           </li>
           <li>
-            <span className="text-terracota">·</span> Lo revisamos antes de publicarlo
+            <span className="text-terracota-texto">·</span> Lo revisamos antes de publicarlo
           </li>
         </ul>
       </header>

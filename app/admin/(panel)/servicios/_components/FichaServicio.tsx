@@ -55,7 +55,7 @@ export function FichaServicio({
             </p>
           )}
 
-          <p className="mt-1 font-mono text-xs text-terracota">
+          <p className="mt-1 font-mono text-xs text-terracota-texto">
             {servicio.categoria_id === 'otros' && servicio.categoria_otra
               ? servicio.categoria_otra
               : servicio.categoria_nombre}
@@ -97,14 +97,14 @@ export function FichaServicio({
                     type="submit"
                     name="accion"
                     value="aprobar"
-                    className="min-h-11 border border-terracota bg-terracota px-5 py-2 font-mono text-xs text-hueso transition-opacity hover:opacity-90"
+                    className="min-h-11 border border-terracota-texto bg-terracota-texto px-5 py-2 font-mono text-xs text-hueso transition-opacity hover:opacity-90"
                   >
                     Publicar
                   </button>
                   <button
                     type="button"
                     onClick={() => setRechazando(true)}
-                    className="min-h-11 border border-tinta/25 px-5 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+                    className="min-h-11 border border-tinta/25 px-5 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
                   >
                     Rechazar
                   </button>
@@ -115,7 +115,7 @@ export function FichaServicio({
                     type="submit"
                     name="accion"
                     value="rechazar"
-                    className="min-h-11 border border-terracota px-5 py-2 font-mono text-xs text-terracota transition-colors hover:bg-terracota hover:text-hueso"
+                    className="min-h-11 border border-terracota-texto px-5 py-2 font-mono text-xs text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso"
                   >
                     Confirmar rechazo
                   </button>
@@ -133,7 +133,7 @@ export function FichaServicio({
             {estadoMod.estado !== 'inicial' && (
               <p
                 role="status"
-                className={`font-mono text-xs ${estadoMod.estado === 'ok' ? 'text-tinta/60' : 'text-terracota'}`}
+                className={`font-mono text-xs ${estadoMod.estado === 'ok' ? 'text-tinta/60' : 'text-terracota-texto'}`}
               >
                 {estadoMod.mensaje}
               </p>

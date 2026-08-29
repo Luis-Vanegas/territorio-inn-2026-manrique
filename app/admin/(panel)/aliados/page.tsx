@@ -55,8 +55,8 @@ export default async function ModeracionPage({
               className={[
                 'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-mono text-xs transition-colors',
                 activo
-                  ? 'border-terracota bg-terracota text-hueso'
-                  : 'border-tinta/15 text-tinta/65 hover:border-terracota hover:text-terracota',
+                  ? 'border-terracota-texto bg-terracota-texto text-hueso'
+                  : 'border-tinta/15 text-tinta/65 hover:border-terracota-texto hover:text-terracota-texto',
               ].join(' ')}
             >
               {e.etiqueta}

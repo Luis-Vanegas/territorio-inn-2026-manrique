@@ -24,7 +24,7 @@ export function RetoSection() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.2} className="mt-10 border-l-2 border-terracota pl-6">
-            <p className="font-display text-3xl italic leading-snug text-terracota sm:text-4xl">
+            <p className="font-display text-3xl italic leading-snug text-terracota-texto sm:text-4xl">
               {reto.cita}
             </p>
           </ScrollReveal>

@@ -30,7 +30,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-2xl font-medium text-tinta">{candidato.nombre}</h3>
 
-          <p className="mt-1 font-mono text-xs text-terracota">
+          <p className="mt-1 font-mono text-xs text-terracota-texto">
             {ETIQUETAS_NIVEL[candidato.nivel_formacion] ?? candidato.nivel_formacion}
             {candidato.programa && <span className="text-tinta/45"> · {candidato.programa}</span>}
             {candidato.graduado !== null && (
@@ -69,14 +69,14 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
                     type="submit"
                     name="accion"
                     value="aprobar"
-                    className="min-h-11 border border-terracota bg-terracota px-5 py-2 font-mono text-xs text-hueso transition-opacity hover:opacity-90"
+                    className="min-h-11 border border-terracota-texto bg-terracota-texto px-5 py-2 font-mono text-xs text-hueso transition-opacity hover:opacity-90"
                   >
                     Publicar
                   </button>
                   <button
                     type="button"
                     onClick={() => setRechazando(true)}
-                    className="min-h-11 border border-tinta/25 px-5 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+                    className="min-h-11 border border-tinta/25 px-5 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
                   >
                     Rechazar
                   </button>
@@ -87,7 +87,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
                     type="submit"
                     name="accion"
                     value="rechazar"
-                    className="min-h-11 border border-terracota px-5 py-2 font-mono text-xs text-terracota transition-colors hover:bg-terracota hover:text-hueso"
+                    className="min-h-11 border border-terracota-texto px-5 py-2 font-mono text-xs text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso"
                   >
                     Confirmar rechazo
                   </button>
@@ -105,7 +105,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
             {estadoMod.estado !== 'inicial' && (
               <p
                 role="status"
-                className={`font-mono text-xs ${estadoMod.estado === 'ok' ? 'text-tinta/60' : 'text-terracota'}`}
+                className={`font-mono text-xs ${estadoMod.estado === 'ok' ? 'text-tinta/60' : 'text-terracota-texto'}`}
               >
                 {estadoMod.mensaje}
               </p>

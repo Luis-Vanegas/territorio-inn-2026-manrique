@@ -187,14 +187,14 @@ export default async function EstadisticasPage() {
         <a
           href="/api/admin/exportar?conjunto=aliados"
           download
-          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
         >
           ↓ Aliados en CSV
         </a>
         <a
           href="/api/admin/exportar?conjunto=interacciones"
           download
-          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
         >
           ↓ Interacciones por día en CSV
         </a>
@@ -405,14 +405,14 @@ export default async function EstadisticasPage() {
             href="https://vercel.com/dashboard"
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
           >
             Abrir Vercel Analytics ↗
           </a>
 
           <Link
             href="/admin/aliados"
-            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
           >
             ← Volver a la cola
           </Link>

@@ -117,7 +117,7 @@ export function VitrinaAliados({
             type="button"
             onClick={pedirUbicacion}
             disabled={estadoGeo === 'pidiendo'}
-            className="group inline-flex items-center gap-2 border border-terracota px-4 py-2 font-mono text-xs text-terracota transition-all duration-200 hover:bg-terracota hover:text-hueso active:scale-[0.97] disabled:cursor-wait disabled:opacity-60"
+            className="group inline-flex items-center gap-2 border border-terracota-texto px-4 py-2 font-mono text-xs text-terracota-texto transition-all duration-200 hover:bg-terracota-texto hover:text-hueso active:scale-[0.97] disabled:cursor-wait disabled:opacity-60"
           >
             <span
               aria-hidden="true"
