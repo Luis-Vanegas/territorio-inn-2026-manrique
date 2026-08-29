@@ -38,13 +38,18 @@ export function Hero() {
               son 4 caminos reales con rutas propias — no un único CTA que
               asume que todo el mundo llega a registrar algo.
 
-              Iban los cuatro en una fila con flex-wrap, agrupados solo por
-              color. Eso dejaba la lógica "buscar vs ofrecer" viviendo
-              únicamente en el matiz (WCAG 1.4.1) y, peor, hacía que cuatro
-              botones del mismo peso compitieran entre sí: cuando todo llama
-              la atención, nada la llama. Ahora son dos bloques con encabezado
-              de texto — el agrupamiento se comunica por posición y por
-              palabra, y el color solo refuerza. */}
+              Iban los cuatro en una fila con flex-wrap, dos rellenos y dos
+              con borde. Eso dejaba la lógica "buscar vs ofrecer" viviendo
+              únicamente en el color (WCAG 1.4.1) y además hacía que dos
+              botones le gritaran más fuerte que los otros dos, sin que nadie
+              hubiera decidido comunicar esa jerarquía.
+
+              Ahora son dos bloques con encabezado de texto y los cuatro
+              botones con el mismo peso: el agrupamiento se comunica por
+              posición y por palabra, que se leen sin depender de distinguir
+              matices. Lo más fuerte del hero vuelve a ser el titular, que es
+              donde está la pregunta que el visitante tiene que responder.
+              Decisión de la usuaria de la prueba (2026-08-28). */}
           <ScrollReveal delay={0.45}>
             <div className="mt-10 grid gap-8 sm:grid-cols-2 sm:gap-10">
               {hero.gruposCta.map((grupo) => {
@@ -61,11 +66,7 @@ export function Hero() {
                         <Link
                           key={cta.href}
                           href={cta.href}
-                          className={
-                            cta.tipo === "buscar"
-                              ? "group inline-flex min-h-[44px] items-center gap-1.5 border border-terracota-texto bg-terracota-texto px-4 py-2 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
-                              : "group inline-flex min-h-[44px] items-center gap-1.5 border border-tinta/55 px-4 py-2 font-mono text-sm text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
-                          }
+                          className="group inline-flex min-h-[44px] items-center gap-1.5 border border-tinta/55 px-4 py-2.5 font-mono text-base text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
                         >
                           {cta.etiqueta}
                           <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
