@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import { hero } from "@/lib/content";
-import { MapaManrique } from "./MapaManrique";
+import { ConstelacionBarrios } from "./ConstelacionBarrios";
 import { ScrollReveal } from "./ScrollReveal";
 
 export function Hero() {
@@ -57,16 +57,22 @@ export function Hero() {
                 if (ctas.length === 0) return null;
 
                 return (
-                  <div key={grupo.tipo}>
+                  <div key={grupo.tipo} className="flex flex-col">
                     <h2 className="font-mono text-sm uppercase tracking-[0.15em] text-tinta/65">
                       {grupo.titulo}
                     </h2>
-                    <div className="mt-3 flex flex-col gap-2">
+                    {/* Sin números mágicos: las dos celdas de la grilla de
+                        arriba ya miden lo mismo (align-items: stretch), así
+                        que alcanza con que la lista ocupe todo el alto de su
+                        celda y reparta las filas en partes iguales. El botón
+                        cuyo texto envuelve define la altura y los otros tres
+                        la acompañan. */}
+                    <div className="mt-3 grid flex-1 auto-rows-fr gap-2">
                       {ctas.map((cta) => (
                         <Link
                           key={cta.href}
                           href={cta.href}
-                          className="group flex min-h-[44px] items-center justify-between gap-3 border border-tinta/55 px-4 py-2.5 font-mono text-base text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+                          className="group flex min-h-[44px] items-center justify-between gap-3 border border-tinta/55 px-4 py-2.5 font-mono text-base leading-snug text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
                         >
                           {cta.etiqueta}
                           <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
@@ -82,10 +88,13 @@ export function Hero() {
           </ScrollReveal>
         </div>
 
-        {/* El mapa entra con el mismo delay que el subtítulo: la secuencia de
-            carga es etiqueta → titular → (subtítulo + territorio) a la vez. */}
-        <ScrollReveal delay={0.3} className="lg:col-span-5 lg:mr-[calc(var(--margen-editorial)*-1)]">
-          <MapaManrique className="ml-auto w-full max-w-[300px] sm:max-w-[380px] lg:max-w-[460px]" />
+        {/* El territorio entra con el mismo delay que el subtítulo: la
+            secuencia de carga es etiqueta → titular → (subtítulo + territorio)
+            a la vez. Ya no sangra fuera del margen: el mapa lo hacía porque era
+            un gráfico que ganaba con el bleed, pero acá hay texto, y el texto
+            se lee mejor dentro de la grilla editorial que colgando del borde. */}
+        <ScrollReveal delay={0.3} className="lg:col-span-5">
+          <ConstelacionBarrios className="w-full lg:pl-4" />
         </ScrollReveal>
       </div>
     </section>
