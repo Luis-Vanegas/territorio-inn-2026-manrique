@@ -9,6 +9,13 @@
 // Es 'use client' por una sola razón: usePathname, para marcar en qué página
 // está la persona. No hay forma de saber la ruta en un Server Component sin
 // pasarla a mano desde cada página, que es peor.
+//
+// El menú inline aparece recién en xl (1440px), no en lg (1024px). A 16px —el
+// piso cómodo de lectura para navegación— los cinco ítems más el logo y el CTA
+// no entran a 1024px, y con el módulo "Inventario predictivo" prendido se
+// desbordan por bastante. La salida NO es bajarle el tamaño a la letra: es
+// dejar el desplegable, donde cada ítem tiene ancho completo, 16px y 44px de
+// alto. Entre 1024 y 1440 se ve el ☰, y está bien.
 
 'use client';
 
@@ -41,7 +48,7 @@ function esActivo(pathname: string, href: string) {
 // la terracota sobre el hueso necesita otra pista, y aria-current es la que
 // escucha el lector de pantalla.
 const BASE_ENLACE =
-  "inline-flex min-h-[44px] items-center font-mono text-sm uppercase tracking-wide transition-colors";
+  "inline-flex min-h-[44px] items-center font-mono text-base uppercase tracking-wide transition-colors";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -62,7 +69,7 @@ export function SiteHeader() {
             <span className="font-display text-lg font-medium tracking-wide text-tinta">
               CONSTELACIONES
             </span>
-            <span className="font-mono text-[10px] tracking-[0.15em] text-tinta/45">
+            <span className="font-mono text-xs tracking-[0.15em] text-tinta/60">
               COMUNA 3 · MANRIQUE
             </span>
           </span>
@@ -71,7 +78,7 @@ export function SiteHeader() {
         {/* Desktop: nav inline + CTA siempre visible */}
         <nav
           aria-label="Navegación principal"
-          className="hidden items-center gap-5 lg:flex xl:gap-7"
+          className="hidden items-center gap-6 xl:flex"
         >
           {ENLACES.map((e) => {
             const activo = esActivo(pathname, e.href);
@@ -94,13 +101,13 @@ export function SiteHeader() {
 
         <Link
           href="/aliados/registro"
-          className="hidden min-h-[44px] shrink-0 items-center border border-terracota-texto bg-terracota-texto px-4 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto lg:inline-flex"
+          className="hidden min-h-[44px] shrink-0 items-center border border-terracota-texto bg-terracota-texto px-4 font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto xl:inline-flex"
         >
           Sumar mi negocio →
         </Link>
 
         {/* Mobile: <details> nativo, cero JavaScript */}
-        <details className="group relative lg:hidden">
+        <details className="group relative xl:hidden">
           <summary
             className="flex h-11 w-11 cursor-pointer list-none items-center justify-center border border-tinta/15 text-tinta [&::-webkit-details-marker]:hidden"
             aria-label="Abrir menú"
@@ -111,7 +118,7 @@ export function SiteHeader() {
 
           <nav
             aria-label="Navegación principal"
-            className="absolute right-0 top-12 flex w-60 flex-col gap-1 border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
+            className="absolute right-0 top-12 flex w-72 flex-col gap-1 border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
           >
             {ENLACES.map((e) => {
               const activo = esActivo(pathname, e.href);
@@ -132,7 +139,7 @@ export function SiteHeader() {
             })}
             <Link
               href="/aliados/registro"
-              className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-terracota-texto bg-terracota-texto px-3 text-center font-mono text-sm text-hueso"
+              className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-terracota-texto bg-terracota-texto px-3 text-center font-mono text-base text-hueso"
             >
               Sumar mi negocio →
             </Link>
