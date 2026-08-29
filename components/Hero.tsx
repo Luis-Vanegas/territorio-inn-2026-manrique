@@ -61,12 +61,12 @@ export function Hero() {
                     <h2 className="font-mono text-sm uppercase tracking-[0.15em] text-tinta/65">
                       {grupo.titulo}
                     </h2>
-                    <div className="mt-3 flex flex-col items-start gap-2">
+                    <div className="mt-3 flex flex-col gap-2">
                       {ctas.map((cta) => (
                         <Link
                           key={cta.href}
                           href={cta.href}
-                          className="group inline-flex min-h-[44px] items-center gap-1.5 border border-tinta/55 px-4 py-2.5 font-mono text-base text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+                          className="group flex min-h-[44px] items-center justify-between gap-3 border border-tinta/55 px-4 py-2.5 font-mono text-base text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
                         >
                           {cta.etiqueta}
                           <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
