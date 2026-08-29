@@ -12,12 +12,12 @@ cada formulario.
 Tabla: `Probá` → `Prueba` · `Intentá` → `Intenta` · `Escribí` → `Escribe` ·
 `Completá` → `Completa`. No tocar comentarios de código.
 
-- [ ] `lib/actions/registrarServicio.ts` — líneas 70, 77, 81, 134
-- [ ] `lib/actions/registrarPortafolio.ts` — líneas 57, 68, 73, 137
-- [ ] `lib/actions/registrarCandidato.ts` — líneas 46, 53, 57, 84
-- [ ] `lib/actions/gestionarEstado.ts` — líneas 44, 89, 147, 157
-- [ ] `lib/actions/registrarPeticion.ts` — líneas 34, 50
-- [ ] `lib/actions/camposPersonalizados.ts` — línea 81
+- [x] `lib/actions/registrarServicio.ts` — líneas 70, 77, 81, 134
+- [x] `lib/actions/registrarPortafolio.ts` — líneas 57, 68, 73, 137
+- [x] `lib/actions/registrarCandidato.ts` — líneas 46, 53, 57, 84
+- [x] `lib/actions/gestionarEstado.ts` — líneas 44, 89, 147, 157
+- [x] `lib/actions/registrarPeticion.ts` — líneas 34, 50
+- [x] `lib/actions/camposPersonalizados.ts` — línea 81
 
 Al terminar: `npm run lint && npm run typecheck` (son solo strings).
 
@@ -40,6 +40,18 @@ Hecho, en la rama `a11y-addendum-2`:
       mobile; ahora son lista HTML en `text-base`. El dibujo queda decorativo
       y oculto en mobile.
 - [x] **`prefers-reduced-motion` global** + `scroll-behavior: auto`.
+- [x] **Menú a 16px.** 14px seguía siendo chico según la usuaria. A 16px el
+      menú inline no entra a 1024px, así que el desplegable cubre hasta xl en
+      vez de encogerle la letra a nadie.
+- [x] **Barrido de contraste del acento** (157 líneas, 48 archivos).
+      `terracota` #C55A3C sobre hueso da 3,93:1 y AA pide 4,5:1 — el sitio
+      incumplía. Donde el acento es texto, o es fill con texto encima, pasa a
+      `terracota-texto` #A34B33 (5,34:1). Sigue vivo en bordes, subrayados,
+      puntos y fondos tenues: ahí 3:1 alcanza y es lo que sostiene la
+      identidad.
+- [x] **Los cuatro CTA del hero, mismo peso visual.** Los encabezados ya
+      arreglaban WCAG 1.4.1, pero la usuaria también reportó que unos
+      resaltaban más que otros. Decisión suya: los cuatro con borde.
 
 Pendiente, en orden de valor:
 
@@ -65,13 +77,19 @@ Pendiente, en orden de valor:
       resto del sitio ya está en `rem` vía las clases de Tailwind. El problema
       real de esos 30 casos es otro y más simple: **son de 9 a 11px**. Son 11
       en el sitio público y 19 en `/admin`. Priorizar los públicos.
-- [ ] **Medir el contraste de todo el sitio** con Lighthouse y corregir lo
-      que falle 4,5:1. `docs/sistema-diseno-a11y.md` ya tiene los cálculos de
-      la paleta base; falta el barrido componente por componente.
-- [ ] **Decidir si el hero lleva un solo CTA primario.** El addendum lo
-      propone y probablemente convierta mejor, pero es una decisión de
-      producto: se resuelve con una prueba de pasillo con 5 vecinos, no
-      discutiéndola.
+- [ ] **Pasar Lighthouse** para cazar lo que quede bajo 4,5:1. El acento ya
+      se barrió entero; falta verificar las opacidades de `tinta` una por una
+      (`docs/sistema-diseno-a11y.md` marca `/65` como el piso y ya detectó
+      `/50` y `/45` en uso).
+- [ ] **Volver a probar con la misma usuaria.** Reportó cinco cosas y las
+      cinco están corregidas; el ciclo se cierra cuando ella lo recorre de
+      nuevo, no cuando pasa un validador.
+- [ ] **El hero no tiene un CTA primario, a propósito.** El addendum proponía
+      dejar uno solo destacado; la usuaria pidió lo contrario, que los cuatro
+      pesen igual, porque el destacado era justo lo que la confundía. Se
+      eligió accesibilidad sobre conversión. Si más adelante los datos dicen
+      que hace falta guiar más, la prueba de pasillo con 5 vecinos es la forma
+      de resolverlo — no volver a discutirlo internamente.
 
 
 - [ ] **La pantalla de error miente.** `app/error.tsx` dice "Casi siempre es
