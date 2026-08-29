@@ -19,7 +19,7 @@ Tabla: `Probá` → `Prueba` · `Intentá` → `Intenta` · `Escribí` → `Escr
 - [x] `lib/actions/registrarPeticion.ts` — líneas 34, 50
 - [x] `lib/actions/camposPersonalizados.ts` — línea 81
 
-Al terminar: `npm run lint && npm run typecheck` (son solo strings).
+Cerrado por Antigravity en `d4459ea` (19 líneas en 6 archivos).
 
 > Nota: los mensajes de `registrarCandidato.ts` los escribí yo (Claude Code)
 > al crear el módulo Empleo, copiando el patrón de `registrarServicio` sin
@@ -52,6 +52,15 @@ Hecho, en la rama `a11y-addendum-2`:
 - [x] **Los cuatro CTA del hero, mismo peso visual.** Los encabezados ya
       arreglaban WCAG 1.4.1, pero la usuaria también reportó que unos
       resaltaban más que otros. Decisión suya: los cuatro con borde.
+- [x] **Los cuatro CTA, mismo ancho y misma altura.** El ancho lo desigualaba
+      `items-start`; la altura, que "Ofrezco un servicio a domicilio"
+      envuelve. Verificado en el navegador: 361x66 los cuatro, letra de 16px.
+- [x] **El SVG del inicio se reemplazó por `ConstelacionBarrios`.** Sacarle
+      los nombres de adentro lo dejó huérfano —una silueta con cinco puntos
+      sin nombre ocupando media pantalla—, y la usuaria lo señaló. Ahora los
+      nombres SON la constelación: Fraunces, desplazados, ninguna letra por
+      debajo de 24px. Se fueron 201 líneas (el SVG entero y su CSS) y
+      entraron 19.
 
 Pendiente, en orden de valor:
 
