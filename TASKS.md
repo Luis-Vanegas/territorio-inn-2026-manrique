@@ -19,7 +19,17 @@ Tabla: `Probá` → `Prueba` · `Intentá` → `Intenta` · `Escribí` → `Escr
 - [x] `lib/actions/registrarPeticion.ts` — líneas 34, 50
 - [x] `lib/actions/camposPersonalizados.ts` — línea 81
 
-Cerrado por Antigravity en `d4459ea` (19 líneas en 6 archivos).
+Cerrado por Antigravity en `d4459ea` (19 líneas en 6 archivos) — correcto,
+pero la lista de arriba estaba **incompleta y la escribí yo**: `lib/actions/`
+tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
+`atenderPeticion.ts` y `camposPersonalizados.ts` (líneas 45 y 94, no solo la
+81). Completado en `bcfcc49`.
+
+> **Cómo delegar tareas mecánicas de acá en adelante:** se pasa el *criterio
+> de búsqueda* ("barré `lib/actions/` entero buscando estas formas"), nunca un
+> inventario de archivos y líneas hecho a mano. El inventario hereda los
+> errores de quien lo escribió y el ejecutor no tiene forma de detectarlos —
+> hizo bien su trabajo y el resultado igual quedó incompleto.
 
 > Nota: los mensajes de `registrarCandidato.ts` los escribí yo (Claude Code)
 > al crear el módulo Empleo, copiando el patrón de `registrarServicio` sin
