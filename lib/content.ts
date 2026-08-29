@@ -26,9 +26,13 @@ export interface ModuloFuturo {
 // mismo flag que usa el menú (SiteHeader) vía enfoque.modulos.
 const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === "true";
 
+// Mismo mecanismo que Servicios: arranca apagado, se prende primero en
+// preproducción para revisarlo. Lo usan el Hero y el menú.
+const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
+
 export const hero = {
   etiqueta: "MEDELLÍN · 2026",
-  titular: "¿Buscas un negocio o servicio en Manrique? ¿O tienes uno para ofrecer?",
+  titular: "¿Buscas un negocio, un servicio o trabajo en Manrique? ¿O tienes algo para ofrecer?",
   subtitulo:
     "Una propuesta de datos abiertos para entender y fortalecer el empleo local.",
   // Bifurcación de intención: Aliados (negocios con dirección en el mapa) y
@@ -40,9 +44,24 @@ export const hero = {
     ...(SERVICIOS_ACTIVO
       ? [{ tipo: "buscar" as const, etiqueta: "Busco un servicio a domicilio", href: "/servicios" }]
       : []),
+    // Empleo faltaba entero: no era que el flag lo escondiera, es que nunca se
+    // le definió un camino. El módulo existe, tiene menú propio y dos rutas, y
+    // desde el inicio no se llegaba a ninguna. Quien entra a buscar trabajo
+    // —que es media razón de ser del proyecto— no tenía por dónde empezar.
+    //
+    // Va del lado de "buscar" porque quien contrata está buscando a alguien;
+    // /empleo es el listado de vecinos disponibles.
+    ...(EMPLEO_ACTIVO
+      ? [{ tipo: "buscar" as const, etiqueta: "Busco a quién contratar", href: "/empleo" }]
+      : []),
     { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/aliados/registro" },
     ...(SERVICIOS_ACTIVO
       ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco un servicio a domicilio", href: "/servicios/registro" }]
+      : []),
+    // Y del lado de "ofrecer" porque quien busca trabajo está ofreciendo lo
+    // suyo; /empleo/registro es donde se anota.
+    ...(EMPLEO_ACTIVO
+      ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco mi trabajo", href: "/empleo/registro" }]
       : []),
   ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
   // Los cuatro caminos se agrupaban solo por color, y el color era el único
@@ -73,10 +92,6 @@ export const reto = {
 // renumera automáticamente por posición en vez de tener el número escrito a
 // mano, para que no quede desincronizado del listado real.
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
-
-// Mismo mecanismo que Servicios: arranca apagado, se prende primero en
-// preproducción para revisarlo.
-const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
 
 const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
