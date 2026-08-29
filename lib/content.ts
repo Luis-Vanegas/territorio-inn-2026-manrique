@@ -58,10 +58,16 @@ export const hero = {
     ...(SERVICIOS_ACTIVO
       ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco un servicio a domicilio", href: "/servicios/registro" }]
       : []),
-    // Y del lado de "ofrecer" porque quien busca trabajo está ofreciendo lo
-    // suyo; /empleo/registro es donde se anota.
+    // Queda del lado de "ofrecer" —quien busca trabajo está ofreciendo lo
+    // suyo, y /empleo/registro es donde se anota— aunque la etiqueta diga
+    // "buscando". Decisión de la usuaria, con el desajuste sobre la mesa:
+    // "Ofrezco mi trabajo" era gramaticalmente correcto para el grupo pero
+    // sonaba a transacción, justo en el botón donde más falta hace la
+    // calidez. Entre la coherencia con el encabezado y que la persona
+    // entienda sin dudar para qué es el botón, gana lo segundo: nadie lee
+    // los encabezados de grupo, todo el mundo lee el botón.
     ...(EMPLEO_ACTIVO
-      ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco mi trabajo", href: "/empleo/registro" }]
+      ? [{ tipo: "ofrecer" as const, etiqueta: "Estoy buscando trabajo", href: "/empleo/registro" }]
       : []),
   ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
   // Los cuatro caminos se agrupaban solo por color, y el color era el único
