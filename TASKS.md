@@ -27,6 +27,53 @@ Al terminar: `npm run lint && npm run typecheck` (son solo strings).
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
 
+### Addendum 2 de la auditoría (accesibilidad visual) — 2026-08-28
+
+Hecho, en la rama `a11y-addendum-2`:
+
+- [x] **Menú: estado activo.** `aria-current="page"` + tres señales visuales
+      (peso, subrayado, color), texto a 14px y área táctil de 44px.
+- [x] **Hero: los 4 CTA agrupados** en "Estoy buscando" / "Tengo algo para
+      ofrecer", con encabezado de texto. El color deja de ser el único
+      portador del significado (WCAG 1.4.1).
+- [x] **Barrios del hero fuera del SVG.** Eran `<text>` a 5,2px efectivos en
+      mobile; ahora son lista HTML en `text-base`. El dibujo queda decorativo
+      y oculto en mobile.
+- [x] **`prefers-reduced-motion` global** + `scroll-behavior: auto`.
+
+Pendiente, en orden de valor:
+
+- [ ] **Desplegar.** El punto 3 del addendum ("el sitio tiene tres barras de
+      navegación") **no es un bug del código**: hay un solo `SiteHeader` en
+      `app/(site)/layout.tsx`. Lo que vio la auditoría es producción
+      desactualizada (Empleo, Hero y mapa nunca se desplegaron) más los flags
+      `NEXT_PUBLIC_MODULO_*`, que filtran los ítems del menú. Se cierra
+      desplegando, no editando.
+- [ ] **Cablear los colores de Tailwind a variables CSS** para que
+      `prefers-contrast: more` y `prefers-color-scheme: dark` puedan
+      funcionar. Hoy `tailwind.config.ts` tiene los hex literales, así que
+      redefinir `--color-tinta` en `globals.css` no afecta a `text-tinta`.
+      Ojo: hay que pasar las variables a formato de canal
+      (`--color-tinta: 26 26 26`) y el config a
+      `rgb(var(--color-tinta) / <alpha-value>)`, porque si no Tailwind
+      **descarta las opacidades** y el sitio usa `text-tinta/65`, `/70`, `/80`
+      por todas partes. Es un refactor transversal con riesgo real, va en su
+      propia rama y con revisión visual antes de mergear.
+- [ ] **Los 30 `text-[Npx]`.** El diagnóstico del addendum ("px hace que el
+      sitio ignore el zoom") es impreciso: el zoom de página sí escala px, lo
+      que ignoran es el *tamaño de fuente predeterminado* del navegador. Y el
+      resto del sitio ya está en `rem` vía las clases de Tailwind. El problema
+      real de esos 30 casos es otro y más simple: **son de 9 a 11px**. Son 11
+      en el sitio público y 19 en `/admin`. Priorizar los públicos.
+- [ ] **Medir el contraste de todo el sitio** con Lighthouse y corregir lo
+      que falle 4,5:1. `docs/sistema-diseno-a11y.md` ya tiene los cálculos de
+      la paleta base; falta el barrido componente por componente.
+- [ ] **Decidir si el hero lleva un solo CTA primario.** El addendum lo
+      propone y probablemente convierta mejor, pero es una decisión de
+      producto: se resuelve con una prueba de pasillo con 5 vecinos, no
+      discutiéndola.
+
+
 - [ ] **La pantalla de error miente.** `app/error.tsx` dice "Casi siempre es
       la base de datos tardando en responder" para *cualquier* fallo. El 413
       de fotos que reportó Luis (2026-08-27) mostró ese texto y mandó el
