@@ -84,7 +84,7 @@ export function Hero() {
         {/* El mapa entra con el mismo delay que el subtítulo: la secuencia de
             carga es etiqueta → titular → (subtítulo + territorio) a la vez. */}
         <ScrollReveal delay={0.3} className="lg:col-span-5 lg:mr-[calc(var(--margen-editorial)*-1)]">
-          <MapaManrique className="pointer-events-none ml-auto h-auto w-full max-w-[300px] text-tinta/25 sm:max-w-[380px] lg:max-w-[460px]" />
+          <MapaManrique className="ml-auto w-full max-w-[300px] sm:max-w-[380px] lg:max-w-[460px]" />
         </ScrollReveal>
       </div>
     </section>
