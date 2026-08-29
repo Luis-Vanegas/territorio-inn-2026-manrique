@@ -17,6 +17,7 @@ import {
 } from '@/lib/validation/servicio.schema';
 import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
 import { comprimirImagen, pesoLegible } from '@/lib/imagen/comprimir';
+import { CampoFormulario } from '@/components/CampoFormulario';
 
 const ESTADO_INICIAL: EstadoRegistroServicio = { estado: 'inicial' };
 
@@ -92,32 +93,12 @@ const claseEtiqueta = 'block font-mono text-xs uppercase tracking-wider text-tin
 function Error({ mensajes }: { mensajes?: string[] }) {
   if (!mensajes?.length) return null;
   return (
-    <p role="alert" className="mt-2 font-sans text-xs text-terracota">
+    <p role="alert" className="mt-2 font-sans text-xs text-terracota-texto">
       {mensajes[0]}
     </p>
   );
 }
 
-function Campo({
-  etiqueta,
-  ayuda,
-  children,
-  errores,
-}: {
-  etiqueta: string;
-  ayuda?: string;
-  children: React.ReactNode;
-  errores?: string[];
-}) {
-  return (
-    <div>
-      <label className={claseEtiqueta}>{etiqueta}</label>
-      {ayuda && <p className="mt-1 font-sans text-xs text-tinta/50">{ayuda}</p>}
-      <div className="mt-2">{children}</div>
-      <Error mensajes={errores} />
-    </div>
-  );
-}
 
 /** Sí / No / prefiero no decir. Un booleano no alcanza: "no contestó" es un dato. */
 function TriEstado({
@@ -218,96 +199,140 @@ export function FormularioServicio({
         ayuda: 'Esto es lo que va a leer quien necesita tu servicio.',
         contenido: (
           <div className="flex flex-col gap-8">
-            <Campo
+            <CampoFormulario
+              id="nombres"
               etiqueta="Nombres"
               ayuda="Se guardan completos, en privado. En tu ficha pública solo se ve el primero, junto con tu primer apellido."
+              requerido
               errores={errores.nombres}
             >
-              <input
-                key={`nombres-${intentoId}`}
-                name="nombres"
-                defaultValue={valoresPrevios.nombres}
-                className={claseInput}
-                placeholder="Juan Pablo"
-              />
-            </Campo>
+              {(p) => (
+                <input
+                  {...p}
+                  key={`nombres-${intentoId}`}
+                  name="nombres"
+                  defaultValue={valoresPrevios.nombres}
+                  className={claseInput}
+                  placeholder="Juan Pablo"
+                />
+              )}
+            </CampoFormulario>
 
-            <Campo etiqueta="Apellidos" errores={errores.apellidos}>
-              <input
-                key={`apellidos-${intentoId}`}
-                name="apellidos"
-                defaultValue={valoresPrevios.apellidos}
-                className={claseInput}
-                placeholder="Gómez Ríos"
-              />
-            </Campo>
+            <CampoFormulario
+              id="apellidos"
+              etiqueta="Apellidos"
+              requerido
+              errores={errores.apellidos}
+            >
+              {(p) => (
+                <input
+                  {...p}
+                  key={`apellidos-${intentoId}`}
+                  name="apellidos"
+                  defaultValue={valoresPrevios.apellidos}
+                  className={claseInput}
+                  placeholder="Gómez Ríos"
+                />
+              )}
+            </CampoFormulario>
 
-            <Campo etiqueta="Tu oficio" errores={errores.categoria_id}>
-              {/* No controlado a propósito, igual que el resto del paso 4: un
-                  <select> CONTROLADO (`value=`) no tiene "valor por defecto"
-                  nativo, así que cuando React 19 resetea el formulario al
-                  terminar la acción, el navegador lo manda al primer <option>
-                  (vacío) — y como el estado `categoria` en memoria nunca
-                  cambió, React no nota la diferencia y no lo reaplica. Con
-                  `defaultValue` + `key={intentoId}`, el nodo se remonta con el
-                  valor correcto como SU PROPIO default, inmune a ese reset.
-                  `onChange` sigue actualizando `categoria` — eso es solo para
-                  mostrar u ocultar "¿Cuál?" cuando elige "otros". */}
-              <select
-                key={`categoria_id-${intentoId}`}
-                name="categoria_id"
-                defaultValue={valoresPrevios.categoria_id ?? ''}
-                onChange={(e) => setCategoria(e.target.value)}
-                className={claseInput}
-              >
-                <option value="">Elige uno…</option>
-                {categorias.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre}
-                  </option>
-                ))}
-              </select>
-            </Campo>
+            <CampoFormulario
+              id="categoria_id"
+              etiqueta="Tu oficio"
+              requerido
+              errores={errores.categoria_id}
+            >
+              {(p) => (
+                <>
+                  {/* No controlado a propósito, igual que el resto del paso 4: un
+                      <select> CONTROLADO (`value=`) no tiene "valor por defecto"
+                      nativo, así que cuando React 19 resetea el formulario al
+                      terminar la acción, el navegador lo manda al primer <option>
+                      (vacío) — y como el estado `categoria` en memoria nunca
+                      cambió, React no nota la diferencia y no lo reaplica. Con
+                      `defaultValue` + `key={intentoId}`, el nodo se remonta con el
+                      valor correcto como SU PROPIO default, inmune a ese reset.
+                      `onChange` sigue actualizando `categoria` — eso es solo para
+                      mostrar u ocultar "¿Cuál?" cuando elige "otros". */}
+                  <select
+                    {...p}
+                    key={`categoria_id-${intentoId}`}
+                    name="categoria_id"
+                    defaultValue={valoresPrevios.categoria_id ?? ''}
+                    onChange={(e) => setCategoria(e.target.value)}
+                    className={claseInput}
+                  >
+                    <option value="">Elige uno…</option>
+                    {categorias.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </CampoFormulario>
 
             {categoria === 'otros' && (
-              <Campo etiqueta="¿Cuál?" errores={errores.categoria_otra}>
-                <input
-                  key={`categoria_otra-${intentoId}`}
-                  name="categoria_otra"
-                  defaultValue={valoresPrevios.categoria_otra ?? ''}
-                  className={claseInput}
-                  placeholder="Escribilo"
-                />
-              </Campo>
+              <CampoFormulario
+                id="categoria_otra"
+                etiqueta="¿Cuál?"
+                requerido
+                errores={errores.categoria_otra}
+              >
+                {(p) => (
+                  <input
+                    {...p}
+                    key={`categoria_otra-${intentoId}`}
+                    name="categoria_otra"
+                    defaultValue={valoresPrevios.categoria_otra ?? ''}
+                    className={claseInput}
+                    placeholder="Escríbelo"
+                  />
+                )}
+              </CampoFormulario>
             )}
 
-            <Campo
+            <CampoFormulario
+              id="descripcion"
               etiqueta="¿Qué haces exactamente?"
               ayuda="Mientras más concreto, más confianza genera. Ej: “Reparo lavadoras y neveras, hago diagnóstico a domicilio sin costo.”"
+              requerido
               errores={errores.descripcion}
             >
-              <textarea
-                key={`descripcion-${intentoId}`}
-                name="descripcion"
-                rows={4}
-                defaultValue={valoresPrevios.descripcion}
-                className={claseInput}
-                maxLength={400}
-              />
-            </Campo>
+              {(p) => (
+                <textarea
+                  {...p}
+                  key={`descripcion-${intentoId}`}
+                  name="descripcion"
+                  rows={4}
+                  defaultValue={valoresPrevios.descripcion}
+                  className={claseInput}
+                  maxLength={400}
+                />
+              )}
+            </CampoFormulario>
 
-            <Campo etiqueta="Años de experiencia" errores={errores.anos_experiencia}>
-              <input
-                key={`anos_experiencia-${intentoId}`}
-                name="anos_experiencia"
-                type="number"
-                min={0}
-                max={70}
-                defaultValue={valoresPrevios.anos_experiencia}
-                className={claseInput}
-                placeholder="5"
-              />
-            </Campo>
+            <CampoFormulario
+              id="anos_experiencia"
+              etiqueta="Años de experiencia"
+              requerido
+              errores={errores.anos_experiencia}
+            >
+              {(p) => (
+                <input
+                  {...p}
+                  key={`anos_experiencia-${intentoId}`}
+                  name="anos_experiencia"
+                  type="number"
+                  min={0}
+                  max={70}
+                  defaultValue={valoresPrevios.anos_experiencia}
+                  className={claseInput}
+                  placeholder="5"
+                />
+              )}
+            </CampoFormulario>
           </div>
         ),
       },
@@ -344,84 +369,100 @@ export function FormularioServicio({
         ayuda: 'El teléfono es lo único de este paso que se publica.',
         contenido: (
           <div className="flex flex-col gap-8">
-            <Campo
+            <CampoFormulario
+              id="telefono"
               etiqueta="Teléfono o WhatsApp"
               ayuda="Se publica. Es la única forma que va a tener la gente de escribirte."
+              requerido
               errores={errores.telefono}
             >
-              <input
-                key={`telefono-${intentoId}`}
-                name="telefono"
-                defaultValue={valoresPrevios.telefono}
-                className={claseInput}
-                placeholder="300 123 4567"
-              />
-            </Campo>
+              {(p) => (
+                <input
+                  {...p}
+                  key={`telefono-${intentoId}`}
+                  name="telefono"
+                  defaultValue={valoresPrevios.telefono}
+                  className={claseInput}
+                  placeholder="300 123 4567"
+                />
+              )}
+            </CampoFormulario>
 
-            <Campo
-              etiqueta="Correo (opcional)"
+            <CampoFormulario
+              id="correo"
+              etiqueta="Correo"
               ayuda="NO se publica. Lo usamos solo para avisarte del estado de tu registro."
               errores={errores.correo}
             >
-              <input
-                key={`correo-${intentoId}`}
-                name="correo"
-                type="email"
-                defaultValue={valoresPrevios.correo ?? ''}
-                className={claseInput}
-              />
-            </Campo>
+              {(p) => (
+                <input
+                  {...p}
+                  key={`correo-${intentoId}`}
+                  name="correo"
+                  type="email"
+                  defaultValue={valoresPrevios.correo ?? ''}
+                  className={claseInput}
+                />
+              )}
+            </CampoFormulario>
 
-            <Campo
+            <CampoFormulario
+              id="foto"
               etiqueta="Una foto tuya (privada, obligatoria)"
               ayuda="No se publica en ningún lado ni se muestra en tu ficha. La pedimos siempre para poder identificarte si llega a haber un problema — es lo que respalda el compromiso que aceptas en el último paso. JPG, PNG o WebP, hasta 5 MB."
+              requerido
               errores={errores.foto}
             >
-              <input
-                name="foto"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={async (e) => {
-                  // `e.target` se guarda ANTES del await: después de un punto de
-                  // suspensión React ya limpió `currentTarget`.
-                  const input = e.target;
-                  const f = input.files?.[0];
+              {(p) => (
+                <>
+                  <input
+                    {...p}
+                    name="foto"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={async (e) => {
+                      // `e.target` se guarda ANTES del await: después de un punto de
+                      // suspensión React ya limpió `currentTarget`.
+                      const input = e.target;
+                      const f = input.files?.[0];
 
-                  if (!f) {
-                    setNombreFoto(null);
-                    return;
-                  }
+                      if (!f) {
+                        setNombreFoto(null);
+                        return;
+                      }
 
-                  // Se avisa antes de enviar: subir una foto que el servidor va a
-                  // rechazar gasta los datos del celular de la persona al pedo.
-                  if (f.size > TAMANO_MAX_FOTO) {
-                    setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
-                    input.value = '';
-                    return;
-                  }
+                      // Se avisa antes de enviar: subir una foto que el servidor va a
+                      // rechazar gasta los datos del celular de la persona al pedo.
+                      if (f.size > TAMANO_MAX_FOTO) {
+                        setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
+                        input.value = '';
+                        return;
+                      }
 
-                  setNombreFoto(`${f.name} · optimizando…`);
+                      setNombreFoto(`${f.name} · optimizando…`);
 
-                  // Se reemplaza el archivo del input por la versión liviana: es
-                  // lo que efectivamente viaja al enviar el formulario.
-                  const optimizada = await comprimirImagen(f);
-                  if (optimizada !== f) {
-                    const dt = new DataTransfer();
-                    dt.items.add(optimizada);
-                    input.files = dt.files;
-                    setNombreFoto(
-                      `${f.name} · ${pesoLegible(f.size)} → ${pesoLegible(optimizada.size)}`,
-                    );
-                  } else {
-                    setNombreFoto(`${f.name} · ${pesoLegible(f.size)}`);
-                  }
-                }}
-                className="font-sans text-sm text-tinta/70 file:mr-3 file:border file:border-tinta/20 file:bg-transparent file:px-3 file:py-1.5 file:font-mono file:text-xs file:text-tinta/70"
-              />
-              {nombreFoto && (
-                <p className="mt-2 font-mono text-xs text-tinta/50">{nombreFoto}</p>
+                      // Se reemplaza el archivo del input por la versión liviana: es
+                      // lo que efectivamente viaja al enviar el formulario.
+                      const optimizada = await comprimirImagen(f);
+                      if (optimizada !== f) {
+                        const dt = new DataTransfer();
+                        dt.items.add(optimizada);
+                        input.files = dt.files;
+                        setNombreFoto(
+                          `${f.name} · ${pesoLegible(f.size)} → ${pesoLegible(optimizada.size)}`,
+                        );
+                      } else {
+                        setNombreFoto(`${f.name} · ${pesoLegible(f.size)}`);
+                      }
+                    }}
+                    className="font-sans text-sm text-tinta/70 file:mr-3 file:border file:border-tinta/20 file:bg-transparent file:px-3 file:py-1.5 file:font-mono file:text-xs file:text-tinta/70"
+                  />
+                  {nombreFoto && (
+                    <p className="mt-2 font-mono text-xs text-tinta/50">{nombreFoto}</p>
+                  )}
+                </>
               )}
-            </Campo>
+            </CampoFormulario>
           </div>
         ),
       },
@@ -431,51 +472,69 @@ export function FormularioServicio({
           'Estas respuestas NO se publican. Son para entender qué necesita quien trabaja por su cuenta en Manrique.',
         contenido: (
           <div className="flex flex-col gap-8">
-            <Campo
+            <CampoFormulario
+              id="mayor_dificultad"
               etiqueta="¿Qué es lo que más te dificulta conseguir trabajo?"
+              requerido
               errores={errores.mayor_dificultad}
             >
-              <textarea
-                key={`mayor_dificultad-${intentoId}`}
-                name="mayor_dificultad"
-                rows={3}
-                defaultValue={valoresPrevios.mayor_dificultad}
-                className={claseInput}
-                maxLength={300}
-              />
-            </Campo>
+              {(p) => (
+                <textarea
+                  {...p}
+                  key={`mayor_dificultad-${intentoId}`}
+                  name="mayor_dificultad"
+                  rows={3}
+                  defaultValue={valoresPrevios.mayor_dificultad}
+                  className={claseInput}
+                  maxLength={300}
+                />
+              )}
+            </CampoFormulario>
 
-            <Campo etiqueta="¿Cómo consigues clientes hoy?">
-              <select
-                key={`como_consigue_clientes-${intentoId}`}
-                name="como_consigue_clientes"
-                defaultValue={valoresPrevios.como_consigue_clientes ?? ''}
-                className={claseInput}
-              >
-                <option value="">Prefiero no decir</option>
-                {OPCIONES_COMO_CONSIGUE.map((o) => (
-                  <option key={o} value={o}>
-                    {ETIQUETAS_COMO_CONSIGUE[o]}
-                  </option>
-                ))}
-              </select>
-            </Campo>
+            <CampoFormulario
+              id="como_consigue_clientes"
+              etiqueta="¿Cómo consigues clientes hoy?"
+            >
+              {(p) => (
+                <>
+                  <select
+                    {...p}
+                    key={`como_consigue_clientes-${intentoId}`}
+                    name="como_consigue_clientes"
+                    defaultValue={valoresPrevios.como_consigue_clientes ?? ''}
+                    className={claseInput}
+                  >
+                    <option value="">Prefiero no decir</option>
+                    {OPCIONES_COMO_CONSIGUE.map((o) => (
+                      <option key={o} value={o}>
+                        {ETIQUETAS_COMO_CONSIGUE[o]}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </CampoFormulario>
 
-            <Campo etiqueta="¿Formación en el oficio?">
-              <select
-                key={`formacion-${intentoId}`}
-                name="formacion"
-                defaultValue={valoresPrevios.formacion ?? ''}
-                className={claseInput}
-              >
-                <option value="">Prefiero no decir</option>
-                {OPCIONES_FORMACION.map((o) => (
-                  <option key={o} value={o}>
-                    {ETIQUETAS_FORMACION[o]}
-                  </option>
-                ))}
-              </select>
-            </Campo>
+            <CampoFormulario id="formacion" etiqueta="¿Formación en el oficio?">
+              {(p) => (
+                <>
+                  <select
+                    {...p}
+                    key={`formacion-${intentoId}`}
+                    name="formacion"
+                    defaultValue={valoresPrevios.formacion ?? ''}
+                    className={claseInput}
+                  >
+                    <option value="">Prefiero no decir</option>
+                    {OPCIONES_FORMACION.map((o) => (
+                      <option key={o} value={o}>
+                        {ETIQUETAS_FORMACION[o]}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </CampoFormulario>
 
             <TriEstado
               key={`ingreso_principal-${intentoId}`}
@@ -563,7 +622,7 @@ export function FormularioServicio({
                   <Link
                     href="/legal/servicios"
                     target="_blank"
-                    className="text-terracota underline underline-offset-2"
+                    className="text-terracota-texto underline underline-offset-2"
                   >
                     términos del módulo Servicios
                   </Link>{' '}
@@ -663,7 +722,7 @@ export function FormularioServicio({
               <button
                 type="button"
                 onClick={() => setPaso((p) => Math.min(pasos.length - 1, p + 1))}
-                className="min-h-11 border border-tinta/25 px-6 py-2.5 font-mono text-sm text-tinta transition-colors hover:border-terracota hover:text-terracota"
+                className="min-h-11 border border-tinta/25 px-6 py-2.5 font-mono text-sm text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
               >
                 Siguiente →
               </button>

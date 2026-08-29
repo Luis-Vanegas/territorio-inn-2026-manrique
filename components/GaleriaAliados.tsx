@@ -31,7 +31,7 @@ export async function GaleriaAliados() {
           </h2>
           <Link
             href="/aliados"
-            className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+            className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
           >
             Ver todos →
           </Link>

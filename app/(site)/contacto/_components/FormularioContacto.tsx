@@ -16,7 +16,7 @@ function BotonEnviar() {
     <button
       type="submit"
       disabled={pending}
-      className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota disabled:cursor-not-allowed disabled:opacity-50"
+      className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Enviando…' : 'Enviar mensaje →'}
     </button>
@@ -31,7 +31,7 @@ export function FormularioContacto() {
   if (estado.estado === 'ok') {
     return (
       <div className="mt-14 max-w-xl border-t border-tinta/12 pt-10">
-        <span className="font-mono text-xs uppercase tracking-wider text-terracota">
+        <span className="font-mono text-xs uppercase tracking-wider text-terracota-texto">
           Mensaje recibido
         </span>
         <h2 className="mt-3 font-display text-3xl font-medium leading-tight text-tinta">
@@ -49,7 +49,7 @@ export function FormularioContacto() {
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota"
+          className="border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota-texto"
         >
           {estado.mensaje}
         </p>
@@ -70,7 +70,7 @@ export function FormularioContacto() {
           className={`mt-2 ${claseInput}`}
         />
         {err('nombre') && (
-          <p className="mt-1.5 font-mono text-xs text-terracota">{err('nombre')![0]}</p>
+          <p className="mt-1.5 font-mono text-xs text-terracota-texto">{err('nombre')![0]}</p>
         )}
       </div>
 
@@ -90,7 +90,7 @@ export function FormularioContacto() {
           className={`mt-2 ${claseInput}`}
         />
         {err('contacto') && (
-          <p className="mt-1.5 font-mono text-xs text-terracota">{err('contacto')![0]}</p>
+          <p className="mt-1.5 font-mono text-xs text-terracota-texto">{err('contacto')![0]}</p>
         )}
       </div>
 
@@ -110,7 +110,7 @@ export function FormularioContacto() {
           className={`mt-2 resize-y ${claseInput}`}
         />
         {err('mensaje') && (
-          <p className="mt-1.5 font-mono text-xs text-terracota">{err('mensaje')![0]}</p>
+          <p className="mt-1.5 font-mono text-xs text-terracota-texto">{err('mensaje')![0]}</p>
         )}
       </div>
 

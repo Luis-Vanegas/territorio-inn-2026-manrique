@@ -38,7 +38,7 @@ export default async function ServiciosPage() {
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
           Personas de Manrique que prestan su oficio yendo hasta donde está el
           cliente. A diferencia de{' '}
-          <Link href="/aliados" className="text-terracota underline underline-offset-2">
+          <Link href="/aliados" className="text-terracota-texto underline underline-offset-2">
             Aliados
           </Link>
           , acá no hay un local al que ir: son personas que se desplazan.
@@ -62,14 +62,14 @@ export default async function ServiciosPage() {
           identidad ni de antecedentes, ni una garantía sobre su trabajo.
         </p>
         <ul className="mt-4 flex list-disc flex-col gap-1.5 pl-4 font-sans text-sm leading-relaxed text-tinta/75">
-          <li>Pedí el documento cuando llegue.</li>
-          <li>Acordá el precio y el alcance antes de que empiece.</li>
-          <li>Evitá dejar a alguien solo en tu casa.</li>
+          <li>Pide el documento cuando llegue.</li>
+          <li>Acuerda el precio y el alcance antes de que empiece.</li>
+          <li>Evita dejar a alguien solo en tu casa.</li>
         </ul>
         <p className="mt-4 font-sans text-sm text-tinta/70">
           ¿Un problema con alguien de esta lista?{' '}
-          <Link href="/contacto" className="text-terracota underline underline-offset-2">
-            Reportalo acá
+          <Link href="/contacto" className="text-terracota-texto underline underline-offset-2">
+            Repórtalo aquí
           </Link>{' '}
           — el perfil se suspende mientras se revisa.
         </p>
@@ -87,10 +87,10 @@ export default async function ServiciosPage() {
       </div>
 
       <div className="mt-20 border-t border-tinta/12 pt-10">
-        <p className="font-sans text-lg text-tinta">¿Prestás un servicio a domicilio?</p>
+        <p className="font-sans text-lg text-tinta">¿Prestas un servicio a domicilio?</p>
         <Link
           href="/servicios/registro"
-          className="mt-4 inline-block min-h-11 border border-terracota bg-terracota px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
+          className="mt-4 inline-block min-h-11 border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
         >
           Publicar mi oficio →
         </Link>

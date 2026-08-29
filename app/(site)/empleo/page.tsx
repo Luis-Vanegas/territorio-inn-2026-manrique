@@ -79,7 +79,7 @@ export default async function EmpleoPage({
         <p className="font-sans text-lg text-tinta">¿Estás buscando trabajo?</p>
         <Link
           href="/empleo/registro"
-          className="mt-4 inline-block min-h-11 border border-terracota bg-terracota px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
+          className="mt-4 inline-block min-h-11 border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
         >
           Publicarme →
         </Link>

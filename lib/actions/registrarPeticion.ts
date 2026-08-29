@@ -31,7 +31,7 @@ export async function registrarPeticion(
   if (!limite.permitido) {
     return {
       estado: 'error',
-      mensaje: `Ya enviaste varios mensajes. Probá de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
+      mensaje: `Ya enviaste varios mensajes. Prueba de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
     };
   }
   await registrarIntento(ip);
@@ -47,7 +47,7 @@ export async function registrarPeticion(
     console.error('[registrarPeticion] insert falló', error);
     return {
       estado: 'error',
-      mensaje: 'No pudimos guardar tu mensaje. Intentá de nuevo en un momento.',
+      mensaje: 'No pudimos guardar tu mensaje. Intenta de nuevo en un momento.',
     };
   }
 

@@ -12,7 +12,7 @@ function BotonAtender() {
     <button
       type="submit"
       disabled={pending}
-      className="border border-terracota bg-terracota px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota disabled:cursor-not-allowed disabled:opacity-40"
+      className="border border-terracota-texto bg-terracota-texto px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-40"
     >
       {pending ? 'Guardando…' : 'Marcar como atendida'}
     </button>
@@ -27,7 +27,7 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
   if (estado.estado === 'ok') {
     return (
       <article className="border-t border-tinta/12 py-6">
-        <p className="font-mono text-xs text-terracota">{peticion.nombre} — atendida.</p>
+        <p className="font-mono text-xs text-terracota-texto">{peticion.nombre} — atendida.</p>
       </article>
     );
   }
@@ -65,7 +65,7 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
       <form action={accion} className="mt-6">
         <input type="hidden" name="id" value={peticion.id} />
         {estado.estado === 'error' && (
-          <p role="alert" className="mb-3 font-mono text-xs text-terracota">
+          <p role="alert" className="mb-3 font-mono text-xs text-terracota-texto">
             {estado.mensaje}
           </p>
         )}

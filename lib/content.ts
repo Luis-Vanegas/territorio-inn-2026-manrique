@@ -26,11 +26,15 @@ export interface ModuloFuturo {
 // mismo flag que usa el menú (SiteHeader) vía enfoque.modulos.
 const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === "true";
 
+// Mismo mecanismo que Servicios: arranca apagado, se prende primero en
+// preproducción para revisarlo. Lo usan el Hero y el menú.
+const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
+
 export const hero = {
-  etiqueta: "COMUNA 3 · MEDELLÍN · 2026",
-  titular: "¿Buscas un negocio o servicio en Manrique? ¿O tienes uno para ofrecer?",
+  etiqueta: "MEDELLÍN · 2026",
+  titular: "¿Buscas un negocio, un servicio o trabajo en Manrique? ¿O tienes algo para ofrecer?",
   subtitulo:
-    "Una propuesta de datos abiertos para entender y fortalecer el empleo en Manrique.",
+    "Una propuesta de datos abiertos para entender y fortalecer el empleo local.",
   // Bifurcación de intención: Aliados (negocios con dirección en el mapa) y
   // Servicios (oficios a domicilio) son módulos distintos con rutas propias
   // de búsqueda y de registro — el Hero tiene que separar los 4 caminos, no
@@ -40,11 +44,36 @@ export const hero = {
     ...(SERVICIOS_ACTIVO
       ? [{ tipo: "buscar" as const, etiqueta: "Busco un servicio a domicilio", href: "/servicios" }]
       : []),
+    // Empleo faltaba entero: no era que el flag lo escondiera, es que nunca se
+    // le definió un camino. El módulo existe, tiene menú propio y dos rutas, y
+    // desde el inicio no se llegaba a ninguna. Quien entra a buscar trabajo
+    // —que es media razón de ser del proyecto— no tenía por dónde empezar.
+    //
+    // Va del lado de "buscar" porque quien contrata está buscando a alguien;
+    // /empleo es el listado de vecinos disponibles.
+    ...(EMPLEO_ACTIVO
+      ? [{ tipo: "buscar" as const, etiqueta: "Busco a quién contratar", href: "/empleo" }]
+      : []),
     { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/aliados/registro" },
     ...(SERVICIOS_ACTIVO
       ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco un servicio a domicilio", href: "/servicios/registro" }]
       : []),
+    // Y del lado de "ofrecer" porque quien busca trabajo está ofreciendo lo
+    // suyo; /empleo/registro es donde se anota.
+    ...(EMPLEO_ACTIVO
+      ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco mi trabajo", href: "/empleo/registro" }]
+      : []),
   ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
+  // Los cuatro caminos se agrupaban solo por color, y el color era el único
+  // portador del significado "buscar" vs "ofrecer" — falla WCAG 1.4.1: quien
+  // no distingue los dos tonos ve cuatro botones sueltos sin relación. El
+  // encabezado de cada grupo pone esa lógica en texto; el color pasa a ser
+  // refuerzo. Orden a propósito: buscar primero, que es lo que hace la
+  // mayoría de quien llega.
+  gruposCta: [
+    { tipo: "buscar" as const, titulo: "Estoy buscando" },
+    { tipo: "ofrecer" as const, titulo: "Tengo algo para ofrecer" },
+  ],
 };
 
 export const reto = {
@@ -64,10 +93,6 @@ export const reto = {
 // mano, para que no quede desincronizado del listado real.
 const INVENTARIO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_INVENTARIO === "true";
 
-// Mismo mecanismo que Servicios: arranca apagado, se prende primero en
-// preproducción para revisarlo.
-const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
-
 const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
     slug: "inventario-predictivo",
@@ -78,7 +103,7 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
     slug: "aliados",
     nombre: "Aliados",
-    descripcion: "Negocios y oficios de Manrique, en el mapa y con contacto directo.",
+    descripcion: "Negocios y oficios del barrio, en el mapa y con contacto directo.",
     estado: "activo",
   },
   {
@@ -91,7 +116,7 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
     slug: "empleo",
     nombre: "Empleo",
-    descripcion: "Vecinos de Manrique buscando trabajo, con contacto directo.",
+    descripcion: "Vecinos buscando trabajo, con contacto directo.",
     estado: "activo",
   },
 ];

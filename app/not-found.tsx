@@ -10,7 +10,7 @@ import Link from "next/link";
 export default function NoEncontrado() {
   return (
     <main className="seccion flex min-h-[70vh] flex-col justify-center">
-      <span className="font-mono text-xs tracking-[0.2em] text-terracota">
+      <span className="font-mono text-xs tracking-[0.2em] text-terracota-texto">
         404
       </span>
 
@@ -26,14 +26,14 @@ export default function NoEncontrado() {
       <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
         <Link
           href="/"
-          className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota"
+          className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
         >
           Volver al inicio
         </Link>
 
         <Link
           href="/aliados"
-          className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+          className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
         >
           Ver el mapa de Aliados
         </Link>

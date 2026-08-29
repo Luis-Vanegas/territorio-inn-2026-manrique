@@ -35,7 +35,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
   return (
     <main className="seccion flex min-h-[70vh] flex-col justify-center">
-      <span className="font-mono text-xs tracking-[0.2em] text-terracota">
+      <span className="font-mono text-xs tracking-[0.2em] text-terracota-texto">
         ERROR
       </span>
 
@@ -52,14 +52,14 @@ export default function Error({ error, reset }: ErrorProps) {
         <button
           type="button"
           onClick={reset}
-          className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota"
+          className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
         >
           Reintentar
         </button>
 
         <Link
           href="/"
-          className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+          className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
         >
           Volver al inicio
         </Link>

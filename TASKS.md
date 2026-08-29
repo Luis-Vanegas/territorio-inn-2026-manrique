@@ -12,20 +12,203 @@ cada formulario.
 Tabla: `Probá` → `Prueba` · `Intentá` → `Intenta` · `Escribí` → `Escribe` ·
 `Completá` → `Completa`. No tocar comentarios de código.
 
-- [ ] `lib/actions/registrarServicio.ts` — líneas 70, 77, 81, 134
-- [ ] `lib/actions/registrarPortafolio.ts` — líneas 57, 68, 73, 137
-- [ ] `lib/actions/registrarCandidato.ts` — líneas 46, 53, 57, 84
-- [ ] `lib/actions/gestionarEstado.ts` — líneas 44, 89, 147, 157
-- [ ] `lib/actions/registrarPeticion.ts` — líneas 34, 50
-- [ ] `lib/actions/camposPersonalizados.ts` — línea 81
+- [x] `lib/actions/registrarServicio.ts` — líneas 70, 77, 81, 134
+- [x] `lib/actions/registrarPortafolio.ts` — líneas 57, 68, 73, 137
+- [x] `lib/actions/registrarCandidato.ts` — líneas 46, 53, 57, 84
+- [x] `lib/actions/gestionarEstado.ts` — líneas 44, 89, 147, 157
+- [x] `lib/actions/registrarPeticion.ts` — líneas 34, 50
+- [x] `lib/actions/camposPersonalizados.ts` — línea 81
 
-Al terminar: `npm run lint && npm run typecheck` (son solo strings).
+Cerrado por Antigravity en `d4459ea` (19 líneas en 6 archivos) — correcto,
+pero la lista de arriba estaba **incompleta y la escribí yo**: `lib/actions/`
+tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
+`atenderPeticion.ts` y `camposPersonalizados.ts` (líneas 45 y 94, no solo la
+81). Completado en `bcfcc49`.
+
+> **Cómo delegar tareas mecánicas de acá en adelante:** se pasa el *criterio
+> de búsqueda* ("barré `lib/actions/` entero buscando estas formas"), nunca un
+> inventario de archivos y líneas hecho a mano. El inventario hereda los
+> errores de quien lo escribió y el ejecutor no tiene forma de detectarlos —
+> hizo bien su trabajo y el resultado igual quedó incompleto.
 
 > Nota: los mensajes de `registrarCandidato.ts` los escribí yo (Claude Code)
 > al crear el módulo Empleo, copiando el patrón de `registrarServicio` sin
 > notar que arrastraba el voseo. No es deuda heredada, es mía.
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
+
+### Revisión previa a producción — 2026-08-29
+
+**Neon** (`dark-shape-12148328`, us-east-2, Postgres 18). Ciclo cierra el
+2026-09-01. Sobra cupo por todos lados:
+
+| Recurso | Uso | Límite Free | % |
+|---|---|---|---|
+| Almacenamiento | 31,5 MB | 512 MB | 6,2 % |
+| Cómputo | 6,4 CU-h | 191,9 CU-h | 3,3 % |
+| Transferencia | 7,3 MB | 5 GB | 0,15 % |
+
+Dos ramas: `main` (31,5 MB) y `dev` (`br-long-lake-ay0jaw5y`, comparte datos
+con `main` por copy-on-write, no suma almacenamiento aparte). 14 tablas.
+
+Pendiente de Neon, en orden:
+
+- [ ] **El cómputo está fijo en 0,25 CU** (`min = max = 0.25`), sin
+      autoescalado. No es un problema de cupo sino un techo de rendimiento:
+      si el sitio se presenta en un evento y entran cien personas a la vez, la
+      base no puede crecer. El plan Free permite hasta 2 CU. Subir el máximo
+      antes de cualquier lanzamiento con público.
+- [ ] **Verificar que Vercel despliegue en la región de la base.** Neon está
+      en `us-east-2` (Ohio). Si las funciones de Vercel quedan en otra región,
+      cada consulta paga el viaje de ida y vuelta entre regiones, y este sitio
+      hace varias por página.
+- [ ] **Retención de historial en 6 horas** (`history_retention_seconds:
+      21600`). Alcanza para deshacer un error que se note enseguida; no
+      alcanza para uno que se note al día siguiente. Decidir si es suficiente
+      una vez que haya datos reales de vecinos.
+- [ ] **La base acepta conexiones desde cualquier IP** (`allowed_ips` vacío).
+      Es lo normal en serverless, pero conviene dejarlo dicho: la única
+      defensa es la cadena de conexión.
+
+**Aplicación**
+
+- [x] La home hacía `listarAprobados()` dos veces por visita. Memoizada con
+      `cache()` de React (`ecfb66e`).
+- [ ] **Todas las rutas públicas son `force-dynamic`.** Es correcto hoy —se
+      eligió a propósito para que un negocio aprobado aparezca de inmediato—
+      pero significa cero caché: cada visita golpea la base. Con el tráfico
+      actual no se nota. Si el sitio se difunde en serio, el patrón a evaluar
+      es revalidación por etiqueta (`revalidateTag` al aprobar) en vez de
+      dinámico total.
+- [ ] **Falta Content-Security-Policy.** Omisión consciente y documentada en
+      `next.config.mjs` y `docs/seguridad.md`. Es lo que queda por hacer en
+      seguridad de cabeceras.
+- [ ] **`public/logos/itm.svg` no lo usa nadie.** La lista de logos
+      institucionales de `lib/content.ts` solo tiene alcaldía y presupuesto
+      participativo. O falta agregarlo, o sobra el archivo — es una decisión
+      de contenido, no técnica.
+- [ ] **Confirmar el origen y la licencia de las dos fotos del carrusel**, y
+      si la de las casas de colores es de Manrique. Sin resolver.
+
+**No se pudo revisar**
+
+- [ ] **Vercel.** El conector de Vercel pide autorización y esta sesión no
+      puede hacer el login, así que no se pudieron ver despliegues, variables
+      de entorno, uso de Blob ni región de las funciones. Autorizarlo desde
+      la configuración de conectores de claude.ai, o revisarlo a mano en el
+      panel.
+- [ ] **`npm run verificar`** (geo, constraints, campos personalizados y
+      entorno). Necesita las credenciales de `.env.local`, que están fuera de
+      permisos en esta sesión. Correrlo antes de desplegar.
+
+
+### Addendum 2 de la auditoría (accesibilidad visual) — 2026-08-28
+
+Hecho, en la rama `a11y-addendum-2`:
+
+- [x] **Menú: estado activo.** `aria-current="page"` + tres señales visuales
+      (peso, subrayado, color), texto a 14px y área táctil de 44px.
+- [x] **Hero: los 4 CTA agrupados** en "Estoy buscando" / "Tengo algo para
+      ofrecer", con encabezado de texto. El color deja de ser el único
+      portador del significado (WCAG 1.4.1).
+- [x] **Barrios del hero fuera del SVG.** Eran `<text>` a 5,2px efectivos en
+      mobile; ahora son lista HTML en `text-base`. El dibujo queda decorativo
+      y oculto en mobile.
+- [x] **`prefers-reduced-motion` global** + `scroll-behavior: auto`.
+- [x] **Menú a 16px.** 14px seguía siendo chico según la usuaria. A 16px el
+      menú inline no entra a 1024px, así que el desplegable cubre hasta xl en
+      vez de encogerle la letra a nadie.
+- [x] **Barrido de contraste del acento** (157 líneas, 48 archivos).
+      `terracota` #C55A3C sobre hueso da 3,93:1 y AA pide 4,5:1 — el sitio
+      incumplía. Donde el acento es texto, o es fill con texto encima, pasa a
+      `terracota-texto` #A34B33 (5,34:1). Sigue vivo en bordes, subrayados,
+      puntos y fondos tenues: ahí 3:1 alcanza y es lo que sostiene la
+      identidad.
+- [x] **Los cuatro CTA del hero, mismo peso visual.** Los encabezados ya
+      arreglaban WCAG 1.4.1, pero la usuaria también reportó que unos
+      resaltaban más que otros. Decisión suya: los cuatro con borde.
+- [x] **Los cuatro CTA, mismo ancho y misma altura.** El ancho lo desigualaba
+      `items-start`; la altura, que "Ofrezco un servicio a domicilio"
+      envuelve. Verificado en el navegador: 361x66 los cuatro, letra de 16px.
+- [x] **El SVG del inicio se reemplazó por `ConstelacionBarrios`.** Sacarle
+      los nombres de adentro lo dejó huérfano —una silueta con cinco puntos
+      sin nombre ocupando media pantalla—, y la usuaria lo señaló. Ahora los
+      nombres SON la constelación: Fraunces, desplazados, ninguna letra por
+      debajo de 24px. Se fueron 201 líneas (el SVG entero y su CSS) y
+      entraron 19.
+
+### Accesibilidad, segunda vuelta — 2026-08-29
+
+Hecho:
+
+- [x] **Enlace "Saltar al contenido"** (WCAG 2.4.1, nivel A). No existía. El
+      destino es un envoltorio en `app/(site)/layout.tsx`, no el `<main>` de
+      cada página, para que funcione en las diez rutas sin depender de que
+      alguien se acuerde de ponerle un id.
+- [x] **Texto repetido.** "Comuna 3" de 4 a 1, "Manrique" de 8 a 5, medido
+      sobre la página renderizada. Cuatro focos: la etiqueta del hero, el
+      subtítulo, el encabezado de barrios y la sección de Aliados destacado,
+      que decía "negocios" tres veces en tres líneas seguidas.
+- [x] **Una sola copia del campo de formulario** (`components/CampoFormulario.tsx`).
+      Había cuatro; dos ponían la `<label>` sin asociar y dejaban 18 campos sin
+      nombre accesible — el lector de pantalla leía el placeholder en su lugar.
+
+Pendiente:
+
+- [ ] **Conseguir una foto de Manrique para el hero.** Decisión de la usuaria:
+      reemplazar la constelación tipográfica por una foto real. El repo no
+      tiene ninguna — solo dos del equipo y el isotipo. Requisitos: horizontal,
+      mínimo 1600px de ancho, y consentimiento firmado si salen personas
+      reconocibles. Con la foto en mano el trabajo restante es de una sesión:
+      optimización, `alt` descriptivo y comportamiento en celular.
+- [ ] **Probar Empleo y Servicios con los flags prendidos.** La corrección de
+      los 18 campos se verificó por código y por typecheck, pero en el
+      navegador solo se pudo comprobar Aliados: las otras dos rutas dan 404
+      con los flags apagados. Antes de prenderlas, recorrer los dos
+      formularios con lector de pantalla.
+- [ ] **Decidir si las etiquetas de formulario suben a 16px.** Hoy quedaron
+      unificadas en 14px, que es lo que ya usaba Aliados. Subirlas es
+      coherente con el resto de lo que se hizo, pero cambia el aspecto de un
+      formulario que hoy funciona — va con revisión visual aparte.
+
+Pendiente, en orden de valor:
+
+- [ ] **Desplegar.** El punto 3 del addendum ("el sitio tiene tres barras de
+      navegación") **no es un bug del código**: hay un solo `SiteHeader` en
+      `app/(site)/layout.tsx`. Lo que vio la auditoría es producción
+      desactualizada (Empleo, Hero y mapa nunca se desplegaron) más los flags
+      `NEXT_PUBLIC_MODULO_*`, que filtran los ítems del menú. Se cierra
+      desplegando, no editando.
+- [ ] **Cablear los colores de Tailwind a variables CSS** para que
+      `prefers-contrast: more` y `prefers-color-scheme: dark` puedan
+      funcionar. Hoy `tailwind.config.ts` tiene los hex literales, así que
+      redefinir `--color-tinta` en `globals.css` no afecta a `text-tinta`.
+      Ojo: hay que pasar las variables a formato de canal
+      (`--color-tinta: 26 26 26`) y el config a
+      `rgb(var(--color-tinta) / <alpha-value>)`, porque si no Tailwind
+      **descarta las opacidades** y el sitio usa `text-tinta/65`, `/70`, `/80`
+      por todas partes. Es un refactor transversal con riesgo real, va en su
+      propia rama y con revisión visual antes de mergear.
+- [ ] **Los 30 `text-[Npx]`.** El diagnóstico del addendum ("px hace que el
+      sitio ignore el zoom") es impreciso: el zoom de página sí escala px, lo
+      que ignoran es el *tamaño de fuente predeterminado* del navegador. Y el
+      resto del sitio ya está en `rem` vía las clases de Tailwind. El problema
+      real de esos 30 casos es otro y más simple: **son de 9 a 11px**. Son 11
+      en el sitio público y 19 en `/admin`. Priorizar los públicos.
+- [ ] **Pasar Lighthouse** para cazar lo que quede bajo 4,5:1. El acento ya
+      se barrió entero; falta verificar las opacidades de `tinta` una por una
+      (`docs/sistema-diseno-a11y.md` marca `/65` como el piso y ya detectó
+      `/50` y `/45` en uso).
+- [ ] **Volver a probar con la misma usuaria.** Reportó cinco cosas y las
+      cinco están corregidas; el ciclo se cierra cuando ella lo recorre de
+      nuevo, no cuando pasa un validador.
+- [ ] **El hero no tiene un CTA primario, a propósito.** El addendum proponía
+      dejar uno solo destacado; la usuaria pidió lo contrario, que los cuatro
+      pesen igual, porque el destacado era justo lo que la confundía. Se
+      eligió accesibilidad sobre conversión. Si más adelante los datos dicen
+      que hace falta guiar más, la prueba de pasillo con 5 vecinos es la forma
+      de resolverlo — no volver a discutirlo internamente.
+
 
 - [ ] **La pantalla de error miente.** `app/error.tsx` dice "Casi siempre es
       la base de datos tardando en responder" para *cualquier* fallo. El 413

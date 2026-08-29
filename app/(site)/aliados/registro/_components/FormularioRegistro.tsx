@@ -16,29 +16,13 @@ import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Posicion } from './SelectorUbicacionClient';
 import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
+import { CampoFormulario } from '@/components/CampoFormulario';
+import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 
 // ─── opciones de los chips ───────────────────────────────────
 // Los `value` (name="horario" / "medios_pago" / "tipo_negocio" / "formalidad"
 // / "mayor_dolor") tienen que calzar exacto con lo que espera `desdeFormData`
 // en el schema.
-
-const BARRIOS_COMUNA_3 = [
-  'El Raizal',
-  'El Pomar',
-  'La Salle',
-  'Las Granjas',
-  'Santa Inés',
-  'Campo Valdés No. 1',
-  'San José de la Cima No. 1',
-  'San José de la Cima No. 2',
-  'La Cruz',
-  'Oriente',
-  'Versalles No. 1',
-  'Versalles No. 2',
-  'Manrique Oriental',
-  'Manrique Central No. 2',
-  'María Cano - Carambolas',
-];
 
 const OPCIONES_HORARIO_UI = [
   { valor: 'mananas', etiqueta: 'Mañanas' },
@@ -132,7 +116,7 @@ function Seccion({
             {titulo}
           </h2>
           {completa && (
-            <span className="font-mono text-xs text-terracota" aria-label="completo">
+            <span className="font-mono text-xs text-terracota-texto" aria-label="completo">
               ✓ completo
             </span>
           )}
@@ -150,62 +134,6 @@ function Seccion({
   );
 }
 
-function Campo({
-  id,
-  etiqueta,
-  ayuda,
-  requerido,
-  errores,
-  children,
-}: {
-  id: string;
-  etiqueta: string;
-  ayuda?: string;
-  requerido?: boolean;
-  errores?: string[];
-  children: (p: {
-    id: string;
-    'aria-describedby'?: string;
-    'aria-invalid'?: true;
-  }) => React.ReactNode;
-}) {
-  const idAyuda = ayuda ? `${id}-ayuda` : undefined;
-  const idError = errores?.length ? `${id}-error` : undefined;
-  const describedBy = [idAyuda, idError].filter(Boolean).join(' ') || undefined;
-
-  return (
-    <div>
-      <label htmlFor={id} className="block font-sans text-sm font-medium text-tinta">
-        {etiqueta}
-        {!requerido && (
-          <span className="ml-2 font-mono text-xs font-normal text-tinta/35">
-            opcional
-          </span>
-        )}
-      </label>
-
-      {ayuda && (
-        <p id={idAyuda} className="mt-1.5 font-sans text-sm leading-snug text-tinta/55">
-          {ayuda}
-        </p>
-      )}
-
-      <div className="mt-2.5">
-        {children({
-          id,
-          ...(describedBy ? { 'aria-describedby': describedBy } : {}),
-          ...(errores?.length ? { 'aria-invalid': true as const } : {}),
-        })}
-      </div>
-
-      {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota">
-          {errores[0]}
-        </p>
-      ) : null}
-    </div>
-  );
-}
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
@@ -232,7 +160,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
       <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
         <p className="font-mono text-xs text-tinta/50">
           {listo ? (
-            <span className="text-terracota">✓ Todo listo para enviar</span>
+            <span className="text-terracota-texto">✓ Todo listo para enviar</span>
           ) : (
             <>
               <span className="text-tinta">{porcentaje}%</span> completado · falta{' '}
@@ -244,7 +172,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
         <button
           type="submit"
           disabled={pending}
-          className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota disabled:cursor-not-allowed disabled:opacity-50"
+          className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? 'Enviando…' : 'Enviar registro →'}
         </button>
@@ -418,7 +346,7 @@ export function FormularioRegistro({
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota"
+          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota-texto"
         >
           {estado.mensaje}
         </p>
@@ -428,7 +356,7 @@ export function FormularioRegistro({
           lista de negocios, y es el paso que más se abandona si aparece al
           final, después de diez campos de texto.
 
-          Antes había acá un ChipsUnica de "cómo atendés" (tipo_presencia)
+          Antes había acá un ChipsUnica de "cómo atiendes" (tipo_presencia)
           que condicionaba si mapa/dirección/barrio eran obligatorios. El
           cliente probó esa versión y pidió sacarla — esa info no le servía.
           Vuelven a ser siempre obligatorios, como en el diseño original. */}
@@ -445,13 +373,18 @@ export function FormularioRegistro({
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
 
         {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-terracota">
+          <p className="font-mono text-xs text-terracota-texto">
             {err('latitud')?.[0] ?? err('longitud')?.[0]}
           </p>
         )}
 
         <div className="grid max-w-xl grid-cols-1 gap-6">
-          <Campo id="direccion" etiqueta="Dirección" requerido errores={err('direccion')}>
+          <CampoFormulario
+            id="direccion"
+            etiqueta="Dirección"
+            requerido
+            errores={err('direccion')}
+          >
             {(p) => (
               <input
                 {...p}
@@ -464,9 +397,9 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
+          <CampoFormulario id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
             {(p) => (
               <SelectConOtro
                 {...p}
@@ -478,7 +411,7 @@ export function FormularioRegistro({
                 placeholderOtro="Escribe el barrio"
               />
             )}
-          </Campo>
+          </CampoFormulario>
         </div>
       </Seccion>
 
@@ -487,7 +420,12 @@ export function FormularioRegistro({
         titulo="Tu negocio"
         completa={llenos.nombre && llenos.categoria}
       >
-        <Campo id="nombre" etiqueta="Nombre del negocio" requerido errores={err('nombre')}>
+        <CampoFormulario
+          id="nombre"
+          etiqueta="Nombre del negocio"
+          requerido
+          errores={err('nombre')}
+        >
           {(p) => (
             <input
               {...p}
@@ -500,9 +438,14 @@ export function FormularioRegistro({
               className={claseInput}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
+        <CampoFormulario
+          id="categoria_id"
+          etiqueta="Categoría"
+          requerido
+          errores={err('categoria_id')}
+        >
           {(p) => (
             <select
               {...p}
@@ -523,10 +466,15 @@ export function FormularioRegistro({
               ))}
             </select>
           )}
-        </Campo>
+        </CampoFormulario>
 
         {categoriaId === 'otros' && (
-          <Campo id="categoria_otra" etiqueta="¿Qué tipo de negocio es?" requerido errores={err('categoria_otra')}>
+          <CampoFormulario
+            id="categoria_otra"
+            etiqueta="¿Qué tipo de negocio es?"
+            requerido
+            errores={err('categoria_otra')}
+          >
             {(p) => (
               <input
                 {...p}
@@ -538,10 +486,10 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
         )}
 
-        <Campo
+        <CampoFormulario
           id="descripcion"
           etiqueta="Cuéntanos, ¿a qué te dedicas?"
           ayuda="Cuéntanos en pocas líneas qué vendes o qué servicio prestas. Hasta 400 caracteres."
@@ -557,7 +505,7 @@ export function FormularioRegistro({
               className={`${claseInput} resize-y`}
             />
           )}
-        </Campo>
+        </CampoFormulario>
       </Seccion>
 
       {/* Preguntas que nunca se publican — van a aliados_investigacion, una
@@ -571,7 +519,12 @@ export function FormularioRegistro({
         ayuda="Estas últimas nos ayudan a entender mejor los negocios de Manrique para el proyecto de investigación. Nunca se publica."
         completa={tipoNegocio !== '' && mayorDolor.length > 0}
       >
-        <Campo id="nombre_dueno" etiqueta="Nombre del dueño o representante" ayuda="Privado — no se publica, es solo para nuestro estudio." errores={err('nombre_dueno')}>
+        <CampoFormulario
+          id="nombre_dueno"
+          etiqueta="Nombre del dueño o representante"
+          ayuda="Privado — no se publica, es solo para nuestro estudio."
+          errores={err('nombre_dueno')}
+        >
           {(p) => (
             <input
               {...p}
@@ -582,9 +535,14 @@ export function FormularioRegistro({
               className={claseInput}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo id="tipo_negocio" etiqueta="¿Cómo describirías tu negocio?" requerido errores={err('tipo_negocio')}>
+        <CampoFormulario
+          id="tipo_negocio"
+          etiqueta="¿Cómo describirías tu negocio?"
+          requerido
+          errores={err('tipo_negocio')}
+        >
           {(p) => (
             <ChipsUnica
               {...p}
@@ -595,10 +553,14 @@ export function FormularioRegistro({
               requerido
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
         {tipoNegocio === 'otro' && (
-          <Campo id="tipo_negocio_detalle" etiqueta="¿Cuál?" errores={err('tipo_negocio_detalle')}>
+          <CampoFormulario
+            id="tipo_negocio_detalle"
+            etiqueta="¿Cuál?"
+            errores={err('tipo_negocio_detalle')}
+          >
             {(p) => (
               <input
                 {...p}
@@ -608,10 +570,10 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
         )}
 
-        <Campo id="formalidad" etiqueta="¿Tienes RUT o Cámara de Comercio?">
+        <CampoFormulario id="formalidad" etiqueta="¿Tienes RUT o Cámara de Comercio?">
           {(p) => (
             <ChipsUnica
               {...p}
@@ -621,9 +583,9 @@ export function FormularioRegistro({
               alCambiar={setFormalidad}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo
+        <CampoFormulario
           id="mayor_dolor"
           etiqueta="De las siguientes tareas del día a día, ¿cuál sientes que te quita más tiempo o te genera más dolores de cabeza?"
           ayuda="Elige hasta 2."
@@ -639,9 +601,9 @@ export function FormularioRegistro({
               alCambiar={alCambiarMayorDolor}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo
+        <CampoFormulario
           id="necesidad_crecer"
           etiqueta="Pensando en el futuro: ¿qué crees que le hace falta a tu negocio hoy para crecer más, organizarse mejor o dar el siguiente paso?"
           ayuda="¡Cuéntanos con confianza! Esta información es clave para nuestra investigación sobre las necesidades reales del sector."
@@ -656,7 +618,7 @@ export function FormularioRegistro({
               className={`${claseInput} resize-y`}
             />
           )}
-        </Campo>
+        </CampoFormulario>
       </Seccion>
 
       <Seccion
@@ -666,7 +628,7 @@ export function FormularioRegistro({
         completa={llenos.contacto}
       >
         <div className="flex flex-col gap-6">
-          <Campo id="whatsapp" etiqueta="WhatsApp" requerido errores={err('whatsapp')}>
+          <CampoFormulario id="whatsapp" etiqueta="WhatsApp" requerido errores={err('whatsapp')}>
             {(p) => (
               <input
                 {...p}
@@ -679,9 +641,9 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo id="correo" etiqueta="Correo" errores={err('correo')}>
+          <CampoFormulario id="correo" etiqueta="Correo" errores={err('correo')}>
             {(p) => (
               <input
                 {...p}
@@ -691,9 +653,9 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo
+          <CampoFormulario
             id="instagram"
             etiqueta="Instagram"
             ayuda="Usuario, @usuario o el link — como te resulte más fácil."
@@ -708,18 +670,18 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
           <button
             type="button"
             onClick={() => setMostrarOtraRed((v) => !v)}
-            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota"
+            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
           >
             {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
           </button>
 
           {mostrarOtraRed && (
-            <Campo
+            <CampoFormulario
               id="facebook"
               etiqueta="Otra red o página"
               ayuda="Facebook, TikTok, sitio web — usuario, @usuario o el link."
@@ -734,7 +696,7 @@ export function FormularioRegistro({
                   className={claseInput}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
           )}
         </div>
       </Seccion>
@@ -747,7 +709,7 @@ export function FormularioRegistro({
         <button
           type="button"
           onClick={() => setMostrarMasInfo((v) => !v)}
-          className="self-start font-mono text-xs text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+          className="self-start font-mono text-xs text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
         >
           {mostrarMasInfo
             ? '− Ocultar'
@@ -756,7 +718,7 @@ export function FormularioRegistro({
 
         {mostrarMasInfo && (
           <>
-            <Campo id="horario" etiqueta="¿Cuándo atiendes?">
+            <CampoFormulario id="horario" etiqueta="¿Cuándo atiendes?">
               {(p) => (
                 <ChipsMultiple
                   {...p}
@@ -766,9 +728,9 @@ export function FormularioRegistro({
                   alCambiar={setHorario}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
 
-            <Campo id="medios_pago" etiqueta="¿Cómo te pagan?">
+            <CampoFormulario id="medios_pago" etiqueta="¿Cómo te pagan?">
               {(p) => (
                 <ChipsMultiple
                   {...p}
@@ -778,9 +740,9 @@ export function FormularioRegistro({
                   alCambiar={setMediosPago}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
 
-            <Campo
+            <CampoFormulario
               id="punto_referencia"
               etiqueta="Punto de referencia"
               ayuda="Algo fácil de reconocer cerca del lugar."
@@ -796,13 +758,13 @@ export function FormularioRegistro({
                   className={claseInput}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
           </>
         )}
       </Seccion>
 
       <Seccion numero="06" titulo="Una foto" ayuda="Ayuda muchísimo a que te encuentren. JPG, PNG o WebP, hasta 5 MB.">
-        <Campo id="foto" etiqueta="Fotografía del negocio" errores={err('foto')}>
+        <CampoFormulario id="foto" etiqueta="Fotografía del negocio" errores={err('foto')}>
           {(p) => (
             <input
               {...p}
@@ -820,10 +782,10 @@ export function FormularioRegistro({
                 }
                 setNombreFoto(f ? f.name : null);
               }}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
         {nombreFoto && <p className="font-mono text-xs text-tinta/50">{nombreFoto}</p>}
       </Seccion>
@@ -853,13 +815,13 @@ export function FormularioRegistro({
             }
 
             return (
-              <Campo
-                key={c.id}
+              <CampoFormulario
                 id={nombre}
                 etiqueta={c.etiqueta}
                 ayuda={c.ayuda ?? undefined}
                 requerido={c.requerido}
                 errores={err(nombre)}
+                key={c.id}
               >
                 {(p) => {
                   if (c.tipo === 'seleccion') {
@@ -906,7 +868,7 @@ export function FormularioRegistro({
                     />
                   );
                 }}
-              </Campo>
+              </CampoFormulario>
             );
           })}
         </Seccion>
@@ -937,7 +899,7 @@ export function FormularioRegistro({
               <Link
                 href="/legal/terminos"
                 target="_blank"
-                className="underline decoration-terracota underline-offset-4 hover:text-terracota"
+                className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
               >
                 términos y condiciones
               </Link>
@@ -945,7 +907,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_terminos') && (
-            <p className="font-mono text-xs text-terracota">{err('acepto_terminos')![0]}</p>
+            <p className="font-mono text-xs text-terracota-texto">{err('acepto_terminos')![0]}</p>
           )}
 
           <label className="flex items-start gap-3">
@@ -961,7 +923,7 @@ export function FormularioRegistro({
               <Link
                 href="/legal/politica-datos"
                 target="_blank"
-                className="underline decoration-terracota underline-offset-4 hover:text-terracota"
+                className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
               >
                 política de tratamiento de datos
               </Link>
@@ -969,7 +931,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_habeas_data') && (
-            <p className="font-mono text-xs text-terracota">
+            <p className="font-mono text-xs text-terracota-texto">
               {err('acepto_habeas_data')![0]}
             </p>
           )}
@@ -981,7 +943,7 @@ export function FormularioRegistro({
 
       <Link
         href="/aliados"
-        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
       >
         ← Volver al mapa
       </Link>

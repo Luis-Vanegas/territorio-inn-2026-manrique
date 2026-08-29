@@ -19,7 +19,7 @@ function BotonToggle({ activo }: { activo: boolean }) {
     <button
       type="submit"
       disabled={pending}
-      className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota disabled:opacity-40"
+      className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto disabled:opacity-40"
     >
       {activo ? 'desactivar' : 'reactivar'}
     </button>
@@ -45,7 +45,7 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         <button
           type="button"
           onClick={() => setEditando(false)}
-          className="mt-4 font-mono text-xs text-tinta/45 hover:text-terracota"
+          className="mt-4 font-mono text-xs text-tinta/45 hover:text-terracota-texto"
         >
           Cancelar
         </button>
@@ -63,7 +63,7 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         <div className="flex items-center gap-2">
           <p className="font-sans text-sm font-medium text-tinta">{campo.etiqueta}</p>
           {campo.requerido && (
-            <span className="font-mono text-[10px] uppercase text-terracota">obligatorio</span>
+            <span className="font-mono text-[10px] uppercase text-terracota-texto">obligatorio</span>
           )}
           {!campo.activo && (
             <span className="font-mono text-[10px] uppercase text-tinta/40">inactivo</span>
@@ -80,7 +80,7 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         <button
           type="button"
           onClick={() => setEditando(true)}
-          className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota"
+          className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto"
         >
           editar
         </button>

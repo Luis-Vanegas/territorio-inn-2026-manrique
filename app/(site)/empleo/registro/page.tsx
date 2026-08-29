@@ -48,7 +48,7 @@ export default function RegistroCandidatoPage() {
 
         <p className="mt-6 font-sans text-sm leading-relaxed text-tinta/60">
           Antes de publicarse, un moderador revisa cada registro.{' '}
-          <Link href="/legal/empleo" className="text-terracota underline underline-offset-2">
+          <Link href="/legal/empleo" className="text-terracota-texto underline underline-offset-2">
             Términos y tratamiento de datos de este módulo
           </Link>
           .

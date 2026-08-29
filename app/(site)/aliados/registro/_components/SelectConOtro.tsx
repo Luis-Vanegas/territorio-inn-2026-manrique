@@ -58,7 +58,7 @@ export function SelectConOtro({
         <button
           type="button"
           onClick={() => alCambiar('', false)}
-          className="self-start font-mono text-sm text-tinta/45 underline decoration-tinta/20 underline-offset-4 hover:text-terracota"
+          className="self-start font-mono text-sm text-tinta/45 underline decoration-tinta/20 underline-offset-4 hover:text-terracota-texto"
         >
           ← Elegir de la lista
         </button>

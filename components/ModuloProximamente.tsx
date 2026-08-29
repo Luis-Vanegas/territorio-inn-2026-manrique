@@ -21,11 +21,11 @@ export function ModuloProximamente({ modulo }: ModuloProximamenteProps) {
 
       <p className="mt-6 max-w-lg font-sans text-lg text-tinta/70">{modulo.descripcion}</p>
 
-      <span className="mt-8 font-mono text-sm text-terracota">[ Próximamente ]</span>
+      <span className="mt-8 font-mono text-sm text-terracota-texto">[ Próximamente ]</span>
 
       <Link
         href="/#enfoque"
-        className="mt-16 inline-block w-fit font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+        className="mt-16 inline-block w-fit font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
       >
         ← Volver a Constelaciones
       </Link>

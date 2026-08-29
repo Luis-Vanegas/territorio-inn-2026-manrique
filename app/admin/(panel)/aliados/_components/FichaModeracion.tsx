@@ -34,8 +34,8 @@ function Boton({
       className={[
         'border px-4 py-2 font-mono text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40',
         variante === 'primaria'
-          ? 'border-terracota bg-terracota text-hueso hover:bg-transparent hover:text-terracota'
-          : 'border-tinta/20 text-tinta/65 hover:border-terracota hover:text-terracota',
+          ? 'border-terracota-texto bg-terracota-texto text-hueso hover:bg-transparent hover:text-terracota-texto'
+          : 'border-tinta/20 text-tinta/65 hover:border-terracota-texto hover:text-terracota-texto',
       ].join(' ')}
     >
       {etiqueta}
@@ -87,7 +87,7 @@ export function FichaModeracion({
   if (estado.estado === 'ok') {
     return (
       <article className="border-t border-tinta/12 py-6">
-        <p className="font-mono text-xs text-terracota">
+        <p className="font-mono text-xs text-terracota-texto">
           {portafolio.nombre} — {estado.mensaje}
         </p>
       </article>
@@ -98,7 +98,7 @@ export function FichaModeracion({
     <article className="border-t border-tinta/12 py-8">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto]">
         <div className="min-w-0">
-          <span className="font-mono text-[11px] uppercase tracking-wider text-terracota">
+          <span className="font-mono text-[11px] uppercase tracking-wider text-terracota-texto">
             {portafolio.categoria_nombre}
           </span>
 
@@ -193,7 +193,7 @@ export function FichaModeracion({
         )}
 
         {estado.estado === 'error' && (
-          <p role="alert" className="mb-3 font-mono text-xs text-terracota">
+          <p role="alert" className="mb-3 font-mono text-xs text-terracota-texto">
             {estado.mensaje}
           </p>
         )}
@@ -205,7 +205,7 @@ export function FichaModeracion({
               <button
                 type="button"
                 onClick={() => setMostrarRechazo(true)}
-                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-terracota hover:text-terracota"
+                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
               >
                 Rechazar…
               </button>
@@ -216,7 +216,7 @@ export function FichaModeracion({
               <button
                 type="button"
                 onClick={() => setMostrarRechazo(false)}
-                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-terracota hover:text-terracota"
+                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
               >
                 Cancelar
               </button>

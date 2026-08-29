@@ -17,7 +17,7 @@
 const claseChip =
   'flex min-h-11 cursor-pointer select-none items-center justify-center border px-4 py-3 text-center ' +
   'font-mono text-sm leading-snug transition-colors ' +
-  'peer-checked:border-terracota peer-checked:bg-terracota peer-checked:text-hueso ' +
+  'peer-checked:border-terracota-texto peer-checked:bg-terracota-texto peer-checked:text-hueso ' +
   'peer-focus-visible:ring-2 peer-focus-visible:ring-terracota peer-focus-visible:ring-offset-2 ' +
   'border-tinta/20 text-tinta/70 hover:border-tinta/40';
 

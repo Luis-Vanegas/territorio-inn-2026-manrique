@@ -49,7 +49,7 @@ export default async function AliadosPage({
   return (
     <main className="seccion">
       <header className="max-w-3xl">
-        <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota">
+        <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota-texto">
           <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />
           {modulo.numero} · en vivo
         </span>
@@ -66,7 +66,7 @@ export default async function AliadosPage({
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link
             href="/aliados/registro"
-            className="border border-terracota bg-terracota px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota"
+            className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
           >
             Poner mi negocio en el mapa →
           </Link>
@@ -87,7 +87,7 @@ export default async function AliadosPage({
             Si tienes un negocio en la Comuna 3,{' '}
             <Link
               href="/aliados/registro"
-              className="underline decoration-terracota underline-offset-4 hover:text-terracota"
+              className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
             >
               sé el primero en aparecer
             </Link>
@@ -115,7 +115,7 @@ export default async function AliadosPage({
                 No hay negocios en {nombreCategoria ?? 'esa categoría'} por ahora.{' '}
                 <Link
                   href="/aliados"
-                  className="underline decoration-terracota underline-offset-4 hover:text-terracota"
+                  className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
                 >
                   Ver todos
                 </Link>
@@ -141,7 +141,7 @@ export default async function AliadosPage({
 
       <Link
         href="/#enfoque"
-        className="mt-24 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota"
+        className="mt-24 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
       >
         ← Volver a Constelaciones
       </Link>

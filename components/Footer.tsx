@@ -25,7 +25,7 @@ export function Footer() {
               href={footer.repo}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota"
+              className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
             >
               {footer.repo.replace("https://", "")}
             </a>
@@ -43,7 +43,7 @@ export function Footer() {
           <p className="font-mono text-xs uppercase tracking-[0.15em] text-hueso/50">Contacto</p>
           <Link
             href="/contacto"
-            className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota"
+            className="mt-1 inline-block font-sans text-sm underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
           >
             Escríbenos
           </Link>
@@ -54,7 +54,7 @@ export function Footer() {
           {/* Mismo tratamiento visual que "Licencia": discreto, sin destacar, pero con
               texto legible — un link sin texto reconocible es un problema de accesibilidad,
               no solo de diseño. */}
-          <Link href="/admin/login" className="font-mono text-xs text-hueso/50 hover:text-terracota">
+          <Link href="/admin/login" className="font-mono text-xs text-hueso/50 hover:text-terracota-texto">
             Equipo
           </Link>
         </div>

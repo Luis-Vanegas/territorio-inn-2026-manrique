@@ -63,7 +63,7 @@ export async function MetricasSection() {
               <p
                 role="text"
                 aria-label={kpi.valor}
-                className="font-mono text-5xl font-medium text-terracota sm:text-6xl"
+                className="font-mono text-5xl font-medium text-terracota-texto sm:text-6xl"
               >
                 <NumeroAnimado numero={kpi.numero} decimales={kpi.decimales} sufijo={kpi.sufijo} />
               </p>

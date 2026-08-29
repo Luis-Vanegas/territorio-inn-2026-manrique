@@ -54,7 +54,7 @@ export async function registrarPortafolio(
   if (!limite.permitido) {
     return {
       estado: 'error',
-      mensaje: `Ya enviaste varios registros. Probá de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
+      mensaje: `Ya enviaste varios registros. Prueba de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
     };
   }
 
@@ -65,12 +65,12 @@ export async function registrarPortafolio(
   // 1.5 · Honeypot + tiempo mínimo de llenado. Mensaje genérico a propósito:
   // no hay que delatarle a un bot que existe una trampa.
   if (formData.get(CAMPO_TRAMPA)) {
-    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intenta de nuevo.' };
   }
 
   const iniciadoEn = Number(formData.get('iniciado_en'));
   if (!iniciadoEn || Date.now() - iniciadoEn < TIEMPO_MINIMO_MS) {
-    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intenta de nuevo.' };
   }
 
   // 2 · Forma
@@ -134,7 +134,7 @@ export async function registrarPortafolio(
     console.error('[registrarPortafolio] insert falló', error);
     return {
       estado: 'error',
-      mensaje: 'No pudimos guardar el registro. Intentá de nuevo en un momento.',
+      mensaje: 'No pudimos guardar el registro. Intenta de nuevo en un momento.',
     };
   }
 

@@ -22,7 +22,7 @@ function Boton({ children }: { children: React.ReactNode }) {
     <button
       type="submit"
       disabled={pending}
-      className="border border-terracota bg-terracota px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota disabled:cursor-not-allowed disabled:opacity-50"
+      className="border border-terracota-texto bg-terracota-texto px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Guardando…' : children}
     </button>
@@ -64,7 +64,7 @@ export function FormularioCampo({
       {campoExistente && <input type="hidden" name="id" value={campoExistente.id} />}
 
       {estado.estado === 'error' && estado.mensaje && (
-        <p role="alert" className="font-mono text-xs text-terracota">
+        <p role="alert" className="font-mono text-xs text-terracota-texto">
           {estado.mensaje}
         </p>
       )}
@@ -80,7 +80,7 @@ export function FormularioCampo({
           placeholder="Horario de atención"
           className={claseInput}
         />
-        {err('etiqueta') && <p className="mt-1 font-mono text-xs text-terracota">{err('etiqueta')}</p>}
+        {err('etiqueta') && <p className="mt-1 font-mono text-xs text-terracota-texto">{err('etiqueta')}</p>}
         {!campoExistente && (
           <p className="mt-1 font-mono text-xs text-tinta/35">
             El identificador interno se genera solo a partir de esto y no cambia después.
@@ -125,7 +125,7 @@ export function FormularioCampo({
             placeholder={'Sí\nNo\nA veces'}
             className={`${claseInput} resize-y font-mono`}
           />
-          {err('opciones') && <p className="mt-1 font-mono text-xs text-terracota">{err('opciones')}</p>}
+          {err('opciones') && <p className="mt-1 font-mono text-xs text-terracota-texto">{err('opciones')}</p>}
         </div>
       )}
 

@@ -9,6 +9,7 @@ import {
   type ValoresEnviados,
 } from '@/lib/actions/registrarCandidato';
 import { OPCIONES_NIVEL_FORMACION } from '@/lib/validation/candidato.schema';
+import { CampoFormulario } from '@/components/CampoFormulario';
 
 const ESTADO_INICIAL: EstadoRegistroCandidato = { estado: 'inicial' };
 
@@ -33,32 +34,12 @@ const claseEtiqueta = 'block font-mono text-xs uppercase tracking-wider text-tin
 function Error({ mensajes }: { mensajes?: string[] }) {
   if (!mensajes?.length) return null;
   return (
-    <p role="alert" className="mt-2 font-sans text-xs text-terracota">
+    <p role="alert" className="mt-2 font-sans text-xs text-terracota-texto">
       {mensajes[0]}
     </p>
   );
 }
 
-function Campo({
-  etiqueta,
-  ayuda,
-  children,
-  errores,
-}: {
-  etiqueta: string;
-  ayuda?: string;
-  children: React.ReactNode;
-  errores?: string[];
-}) {
-  return (
-    <div>
-      <label className={claseEtiqueta}>{etiqueta}</label>
-      {ayuda && <p className="mt-1 font-sans text-xs text-tinta/50">{ayuda}</p>}
-      <div className="mt-2">{children}</div>
-      <Error mensajes={errores} />
-    </div>
-  );
-}
 
 export function FormularioCandidato() {
   const [estado, accion] = useActionState(registrarCandidato, ESTADO_INICIAL);
@@ -105,58 +86,81 @@ export function FormularioCandidato() {
       )}
 
       <div className="flex flex-col gap-8">
-        <Campo etiqueta="Nombre" errores={errores.nombre}>
-          <input
-            key={`nombre-${intentoId}`}
-            name="nombre"
-            defaultValue={valoresPrevios.nombre}
-            className={claseInput}
-            placeholder="Juan Pablo Gómez"
-          />
-        </Campo>
+        <CampoFormulario id="nombre" etiqueta="Nombre" requerido errores={errores.nombre}>
+          {(p) => (
+            <input
+              {...p}
+              key={`nombre-${intentoId}`}
+              name="nombre"
+              defaultValue={valoresPrevios.nombre}
+              className={claseInput}
+              placeholder="Juan Pablo Gómez"
+            />
+          )}
+        </CampoFormulario>
 
-        <Campo
+        <CampoFormulario
+          id="telefono"
           etiqueta="Teléfono"
           ayuda="Se publica. Es la única forma que va a tener quien te quiera contratar de escribirte."
+          requerido
           errores={errores.telefono}
         >
-          <input
-            key={`telefono-${intentoId}`}
-            name="telefono"
-            defaultValue={valoresPrevios.telefono}
-            className={claseInput}
-            placeholder="300 123 4567"
-          />
-        </Campo>
+          {(p) => (
+            <input
+              {...p}
+              key={`telefono-${intentoId}`}
+              name="telefono"
+              defaultValue={valoresPrevios.telefono}
+              className={claseInput}
+              placeholder="300 123 4567"
+            />
+          )}
+        </CampoFormulario>
 
-        <Campo etiqueta="Nivel de formación" errores={errores.nivel_formacion}>
-          <select
-            key={`nivel_formacion-${intentoId}`}
-            name="nivel_formacion"
-            defaultValue={valoresPrevios.nivel_formacion ?? ''}
-            onChange={(e) => setNivel(e.target.value)}
-            className={claseInput}
-          >
-            <option value="">Elige uno…</option>
-            {OPCIONES_NIVEL_FORMACION.map((o) => (
-              <option key={o} value={o}>
-                {ETIQUETAS_NIVEL[o]}
-              </option>
-            ))}
-          </select>
-        </Campo>
+        <CampoFormulario
+          id="nivel_formacion"
+          etiqueta="Nivel de formación"
+          requerido
+          errores={errores.nivel_formacion}
+        >
+          {(p) => (
+            <select
+              {...p}
+              key={`nivel_formacion-${intentoId}`}
+              name="nivel_formacion"
+              defaultValue={valoresPrevios.nivel_formacion ?? ''}
+              onChange={(e) => setNivel(e.target.value)}
+              className={claseInput}
+            >
+              <option value="">Elige uno…</option>
+              {OPCIONES_NIVEL_FORMACION.map((o) => (
+                <option key={o} value={o}>
+                  {ETIQUETAS_NIVEL[o]}
+                </option>
+              ))}
+            </select>
+          )}
+        </CampoFormulario>
 
         {muestraPrograma && (
           <>
-            <Campo etiqueta="Programa o carrera" errores={errores.programa}>
-              <input
-                key={`programa-${intentoId}`}
-                name="programa"
-                defaultValue={valoresPrevios.programa ?? ''}
-                className={claseInput}
-                placeholder="Ingeniería de Sistemas"
-              />
-            </Campo>
+            <CampoFormulario
+              id="programa"
+              etiqueta="Programa o carrera"
+              errores={errores.programa}
+            >
+              {(p) => (
+                <input
+                  {...p}
+                  key={`programa-${intentoId}`}
+                  name="programa"
+                  defaultValue={valoresPrevios.programa ?? ''}
+                  className={claseInput}
+                  placeholder="Ingeniería de Sistemas"
+                />
+              )}
+            </CampoFormulario>
 
             <fieldset>
               <legend className={claseEtiqueta}>¿Ya te graduaste?</legend>
@@ -185,34 +189,44 @@ export function FormularioCandidato() {
           </>
         )}
 
-        <Campo
+        <CampoFormulario
+          id="experiencia"
           etiqueta="¿Qué sabes hacer?"
           ayuda="Mientras más concreto, más confianza genera. Ej: “Manejo Excel, atención al cliente, dos años en bodega.”"
+          requerido
           errores={errores.experiencia}
         >
-          <textarea
-            key={`experiencia-${intentoId}`}
-            name="experiencia"
-            rows={3}
-            defaultValue={valoresPrevios.experiencia}
-            className={claseInput}
-            maxLength={400}
-          />
-        </Campo>
+          {(p) => (
+            <textarea
+              {...p}
+              key={`experiencia-${intentoId}`}
+              name="experiencia"
+              rows={3}
+              defaultValue={valoresPrevios.experiencia}
+              className={claseInput}
+              maxLength={400}
+            />
+          )}
+        </CampoFormulario>
 
-        <Campo
+        <CampoFormulario
+          id="busca"
           etiqueta="¿Qué tipo de trabajo buscas?"
           ayuda="Ej: “Auxiliar administrativo”, “Cualquier cosa en bodega o logística”."
+          requerido
           errores={errores.busca}
         >
-          <input
-            key={`busca-${intentoId}`}
-            name="busca"
-            defaultValue={valoresPrevios.busca}
-            className={claseInput}
-            maxLength={200}
-          />
-        </Campo>
+          {(p) => (
+            <input
+              {...p}
+              key={`busca-${intentoId}`}
+              name="busca"
+              defaultValue={valoresPrevios.busca}
+              className={claseInput}
+              maxLength={200}
+            />
+          )}
+        </CampoFormulario>
 
         <div className="flex flex-col gap-3 border-t border-tinta/12 pt-6">
           <label className="flex items-start gap-2.5 font-sans text-sm text-tinta">
@@ -228,7 +242,7 @@ export function FormularioCandidato() {
               <Link
                 href="/legal/empleo"
                 target="_blank"
-                className="text-terracota underline underline-offset-2"
+                className="text-terracota-texto underline underline-offset-2"
               >
                 términos del módulo Empleo
               </Link>{' '}
@@ -256,7 +270,7 @@ export function FormularioCandidato() {
 
         <button
           type="submit"
-          className="min-h-11 self-start border border-terracota bg-terracota px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
+          className="min-h-11 self-start border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
         >
           Publicarme →
         </button>

@@ -6,7 +6,7 @@ import L from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
 
-import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, ZOOM } from '@/lib/geo/constantes';
+import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, TESELAS, ZOOM } from '@/lib/geo/constantes';
 import type { Coordenada } from '@/lib/geo/constantes';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
@@ -143,8 +143,8 @@ export default function MapaAliadosClient({
       className="h-full w-full"
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &middot; &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url={TESELAS.url}
+        attribution={TESELAS.atribucion}
         maxZoom={ZOOM.maximo}
       />
 
@@ -190,7 +190,7 @@ export default function MapaAliadosClient({
           }
         >
           <Popup minWidth={200}>
-            <span className="block font-mono text-[10px] uppercase tracking-wide text-terracota">
+            <span className="block font-mono text-[10px] uppercase tracking-wide text-terracota-texto">
               {p.categoria_nombre}
             </span>
             <strong className="mt-1 block font-display text-base font-medium text-tinta">
@@ -213,7 +213,7 @@ export default function MapaAliadosClient({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => contar(p.id, 'contacto')}
-                className="mt-2 inline-block font-mono text-xs text-terracota underline decoration-terracota/40 underline-offset-4 hover:text-tinta"
+                className="mt-2 inline-block font-mono text-xs text-terracota-texto underline decoration-terracota/40 underline-offset-4 hover:text-tinta"
               >
                 Escribir por WhatsApp →
               </a>

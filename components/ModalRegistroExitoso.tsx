@@ -80,7 +80,7 @@ export function ModalRegistroExitoso() {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-md border border-tinta/15 bg-hueso p-6 shadow-[0_8px_40px_rgb(26_26_26/0.15)] sm:p-8"
       >
-        <span className="font-mono text-xs text-terracota">✓ Registro guardado</span>
+        <span className="font-mono text-xs text-terracota-texto">✓ Registro guardado</span>
 
         <h2 id="modal-registro-titulo" className="mt-2 font-display text-2xl font-medium text-tinta">
           ¡Listo! Tu negocio quedó registrado.
@@ -110,7 +110,7 @@ export function ModalRegistroExitoso() {
           <button
             type="button"
             onClick={copiarLink}
-            className="shrink-0 border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+            className="shrink-0 border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
           >
             {copiado ? 'Copiado ✓' : 'Copiar'}
           </button>
@@ -120,7 +120,7 @@ export function ModalRegistroExitoso() {
           href={hrefWhatsapp}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-terracota hover:text-terracota"
+          className="mt-3 inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
         >
           <span aria-hidden="true">↗</span>
           Guardar este enlace por WhatsApp
@@ -129,7 +129,7 @@ export function ModalRegistroExitoso() {
         <div className="mt-6 flex items-center justify-between gap-4 border-t border-tinta/12 pt-5">
           <Link
             href={`/aliados/estado/${datos.token}`}
-            className="font-mono text-sm text-terracota underline decoration-terracota underline-offset-4 hover:text-terracota/80"
+            className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4 hover:text-terracota-texto/80"
           >
             Ver mi registro →
           </Link>

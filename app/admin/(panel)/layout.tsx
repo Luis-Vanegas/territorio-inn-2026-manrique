@@ -39,38 +39,38 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           </Link>
           <Link
             href="/admin/servicios"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
           >
             Servicios
           </Link>
           <Link
             href="/admin/empleo"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
           >
             Empleo
           </Link>
           <Link
             href="/admin/estadisticas"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
           >
             Estadísticas
           </Link>
           <Link
             href="/admin/campos"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
           >
             Campos
           </Link>
           <Link
             href="/admin/peticiones"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota"
+            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
           >
             Peticiones
           </Link>
           <Link
             href="/aliados"
             target="_blank"
-            className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota"
+            className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto"
           >
             ver mapa ↗
           </Link>
@@ -81,7 +81,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <form action={cerrarSesion}>
             <button
               type="submit"
-              className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota"
+              className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto"
             >
               salir
             </button>

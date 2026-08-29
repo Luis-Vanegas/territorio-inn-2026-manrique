@@ -42,7 +42,7 @@ export async function crearCampoAction(
   formData: FormData,
 ): Promise<EstadoCampo> {
   const sesion = await verificarSesion();
-  if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
+  if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Vuelve a entrar.' };
 
   const parsed = definicionCampoSchema.safeParse(datosDesdeForm(formData));
   if (!parsed.success) {
@@ -78,7 +78,7 @@ export async function crearCampoAction(
       };
     }
     console.error('[crearCampoAction]', error);
-    return { estado: 'error', mensaje: 'No se pudo crear el campo. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No se pudo crear el campo. Intenta de nuevo.' };
   }
 
   revalidatePath('/admin/campos');
@@ -91,7 +91,7 @@ export async function editarCampoAction(
   formData: FormData,
 ): Promise<EstadoCampo> {
   const sesion = await verificarSesion();
-  if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Volvé a entrar.' };
+  if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Vuelve a entrar.' };
 
   const id = String(formData.get('id') ?? '');
   if (!id) return { estado: 'error', mensaje: 'Falta el identificador del campo.' };
