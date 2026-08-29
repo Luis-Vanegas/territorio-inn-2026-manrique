@@ -16,6 +16,7 @@ import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Posicion } from './SelectorUbicacionClient';
 import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
+import { CampoFormulario } from '@/components/CampoFormulario';
 
 // ─── opciones de los chips ───────────────────────────────────
 // Los `value` (name="horario" / "medios_pago" / "tipo_negocio" / "formalidad"
@@ -150,62 +151,6 @@ function Seccion({
   );
 }
 
-function Campo({
-  id,
-  etiqueta,
-  ayuda,
-  requerido,
-  errores,
-  children,
-}: {
-  id: string;
-  etiqueta: string;
-  ayuda?: string;
-  requerido?: boolean;
-  errores?: string[];
-  children: (p: {
-    id: string;
-    'aria-describedby'?: string;
-    'aria-invalid'?: true;
-  }) => React.ReactNode;
-}) {
-  const idAyuda = ayuda ? `${id}-ayuda` : undefined;
-  const idError = errores?.length ? `${id}-error` : undefined;
-  const describedBy = [idAyuda, idError].filter(Boolean).join(' ') || undefined;
-
-  return (
-    <div>
-      <label htmlFor={id} className="block font-sans text-sm font-medium text-tinta">
-        {etiqueta}
-        {!requerido && (
-          <span className="ml-2 font-mono text-xs font-normal text-tinta/35">
-            opcional
-          </span>
-        )}
-      </label>
-
-      {ayuda && (
-        <p id={idAyuda} className="mt-1.5 font-sans text-sm leading-snug text-tinta/55">
-          {ayuda}
-        </p>
-      )}
-
-      <div className="mt-2.5">
-        {children({
-          id,
-          ...(describedBy ? { 'aria-describedby': describedBy } : {}),
-          ...(errores?.length ? { 'aria-invalid': true as const } : {}),
-        })}
-      </div>
-
-      {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota-texto">
-          {errores[0]}
-        </p>
-      ) : null}
-    </div>
-  );
-}
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
@@ -451,7 +396,12 @@ export function FormularioRegistro({
         )}
 
         <div className="grid max-w-xl grid-cols-1 gap-6">
-          <Campo id="direccion" etiqueta="Dirección" requerido errores={err('direccion')}>
+          <CampoFormulario
+            id="direccion"
+            etiqueta="Dirección"
+            requerido
+            errores={err('direccion')}
+          >
             {(p) => (
               <input
                 {...p}
@@ -464,9 +414,9 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
+          <CampoFormulario id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
             {(p) => (
               <SelectConOtro
                 {...p}
@@ -478,7 +428,7 @@ export function FormularioRegistro({
                 placeholderOtro="Escribe el barrio"
               />
             )}
-          </Campo>
+          </CampoFormulario>
         </div>
       </Seccion>
 
@@ -487,7 +437,12 @@ export function FormularioRegistro({
         titulo="Tu negocio"
         completa={llenos.nombre && llenos.categoria}
       >
-        <Campo id="nombre" etiqueta="Nombre del negocio" requerido errores={err('nombre')}>
+        <CampoFormulario
+          id="nombre"
+          etiqueta="Nombre del negocio"
+          requerido
+          errores={err('nombre')}
+        >
           {(p) => (
             <input
               {...p}
@@ -500,9 +455,14 @@ export function FormularioRegistro({
               className={claseInput}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
+        <CampoFormulario
+          id="categoria_id"
+          etiqueta="Categoría"
+          requerido
+          errores={err('categoria_id')}
+        >
           {(p) => (
             <select
               {...p}
@@ -523,10 +483,15 @@ export function FormularioRegistro({
               ))}
             </select>
           )}
-        </Campo>
+        </CampoFormulario>
 
         {categoriaId === 'otros' && (
-          <Campo id="categoria_otra" etiqueta="¿Qué tipo de negocio es?" requerido errores={err('categoria_otra')}>
+          <CampoFormulario
+            id="categoria_otra"
+            etiqueta="¿Qué tipo de negocio es?"
+            requerido
+            errores={err('categoria_otra')}
+          >
             {(p) => (
               <input
                 {...p}
@@ -538,10 +503,10 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
         )}
 
-        <Campo
+        <CampoFormulario
           id="descripcion"
           etiqueta="Cuéntanos, ¿a qué te dedicas?"
           ayuda="Cuéntanos en pocas líneas qué vendes o qué servicio prestas. Hasta 400 caracteres."
@@ -557,7 +522,7 @@ export function FormularioRegistro({
               className={`${claseInput} resize-y`}
             />
           )}
-        </Campo>
+        </CampoFormulario>
       </Seccion>
 
       {/* Preguntas que nunca se publican — van a aliados_investigacion, una
@@ -571,7 +536,12 @@ export function FormularioRegistro({
         ayuda="Estas últimas nos ayudan a entender mejor los negocios de Manrique para el proyecto de investigación. Nunca se publica."
         completa={tipoNegocio !== '' && mayorDolor.length > 0}
       >
-        <Campo id="nombre_dueno" etiqueta="Nombre del dueño o representante" ayuda="Privado — no se publica, es solo para nuestro estudio." errores={err('nombre_dueno')}>
+        <CampoFormulario
+          id="nombre_dueno"
+          etiqueta="Nombre del dueño o representante"
+          ayuda="Privado — no se publica, es solo para nuestro estudio."
+          errores={err('nombre_dueno')}
+        >
           {(p) => (
             <input
               {...p}
@@ -582,9 +552,14 @@ export function FormularioRegistro({
               className={claseInput}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo id="tipo_negocio" etiqueta="¿Cómo describirías tu negocio?" requerido errores={err('tipo_negocio')}>
+        <CampoFormulario
+          id="tipo_negocio"
+          etiqueta="¿Cómo describirías tu negocio?"
+          requerido
+          errores={err('tipo_negocio')}
+        >
           {(p) => (
             <ChipsUnica
               {...p}
@@ -595,10 +570,14 @@ export function FormularioRegistro({
               requerido
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
         {tipoNegocio === 'otro' && (
-          <Campo id="tipo_negocio_detalle" etiqueta="¿Cuál?" errores={err('tipo_negocio_detalle')}>
+          <CampoFormulario
+            id="tipo_negocio_detalle"
+            etiqueta="¿Cuál?"
+            errores={err('tipo_negocio_detalle')}
+          >
             {(p) => (
               <input
                 {...p}
@@ -608,10 +587,10 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
         )}
 
-        <Campo id="formalidad" etiqueta="¿Tienes RUT o Cámara de Comercio?">
+        <CampoFormulario id="formalidad" etiqueta="¿Tienes RUT o Cámara de Comercio?">
           {(p) => (
             <ChipsUnica
               {...p}
@@ -621,9 +600,9 @@ export function FormularioRegistro({
               alCambiar={setFormalidad}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo
+        <CampoFormulario
           id="mayor_dolor"
           etiqueta="De las siguientes tareas del día a día, ¿cuál sientes que te quita más tiempo o te genera más dolores de cabeza?"
           ayuda="Elige hasta 2."
@@ -639,9 +618,9 @@ export function FormularioRegistro({
               alCambiar={alCambiarMayorDolor}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo
+        <CampoFormulario
           id="necesidad_crecer"
           etiqueta="Pensando en el futuro: ¿qué crees que le hace falta a tu negocio hoy para crecer más, organizarse mejor o dar el siguiente paso?"
           ayuda="¡Cuéntanos con confianza! Esta información es clave para nuestra investigación sobre las necesidades reales del sector."
@@ -656,7 +635,7 @@ export function FormularioRegistro({
               className={`${claseInput} resize-y`}
             />
           )}
-        </Campo>
+        </CampoFormulario>
       </Seccion>
 
       <Seccion
@@ -666,7 +645,7 @@ export function FormularioRegistro({
         completa={llenos.contacto}
       >
         <div className="flex flex-col gap-6">
-          <Campo id="whatsapp" etiqueta="WhatsApp" requerido errores={err('whatsapp')}>
+          <CampoFormulario id="whatsapp" etiqueta="WhatsApp" requerido errores={err('whatsapp')}>
             {(p) => (
               <input
                 {...p}
@@ -679,9 +658,9 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo id="correo" etiqueta="Correo" errores={err('correo')}>
+          <CampoFormulario id="correo" etiqueta="Correo" errores={err('correo')}>
             {(p) => (
               <input
                 {...p}
@@ -691,9 +670,9 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo
+          <CampoFormulario
             id="instagram"
             etiqueta="Instagram"
             ayuda="Usuario, @usuario o el link — como te resulte más fácil."
@@ -708,7 +687,7 @@ export function FormularioRegistro({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
           <button
             type="button"
@@ -719,7 +698,7 @@ export function FormularioRegistro({
           </button>
 
           {mostrarOtraRed && (
-            <Campo
+            <CampoFormulario
               id="facebook"
               etiqueta="Otra red o página"
               ayuda="Facebook, TikTok, sitio web — usuario, @usuario o el link."
@@ -734,7 +713,7 @@ export function FormularioRegistro({
                   className={claseInput}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
           )}
         </div>
       </Seccion>
@@ -756,7 +735,7 @@ export function FormularioRegistro({
 
         {mostrarMasInfo && (
           <>
-            <Campo id="horario" etiqueta="¿Cuándo atiendes?">
+            <CampoFormulario id="horario" etiqueta="¿Cuándo atiendes?">
               {(p) => (
                 <ChipsMultiple
                   {...p}
@@ -766,9 +745,9 @@ export function FormularioRegistro({
                   alCambiar={setHorario}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
 
-            <Campo id="medios_pago" etiqueta="¿Cómo te pagan?">
+            <CampoFormulario id="medios_pago" etiqueta="¿Cómo te pagan?">
               {(p) => (
                 <ChipsMultiple
                   {...p}
@@ -778,9 +757,9 @@ export function FormularioRegistro({
                   alCambiar={setMediosPago}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
 
-            <Campo
+            <CampoFormulario
               id="punto_referencia"
               etiqueta="Punto de referencia"
               ayuda="Algo fácil de reconocer cerca del lugar."
@@ -796,13 +775,13 @@ export function FormularioRegistro({
                   className={claseInput}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
           </>
         )}
       </Seccion>
 
       <Seccion numero="06" titulo="Una foto" ayuda="Ayuda muchísimo a que te encuentren. JPG, PNG o WebP, hasta 5 MB.">
-        <Campo id="foto" etiqueta="Fotografía del negocio" errores={err('foto')}>
+        <CampoFormulario id="foto" etiqueta="Fotografía del negocio" errores={err('foto')}>
           {(p) => (
             <input
               {...p}
@@ -823,7 +802,7 @@ export function FormularioRegistro({
               className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
         {nombreFoto && <p className="font-mono text-xs text-tinta/50">{nombreFoto}</p>}
       </Seccion>
@@ -853,13 +832,13 @@ export function FormularioRegistro({
             }
 
             return (
-              <Campo
-                key={c.id}
+              <CampoFormulario
                 id={nombre}
                 etiqueta={c.etiqueta}
                 ayuda={c.ayuda ?? undefined}
                 requerido={c.requerido}
                 errores={err(nombre)}
+                key={c.id}
               >
                 {(p) => {
                   if (c.tipo === 'seleccion') {
@@ -906,7 +885,7 @@ export function FormularioRegistro({
                     />
                   );
                 }}
-              </Campo>
+              </CampoFormulario>
             );
           })}
         </Seccion>

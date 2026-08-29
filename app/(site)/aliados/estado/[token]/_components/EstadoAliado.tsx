@@ -15,6 +15,7 @@ import type { Categoria, PortafolioAdmin } from '@/lib/db/portafolios.repo';
 import type { Posicion } from '@/app/(site)/aliados/registro/_components/SelectorUbicacionClient';
 import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
 import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
+import { CampoFormulario } from '@/components/CampoFormulario';
 
 // Misma lista que FormularioRegistro.tsx — copiada, no importada, para no
 // acoplar dos rutas hermanas que solo comparten estos 15 nombres por
@@ -109,62 +110,6 @@ function Seccion({
   );
 }
 
-function Campo({
-  id,
-  etiqueta,
-  ayuda,
-  requerido,
-  errores,
-  children,
-}: {
-  id: string;
-  etiqueta: string;
-  ayuda?: string;
-  requerido?: boolean;
-  errores?: string[];
-  children: (p: {
-    id: string;
-    'aria-describedby'?: string;
-    'aria-invalid'?: true;
-  }) => React.ReactNode;
-}) {
-  const idAyuda = ayuda ? `${id}-ayuda` : undefined;
-  const idError = errores?.length ? `${id}-error` : undefined;
-  const describedBy = [idAyuda, idError].filter(Boolean).join(' ') || undefined;
-
-  return (
-    <div>
-      <label htmlFor={id} className="block font-sans text-sm font-medium text-tinta">
-        {etiqueta}
-        {!requerido && (
-          <span className="ml-2 font-mono text-xs font-normal text-tinta/35">
-            opcional
-          </span>
-        )}
-      </label>
-
-      {ayuda && (
-        <p id={idAyuda} className="mt-1.5 font-sans text-sm leading-snug text-tinta/55">
-          {ayuda}
-        </p>
-      )}
-
-      <div className="mt-2.5">
-        {children({
-          id,
-          ...(describedBy ? { 'aria-describedby': describedBy } : {}),
-          ...(errores?.length ? { 'aria-invalid': true as const } : {}),
-        })}
-      </div>
-
-      {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota-texto">
-          {errores[0]}
-        </p>
-      ) : null}
-    </div>
-  );
-}
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
@@ -338,7 +283,7 @@ function FormularioEdicion({
         )}
 
         <div className="grid max-w-xl grid-cols-1 gap-6">
-          <Campo id="direccion" etiqueta="Dirección" requerido errores={err('direccion')}>
+          <CampoFormulario id="direccion" etiqueta="Dirección" requerido errores={err('direccion')}>
             {(p) => (
               <input
                 {...p}
@@ -351,9 +296,9 @@ function FormularioEdicion({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
+          <CampoFormulario id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
             {(p) => (
               <SelectConOtro
                 {...p}
@@ -365,12 +310,12 @@ function FormularioEdicion({
                 placeholderOtro="Escribe el barrio"
               />
             )}
-          </Campo>
+          </CampoFormulario>
         </div>
       </Seccion>
 
       <Seccion numero="02" titulo="Tu negocio">
-        <Campo id="nombre" etiqueta="Nombre del negocio" requerido errores={err('nombre')}>
+        <CampoFormulario id="nombre" etiqueta="Nombre del negocio" requerido errores={err('nombre')}>
           {(p) => (
             <input
               {...p}
@@ -383,9 +328,9 @@ function FormularioEdicion({
               className={claseInput}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
+        <CampoFormulario id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
           {(p) => (
             <select
               {...p}
@@ -403,10 +348,10 @@ function FormularioEdicion({
               ))}
             </select>
           )}
-        </Campo>
+        </CampoFormulario>
 
         {categoriaId === 'otros' && (
-          <Campo id="categoria_otra" etiqueta="¿Qué tipo de negocio es?" requerido errores={err('categoria_otra')}>
+          <CampoFormulario id="categoria_otra" etiqueta="¿Qué tipo de negocio es?" requerido errores={err('categoria_otra')}>
             {(p) => (
               <input
                 {...p}
@@ -419,10 +364,10 @@ function FormularioEdicion({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
         )}
 
-        <Campo
+        <CampoFormulario
           id="descripcion"
           etiqueta="¿Qué haces?"
           ayuda="Cuenta en pocas líneas qué vendes o qué servicio prestas. Hasta 400 caracteres."
@@ -439,7 +384,7 @@ function FormularioEdicion({
               className={`${claseInput} resize-y`}
             />
           )}
-        </Campo>
+        </CampoFormulario>
       </Seccion>
 
       <Seccion
@@ -448,7 +393,7 @@ function FormularioEdicion({
         ayuda="El WhatsApp es obligatorio — es el canal que usa la gente para escribirte. Los demás son opcionales."
       >
         <div className="flex flex-col gap-6">
-          <Campo id="whatsapp" etiqueta="WhatsApp" requerido errores={err('whatsapp')}>
+          <CampoFormulario id="whatsapp" etiqueta="WhatsApp" requerido errores={err('whatsapp')}>
             {(p) => (
               <input
                 {...p}
@@ -461,9 +406,9 @@ function FormularioEdicion({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo id="correo" etiqueta="Correo" errores={err('correo')}>
+          <CampoFormulario id="correo" etiqueta="Correo" errores={err('correo')}>
             {(p) => (
               <input
                 {...p}
@@ -474,9 +419,9 @@ function FormularioEdicion({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
-          <Campo
+          <CampoFormulario
             id="instagram"
             etiqueta="Instagram"
             ayuda="Usuario, @usuario o el link — como te resulte más fácil."
@@ -492,7 +437,7 @@ function FormularioEdicion({
                 className={claseInput}
               />
             )}
-          </Campo>
+          </CampoFormulario>
 
           <button
             type="button"
@@ -503,7 +448,7 @@ function FormularioEdicion({
           </button>
 
           {mostrarOtraRed && (
-            <Campo
+            <CampoFormulario
               id="facebook"
               etiqueta="Otra red o página"
               ayuda="Facebook, TikTok, sitio web — usuario, @usuario o el link."
@@ -519,7 +464,7 @@ function FormularioEdicion({
                   className={claseInput}
                 />
               )}
-            </Campo>
+            </CampoFormulario>
           )}
         </div>
       </Seccion>
@@ -529,7 +474,7 @@ function FormularioEdicion({
         titulo="Horario y medios de pago"
         ayuda="Opcional, pero ayuda a que la gente sepa qué esperar antes de escribirte."
       >
-        <Campo id="horario" etiqueta="¿Cuándo atiendes?">
+        <CampoFormulario id="horario" etiqueta="¿Cuándo atiendes?">
           {(p) => (
             <ChipsMultiple
               {...p}
@@ -539,9 +484,9 @@ function FormularioEdicion({
               alCambiar={setHorario}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo id="medios_pago" etiqueta="¿Cómo te pagan?">
+        <CampoFormulario id="medios_pago" etiqueta="¿Cómo te pagan?">
           {(p) => (
             <ChipsMultiple
               {...p}
@@ -551,9 +496,9 @@ function FormularioEdicion({
               alCambiar={setMediosPago}
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
-        <Campo
+        <CampoFormulario
           id="punto_referencia"
           etiqueta="Punto de referencia"
           ayuda="Algo fácil de reconocer cerca del lugar."
@@ -570,7 +515,7 @@ function FormularioEdicion({
               className={claseInput}
             />
           )}
-        </Campo>
+        </CampoFormulario>
       </Seccion>
 
       <Seccion numero="05" titulo="Una foto" ayuda="JPG, PNG o WebP, hasta 5 MB.">
@@ -583,7 +528,7 @@ function FormularioEdicion({
           />
         )}
 
-        <Campo
+        <CampoFormulario
           id="foto"
           etiqueta={portafolio.foto_url ? 'Reemplazar foto' : 'Fotografía del negocio'}
           errores={err('foto')}
@@ -606,7 +551,7 @@ function FormularioEdicion({
               className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
             />
           )}
-        </Campo>
+        </CampoFormulario>
 
         {nombreFoto && <p className="font-mono text-xs text-tinta/50">{nombreFoto}</p>}
       </Seccion>
