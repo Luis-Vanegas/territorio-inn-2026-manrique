@@ -41,7 +41,7 @@ export async function actualizarPortafolio(
   if (!limite.permitido) {
     return {
       estado: 'error',
-      mensaje: `Probá de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
+      mensaje: `Prueba de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
     };
   }
   await registrarIntento(ip, 'estado');
@@ -86,7 +86,7 @@ export async function actualizarPortafolio(
     });
   } catch (error) {
     console.error('[actualizarPortafolio] update falló', error);
-    return { estado: 'error', mensaje: 'No pudimos guardar los cambios. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No pudimos guardar los cambios. Intenta de nuevo.' };
   }
 
   if (!id) {
@@ -144,7 +144,7 @@ export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
   if (!limite.permitido) {
     return {
       estado: 'error',
-      mensaje: `Probá de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
+      mensaje: `Prueba de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
     };
   }
   await registrarIntento(ip, 'estado');
@@ -154,7 +154,7 @@ export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
     resultado = await archivarPorToken(token);
   } catch (error) {
     console.error('[borrarPortafolio] falló', error);
-    return { estado: 'error', mensaje: 'No pudimos borrar el registro. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No pudimos borrar el registro. Intenta de nuevo.' };
   }
 
   if (!resultado) {

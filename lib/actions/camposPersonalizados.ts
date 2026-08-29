@@ -78,7 +78,7 @@ export async function crearCampoAction(
       };
     }
     console.error('[crearCampoAction]', error);
-    return { estado: 'error', mensaje: 'No se pudo crear el campo. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No se pudo crear el campo. Intenta de nuevo.' };
   }
 
   revalidatePath('/admin/campos');

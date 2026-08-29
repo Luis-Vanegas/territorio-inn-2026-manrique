@@ -67,18 +67,18 @@ export async function registrarServicio(
   if (!limite.permitido) {
     return {
       estado: 'error',
-      mensaje: `Ya enviaste varios registros. Probá de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
+      mensaje: `Ya enviaste varios registros. Prueba de nuevo en ${limite.minutosRestantes} minuto${limite.minutosRestantes === 1 ? '' : 's'}.`,
     };
   }
   await registrarIntento(ip);
 
   // 2 · Anti-bot
   if (formData.get(CAMPO_TRAMPA)) {
-    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intenta de nuevo.' };
   }
   const iniciadoEn = Number(formData.get('iniciado_en'));
   if (!iniciadoEn || Date.now() - iniciadoEn < TIEMPO_MINIMO_MS) {
-    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intentá de nuevo.' };
+    return { estado: 'error', mensaje: 'No pudimos procesar el registro. Intenta de nuevo.' };
   }
 
   // 3 · Forma
@@ -131,7 +131,7 @@ export async function registrarServicio(
     console.error('[registrarServicio] insert falló', error);
     return {
       estado: 'error',
-      mensaje: 'No pudimos guardar el registro. Intentá de nuevo en un momento.',
+      mensaje: 'No pudimos guardar el registro. Intenta de nuevo en un momento.',
       valores: crudo,
     };
   }
