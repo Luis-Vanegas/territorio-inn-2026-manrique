@@ -52,7 +52,7 @@ export function EquipoSection() {
                 // ya la tienen cargada.
                 <div
                   aria-hidden
-                  className="mt-4 flex aspect-[4/5] w-full items-center justify-center bg-terracota-texto font-mono text-6xl text-hueso"
+                  className="mt-4 flex aspect-[4/5] w-full items-center justify-center border border-terracota-texto/35 bg-tinta/[0.04] font-mono text-6xl text-terracota-texto"
                 >
                   {miembro.iniciales}
                 </div>
