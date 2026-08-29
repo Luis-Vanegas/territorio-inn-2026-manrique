@@ -72,6 +72,40 @@ Hecho, en la rama `a11y-addendum-2`:
       debajo de 24px. Se fueron 201 líneas (el SVG entero y su CSS) y
       entraron 19.
 
+### Accesibilidad, segunda vuelta — 2026-08-29
+
+Hecho:
+
+- [x] **Enlace "Saltar al contenido"** (WCAG 2.4.1, nivel A). No existía. El
+      destino es un envoltorio en `app/(site)/layout.tsx`, no el `<main>` de
+      cada página, para que funcione en las diez rutas sin depender de que
+      alguien se acuerde de ponerle un id.
+- [x] **Texto repetido.** "Comuna 3" de 4 a 1, "Manrique" de 8 a 5, medido
+      sobre la página renderizada. Cuatro focos: la etiqueta del hero, el
+      subtítulo, el encabezado de barrios y la sección de Aliados destacado,
+      que decía "negocios" tres veces en tres líneas seguidas.
+- [x] **Una sola copia del campo de formulario** (`components/CampoFormulario.tsx`).
+      Había cuatro; dos ponían la `<label>` sin asociar y dejaban 18 campos sin
+      nombre accesible — el lector de pantalla leía el placeholder en su lugar.
+
+Pendiente:
+
+- [ ] **Conseguir una foto de Manrique para el hero.** Decisión de la usuaria:
+      reemplazar la constelación tipográfica por una foto real. El repo no
+      tiene ninguna — solo dos del equipo y el isotipo. Requisitos: horizontal,
+      mínimo 1600px de ancho, y consentimiento firmado si salen personas
+      reconocibles. Con la foto en mano el trabajo restante es de una sesión:
+      optimización, `alt` descriptivo y comportamiento en celular.
+- [ ] **Probar Empleo y Servicios con los flags prendidos.** La corrección de
+      los 18 campos se verificó por código y por typecheck, pero en el
+      navegador solo se pudo comprobar Aliados: las otras dos rutas dan 404
+      con los flags apagados. Antes de prenderlas, recorrer los dos
+      formularios con lector de pantalla.
+- [ ] **Decidir si las etiquetas de formulario suben a 16px.** Hoy quedaron
+      unificadas en 14px, que es lo que ya usaba Aliados. Subirlas es
+      coherente con el resto de lo que se hizo, pero cambia el aspecto de un
+      formulario que hoy funciona — va con revisión visual aparte.
+
 Pendiente, en orden de valor:
 
 - [ ] **Desplegar.** El punto 3 del addendum ("el sitio tiene tres barras de
