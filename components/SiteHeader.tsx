@@ -101,7 +101,7 @@ export function SiteHeader() {
 
         <Link
           href="/aliados/registro"
-          className="hidden min-h-[44px] shrink-0 items-center border border-terracota-texto px-4 font-mono text-base text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso xl:inline-flex"
+          className="hidden min-h-[44px] shrink-0 items-center border border-terracota-texto bg-terracota-texto text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto px-4 font-mono text-base xl:inline-flex"
         >
           Sumar mi negocio →
         </Link>
@@ -139,7 +139,7 @@ export function SiteHeader() {
             })}
             <Link
               href="/aliados/registro"
-              className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-terracota-texto px-3 text-center font-mono text-base text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso"
+              className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-terracota-texto bg-terracota-texto text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto px-3 text-center font-mono text-base"
             >
               Sumar mi negocio →
             </Link>

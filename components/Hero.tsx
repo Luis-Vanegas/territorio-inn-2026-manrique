@@ -72,7 +72,7 @@ export function Hero() {
                         <Link
                           key={cta.href}
                           href={cta.href}
-                          className="group flex min-h-[44px] items-center justify-between gap-3 border border-tinta/55 px-4 py-2.5 font-mono text-base leading-snug text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+                          className="group flex min-h-[44px] items-center justify-between gap-3 border border-terracota-texto bg-terracota-texto text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto px-4 py-2.5 font-mono text-base leading-snug"
                         >
                           {cta.etiqueta}
                           <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">

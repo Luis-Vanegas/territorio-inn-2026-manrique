@@ -27,7 +27,7 @@ export async function GaleriaAliados() {
       <ScrollReveal>
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <h2 className="font-display text-4xl font-medium leading-[0.95] text-tinta sm:text-5xl">
-            Caras del barrio
+            Así se ven los negocios
           </h2>
           <Link
             href="/aliados"
