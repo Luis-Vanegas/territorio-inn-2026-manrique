@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import { hero } from "@/lib/content";
-import Image from "next/image";
+import { CarruselFotos } from "./CarruselFotos";
 import { ScrollReveal } from "./ScrollReveal";
 
 export function Hero() {
@@ -89,23 +89,15 @@ export function Hero() {
         </div>
 
         {/* El territorio entra con el mismo delay que el subtítulo: la
-            secuencia de carga es etiqueta → titular → (subtítulo + foto).
+            secuencia de carga es etiqueta → titular → (subtítulo + fotos).
 
-            `priority` porque está sobre el pliegue: sin eso Next la carga
-            perezosa y es lo último que aparece, justo al lado del titular.
-            `sizes` le dice al navegador que en pantalla ancha la foto ocupa
-            ~42vw y no el ancho completo, para que no se baje una versión más
-            pesada de la que necesita. */}
-        <ScrollReveal delay={0.3} className="lg:col-span-5">
-          <Image
-            src="/fotos/manrique-tejados.jpg"
-            alt="Tejados de barro de Manrique vistos desde lo alto, con la torre de la iglesia del barrio destacándose entre las casas y el centro de Medellín y las montañas al fondo."
-            width={1200}
-            height={650}
-            priority
-            sizes="(min-width: 1024px) 42vw, 100vw"
-            className="h-auto w-full"
-          />
+            self-stretch en vez del items-center de la grilla: centrada, la
+            foto flotaba en el medio de una columna mucho más alta que ella y
+            no se alineaba con nada. Estirada, arranca donde arranca la
+            etiqueta y termina donde terminan los botones — un bloque, no algo
+            suelto. */}
+        <ScrollReveal delay={0.3} className="lg:col-span-5 lg:self-stretch">
+          <CarruselFotos className="h-full" />
         </ScrollReveal>
       </div>
     </section>
