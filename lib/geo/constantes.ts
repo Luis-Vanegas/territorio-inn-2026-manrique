@@ -70,3 +70,39 @@ export const BARRIOS_COMUNA_3: string[] = [
   'Manrique Central No. 2',
   'María Cano - Carambolas',
 ];
+
+/**
+ * Teselas del mapa base.
+ *
+ * ── Por qué se fue CARTO ──
+ *
+ * El sitio usaba `basemaps.cartocdn.com/light_all`, el endpoint gratuito y
+ * sin clave. El 2026-08-29 CARTO empezó a estampar «API KEY REQUIRED» en
+ * diagonal sobre cada tesela. Lo peor del cambio es cómo se manifiesta: la
+ * petición sigue devolviendo 200 con un PNG válido, así que no hay error en
+ * consola, no falla ningún chequeo y el mapa "funciona" — solo que ilegible.
+ * Lo detectó una persona mirando la pantalla, no una herramienta.
+ *
+ * ── Por qué Esri y no OpenStreetMap ──
+ *
+ * Las dos sirven sin clave (verificado con una tesela real de Medellín: las
+ * dos responden 200 con imagen). Pero el OSM estándar es a todo color —verdes
+ * de parque, amarillos de vía— y pelea con la paleta editorial de tres
+ * colores. World Light Gray Base es un lienzo gris claro, que es justo lo que
+ * daba `light_all`: el mapa es el fondo, los puntos terracota son la
+ * información.
+ *
+ * Ojo con el orden: Esri sirve {z}/{y}/{x}, con la Y antes que la X. Y no
+ * tiene subdominios {s} ni variante retina {r}.
+ *
+ * La atribución es obligatoria y sale del propio servicio
+ * (`.../MapServer?f=json`, campo copyrightText). No inventarla.
+ *
+ * Vive acá y no en cada mapa porque estaba duplicada en dos componentes: el
+ * día que este proveedor haga lo mismo que CARTO, se cambia en un solo lugar.
+ */
+export const TESELAS = {
+  url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  atribucion:
+    'Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> y la comunidad GIS',
+} as const;

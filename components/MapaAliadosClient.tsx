@@ -6,7 +6,7 @@ import L from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
 
-import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, ZOOM } from '@/lib/geo/constantes';
+import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, TESELAS, ZOOM } from '@/lib/geo/constantes';
 import type { Coordenada } from '@/lib/geo/constantes';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
@@ -143,8 +143,8 @@ export default function MapaAliadosClient({
       className="h-full w-full"
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &middot; &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        url={TESELAS.url}
+        attribution={TESELAS.atribucion}
         maxZoom={ZOOM.maximo}
       />
 
