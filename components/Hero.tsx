@@ -8,7 +8,7 @@
 
 import Link from "next/link";
 import { hero } from "@/lib/content";
-import { ConstelacionBarrios } from "./ConstelacionBarrios";
+import Image from "next/image";
 import { ScrollReveal } from "./ScrollReveal";
 
 export function Hero() {
@@ -89,12 +89,23 @@ export function Hero() {
         </div>
 
         {/* El territorio entra con el mismo delay que el subtítulo: la
-            secuencia de carga es etiqueta → titular → (subtítulo + territorio)
-            a la vez. Ya no sangra fuera del margen: el mapa lo hacía porque era
-            un gráfico que ganaba con el bleed, pero acá hay texto, y el texto
-            se lee mejor dentro de la grilla editorial que colgando del borde. */}
+            secuencia de carga es etiqueta → titular → (subtítulo + foto).
+
+            `priority` porque está sobre el pliegue: sin eso Next la carga
+            perezosa y es lo último que aparece, justo al lado del titular.
+            `sizes` le dice al navegador que en pantalla ancha la foto ocupa
+            ~42vw y no el ancho completo, para que no se baje una versión más
+            pesada de la que necesita. */}
         <ScrollReveal delay={0.3} className="lg:col-span-5">
-          <ConstelacionBarrios className="w-full lg:pl-4" />
+          <Image
+            src="/fotos/manrique-tejados.jpg"
+            alt="Tejados de barro de Manrique vistos desde lo alto, con la torre de la iglesia del barrio destacándose entre las casas y el centro de Medellín y las montañas al fondo."
+            width={1200}
+            height={650}
+            priority
+            sizes="(min-width: 1024px) 42vw, 100vw"
+            className="h-auto w-full"
+          />
         </ScrollReveal>
       </div>
     </section>
