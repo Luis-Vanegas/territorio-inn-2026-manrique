@@ -37,6 +37,71 @@ tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
 
+### Revisión previa a producción — 2026-08-29
+
+**Neon** (`dark-shape-12148328`, us-east-2, Postgres 18). Ciclo cierra el
+2026-09-01. Sobra cupo por todos lados:
+
+| Recurso | Uso | Límite Free | % |
+|---|---|---|---|
+| Almacenamiento | 31,5 MB | 512 MB | 6,2 % |
+| Cómputo | 6,4 CU-h | 191,9 CU-h | 3,3 % |
+| Transferencia | 7,3 MB | 5 GB | 0,15 % |
+
+Dos ramas: `main` (31,5 MB) y `dev` (`br-long-lake-ay0jaw5y`, comparte datos
+con `main` por copy-on-write, no suma almacenamiento aparte). 14 tablas.
+
+Pendiente de Neon, en orden:
+
+- [ ] **El cómputo está fijo en 0,25 CU** (`min = max = 0.25`), sin
+      autoescalado. No es un problema de cupo sino un techo de rendimiento:
+      si el sitio se presenta en un evento y entran cien personas a la vez, la
+      base no puede crecer. El plan Free permite hasta 2 CU. Subir el máximo
+      antes de cualquier lanzamiento con público.
+- [ ] **Verificar que Vercel despliegue en la región de la base.** Neon está
+      en `us-east-2` (Ohio). Si las funciones de Vercel quedan en otra región,
+      cada consulta paga el viaje de ida y vuelta entre regiones, y este sitio
+      hace varias por página.
+- [ ] **Retención de historial en 6 horas** (`history_retention_seconds:
+      21600`). Alcanza para deshacer un error que se note enseguida; no
+      alcanza para uno que se note al día siguiente. Decidir si es suficiente
+      una vez que haya datos reales de vecinos.
+- [ ] **La base acepta conexiones desde cualquier IP** (`allowed_ips` vacío).
+      Es lo normal en serverless, pero conviene dejarlo dicho: la única
+      defensa es la cadena de conexión.
+
+**Aplicación**
+
+- [x] La home hacía `listarAprobados()` dos veces por visita. Memoizada con
+      `cache()` de React (`ecfb66e`).
+- [ ] **Todas las rutas públicas son `force-dynamic`.** Es correcto hoy —se
+      eligió a propósito para que un negocio aprobado aparezca de inmediato—
+      pero significa cero caché: cada visita golpea la base. Con el tráfico
+      actual no se nota. Si el sitio se difunde en serio, el patrón a evaluar
+      es revalidación por etiqueta (`revalidateTag` al aprobar) en vez de
+      dinámico total.
+- [ ] **Falta Content-Security-Policy.** Omisión consciente y documentada en
+      `next.config.mjs` y `docs/seguridad.md`. Es lo que queda por hacer en
+      seguridad de cabeceras.
+- [ ] **`public/logos/itm.svg` no lo usa nadie.** La lista de logos
+      institucionales de `lib/content.ts` solo tiene alcaldía y presupuesto
+      participativo. O falta agregarlo, o sobra el archivo — es una decisión
+      de contenido, no técnica.
+- [ ] **Confirmar el origen y la licencia de las dos fotos del carrusel**, y
+      si la de las casas de colores es de Manrique. Sin resolver.
+
+**No se pudo revisar**
+
+- [ ] **Vercel.** El conector de Vercel pide autorización y esta sesión no
+      puede hacer el login, así que no se pudieron ver despliegues, variables
+      de entorno, uso de Blob ni región de las funciones. Autorizarlo desde
+      la configuración de conectores de claude.ai, o revisarlo a mano en el
+      panel.
+- [ ] **`npm run verificar`** (geo, constraints, campos personalizados y
+      entorno). Necesita las credenciales de `.env.local`, que están fuera de
+      permisos en esta sesión. Correrlo antes de desplegar.
+
+
 ### Addendum 2 de la auditoría (accesibilidad visual) — 2026-08-28
 
 Hecho, en la rama `a11y-addendum-2`:
