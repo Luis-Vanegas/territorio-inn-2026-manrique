@@ -49,14 +49,14 @@ export async function AliadosDestacado() {
 
           <h2 className="mt-4 max-w-2xl font-display text-4xl font-medium leading-[1.02] text-tinta sm:text-6xl">
             {total > 0
-              ? "Los negocios de Manrique, con nombre y dirección."
+              ? "Los negocios del barrio, con nombre y dirección."
               : "¿Tienes un negocio o un oficio en Manrique?"}
           </h2>
 
           <p className="mt-5 max-w-lg font-sans text-lg leading-relaxed text-tinta/70">
-            Aliados es el directorio público de negocios y oficios de la Comuna 3.
-            Cualquiera puede sumarse: es gratis, toma menos de 3 minutos y queda
-            visible para todo el barrio.
+            El directorio público de quienes trabajan acá. Cualquiera puede
+            sumarse: es gratis, toma menos de 3 minutos y queda a la vista de
+            todos.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">

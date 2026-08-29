@@ -27,10 +27,10 @@ export interface ModuloFuturo {
 const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === "true";
 
 export const hero = {
-  etiqueta: "COMUNA 3 · MEDELLÍN · 2026",
+  etiqueta: "MEDELLÍN · 2026",
   titular: "¿Buscas un negocio o servicio en Manrique? ¿O tienes uno para ofrecer?",
   subtitulo:
-    "Una propuesta de datos abiertos para entender y fortalecer el empleo en Manrique.",
+    "Una propuesta de datos abiertos para entender y fortalecer el empleo local.",
   // Bifurcación de intención: Aliados (negocios con dirección en el mapa) y
   // Servicios (oficios a domicilio) son módulos distintos con rutas propias
   // de búsqueda y de registro — el Hero tiene que separar los 4 caminos, no
@@ -88,7 +88,7 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
     slug: "aliados",
     nombre: "Aliados",
-    descripcion: "Negocios y oficios de Manrique, en el mapa y con contacto directo.",
+    descripcion: "Negocios y oficios del barrio, en el mapa y con contacto directo.",
     estado: "activo",
   },
   {
@@ -101,7 +101,7 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
   {
     slug: "empleo",
     nombre: "Empleo",
-    descripcion: "Vecinos de Manrique buscando trabajo, con contacto directo.",
+    descripcion: "Vecinos buscando trabajo, con contacto directo.",
     estado: "activo",
   },
 ];

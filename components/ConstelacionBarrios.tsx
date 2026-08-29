@@ -40,7 +40,7 @@ export function ConstelacionBarrios({ className }: ConstelacionBarriosProps) {
   return (
     <div className={className}>
       <p className="font-mono text-sm uppercase tracking-[0.2em] text-tinta/65">
-        Barrios de la Comuna 3
+        Barrios
       </p>
 
       <ul className="mt-7 flex flex-col gap-5">
