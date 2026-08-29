@@ -1,4 +1,5 @@
 import 'server-only';
+import { cache } from 'react';
 import { sql } from './neon';
 
 export type EstadoPortafolio = 'pendiente' | 'aprobado' | 'rechazado' | 'archivado';
@@ -86,21 +87,31 @@ const COLUMNAS_PUBLICAS = `
 /**
  * Vitrina pública. El filtro por categoría es opcional y va en la misma query:
  * dos ramas separadas se desincronizan en cuanto alguien toca las columnas.
+ *
+ * Envuelta en `cache()` de React porque el inicio la pide DOS veces por
+ * visita: una desde AliadosDestacado y otra desde GaleriaAliados, que traen
+ * sus propios datos para que la página no tenga que ser async. Sin esto son
+ * dos consultas idénticas a Neon en cada carga. `cache()` deduplica dentro
+ * del mismo request y no entre requests: no es caché de contenido, así que un
+ * negocio recién aprobado sigue apareciendo en la visita siguiente — que es
+ * justo por lo que estas rutas son force-dynamic.
  */
-export async function listarAprobados(categoriaId?: string): Promise<Portafolio[]> {
-  const filtro = categoriaId ?? null;
+export const listarAprobados = cache(
+  async (categoriaId?: string): Promise<Portafolio[]> => {
+    const filtro = categoriaId ?? null;
 
-  const rows = await sql`
-    select ${sql.unsafe(COLUMNAS_PUBLICAS)}
-    from portafolios p
-    join categorias c on c.id = p.categoria_id
-    where p.estado = 'aprobado'
-      and (${filtro}::text is null or p.categoria_id = ${filtro})
-    order by p.creado_en desc
-  `;
+    const rows = await sql`
+      select ${sql.unsafe(COLUMNAS_PUBLICAS)}
+      from portafolios p
+      join categorias c on c.id = p.categoria_id
+      where p.estado = 'aprobado'
+        and (${filtro}::text is null or p.categoria_id = ${filtro})
+      order by p.creado_en desc
+    `;
 
-  return rows as Portafolio[];
-}
+    return rows as Portafolio[];
+  },
+);
 
 export async function obtenerAprobadoPorId(id: string): Promise<Portafolio | null> {
   // El id es uuid: si llega algo que no lo es, Postgres tira error de tipo.

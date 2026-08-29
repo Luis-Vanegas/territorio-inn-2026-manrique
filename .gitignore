@@ -11,3 +11,7 @@ next-env.d.ts
 # Fuentes de datos crudas (DANE, Cámara de Comercio, etc.) — pesadas, no van al repo
 *.zip
 /data/
+
+# Originales de fotos sin optimizar. Las versiones que usa el sitio viven en
+# public/fotos/ — estas quedan fuera del repo para no duplicar los mismos bytes.
+originales/
