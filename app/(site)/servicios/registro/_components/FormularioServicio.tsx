@@ -261,7 +261,11 @@ export function FormularioServicio({
                     onChange={(e) => setCategoria(e.target.value)}
                     className={claseInput}
                   >
-                    <option value="">Elige uno…</option>
+                    {/* El `key` no sobra, aunque la opción sea estática: al
+                        tener un `.map` de hermano, React recibe los hijos del
+                        <select> como una lista y le exige key a TODOS. Sin él,
+                        la consola de esta ruta arrancaba con un warning. */}
+                    <option key="" value="">Elige uno…</option>
                     {categorias.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.nombre}
@@ -469,7 +473,7 @@ export function FormularioServicio({
                     defaultValue={valoresPrevios.como_consigue_clientes ?? ''}
                     className={claseInput}
                   >
-                    <option value="">Prefiero no decir</option>
+                    <option key="" value="">Prefiero no decir</option>
                     {OPCIONES_COMO_CONSIGUE.map((o) => (
                       <option key={o} value={o}>
                         {ETIQUETAS_COMO_CONSIGUE[o]}
@@ -490,7 +494,7 @@ export function FormularioServicio({
                     defaultValue={valoresPrevios.formacion ?? ''}
                     className={claseInput}
                   >
-                    <option value="">Prefiero no decir</option>
+                    <option key="" value="">Prefiero no decir</option>
                     {OPCIONES_FORMACION.map((o) => (
                       <option key={o} value={o}>
                         {ETIQUETAS_FORMACION[o]}

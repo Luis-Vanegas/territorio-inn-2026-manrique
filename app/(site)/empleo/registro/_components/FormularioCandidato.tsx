@@ -133,7 +133,9 @@ export function FormularioCandidato() {
               onChange={(e) => setNivel(e.target.value)}
               className={claseInput}
             >
-              <option value="">Elige uno…</option>
+              {/* El `key` no sobra: con un `.map` de hermano, React trata los
+                  hijos del <select> como lista y le exige key a todos. */}
+              <option key="" value="">Elige uno…</option>
               {OPCIONES_NIVEL_FORMACION.map((o) => (
                 <option key={o} value={o}>
                   {ETIQUETAS_NIVEL[o]}
