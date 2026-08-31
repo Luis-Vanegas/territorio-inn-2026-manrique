@@ -1,5 +1,44 @@
 # Tareas del proyecto
 
+## 📷 Fotos propias en el carrusel — 2026-08-31
+
+Luis reemplazó las dos fotos del carrusel por otras tomadas por él. Con eso
+queda resuelta de paso la licencia, que estaba sin confirmar desde el 29.
+
+En el repo quedan solo las versiones optimizadas; los originales se movieron a
+`originales/`, que está en `.gitignore` — misma convención que ya seguía el
+proyecto.
+
+- [x] **`manrique-iglesia.jpg`** (1080x823, 327 KB). La aguja de la iglesia
+      entre el mar de casas de ladrillo.
+- [x] **`manrique-casas-arcoiris.jpg`** (1400x1867, 626 KB). Las casas
+      pintadas sobre la ladera con el arcoíris bajando al agua.
+- [x] **Avanza solo cada 6 s, con botón de pausa.** Ver el encabezado de
+      `components/CarruselFotos.tsx` para el porqué de cada decisión.
+
+Dos cosas que costaron y conviene no volver a aprender:
+
+- **No recortar las fotos del carrusel.** El primer intento las recortó a 3:2
+  apaisado, dando por hecho que el carrusel era horizontal. No lo es: medido
+  en el navegador, el contenedor es de **557x744 — vertical**, y encima aplica
+  `object-cover`. O sea que el recorte previo se sumaba al del contenedor y la
+  foto salía ampliada y sin composición. Se entregan enteras y que recorte el
+  contenedor.
+- **Next 16 degrada `quality` EN SILENCIO.** El default de `images.qualities`
+  pasó a `[75]`, y un `quality={90}` que no esté declarado en esa lista no
+  falla ni avisa: se ajusta al valor más cercano. Está declarado en
+  `next.config.mjs` y verificado en el navegador (`&q=90` en la URL de
+  `/_next/image`). Si alguien saca esa línea, la calidad baja sin que nada se
+  rompa.
+
+Pendiente:
+
+- [ ] **`originales/20250129_221336.dng` no se pudo usar.** Es un RAW de
+      cámara: ningún navegador lo muestra, y `sharp` tampoco lo abre
+      (`tiff2vips: samples_per_pixel not a whole number of bytes`). Son 36 MB
+      que hoy no sirven para nada. Si esa foto vale la pena, hace falta
+      exportarla a JPG desde el celular o desde un editor y pasarla de nuevo.
+
 ## 🧪 QA de producción — 2026-08-31
 
 Primera vez que el registro se recorre **entero contra producción**, con
@@ -308,8 +347,10 @@ Pendiente de Neon, en orden:
       institucionales de `lib/content.ts` solo tiene alcaldía y presupuesto
       participativo. O falta agregarlo, o sobra el archivo — es una decisión
       de contenido, no técnica.
-- [ ] **Confirmar el origen y la licencia de las dos fotos del carrusel**, y
-      si la de las casas de colores es de Manrique. Sin resolver.
+- [x] ~~**Confirmar el origen y la licencia de las dos fotos del carrusel.**~~
+      Resuelto el 2026-08-31 sin necesidad de confirmar nada: las dos fotos se
+      reemplazaron por otras **tomadas por Luis**, así que la licencia es
+      propia. Ver la sección de fotos más abajo.
 
 **No se pudo revisar**
 
