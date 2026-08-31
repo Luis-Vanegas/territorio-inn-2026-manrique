@@ -1,5 +1,53 @@
 # Tareas del proyecto
 
+## 🔎 Análisis de SonarCloud — 2026-08-31
+
+Primer análisis sobre `main` (commit `d120aa7`). Marcó Security C (1 issue),
+Reliability C (35) y Maintainability A (146). **Las notas engañan**: de los 182
+hallazgos, uno solo tenía consecuencia real.
+
+Proyecto público, así que la API se consulta sin credenciales:
+
+```bash
+curl -s "https://sonarcloud.io/api/issues/search?componentKeys=Luis-Vanegas_territorio-inn-2026-manrique&impactSoftwareQualities=RELIABILITY&statuses=OPEN,CONFIRMED&ps=50"
+```
+
+- [x] **Los 4 `<label>` sin asociar de `/admin/campos`** (`typescript:S6853`).
+      El único con consecuencia. Ver la tarea de `CampoFormulario` más abajo.
+
+Revisados y descartados, con el porqué —para no volver a auditarlos:
+
+- **El modal de registro (`S1082`, `S6847`, `S6848`) es un falso positivo.**
+  Sonar pide un listener de teclado en el mismo elemento que tiene el
+  `onClick`; `ModalRegistroExitoso.tsx` cierra con `Escape` desde un listener
+  a nivel documento (línea 48). Funcionalmente está cubierto.
+- **Los 9 «ambiguous spacing» (`S6772`)** son formato de JSX.
+- **Los 9 regex «super-linear» (`S8786`)**: seis están en scripts que corre el
+  equipo. Los tres de la aplicación (`lib/sitio.ts`,
+  `TarjetaEmprendimiento.tsx`, `camposPersonalizados.schema.ts`) son todos el
+  mismo patrón de recortar barras o guiones bajos (`/^_+|_+$/g`) sobre
+  entradas ya acotadas por Zod y `maxLength`. Riesgo real: despreciable.
+- **`Error` como nombre de función (`S2137`, 3 casos)**: tapa el `Error`
+  global dentro de esos archivos. Ninguno de los tres usa `new Error()` en el
+  mismo alcance. Es un olor, no un defecto.
+
+Pendiente:
+
+- [ ] **El único issue de seguridad está en `scripts/extraer-manrique.mjs:240`**
+      (`jssecurity:S8707`): construye una ruta desde argumentos de línea de
+      comandos sin validarla, así que un argumento torcido puede salirse del
+      directorio previsto. Es un script de mantenimiento que corre el equipo,
+      no un endpoint público — por eso no es urgente, pero se cierra con una
+      validación de la ruta antes de tocar el disco.
+- [ ] **Coverage sin configurar, porque no hay tests.** Es el dato de fondo
+      más pesado de todo el informe, y no lo arregla ninguna regla de Sonar.
+      Con Empleo y Servicios ya abiertos al público, lo que más valor tendría
+      es una prueba del camino de registro de punta a punta — el mismo que se
+      recorrió a mano el 31 (ver el QA de producción más arriba).
+
+      Ojo con el presupuesto: la cuenta tiene $0 en GitHub Actions, así que
+      hoy los tests se correrían a mano, igual que `npm run verificar`.
+
 ## 📷 Fotos propias en el carrusel — 2026-08-31
 
 Luis reemplazó las dos fotos del carrusel por otras tomadas por él. Con eso
@@ -429,6 +477,25 @@ Hecho:
 - [x] **Una sola copia del campo de formulario** (`components/CampoFormulario.tsx`).
       Había cuatro; dos ponían la `<label>` sin asociar y dejaban 18 campos sin
       nombre accesible — el lector de pantalla leía el placeholder en su lugar.
+
+      **Estaba incompleto y se cerró el 2026-08-31.** El barrido cubrió el
+      sitio público pero se salteó el panel: `FormularioCampo.tsx` de
+      `/admin/campos` seguía con cuatro `<label>` sueltas, sin `htmlFor` y sin
+      envolver el control. Lo encontró SonarCloud (`typescript:S6853`), no una
+      revisión nuestra. Ahora usa `CampoFormulario` como el resto.
+
+      Verificado que **no queda ninguna otra**: se barrieron todas las
+      `<label>` de `app/` y `components/`; las demás o envuelven el control
+      —que es válido en HTML— o llevan `htmlFor`.
+
+      Lo que esto enseña: el comentario de `CampoFormulario` decía que la
+      corrección no era parchear archivos sino que quedara UNA sola copia
+      "para que no haya de dónde copiar mal". La intención era correcta y el
+      barrido igual dejó una copia viva, porque se buscó donde se esperaba el
+      problema —los formularios públicos— y no en todo el árbol. **El chequeo
+      que hubiera servido es el que se corrió recién: barrer `<label>` en todo
+      `app/` y `components/`, no ir archivo por archivo de memoria.** Mismo
+      error de método que con el voseo.
 
 Pendiente:
 

@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { DefinicionCampo, TipoCampoPersonalizado } from '@/lib/db/camposPersonalizados.repo';
 import type { EstadoCampo } from '@/lib/actions/camposPersonalizados';
+import { CampoFormulario } from '@/components/CampoFormulario';
 
 const TIPOS: { valor: TipoCampoPersonalizado; etiqueta: string }[] = [
   { valor: 'texto', etiqueta: 'Texto corto' },
@@ -50,7 +51,6 @@ export function FormularioCampo({
   const [tipo, setTipo] = useState<TipoCampoPersonalizado>(campoExistente?.tipo ?? 'texto');
 
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
-  const err = (campo: string) => errores[campo]?.[0];
 
   // Efecto, no una llamada directa en el render: reaccionar a un cambio de
   // estado con un efecto secundario (cerrar el formulario) es exactamente
@@ -69,79 +69,99 @@ export function FormularioCampo({
         </p>
       )}
 
-      <div>
-        <label className="block font-sans text-xs font-medium text-tinta">Etiqueta</label>
-        <input
-          name="etiqueta"
-          type="text"
-          required
-          maxLength={80}
-          defaultValue={campoExistente?.etiqueta}
-          placeholder="Horario de atención"
-          className={claseInput}
-        />
-        {err('etiqueta') && <p className="mt-1 font-mono text-xs text-terracota-texto">{err('etiqueta')}</p>}
-        {!campoExistente && (
-          <p className="mt-1 font-mono text-xs text-tinta/35">
-            El identificador interno se genera solo a partir de esto y no cambia después.
-          </p>
+      <CampoFormulario
+        id="campo-etiqueta"
+        etiqueta="Etiqueta"
+        requerido
+        ayuda={
+          campoExistente
+            ? undefined
+            : 'El identificador interno se genera solo a partir de esto y no cambia después.'
+        }
+        errores={errores.etiqueta}
+      >
+        {(p) => (
+          <input
+            {...p}
+            name="etiqueta"
+            type="text"
+            required
+            maxLength={80}
+            defaultValue={campoExistente?.etiqueta}
+            placeholder="Horario de atención"
+            className={claseInput}
+          />
         )}
-      </div>
+      </CampoFormulario>
 
-      <div>
-        <label className="block font-sans text-xs font-medium text-tinta">Tipo de dato</label>
-        {campoExistente ? (
+      {/* En edición el tipo no es un control sino un dato fijo, así que va como
+          texto y no como <label>: una etiqueta sin campo que etiquetar es
+          justamente lo que confunde al lector de pantalla. */}
+      {campoExistente ? (
+        <div>
+          <p className="block font-sans text-sm font-medium text-tinta">Tipo de dato</p>
           <p className="mt-2 font-mono text-sm text-tinta/70">
             {TIPOS.find((t) => t.valor === campoExistente.tipo)?.etiqueta}
             <span className="ml-2 text-xs text-tinta/35">(no se puede cambiar)</span>
           </p>
-        ) : (
-          <select
-            name="tipo"
-            required
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value as TipoCampoPersonalizado)}
-            className={claseInput}
-          >
-            {TIPOS.map((t) => (
-              <option key={t.valor} value={t.valor}>
-                {t.etiqueta}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-
-      {tipo === 'seleccion' && (
-        <div>
-          <label className="block font-sans text-xs font-medium text-tinta">
-            Opciones (una por línea)
-          </label>
-          <textarea
-            name="opciones"
-            rows={4}
-            required
-            defaultValue={campoExistente?.opciones?.join('\n')}
-            placeholder={'Sí\nNo\nA veces'}
-            className={`${claseInput} resize-y font-mono`}
-          />
-          {err('opciones') && <p className="mt-1 font-mono text-xs text-terracota-texto">{err('opciones')}</p>}
         </div>
+      ) : (
+        <CampoFormulario id="campo-tipo" etiqueta="Tipo de dato" requerido>
+          {(p) => (
+            <select
+              {...p}
+              name="tipo"
+              required
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value as TipoCampoPersonalizado)}
+              className={claseInput}
+            >
+              {TIPOS.map((t) => (
+                <option key={t.valor} value={t.valor}>
+                  {t.etiqueta}
+                </option>
+              ))}
+            </select>
+          )}
+        </CampoFormulario>
       )}
 
-      <div>
-        <label className="block font-sans text-xs font-medium text-tinta">
-          Texto de ayuda <span className="font-normal text-tinta/35">opcional</span>
-        </label>
-        <input
-          name="ayuda"
-          type="text"
-          maxLength={200}
-          defaultValue={campoExistente?.ayuda ?? ''}
-          placeholder="Aparece debajo del campo, en el formulario público"
-          className={claseInput}
-        />
-      </div>
+      {tipo === 'seleccion' && (
+        <CampoFormulario
+          id="campo-opciones"
+          etiqueta="Opciones (una por línea)"
+          requerido
+          errores={errores.opciones}
+        >
+          {(p) => (
+            <textarea
+              {...p}
+              name="opciones"
+              rows={4}
+              required
+              defaultValue={campoExistente?.opciones?.join('\n')}
+              placeholder={'Sí\nNo\nA veces'}
+              className={`${claseInput} resize-y font-mono`}
+            />
+          )}
+        </CampoFormulario>
+      )}
+
+      {/* Sin "(opcional)" escrito a mano: lo pone CampoFormulario al omitir
+          `requerido`, y así todos los formularios del sitio lo dicen igual. */}
+      <CampoFormulario id="campo-ayuda" etiqueta="Texto de ayuda">
+        {(p) => (
+          <input
+            {...p}
+            name="ayuda"
+            type="text"
+            maxLength={200}
+            defaultValue={campoExistente?.ayuda ?? ''}
+            placeholder="Aparece debajo del campo, en el formulario público"
+            className={claseInput}
+          />
+        )}
+      </CampoFormulario>
 
       <label className="flex items-center gap-2">
         <input
