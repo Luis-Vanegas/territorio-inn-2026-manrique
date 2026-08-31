@@ -128,12 +128,13 @@ las 25 filas de `_migraciones` y los tres admins activos — borrar esos
       No llegó a filtrarse nada porque el módulo nunca se encendió. Arreglado
       en `lib/blob/fotos.ts`: sufijo aleatorio solo para `servicios`, así la
       URL solo la conoce quien lee la tabla privada. Sin filas que migrar.
-- [ ] **Ningún flujo libera la foto de un servicio.** Portafolios tiene tres
+- [x] **Ningún flujo libera la foto de un servicio.** Portafolios tenía tres
       caminos que llaman `borrarFoto` (moderar→archivado, borrado propio);
-      Servicios no tiene ninguno — ni archivado, ni borrado por la persona.
-      Un servicio rechazado deja la foto en Blob para siempre. De ahí salieron
-      los 3 blobs huérfanos que había hoy. Resolver antes de encender
-      `NEXT_PUBLIC_MODULO_SERVICIOS`.
+      Servicios no tenía ninguno, y un servicio rechazado dejaba la foto en
+      Blob para siempre — de ahí salieron los 3 blobs huérfanos. Cerrado en
+      `7f8350c`: `soltarFoto()` en `serviciosPrivado.repo.ts` + llamada en
+      `moderarServicio`. Queda abierto el caso de borrado por la persona, que
+      no existe como flujo todavía.
 - [ ] **Neon sigue con el cómputo fijo en 0,25 CU** (verificado hoy:
       `autoscaling_limit_min_cu` = `max_cu` = 0.25). Sigue pendiente de la
       revisión del 29. Con público de verdad, subir el máximo.
