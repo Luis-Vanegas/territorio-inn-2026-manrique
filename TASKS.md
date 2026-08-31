@@ -1,5 +1,61 @@
 # Tareas del proyecto
 
+## 🧪 QA de producción — 2026-08-31
+
+Primera vez que el registro se recorre **entero contra producción**, con
+escritura real en la base y borrado después. Hasta hoy solo se había probado
+en local o por código, y hay antecedente de por qué eso no alcanza: el commit
+`303db1c` arregló que Servicios **no guardaba nunca** y fallaba en silencio.
+
+Antes de empezar: base en cero (0 candidatos, 0 servicios, 0 portafolios,
+28 categorías de catálogo).
+
+Lo que pasó:
+
+- [x] **Empleo guarda.** Redirige a `/empleo?registrado=1` con confirmación, y
+      la fila llega a `candidatos` con `estado = 'pendiente'`.
+- [x] **Servicios guarda**, con sus cuatro consentimientos presentes en el DOM
+      — el bug de `303db1c` no volvió. Redirige con el token.
+- [x] **El compresor del navegador funciona en producción.** Un PNG de 800x600
+      salió convertido a `.webp` de 3,9 KB antes de subir. `lib/imagen/comprimir.ts`
+      verificado en vivo, no solo en local.
+- [x] **El reparto público/privado es correcto.** `nombres` y `apellidos`
+      quedan en `servicios_privado`; en `servicios` solo el nombre público
+      (primer nombre + primer apellido), tal como promete la ayuda del campo.
+- [x] **La moderación aísla de verdad.** Con el registro en `pendiente`, ni el
+      nombre, ni el correo, ni la IP, ni la URL de la foto aparecen en la
+      vitrina pública.
+- [x] **El fix del Blob derivable está confirmado en producción.** La URL con
+      sufijo aleatorio responde 200; la URL construida solo desde el `id` —que
+      era el bug— responde **404**.
+- [x] **La IP en claro está declarada.** `servicios_privado.ip_registro` guarda
+      la IP sin hashear, y eso es deliberado: `ip_hash` existe solo para
+      `aliados_consentimiento`. La política publicada la declara con su
+      finalidad ("seguridad y prevención de abuso") y dice que no se publica.
+      Cubierto para la Ley 1581.
+
+Lo que el QA dejó al descubierto:
+
+- [ ] **Un blob huérfano, y confirma el pendiente de arriba en vivo.** Al
+      borrar la fila de prueba por SQL, la foto quedó viva en el Blob:
+      `servicios/c2408d18-c471-4ff9-acdc-2878f8fbcc93-9MzNtTnuNF4Wk4FmjaZ62aEsJH3UI7.webp`
+      Hay que borrarla a mano — la CLI pide un token de lectura-escritura que
+      no está en las variables del proyecto (la app sube por OIDC), así que va
+      desde el panel o con `vercel blob del <url> --rw-token <token>`.
+
+      Lo importante no es este archivo: es que **el arreglo de hoy cubre el
+      rechazo desde moderación, no el borrado de la fila**. Cualquier camino
+      que borre un servicio sin pasar por `moderarServicio` deja la foto
+      viva. Es el mismo agujero de los 3 huérfanos que aparecieron en el
+      vaciado, con una boca menos.
+
+Lo que NO se pudo probar:
+
+- [ ] **El panel de moderación con los registros a la vista.** Requiere
+      credenciales de admin, que esta sesión no tiene ni debe pedir. Falta
+      confirmar que un moderador ve el registro, lo aprueba y aparece en la
+      vitrina. **Es el último tramo del camino sin verificar.**
+
 ## 🟢 Para Antigravity (rápidas, mecánicas, acotadas)
 
 ### Voseo en los mensajes de las server actions
@@ -175,9 +231,8 @@ las 25 filas de `_migraciones` y los tres admins activos — borrar esos
       `7f8350c`: `soltarFoto()` en `serviciosPrivado.repo.ts` + llamada en
       `moderarServicio`. Queda abierto el caso de borrado por la persona, que
       no existe como flujo todavía.
-- [ ] **Neon sigue con el cómputo fijo en 0,25 CU** (verificado hoy:
-      `autoscaling_limit_min_cu` = `max_cu` = 0.25). Sigue pendiente de la
-      revisión del 29. Con público de verdad, subir el máximo.
+- [x] ~~**Neon sigue con el cómputo fijo en 0,25 CU.**~~ Resuelto el
+      2026-08-31 a pedido de Luis. Ver la tarea del 29 más abajo.
 - [ ] La retención de historial sigue en 6 h y `allowed_ips` sigue vacío.
       Ambos verificados hoy, ambos sin cambio.
 
@@ -201,11 +256,22 @@ con `main` por copy-on-write, no suma almacenamiento aparte). 14 tablas.
 
 Pendiente de Neon, en orden:
 
-- [ ] **El cómputo está fijo en 0,25 CU** (`min = max = 0.25`), sin
-      autoescalado. No es un problema de cupo sino un techo de rendimiento:
-      si el sitio se presenta en un evento y entran cien personas a la vez, la
-      base no puede crecer. El plan Free permite hasta 2 CU. Subir el máximo
-      antes de cualquier lanzamiento con público.
+- [x] **El cómputo estaba fijo en 0,25 CU** (`min = max = 0.25`), sin
+      autoescalado. No era un problema de cupo sino un techo de rendimiento:
+      con cien personas a la vez, la base no podía crecer. **Cambiado el
+      2026-08-31**: el endpoint de producción (`ep-rapid-mouse-aypzg5fv`) quedó
+      en **min 0,25 / max 2 CU**, el techo del plan Free. Escala sola cuando
+      hace falta y no cuesta más cuando está tranquila.
+
+      El endpoint de `dev` (`ep-floral-tree-ayi6j6o2`) se dejó en 0,25 a
+      propósito: no atiende público.
+- [ ] **`suspend_timeout_seconds` sigue en 0**, decisión de Luis por ahora. La
+      base se suspende apenas queda inactiva, y como las rutas públicas son
+      `force-dynamic`, el primer visitante después de un rato de silencio paga
+      el arranque en frío. En un sitio para vecinos que entran desde el celular
+      con datos móviles, esa espera es justo la que hace cerrar la pestaña.
+      Subirlo a unos minutos lo elimina, a cambio de más tiempo de cómputo
+      facturado — y del cupo Free sobra (3,3 % usado al 29).
 - [ ] **Vercel NO despliega en la región de la base.** Verificado el
       2026-08-31 con `vercel inspect`: las funciones salen en **`iad1`**
       (Virginia, us-east-1) y Neon está en **us-east-2** (Ohio). No coinciden,
