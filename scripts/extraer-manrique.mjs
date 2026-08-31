@@ -18,7 +18,7 @@
  * solo resuelve .json de fábrica; un .geojson falla el import sin config extra.
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -39,6 +39,40 @@ const TOLERANCIA_DEFECTO = 0.00002;
 
 // ─── args ────────────────────────────────────────────────────
 
+/**
+ * `--input` llega de la línea de comandos y termina en `readFileSync`. Sin
+ * validarlo, el script lee cualquier archivo de la máquina — `.env.local`
+ * incluido, que acá tiene las credenciales de producción.
+ *
+ * Para una persona eso no agrega riesgo: quien puede correr el script ya tiene
+ * consola y puede leer ese archivo igual. El escenario real es otro, y es el
+ * que nombra la regla que lo detectó: un agente de IA al que se le pide correr
+ * esto con un argumento preparado. Ahí el script se vuelve el medio para salir
+ * del directorio del proyecto.
+ *
+ * Se valida por extensión y no por directorio a propósito: el dataset fuente
+ * pesa ~6 MB y vive fuera del repo justamente para no versionarlo, así que
+ * atarlo a una carpeta rompería el uso normal. Exigir GeoJSON alcanza para que
+ * el script solo pueda leer lo que dice leer.
+ *
+ * ponytail: un `.json` cualquiera pasa el filtro (probado con `package.json`).
+ * No filtra nada igual: el script no imprime el contenido, solo busca
+ * `features` y aborta. Si algún día hace falta cerrarlo del todo, la vía es
+ * exigir `.geojson` a secas.
+ */
+function rutaGeojson(valor) {
+  const ruta = resolve(valor);
+
+  if (!/\.(geo)?json$/i.test(ruta)) {
+    throw new Error(`--input tiene que ser un archivo .geojson o .json. Se recibió: ${valor}`);
+  }
+  if (!existsSync(ruta)) {
+    throw new Error(`No existe el archivo: ${ruta}`);
+  }
+
+  return ruta;
+}
+
 function leerArgs(argv) {
   const args = { input: ENTRADA_DEFECTO, tolerancia: TOLERANCIA_DEFECTO };
   for (let i = 2; i < argv.length; i += 2) {
@@ -47,6 +81,7 @@ function leerArgs(argv) {
     if (clave === 'input') args.input = valor;
     else if (clave === 'tolerancia') args.tolerancia = Number(valor);
   }
+  args.input = rutaGeojson(args.input);
   return args;
 }
 
