@@ -37,6 +37,113 @@ tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
 
+### Cierre de tareas previo a producción — 2026-08-30 (segunda vuelta)
+
+Verificado en el navegador con el dev server, no solo por código.
+
+Hecho:
+
+- [x] **`useFormState` migrado a `useActionState` en los 7 componentes que
+      faltaban.** La nota de "⚪ Anotado" decía que no se podía porque
+      `useActionState` no existe en React 18.3 "verificado en node_modules".
+      La verificación miró el `node_modules` equivocado: el App Router de
+      Next 16 corre sobre el React que **Next vendoriza**
+      (`next/dist/compiled/react`), que sí lo exporta, y los tipos están en
+      `@types/react/canary.d.ts`. La prueba viva es que cinco componentes del
+      propio proyecto ya lo usaban y funcionaban. El proyecto estaba partido
+      en dos patrones para lo mismo; ahora hay uno. `useFormStatus` se queda
+      en `react-dom`, que ahí no cambió. Consola limpia tras el cambio.
+- [x] **Compresión de fotos en Aliados** (registro y edición). No se agregó
+      una cuarta copia del handler: había TRES copias del mismo `onChange` y
+      solo la de Servicios comprimía. Ahora hay una sola,
+      `manejarSeleccionFoto` en `lib/imagen/comprimir.ts`, y los tres
+      formularios la llaman. 39 líneas menos en Servicios.
+- [x] **`app/error.tsx` ya no miente.** Distingue el 413 por foto grande del
+      resto, con título y cuerpo propios. Se verificó en
+      `node_modules/next/.../action-handler.js` que el mensaje es `Body
+      exceeded Nmb limit.`, y en `server-action-reducer.js` que lo reexpone el
+      CLIENTE cuando la respuesta es `text/plain` — por eso sobrevive a la
+      sanitización de producción. Para todo lo demás ya no afirma una causa.
+- [x] **Los `text-[Npx]` de 9–11 px.** Eran 20 (10 públicos, 10 en admin), no
+      30. Todos a `text-xs`. Se deja a propósito el de
+      `IndicadorEntorno.tsx`, que no se renderiza en producción. Medido en el
+      navegador: no queda texto bajo 12 px en ninguna ruta pública.
+- [x] **La atribución de Leaflet subió de 10 a 12 px.** No estaba en la lista
+      porque no es un `text-[Npx]` sino CSS propio en `globals.css`. Es la
+      atribución que la licencia de OpenStreetMap obliga a mostrar.
+- [x] **La foto de un servicio rechazado se libera del Blob.**
+      `soltarFoto()` en `serviciosPrivado.repo.ts` + llamada en
+      `moderarServicio`. Cierra la asimetría con Portafolios anotada arriba.
+- [x] **Empleo y Servicios probados con los flags prendidos.** En local están
+      encendidos. Las dos rutas cargan, los formularios renderizan (44 campos
+      Servicios, 8 Empleo) y el honeypot `sitio_web` está bien tapado: los
+      tres formularios llevan `aria-hidden` (en el `div` contenedor en Empleo
+      y Servicios), así que no llega al lector de pantalla.
+
+Pendiente, con lo que se averiguó:
+
+- [ ] **Dos warnings de React SOLO en `/servicios/registro` y
+      `/empleo/registro`** — los dos formularios que ajustan estado durante el
+      render para repoblar tras un error (`if (estado !== estadoVisto) {...}`).
+      Son los mismos dos en ambas rutas, están desde antes de este cambio
+      (verificado con `git stash`), y React no evalúa ninguno de los dos en
+      producción:
+      1. `Can't perform a React state update on a component that hasn't
+         mounted yet` — apunta al bloque de repoblado.
+      2. `Each child in a list should have a unique "key" prop. Check the
+         render method of CampoFormulario` — el array sin key se crea dentro
+         de alguna función `children` de `CampoFormulario` (por eso React lo
+         atribuye a ese componente y no a quien lo llama). No se localizó el
+         array exacto: se revisaron los seis `.map` de `FormularioServicio` y
+         todos llevan key, y el `componentStack` llega vacío.
+      Arreglarlos es refactorizar el patrón de repoblado de dos formularios;
+      va con envío real de formulario para probarlo, no a ciegas. **Hacerlo
+      antes de encender los flags.**
+- [ ] **`servicios.token_publico` no lleva a ninguna parte.** La columna
+      existe, tiene índice único y se le muestra a la persona al registrarse
+      (`/servicios?registrado=<token>`), pero no hay ruta
+      `/servicios/estado/[token]` — el equivalente sí existe para Aliados. Hoy
+      un servicio rechazado es terminal: no hay cómo corregirlo. Decidir si se
+      construye la ruta o se deja de prometer el token.
+
+### Vaciado de datos de prueba — 2026-08-30
+
+La base de producción se vació a pedido de Luis, que la revisó y confirmó
+"todo". Respaldo completo (14 tablas + las 7 fotos de Blob) en el scratchpad
+de la sesión antes de borrar — fuera del repo, así que **no sobrevive a un
+reinicio de la máquina**. Si hay que conservarlo, moverlo a un lugar propio.
+
+Borrado: 10 portafolios, 9 `aliados_investigacion`, 10
+`aliados_consentimiento`, 8 `interacciones_portafolio`, 10 `visitas_sitio`,
+1 `candidatos`, 1 `intentos_registro`, el admin `prueba@itm.edu.co` y los 7
+blobs. Conservados a propósito: las 28 `categorias` (catálogo, no datos),
+las 25 filas de `_migraciones` y los tres admins activos — borrar esos
+últimos dejaba el panel sin acceso el día del lanzamiento.
+
+- [x] **La foto de Servicios era derivable desde la vitrina pública.** La 023
+      movió `foto_url` a `servicios_privado` porque el dato es reservado, pero
+      `subirFoto` la guardaba en `servicios/<id>.webp` con `addRandomSuffix:
+      false` — y ese `id` es el mismo que `COLUMNAS_PUBLICAS` manda al
+      navegador. Cualquiera con la ficha a la vista armaba la URL del blob.
+      No llegó a filtrarse nada porque el módulo nunca se encendió. Arreglado
+      en `lib/blob/fotos.ts`: sufijo aleatorio solo para `servicios`, así la
+      URL solo la conoce quien lee la tabla privada. Sin filas que migrar.
+- [ ] **Ningún flujo libera la foto de un servicio.** Portafolios tiene tres
+      caminos que llaman `borrarFoto` (moderar→archivado, borrado propio);
+      Servicios no tiene ninguno — ni archivado, ni borrado por la persona.
+      Un servicio rechazado deja la foto en Blob para siempre. De ahí salieron
+      los 3 blobs huérfanos que había hoy. Resolver antes de encender
+      `NEXT_PUBLIC_MODULO_SERVICIOS`.
+- [ ] **Neon sigue con el cómputo fijo en 0,25 CU** (verificado hoy:
+      `autoscaling_limit_min_cu` = `max_cu` = 0.25). Sigue pendiente de la
+      revisión del 29. Con público de verdad, subir el máximo.
+- [ ] La retención de historial sigue en 6 h y `allowed_ips` sigue vacío.
+      Ambos verificados hoy, ambos sin cambio.
+
+Verificado en verde tras el vaciado: `verificar-voseo`, `verificar-geo`
+(14/14), `verificar-constraints` (11/11), `verificar-campos-personalizados`
+(6/6), `verificar-entorno` (10/10), `tsc --noEmit` y `eslint .`.
+
 ### Revisión previa a producción — 2026-08-29
 
 **Neon** (`dark-shape-12148328`, us-east-2, Postgres 18). Ciclo cierra el
@@ -294,11 +401,11 @@ Hecho el 2026-08-25:
       archivo completo; el `bodySizeLimit` lo cubre, pero le gasta los datos
       móviles a la persona igual. Reusar `lib/imagen/comprimir.ts`.
 
-- [ ] **`useFormState` está deprecado** en `FormularioRegistro.tsx:265` y la
-      consola lo avisa en cada carga. **No se puede arreglar todavía**: el
-      reemplazo (`React.useActionState`) no existe en React 18.3, que es la
-      versión instalada — verificado en `node_modules`. Queda para cuando el
-      proyecto suba a React 19.
+- [x] ~~**`useFormState` está deprecado.**~~ Hecho el 2026-08-30. La razón
+      por la que estaba bloqueado era incorrecta: se verificó el
+      `node_modules` del proyecto (React 18.3.1) en vez del React que Next
+      vendoriza para el App Router, que sí exporta `useActionState`. Ver la
+      sección del 2026-08-30, segunda vuelta.
 
 - [ ] **Reevaluar el plan de Neon cuando crezca el volumen.** Free retiene
       6 h de historial: ese es todo el margen para un point-in-time restore.
