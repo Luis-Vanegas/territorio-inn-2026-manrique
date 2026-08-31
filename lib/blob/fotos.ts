@@ -72,10 +72,18 @@ export async function subirFoto(
   // sufijo aleatorio. Predecible además permite sobrescribir al reemplazar la foto.
   const pathname = `${carpeta}/${portafolioId}.webp`;
 
+  // Salvo en `servicios`: ahí la foto es reservada (migración 023) y el id del
+  // servicio SÍ viaja al cliente en la vitrina pública. Con pathname derivado
+  // del id, cualquiera que vea la ficha arma la URL del blob y ve la foto —
+  // la separación pública/privada que la 023 hizo estructural en la base se
+  // caía acá. El sufijo aleatorio corta la derivación: la URL solo la conoce
+  // quien lee `servicios_privado.foto_url`.
+  const sufijoAleatorio = carpeta === 'servicios';
+
   const blob = await put(pathname, optimizada, {
     access: 'public',
     contentType: 'image/webp',
-    addRandomSuffix: false,
+    addRandomSuffix: sufijoAleatorio,
     // La foto es pública e inmutable por id: se cachea fuerte.
     cacheControlMaxAge: 60 * 60 * 24 * 365,
   });
