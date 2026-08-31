@@ -52,7 +52,7 @@ export async function GaleriaAliados() {
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 17vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
               />
-              <span className="absolute inset-x-0 bottom-0 bg-tinta/70 px-2.5 py-2 font-mono text-[11px] text-hueso opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="absolute inset-x-0 bottom-0 bg-tinta/70 px-2.5 py-2 font-mono text-xs text-hueso opacity-0 transition-opacity group-hover:opacity-100">
                 {portafolio.nombre}
               </span>
             </Link>

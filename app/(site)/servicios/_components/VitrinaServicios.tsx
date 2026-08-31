@@ -27,7 +27,7 @@ function Compromiso({ fecha }: { fecha: string }) {
   return (
     <span
       title="Entregó sus datos y aceptó el compromiso de conducta. El proyecto no verifica identidad ni antecedentes."
-      className="inline-flex items-center gap-1.5 border border-terracota/40 px-2 py-1 font-mono text-[11px] text-terracota-texto"
+      className="inline-flex items-center gap-1.5 border border-terracota/40 px-2 py-1 font-mono text-xs text-terracota-texto"
     >
       ✓ Aceptó el compromiso · {fecha}
     </span>
@@ -111,11 +111,11 @@ function Ficha({ servicio }: { servicio: Servicio }) {
           </p>
 
           <div className="mt-4 flex flex-wrap gap-x-2 gap-y-1.5">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-tinta/45">
+            <span className="font-mono text-xs uppercase tracking-wider text-tinta/45">
               Atiende en
             </span>
             {servicio.cobertura.map((b) => (
-              <span key={b} className="font-mono text-[11px] text-tinta/65">
+              <span key={b} className="font-mono text-xs text-tinta/65">
                 {b}
               </span>
             ))}

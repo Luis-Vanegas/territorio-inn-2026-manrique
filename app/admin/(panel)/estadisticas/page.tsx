@@ -132,7 +132,7 @@ function SerieDiaria({
         ))}
       </div>
 
-      <div className="mt-2 flex justify-between font-mono text-[10px] text-tinta/35">
+      <div className="mt-2 flex justify-between font-mono text-xs text-tinta/35">
         <span>{filas[0]?.dia.slice(5)}</span>
         <span>{hayDatos ? `máx ${max}/día` : `sin ${unidad} aún`}</span>
         <span>{filas[filas.length - 1]?.dia.slice(5)}</span>
@@ -291,7 +291,7 @@ export default async function EstadisticasPage() {
         </div>
 
         <div className="mt-8 max-w-3xl">
-          <p className="mb-3 font-mono text-[11px] uppercase tracking-wider text-tinta/45">
+          <p className="mb-3 font-mono text-xs uppercase tracking-wider text-tinta/45">
             Evolución diaria
             <span className="ml-3 inline-flex items-center gap-1.5 normal-case tracking-normal text-tinta/40">
               <span className="inline-block h-2 w-2 bg-terracota/85" aria-hidden="true" />

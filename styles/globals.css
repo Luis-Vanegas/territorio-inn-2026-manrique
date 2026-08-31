@@ -213,7 +213,10 @@ body {
 .leaflet-control-attribution {
   background-color: rgb(247 245 240 / 0.85) !important;
   font-family: var(--font-jetbrains-mono), monospace;
-  font-size: 10px;
+  /* 12px y no los 10px que tenía: es la atribución que la licencia de
+     OpenStreetMap obliga a mostrar, y una atribución ilegible cumple la letra
+     y no el propósito. 12px es el piso que usa el resto del sitio. */
+  font-size: 12px;
 }
 
 .leaflet-bar a {

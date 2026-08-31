@@ -81,7 +81,7 @@ function Ficha({ candidato }: { candidato: Candidato }) {
             {candidato.experiencia}
           </p>
 
-          <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-tinta/45">
+          <p className="mt-2 font-mono text-xs uppercase tracking-wider text-tinta/45">
             Busca: <span className="font-sans text-xs normal-case text-tinta/65">{candidato.busca}</span>
           </p>
 

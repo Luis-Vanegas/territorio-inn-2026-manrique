@@ -63,10 +63,10 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         <div className="flex items-center gap-2">
           <p className="font-sans text-sm font-medium text-tinta">{campo.etiqueta}</p>
           {campo.requerido && (
-            <span className="font-mono text-[10px] uppercase text-terracota-texto">obligatorio</span>
+            <span className="font-mono text-xs uppercase text-terracota-texto">obligatorio</span>
           )}
           {!campo.activo && (
-            <span className="font-mono text-[10px] uppercase text-tinta/40">inactivo</span>
+            <span className="font-mono text-xs uppercase text-tinta/40">inactivo</span>
           )}
         </div>
         <p className="mt-1 font-mono text-xs text-tinta/45">

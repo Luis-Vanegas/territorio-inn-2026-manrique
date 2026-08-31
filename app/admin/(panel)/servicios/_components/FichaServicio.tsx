@@ -38,7 +38,7 @@ export function FichaServicio({
           )}
           {/* Recordatorio en el propio panel: esto no es una vitrina, es dato
               reservado — que se vea acá no significa que se pueda compartir. */}
-          <p className="mt-1 w-24 text-center font-mono text-[9px] uppercase tracking-wider text-tinta/35">
+          <p className="mt-1 w-24 text-center font-mono text-xs uppercase tracking-wider text-tinta/35">
             privada
           </p>
         </div>
@@ -73,7 +73,7 @@ export function FichaServicio({
             Tel: {servicio.telefono}
           </p>
 
-          <p className="mt-2 font-mono text-[11px] text-tinta/50">
+          <p className="mt-2 font-mono text-xs text-tinta/50">
             Atiende en: {servicio.cobertura.join(' · ')}
           </p>
 

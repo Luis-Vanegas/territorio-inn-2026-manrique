@@ -111,14 +111,14 @@ export function TarjetaEmprendimiento({
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_auto] sm:gap-8">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-terracota-texto">
+            <span className="font-mono text-xs uppercase tracking-wider text-terracota-texto">
               {portafolio.categoria_nombre}
             </span>
 
             {/* La distancia es la respuesta a "¿esto me queda cerca?", que es
                 la única pregunta que se hace alguien parado en la calle. */}
             {typeof distancia === 'number' && (
-              <span className="inline-flex items-center gap-1 bg-terracota/10 px-2 py-0.5 font-mono text-[11px] text-terracota-texto">
+              <span className="inline-flex items-center gap-1 bg-terracota/10 px-2 py-0.5 font-mono text-xs text-terracota-texto">
                 <span aria-hidden="true">◎</span>
                 {formatearDistancia(distancia)}
               </span>

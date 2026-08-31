@@ -172,7 +172,7 @@ export default function MapaAliadosClient({
             <strong className="block font-display text-sm font-medium text-tinta">
               Estás por acá
             </strong>
-            <span className="mt-1 block font-mono text-[11px] text-tinta/55">
+            <span className="mt-1 block font-mono text-xs text-tinta/55">
               Posición aproximada de tu dispositivo. No se guarda en ningún lado.
             </span>
           </Popup>
@@ -190,7 +190,7 @@ export default function MapaAliadosClient({
           }
         >
           <Popup minWidth={200}>
-            <span className="block font-mono text-[10px] uppercase tracking-wide text-terracota-texto">
+            <span className="block font-mono text-xs uppercase tracking-wide text-terracota-texto">
               {p.categoria_nombre}
             </span>
             <strong className="mt-1 block font-display text-base font-medium text-tinta">
