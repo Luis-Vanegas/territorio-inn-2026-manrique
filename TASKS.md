@@ -145,9 +145,29 @@ las 25 filas de `_migraciones` y los tres admins activos — borrar esos
       `subirFoto` la guardaba en `servicios/<id>.webp` con `addRandomSuffix:
       false` — y ese `id` es el mismo que `COLUMNAS_PUBLICAS` manda al
       navegador. Cualquiera con la ficha a la vista armaba la URL del blob.
-      No llegó a filtrarse nada porque el módulo nunca se encendió. Arreglado
-      en `lib/blob/fotos.ts`: sufijo aleatorio solo para `servicios`, así la
-      URL solo la conoce quien lee la tabla privada. Sin filas que migrar.
+      Arreglado en `lib/blob/fotos.ts`: sufijo aleatorio solo para `servicios`,
+      así la URL solo la conoce quien lee la tabla privada. Sin filas que
+      migrar. **Desplegado el 2026-08-31.**
+
+      **Corrección del 2026-08-31: la frase "no llegó a filtrarse nada porque
+      el módulo nunca se encendió" era falsa.** Se escribió sin poder consultar
+      Vercel. Con la CLI ya autenticada se verificó que
+      `NEXT_PUBLIC_MODULO_SERVICIOS` existe en Production desde hace 11 días y
+      que `/servicios` y `/servicios/registro` responden 200 en el sitio
+      público — o sea el módulo **estaba encendido**. Y sí hubo fotos: de los
+      7 blobs que se borraron en el vaciado, 3 eran de servicios.
+
+      Lo que se puede afirmar: la URL fue derivable desde la vitrina pública
+      mientras esas fichas estuvieron visibles. Lo que NO se puede afirmar es
+      que alguien la haya construido — no hay logs de acceso al Blob para
+      saberlo, y los archivos ya no existen. La CLI no expone el historial de
+      cambios de una variable, así que tampoco se sabe si el flag estuvo en
+      `true` los 11 días completos.
+
+      La lección no es el bug, es el método: **una afirmación de seguridad no
+      se apoya en un supuesto sobre el entorno que no se pudo verificar.** Si
+      la verificación está bloqueada, se anota como desconocido, no como
+      descartado.
 - [x] **Ningún flujo libera la foto de un servicio.** Portafolios tenía tres
       caminos que llaman `borrarFoto` (moderar→archivado, borrado propio);
       Servicios no tenía ninguno, y un servicio rechazado dejaba la foto en
@@ -186,10 +206,17 @@ Pendiente de Neon, en orden:
       si el sitio se presenta en un evento y entran cien personas a la vez, la
       base no puede crecer. El plan Free permite hasta 2 CU. Subir el máximo
       antes de cualquier lanzamiento con público.
-- [ ] **Verificar que Vercel despliegue en la región de la base.** Neon está
-      en `us-east-2` (Ohio). Si las funciones de Vercel quedan en otra región,
-      cada consulta paga el viaje de ida y vuelta entre regiones, y este sitio
-      hace varias por página.
+- [ ] **Vercel NO despliega en la región de la base.** Verificado el
+      2026-08-31 con `vercel inspect`: las funciones salen en **`iad1`**
+      (Virginia, us-east-1) y Neon está en **us-east-2** (Ohio). No coinciden,
+      así que cada consulta paga el viaje entre regiones — y las rutas públicas
+      son `force-dynamic`, o sea varias consultas por visita.
+
+      Con el tráfico actual no se nota, y el salto Virginia↔Ohio es de los
+      baratos (~10-15 ms ida y vuelta). Se arregla poniendo la región del
+      proyecto en `cle1` (Cleveland, us-east-2) o moviendo la base a us-east-1.
+      Decisión de una línea, pero conviene medirla antes: mover la base es más
+      caro que mover las funciones.
 - [ ] **Retención de historial en 6 horas** (`history_retention_seconds:
       21600`). Alcanza para deshacer un error que se note enseguida; no
       alcanza para uno que se note al día siguiente. Decidir si es suficiente
@@ -220,11 +247,26 @@ Pendiente de Neon, en orden:
 
 **No se pudo revisar**
 
-- [ ] **Vercel.** El conector de Vercel pide autorización y esta sesión no
-      puede hacer el login, así que no se pudieron ver despliegues, variables
-      de entorno, uso de Blob ni región de las funciones. Autorizarlo desde
-      la configuración de conectores de claude.ai, o revisarlo a mano en el
-      panel.
+- [x] **Vercel.** Resuelto el 2026-08-31: se instaló la CLI (`npm i -g vercel`)
+      y Luis corrió `vercel login`. La CLI le gana al conector de claude.ai,
+      que pide un OAuth que la sesión no puede completar. Lo que se vio:
+
+      - **Despliegues.** El auto-deploy desde `main` funciona: los tres pushes
+        del 31 dispararon tres builds de Production, los tres `Ready` en menos
+        de 30 s. Con eso quedó aplicado el `bodySizeLimit: '6mb'`, que vive en
+        `next.config.mjs` y solo toma efecto en el build.
+      - **Región.** `iad1`. Ver la tarea de arriba.
+      - **Variables.** Las ocho de Production están puestas. `CRON_SECRET`,
+        `IP_HASH_PEPPER`, `ADMIN_SESSION_SECRET` y `DATABASE_URL` como Secret.
+      - **Los dos flags de módulo están ENCENDIDOS.** `/empleo`, `/servicios`
+        y sus dos `/registro` responden 200 en el sitio público. La nota de
+        más arriba que decía "cuando se quiera publicar el módulo Empleo" está
+        vencida: ya está publicado.
+      - **Blob.** Sigue sin verse. `vercel blob list` exige un token de
+        lectura-escritura, y traerlo con `vercel env pull` sobreescribiría el
+        `.env.local` de Luis, que tiene las dos líneas `DATABASE_URL` de la
+        tarea de abajo. Se mira desde el panel, o con
+        `vercel blob list --rw-token <token>`.
 - [ ] **`npm run verificar`** (geo, constraints, campos personalizados y
       entorno). Necesita las credenciales de `.env.local`, que están fuera de
       permisos en esta sesión. Correrlo antes de desplegar.
