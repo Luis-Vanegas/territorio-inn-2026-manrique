@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { verificarSesion } from '@/lib/auth/admin';
 import { moderarServicio as moderarEnBase } from '@/lib/db/servicios.repo';
+import { soltarFoto } from '@/lib/db/serviciosPrivado.repo';
+import { borrarFoto } from '@/lib/blob/fotos';
 
 export type EstadoModeracionServicio =
   | { estado: 'inicial' }
@@ -45,6 +47,27 @@ export async function moderarServicioAction(
       sesion.email,
       accion === 'rechazar' ? motivo : undefined,
     );
+
+    // Al rechazar se libera la foto. Es el mismo criterio que
+    // `moderarPortafolio` aplica al archivar, con una razón más fuerte: acá la
+    // foto es un dato RESERVADO de una persona (migración 023), no la fachada
+    // de un local. Y a diferencia de un portafolio rechazado, que puede
+    // corregirse desde /aliados/estado/[token], un servicio rechazado hoy es
+    // terminal: `servicios.token_publico` existe en el esquema pero no tiene
+    // ninguna ruta que lo reciba. Guardar la foto de alguien que no quedó en
+    // la plataforma y no tiene cómo volver no le sirve a nadie.
+    if (accion === 'rechazar') {
+      const pathname = await soltarFoto(id);
+      if (pathname) {
+        try {
+          await borrarFoto(pathname);
+        } catch (error) {
+          // La moderación ya se aplicó y la fila ya no apunta a la imagen; un
+          // blob huérfano no justifica revertirla.
+          console.error('[moderarServicio] no se pudo borrar la foto', error);
+        }
+      }
+    }
   } catch (error) {
     console.error('[moderarServicio] falló', error);
     return { estado: 'error', mensaje: 'No se pudo aplicar el cambio.' };

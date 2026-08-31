@@ -81,6 +81,26 @@ export async function adjuntarFoto(
   `;
 }
 
+/**
+ * Suelta la foto de un servicio y devuelve el pathname que tenía, para que
+ * quien llama la borre del Blob.
+ *
+ * El `update` a null va acá y no después del borrado remoto a propósito: si el
+ * `del()` falla, la fila ya no apunta a una imagen que quizás siga existiendo.
+ * Un blob huérfano cuesta cuota; una fila que apunta a una foto reservada que
+ * el sistema cree borrada cuesta la promesa que sostiene el módulo.
+ */
+export async function soltarFoto(servicioId: string): Promise<string | null> {
+  const rows = (await sql`
+    update servicios_privado
+    set foto_url = null, foto_blob_pathname = null
+    where servicio_id = ${servicioId} and foto_blob_pathname is not null
+    returning foto_blob_pathname
+  `) as { foto_blob_pathname: string }[];
+
+  return rows[0]?.foto_blob_pathname ?? null;
+}
+
 export type DatoReservado = {
   foto_url: string | null;
   nombres: string;
