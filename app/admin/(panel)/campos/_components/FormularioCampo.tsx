@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import type { DefinicionCampo, TipoCampoPersonalizado } from '@/lib/db/camposPersonalizados.repo';
 import type { EstadoCampo } from '@/lib/actions/camposPersonalizados';
 
@@ -46,7 +46,7 @@ export function FormularioCampo({
   campoExistente?: DefinicionCampo;
   alGuardar?: () => void;
 }) {
-  const [estado, ejecutar] = useFormState<EstadoCampo, FormData>(accion, { estado: 'inicial' });
+  const [estado, ejecutar] = useActionState<EstadoCampo, FormData>(accion, { estado: 'inicial' });
   const [tipo, setTipo] = useState<TipoCampoPersonalizado>(campoExistente?.tipo ?? 'texto');
 
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};

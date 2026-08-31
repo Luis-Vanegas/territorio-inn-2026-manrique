@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import Image from 'next/image';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 
 import {
   moderarPortafolio,
@@ -63,7 +63,7 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
   if (!valor) return null;
   return (
     <div className="flex gap-3">
-      <dt className="w-24 shrink-0 font-mono text-[11px] uppercase tracking-wide text-tinta/40">
+      <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/40">
         {etiqueta}
       </dt>
       <dd className="font-sans text-sm text-tinta/75">{valor}</dd>
@@ -78,7 +78,7 @@ export function FichaModeracion({
   portafolio: PortafolioAdmin;
   definicionesCampos: DefinicionCampo[];
 }) {
-  const [estado, accion] = useFormState(moderarPortafolio, ESTADO_INICIAL);
+  const [estado, accion] = useActionState(moderarPortafolio, ESTADO_INICIAL);
   const [mostrarRechazo, setMostrarRechazo] = useState(false);
   const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
 
@@ -98,7 +98,7 @@ export function FichaModeracion({
     <article className="border-t border-tinta/12 py-8">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto]">
         <div className="min-w-0">
-          <span className="font-mono text-[11px] uppercase tracking-wider text-terracota-texto">
+          <span className="font-mono text-xs uppercase tracking-wider text-terracota-texto">
             {portafolio.categoria_nombre}
           </span>
 

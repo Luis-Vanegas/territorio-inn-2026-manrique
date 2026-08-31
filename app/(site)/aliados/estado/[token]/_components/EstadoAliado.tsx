@@ -1,16 +1,16 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useActionState, useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 
 import {
   actualizarPortafolio,
   borrarPortafolio,
   type EstadoEdicion,
 } from '@/lib/actions/gestionarEstado';
-import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
+import { manejarSeleccionFoto } from '@/lib/imagen/comprimir';
 import type { Categoria, PortafolioAdmin } from '@/lib/db/portafolios.repo';
 import type { Posicion } from '@/app/(site)/aliados/registro/_components/SelectorUbicacionClient';
 import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
@@ -210,7 +210,7 @@ function FormularioEdicion({
   token: string;
   categorias: Categoria[];
 }) {
-  const [estado, accion] = useFormState(actualizarPortafolio.bind(null, token), ESTADO_INICIAL);
+  const [estado, accion] = useActionState(actualizarPortafolio.bind(null, token), ESTADO_INICIAL);
 
   const [coords, setCoords] = useState<Posicion | null>({
     lat: portafolio.latitud,
@@ -522,15 +522,7 @@ function FormularioEdicion({
               name="foto"
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f && f.size > TAMANO_MAX_FOTO) {
-                  setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
-                  e.target.value = '';
-                  return;
-                }
-                setNombreFoto(f ? f.name : null);
-              }}
+              onChange={(e) => manejarSeleccionFoto(e.target, setNombreFoto)}
               className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
             />
           )}

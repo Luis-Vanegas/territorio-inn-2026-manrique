@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { registrarPeticion, type EstadoPeticion } from '@/lib/actions/registrarPeticion';
 
 const ESTADO_INICIAL: EstadoPeticion = { estado: 'inicial' };
@@ -24,7 +25,7 @@ function BotonEnviar() {
 }
 
 export function FormularioContacto() {
-  const [estado, accion] = useFormState(registrarPeticion, ESTADO_INICIAL);
+  const [estado, accion] = useActionState(registrarPeticion, ESTADO_INICIAL);
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
 

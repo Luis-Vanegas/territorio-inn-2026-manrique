@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { atenderPeticion, type EstadoAtencion } from '@/lib/actions/atenderPeticion';
 import type { Peticion } from '@/lib/db/peticiones.repo';
 
@@ -20,7 +21,7 @@ function BotonAtender() {
 }
 
 export function FichaPeticion({ peticion }: { peticion: Peticion }) {
-  const [estado, accion] = useFormState(atenderPeticion, ESTADO_INICIAL);
+  const [estado, accion] = useActionState(atenderPeticion, ESTADO_INICIAL);
 
   // Atendida: desaparece de la lista al revalidar. Esto cubre el instante
   // entre la respuesta y el refresco, mismo criterio que FichaModeracion.
@@ -40,13 +41,13 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
 
       <dl className="mt-4 flex flex-col gap-1.5">
         <div className="flex gap-3">
-          <dt className="w-20 shrink-0 font-mono text-[11px] uppercase tracking-wide text-tinta/40">
+          <dt className="w-20 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/40">
             Contacto
           </dt>
           <dd className="font-sans text-sm text-tinta/75">{peticion.contacto}</dd>
         </div>
         <div className="flex gap-3">
-          <dt className="w-20 shrink-0 font-mono text-[11px] uppercase tracking-wide text-tinta/40">
+          <dt className="w-20 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/40">
             Recibido
           </dt>
           <dd className="font-sans text-sm text-tinta/75">

@@ -1,15 +1,15 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useActionState, useCallback, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 
 import {
   registrarPortafolio,
   type EstadoRegistro,
 } from '@/lib/actions/registrarPortafolio';
-import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
+import { manejarSeleccionFoto } from '@/lib/imagen/comprimir';
 import { nombreCampoFormulario } from '@/lib/validation/camposPersonalizados.schema';
 import type { Categoria } from '@/lib/db/portafolios.repo';
 import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
@@ -190,7 +190,7 @@ export function FormularioRegistro({
   categorias: Categoria[];
   camposPersonalizados: DefinicionCampo[];
 }) {
-  const [estado, accion] = useFormState(registrarPortafolio, ESTADO_INICIAL);
+  const [estado, accion] = useActionState(registrarPortafolio, ESTADO_INICIAL);
 
   // Marca de tiempo de cuándo se abrió el formulario, para el chequeo de
   // tiempo mínimo de llenado en el server (anti-bot).
@@ -771,17 +771,7 @@ export function FormularioRegistro({
               name="foto"
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                // Se avisa antes de enviar: subir 8 MB para que el server los
-                // rechace gasta los datos del celular de la persona.
-                if (f && f.size > TAMANO_MAX_FOTO) {
-                  setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
-                  e.target.value = '';
-                  return;
-                }
-                setNombreFoto(f ? f.name : null);
-              }}
+              onChange={(e) => manejarSeleccionFoto(e.target, setNombreFoto)}
               className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
             />
           )}

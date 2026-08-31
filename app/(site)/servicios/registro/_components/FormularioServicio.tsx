@@ -15,8 +15,7 @@ import {
   OPCIONES_FORMACION,
   OPCIONES_NECESITA,
 } from '@/lib/validation/servicio.schema';
-import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
-import { comprimirImagen, pesoLegible } from '@/lib/imagen/comprimir';
+import { manejarSeleccionFoto } from '@/lib/imagen/comprimir';
 import { CampoFormulario } from '@/components/CampoFormulario';
 
 const ESTADO_INICIAL: EstadoRegistroServicio = { estado: 'inicial' };
@@ -420,41 +419,7 @@ export function FormularioServicio({
                     name="foto"
                     type="file"
                     accept="image/jpeg,image/png,image/webp"
-                    onChange={async (e) => {
-                      // `e.target` se guarda ANTES del await: después de un punto de
-                      // suspensión React ya limpió `currentTarget`.
-                      const input = e.target;
-                      const f = input.files?.[0];
-
-                      if (!f) {
-                        setNombreFoto(null);
-                        return;
-                      }
-
-                      // Se avisa antes de enviar: subir una foto que el servidor va a
-                      // rechazar gasta los datos del celular de la persona al pedo.
-                      if (f.size > TAMANO_MAX_FOTO) {
-                        setNombreFoto(`"${f.name}" pesa más de 5 MB — elige otra`);
-                        input.value = '';
-                        return;
-                      }
-
-                      setNombreFoto(`${f.name} · optimizando…`);
-
-                      // Se reemplaza el archivo del input por la versión liviana: es
-                      // lo que efectivamente viaja al enviar el formulario.
-                      const optimizada = await comprimirImagen(f);
-                      if (optimizada !== f) {
-                        const dt = new DataTransfer();
-                        dt.items.add(optimizada);
-                        input.files = dt.files;
-                        setNombreFoto(
-                          `${f.name} · ${pesoLegible(f.size)} → ${pesoLegible(optimizada.size)}`,
-                        );
-                      } else {
-                        setNombreFoto(`${f.name} · ${pesoLegible(f.size)}`);
-                      }
-                    }}
+                    onChange={(e) => manejarSeleccionFoto(e.target, setNombreFoto)}
                     className="font-sans text-sm text-tinta/70 file:mr-3 file:border file:border-tinta/20 file:bg-transparent file:px-3 file:py-1.5 file:font-mono file:text-xs file:text-tinta/70"
                   />
                   {nombreFoto && (

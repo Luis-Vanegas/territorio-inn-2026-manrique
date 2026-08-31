@@ -23,6 +23,8 @@
  * cliente.
  */
 
+import { TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
+
 // Los mismos valores que usa sharp en lib/blob/fotos.ts (LADO_MAX, CALIDAD_WEBP):
 // comprimir con otros números haría que el servidor recomprima una imagen ya
 // degradada y se note en la ficha.
@@ -89,4 +91,52 @@ export function pesoLegible(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1).replace('.', ',')} MB`;
+}
+
+/**
+ * El `onChange` completo de un `<input type="file">` de foto: rechaza lo que el
+ * servidor iba a rechazar, comprime, y reemplaza el archivo del input por la
+ * versión liviana — que es la que efectivamente viaja al enviar.
+ *
+ * Vive acá porque estaba escrito tres veces (registro de Aliados, edición de
+ * Aliados y registro de Servicios) y solo la copia de Servicios comprimía. Las
+ * otras dos subían el archivo entero: el `bodySizeLimit` las cubría, pero le
+ * gastaban los datos móviles a la persona igual. Una sola copia es lo que hace
+ * que el próximo formulario con foto no nazca con el mismo olvido.
+ *
+ * `input` se recibe ya resuelto y no como evento: entre el `await` de la
+ * compresión y la vuelta, React puede haber limpiado `currentTarget`.
+ */
+export async function manejarSeleccionFoto(
+  input: HTMLInputElement,
+  avisar: (mensaje: string | null) => void,
+): Promise<void> {
+  const archivo = input.files?.[0];
+
+  if (!archivo) {
+    avisar(null);
+    return;
+  }
+
+  // Se avisa antes de enviar: subir una foto que el servidor va a rechazar
+  // gasta los datos del celular de la persona al pedo.
+  if (archivo.size > TAMANO_MAX_FOTO) {
+    avisar(`"${archivo.name}" pesa más de 5 MB — elige otra`);
+    input.value = '';
+    return;
+  }
+
+  avisar(`${archivo.name} · optimizando…`);
+
+  const optimizada = await comprimirImagen(archivo);
+
+  if (optimizada === archivo) {
+    avisar(`${archivo.name} · ${pesoLegible(archivo.size)}`);
+    return;
+  }
+
+  const dt = new DataTransfer();
+  dt.items.add(optimizada);
+  input.files = dt.files;
+  avisar(`${archivo.name} · ${pesoLegible(archivo.size)} → ${pesoLegible(optimizada.size)}`);
 }

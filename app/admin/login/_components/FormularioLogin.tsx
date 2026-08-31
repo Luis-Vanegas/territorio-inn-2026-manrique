@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { iniciarSesion, type EstadoSesion } from '@/lib/actions/sesionAdmin';
 
 const ESTADO_INICIAL: EstadoSesion = { estado: 'inicial' };
@@ -23,7 +24,7 @@ function Boton() {
 }
 
 export function FormularioLogin() {
-  const [estado, accion] = useFormState(iniciarSesion, ESTADO_INICIAL);
+  const [estado, accion] = useActionState(iniciarSesion, ESTADO_INICIAL);
 
   return (
     <form action={accion} className="mt-10">
