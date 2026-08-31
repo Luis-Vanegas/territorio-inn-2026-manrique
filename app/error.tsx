@@ -25,6 +25,41 @@ interface ErrorProps {
   reset: () => void;
 }
 
+/**
+ * Qué decirle a la persona, sin inventar una causa.
+ *
+ * Antes esto afirmaba "casi siempre es la base de datos tardando" para
+ * CUALQUIER fallo. El 413 por foto grande que reportó Luis (2026-08-27) mostró
+ * ese texto y mandó el diagnóstico para el lado equivocado: la persona
+ * reintentaba con la misma foto, que era exactamente lo que no iba a funcionar.
+ *
+ * El 413 sí se puede reconocer. Next lo tira como `ApiError(413, "Body exceeded
+ * 6mb limit.")` en el action handler, y el cliente lo reexpone tal cual cuando
+ * la respuesta es `text/plain` (`server-action-reducer.js`). Ese mensaje lo
+ * arma el navegador, no el servidor, así que sobrevive a la sanitización de
+ * producción y llega acá entero.
+ *
+ * Para todo lo demás no se afirma nada: se ofrece el reintento, que es lo único
+ * que se sabe que a veces sirve.
+ */
+function mensajeSegun(error: Error): { titulo: string; cuerpo: string } {
+  if (/body exceeded/i.test(error.message)) {
+    return {
+      // No "se rompió de nuestro lado": en este caso no se rompió nada, y
+      // decirlo deja a la persona esperando que se arregle solo.
+      titulo: "Esa foto pesa demasiado.",
+      cuerpo:
+        "No se pudo enviar el formulario porque la foto es muy grande. Prueba con una más liviana, o sácala de nuevo con menos resolución.",
+    };
+  }
+
+  return {
+    titulo: "Algo se rompió de nuestro lado.",
+    cuerpo:
+      "No es algo que hayas hecho mal. Prueba de nuevo en unos segundos — muchas veces el segundo intento entra.",
+  };
+}
+
 export default function Error({ error, reset }: ErrorProps) {
   useEffect(() => {
     // En Vercel esto queda en los logs de la función junto al `digest`, que es
@@ -33,6 +68,8 @@ export default function Error({ error, reset }: ErrorProps) {
     console.error("[error]", error.digest ?? "sin digest", error);
   }, [error]);
 
+  const { titulo, cuerpo } = mensajeSegun(error);
+
   return (
     <main className="seccion flex min-h-[70vh] flex-col justify-center">
       <span className="font-mono text-xs tracking-[0.2em] text-terracota-texto">
@@ -40,12 +77,11 @@ export default function Error({ error, reset }: ErrorProps) {
       </span>
 
       <h1 className="mt-4 max-w-3xl font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
-        Algo se rompió de nuestro lado.
+        {titulo}
       </h1>
 
       <p className="mt-6 max-w-lg font-sans text-lg leading-relaxed text-tinta/70">
-        No es algo que hayas hecho mal. Casi siempre es la base de datos
-        tardando en responder — prueba de nuevo en unos segundos.
+        {cuerpo}
       </p>
 
       <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
