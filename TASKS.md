@@ -82,23 +82,43 @@ Hecho:
 
 Pendiente, con lo que se averiguó:
 
-- [ ] **Dos warnings de React SOLO en `/servicios/registro` y
-      `/empleo/registro`** — los dos formularios que ajustan estado durante el
-      render para repoblar tras un error (`if (estado !== estadoVisto) {...}`).
-      Son los mismos dos en ambas rutas, están desde antes de este cambio
-      (verificado con `git stash`), y React no evalúa ninguno de los dos en
-      producción:
-      1. `Can't perform a React state update on a component that hasn't
-         mounted yet` — apunta al bloque de repoblado.
-      2. `Each child in a list should have a unique "key" prop. Check the
-         render method of CampoFormulario` — el array sin key se crea dentro
-         de alguna función `children` de `CampoFormulario` (por eso React lo
-         atribuye a ese componente y no a quien lo llama). No se localizó el
-         array exacto: se revisaron los seis `.map` de `FormularioServicio` y
-         todos llevan key, y el `componentStack` llega vacío.
-      Arreglarlos es refactorizar el patrón de repoblado de dos formularios;
-      va con envío real de formulario para probarlo, no a ciegas. **Hacerlo
-      antes de encender los flags.**
+- [x] **Los warnings de React de `/servicios/registro` y `/empleo/registro`.**
+      Cerrado en `3668ff6`. El diagnóstico anterior apuntaba al patrón de
+      repoblado y anticipaba un refactor de los dos formularios; **no era eso**,
+      y el arreglo terminó siendo de cuatro líneas.
+
+      El warning de `key` no venía de ningún `.map` — todos tenían key, como
+      decía la nota. Venía de la **opción vacía** de cuatro `<select>`
+      (`categoria_id`, `como_consigue_clientes`, `formacion`, y
+      `nivel_formacion` en Empleo):
+
+      ```jsx
+      <option value="">Elige uno…</option>   ← estática, sin key
+      {OPCIONES.map((o) => <option key={o} …>)}
+      ```
+
+      Cuando una opción estática convive con un `.map`, React recibe los hijos
+      del `<select>` como UNA lista y le exige key a todos, incluida la
+      estática. Por eso el warning se atribuía a `CampoFormulario`: el array se
+      arma dentro de la función `children` que ese componente ejecuta.
+
+      Cómo se localizó, porque leyendo el código no se ve: se instrumentó
+      `CampoFormulario` para recorrer el árbol que devuelve `children()` y
+      reportar los elementos con `key == null` y `_store.validated` falso, que
+      es el criterio exacto que usa React. Salieron los tres campos de
+      Servicios por nombre. Antes de eso, tres hipótesis razonables —el
+      Stepper, el Fragment del campo `foto`, el `key` sobre `{...p}`— fueron
+      todas descartadas por bisección contra el navegador. **La lección es que
+      acá revisar los `.map` a ojo no alcanzaba: había que preguntarle a React
+      cuál era.**
+
+      El segundo warning (`Can't perform a React state update on a component
+      that hasn't mounted yet`) **ya no existe**: se recorrieron las dos rutas
+      con la consola limpia, y además se envió cada formulario para forzar el
+      error del servidor y ejecutar el bloque de repoblado. Cero errores en las
+      dos, antes y después del envío. Lo más probable es que se lo haya llevado
+      la migración a `useActionState` de `c18d232`, posterior a aquella nota.
+      El patrón de repoblado se queda como está.
 - [ ] **`servicios.token_publico` no lleva a ninguna parte.** La columna
       existe, tiene índice único y se le muestra a la persona al registrarse
       (`/servicios?registrado=<token>`), pero no hay ruta
