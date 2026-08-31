@@ -33,12 +33,28 @@ Revisados y descartados, con el porqué —para no volver a auditarlos:
 
 Pendiente:
 
-- [ ] **El único issue de seguridad está en `scripts/extraer-manrique.mjs:240`**
-      (`jssecurity:S8707`): construye una ruta desde argumentos de línea de
-      comandos sin validarla, así que un argumento torcido puede salirse del
-      directorio previsto. Es un script de mantenimiento que corre el equipo,
-      no un endpoint público — por eso no es urgente, pero se cierra con una
-      validación de la ruta antes de tocar el disco.
+- [x] **El único issue de seguridad, en `scripts/extraer-manrique.mjs`**
+      (`jssecurity:S8707`). Cerrado el 2026-08-31 en `8cf6a82`.
+
+      **La primera evaluación lo subestimó**, y vale dejar por qué. Se descartó
+      como "script local, bajo riesgo" razonando sobre una persona
+      corriéndolo — y ahí es cierto que no agrega nada, porque quien tiene
+      consola ya puede leer lo que quiera. Pero el mensaje de la regla dice
+      otra cosa: *«LLMs running this code with faulty CLI arguments can escape
+      file system restrictions»*. El escenario es un agente de IA al que se le
+      pide correr el script con un argumento preparado, y en este repo hay un
+      `.env.local` con las credenciales de producción. Ese escenario es
+      cotidiano acá, así que el riesgo no era teórico.
+
+      El `--input` iba directo a `readFileSync`. Ahora pasa por
+      `rutaGeojson()`, que valida extensión y existencia. Se valida por
+      extensión y no por directorio porque el dataset fuente pesa ~6 MB y vive
+      fuera del repo a propósito. La salida siempre fue fija
+      (`lib/geo/manrique.json`), así que nunca hubo escritura arbitraria.
+
+      Probado, no supuesto: `--input .env.local` y un traversal a `System32`
+      quedan bloqueados; el uso normal genera la misma geometría (solo cambia
+      el timestamp de `metadata.generadoEn`) y `verificar-geo` sigue 14/14.
 - [ ] **Coverage sin configurar, porque no hay tests.** Es el dato de fondo
       más pesado de todo el informe, y no lo arregla ninguna regla de Sonar.
       Con Empleo y Servicios ya abiertos al público, lo que más valor tendría
