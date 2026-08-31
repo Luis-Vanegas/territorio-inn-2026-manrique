@@ -26,9 +26,9 @@ export const equipo: MiembroEquipo[] = [
     foto: "/equipo/Estefania.jpeg",
   },
   {
-    // ponytail: falta la foto — el usuario la va a mandar después.
     iniciales: "MJ",
     nombre: "Maria Camila Jaramillo Zapata",
     programaInstitucion: "Negocios Internacionales, en curso · Tecnológico de Antioquia",
+    foto: "/equipo/fotoCamila.jpeg",
   },
 ];
