@@ -88,7 +88,13 @@ const nextConfig = {
     // (208px en tarjeta, 100vw en móvil) — pedir la escalera completa por
     // defecto genera variantes que nadie llega a solicitar.
     formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 828, 1080, 1200],
+    // Next 16 cambió el default de `qualities` a `[75]`, y un `quality` que no
+    // esté en esta lista NO falla: se degrada en silencio al valor más cercano.
+    // El 90 es para las fotos del carrusel del inicio, que son grandes y con
+    // mucho detalle de color — a 75 el ladrillo y las fachadas pintadas salen
+    // con artefactos. El resto del sitio sigue en 75.
+    qualities: [75, 90],
+    deviceSizes: [640, 828, 1080, 1200, 1600],
     imageSizes: [128, 208, 384],
     // Las fotos son inmutables por id: si cambia, cambia el id del registro.
     minimumCacheTTL: 60 * 60 * 24 * 365,
