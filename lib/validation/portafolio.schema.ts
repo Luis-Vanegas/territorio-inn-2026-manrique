@@ -12,7 +12,9 @@ import { z } from 'zod';
 /** Se sube cuando cambie el texto legal. Queda grabado en cada registro. */
 // v2: se saca la mención al ITM como responsable del tratamiento y se abre
 // la ubicación a cualquier punto del mundo (antes limitada a Manrique).
-export const VERSION_TERMINOS = '2026-08-v2';
+// v3: se agrega la cláusula de transferencia internacional de datos (Decreto
+// 1377 de 2013, art. 26) — la base y el Blob viven fuera de Colombia.
+export const VERSION_TERMINOS = '2026-09-v3';
 
 export const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export const TAMANO_MAX_FOTO = 5 * 1024 * 1024;

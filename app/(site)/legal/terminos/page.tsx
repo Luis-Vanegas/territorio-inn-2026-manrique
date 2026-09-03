@@ -12,7 +12,7 @@ export default function TerminosPage() {
     <DocumentoLegal
       titulo="Términos y condiciones"
       version={VERSION_TERMINOS}
-      actualizado="agosto de 2026"
+      actualizado="septiembre de 2026"
     >
       <p>
         Estos términos regulan el registro y la publicación de emprendimientos en

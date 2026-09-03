@@ -12,7 +12,7 @@ export default function PoliticaDatosPage() {
     <DocumentoLegal
       titulo="Política de tratamiento de datos personales"
       version={VERSION_TERMINOS}
-      actualizado="agosto de 2026"
+      actualizado="septiembre de 2026"
     >
       <p>
         Esta política describe cómo se recolectan, usan y protegen los datos
@@ -95,14 +95,24 @@ export default function PoliticaDatosPage() {
         inscribirse. La solicitud se responde en los términos de ley.
       </p>
 
-      <h2>07 · Conservación</h2>
+      <h2>07 · Dónde se almacenan los datos</h2>
+      <p>
+        La base de datos y las fotografías se alojan en proveedores de
+        infraestructura en la nube (Neon y Vercel) cuyos servidores están fuera
+        de Colombia, conforme al artículo 26 del Decreto 1377 de 2013. Al
+        aceptar esta política autorizas esa transferencia internacional, que se
+        hace únicamente para operar el servicio — no se comparten los datos con
+        terceros distintos de estos proveedores de infraestructura.
+      </p>
+
+      <h2>08 · Conservación</h2>
       <p>
         Los datos se conservan mientras el emprendimiento permanezca activo en la
         vitrina o hasta que se solicite su supresión. Al archivarse un registro,
         la fotografía asociada se elimina del almacenamiento.
       </p>
 
-      <h2>08 · Cambios</h2>
+      <h2>09 · Cambios</h2>
       <p>
         Cada registro guarda la versión de la política vigente al momento de
         aceptarla. Si esta política cambia, los consentimientos previos quedan
