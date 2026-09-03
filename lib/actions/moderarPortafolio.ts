@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { verificarSesion } from '@/lib/auth/admin';
-import { moderar, obtenerParaModerar } from '@/lib/db/portafolios.repo';
+import { moderar } from '@/lib/db/portafolios.repo';
 import { borrarFoto } from '@/lib/blob/fotos';
 
 export type EstadoModeracion =
@@ -51,14 +51,14 @@ export async function moderarPortafolio(
   )[accion];
 
   try {
-    const cambió = await moderar(
+    const resultado = await moderar(
       id,
       nuevoEstado,
       sesion.email,
       accion === 'rechazar' ? motivo : undefined,
     );
 
-    if (!cambió) {
+    if (!resultado.cambio) {
       return {
         estado: 'error',
         mensaje: 'Ese registro ya estaba en ese estado. Refresca la lista.',
@@ -67,15 +67,12 @@ export async function moderarPortafolio(
 
     // Al archivar se libera el Blob: si no, las fotos de registros retirados
     // siguen ocupando cuota y siguen siendo públicas por URL directa.
-    if (nuevoEstado === 'archivado') {
-      const registro = await obtenerParaModerar(id);
-      if (registro?.foto_blob_pathname) {
-        try {
-          await borrarFoto(registro.foto_blob_pathname);
-        } catch (error) {
-          // La moderación ya se aplicó; un blob huérfano no justifica revertirla.
-          console.error('[moderarPortafolio] no se pudo borrar la foto', error);
-        }
+    if (nuevoEstado === 'archivado' && resultado.foto_blob_pathname) {
+      try {
+        await borrarFoto(resultado.foto_blob_pathname);
+      } catch (error) {
+        // La moderación ya se aplicó; un blob huérfano no justifica revertirla.
+        console.error('[moderarPortafolio] no se pudo borrar la foto', error);
       }
     }
   } catch (error) {

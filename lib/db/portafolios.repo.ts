@@ -358,11 +358,21 @@ export async function archivarPorToken(
   // moderado_en sí se marca (queda el "cuándo"), moderado_por se deja null a
   // propósito — no lo archivó ningún admin. chk_moderacion_completa (018) ya
   // sabe que 'archivado' solo necesita el primero.
+  //
+  // foto_url/foto_blob_pathname se limpian acá: el blob se borra aparte
+  // (quien llama a esta función), pero si la fila se queda apuntando a un
+  // pathname que ya no existe, la pestaña "Archivados" del panel intenta
+  // mostrar una imagen 404. `from (select ...)` captura el pathname ANTES
+  // del update para poder devolverlo, aunque el update lo deje en null.
   const rows = await sql`
-    update portafolios
-    set estado = 'archivado', moderado_en = now()
-    where token_publico = ${token} and estado <> 'archivado'
-    returning id, foto_blob_pathname
+    update portafolios as p
+    set estado = 'archivado', moderado_en = now(), foto_url = null, foto_blob_pathname = null
+    from (
+      select foto_blob_pathname from portafolios
+      where token_publico = ${token} and estado <> 'archivado'
+    ) as previo
+    where p.token_publico = ${token} and p.estado <> 'archivado'
+    returning p.id, previo.foto_blob_pathname
   `;
   return (rows[0] as { id: string; foto_blob_pathname: string | null } | undefined) ?? null;
 }
@@ -384,43 +394,37 @@ export async function listarParaModerar(
   return rows as PortafolioAdmin[];
 }
 
-export async function obtenerParaModerar(id: string): Promise<PortafolioAdmin | null> {
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) {
-    return null;
-  }
-
-  const rows = await sql`
-    select ${sql.unsafe(COLUMNAS_PUBLICAS)},
-           p.estado, p.motivo_rechazo, p.moderado_por, p.moderado_en,
-           p.foto_blob_pathname
-    from portafolios p
-    join categorias c on c.id = p.categoria_id
-    where p.id = ${id}
-  `;
-  return (rows[0] as PortafolioAdmin) ?? null;
-}
-
 /**
  * Cambia el estado dejando registro de quién y cuándo.
  * El `where estado <> $nuevo` evita que dos moderadores con la pestaña abierta
  * se pisen: el segundo no encuentra fila y la UI se entera de que ya se decidió.
+ *
+ * Al archivar se limpian foto_url/foto_blob_pathname en la misma consulta —
+ * mismo motivo que archivarPorToken: sin esto la fila se queda apuntando a un
+ * blob que el caller borra por separado, y la pestaña "Archivados" intenta
+ * mostrar una imagen que ya no existe. Se devuelve el pathname previo (capturado
+ * antes del update vía `from`) para que el caller pueda borrar el blob.
  */
 export async function moderar(
   id: string,
   nuevoEstado: Exclude<EstadoPortafolio, 'pendiente'>,
   moderadorEmail: string,
   motivoRechazo?: string,
-): Promise<boolean> {
+): Promise<{ cambio: boolean; foto_blob_pathname: string | null }> {
   const rows = await sql`
-    update portafolios
+    update portafolios as p
     set estado = ${nuevoEstado},
         motivo_rechazo = ${motivoRechazo ?? null},
         moderado_por = ${moderadorEmail},
-        moderado_en = now()
-    where id = ${id} and estado <> ${nuevoEstado}
-    returning id
+        moderado_en = now(),
+        foto_url = case when ${nuevoEstado} = 'archivado' then null else p.foto_url end,
+        foto_blob_pathname = case when ${nuevoEstado} = 'archivado' then null else p.foto_blob_pathname end
+    from (select foto_blob_pathname from portafolios where id = ${id}) as previo
+    where p.id = ${id} and p.estado <> ${nuevoEstado}
+    returning p.id, previo.foto_blob_pathname
   `;
-  return rows.length > 0;
+  const fila = rows[0] as { id: string; foto_blob_pathname: string | null } | undefined;
+  return { cambio: Boolean(fila), foto_blob_pathname: fila?.foto_blob_pathname ?? null };
 }
 
 export async function contarPorEstado(): Promise<Record<EstadoPortafolio, number>> {
