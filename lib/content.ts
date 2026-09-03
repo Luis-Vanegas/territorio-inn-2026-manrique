@@ -146,9 +146,6 @@ export interface LogoInstitucional {
 }
 
 export const footer = {
-  // Sin NEXT_PUBLIC_REPO_URL el link no se muestra — no todos los despliegues
-  // de este código quieren apuntar al repo público de referencia.
-  repo: process.env.NEXT_PUBLIC_REPO_URL,
   licencia: "MIT",
   logos: [
     { src: "/logos/alcaldia.svg", alt: "Alcaldía de Medellín" },

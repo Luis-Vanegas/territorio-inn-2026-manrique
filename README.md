@@ -125,7 +125,6 @@ igual y falla al primer uso real, que es la peor forma de fallar.
 | `BLOB_READ_WRITE_TOKEN`, `BLOB_STORE_ID` | sí | Fotos en Vercel Blob. Los inyecta la integración al vincular el store. |
 | `NEXT_PUBLIC_MODULO_SERVICIOS`, `NEXT_PUBLIC_MODULO_INVENTARIO` | no | `"true"` prende el módulo. Apagados, la ruta devuelve 404 y no aparece ni en el menú ni en el sitemap. |
 | `NEXT_PUBLIC_SITE_URL` | no | Solo si hay dominio propio. Sin ella se usa `VERCEL_PROJECT_PRODUCTION_URL`, correcto mientras el sitio viva en `.vercel.app`. |
-| `NEXT_PUBLIC_REPO_URL` | no | Link al repositorio en el pie de página. Sin ella, no se muestra. |
 
 Generar un secreto:
 
