@@ -2,7 +2,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { sesionActual } from '@/lib/auth/usuario';
-import { PASOS, VIDEOS, ETIQUETA_TIPO, type TipoRuta } from '@/lib/formalizacion';
+import { negociosDe } from '@/lib/db/usuarios.repo';
+import {
+  PASOS,
+  VIDEOS,
+  ETIQUETA_TIPO,
+  ETIQUETA_FORMALIDAD,
+  pasosPara,
+  type TipoRuta,
+} from '@/lib/formalizacion';
+import { RutasPersonalizadas } from './_components/RutasPersonalizadas';
 
 export const metadata: Metadata = {
   title: 'Formalización · Constelaciones',
@@ -122,7 +131,19 @@ function VistaPrevia() {
 }
 
 export default async function FormalizacionPage() {
-  if (!(await sesionActual())) return <VistaPrevia />;
+  const sesion = await sesionActual();
+  if (!sesion) return <VistaPrevia />;
+
+  // Personalizar por `formalidad` solo cuando no hay ambigüedad: exactamente
+  // un negocio, con una respuesta que de verdad filtra algo. Con 0 o 2+
+  // negocios no hay un "tu negocio" único al que atarle la lista — se
+  // muestran los pasos completos, que es el comportamiento seguro por
+  // defecto. Con 10-20 negocios en total, el dueño de dos es la excepción,
+  // no la regla: no vale la pena resolverla mejor todavía.
+  const negocios = await negociosDe(sesion.id);
+  const formalidad = negocios.length === 1 ? negocios[0]!.formalidad : null;
+  const propios = formalidad ? pasosPara(formalidad) : PASOS;
+  const personalizado = Boolean(formalidad) && propios.length < PASOS.length;
 
   return (
     <main className="seccion">
@@ -152,66 +173,74 @@ export default async function FormalizacionPage() {
         </p>
       </header>
 
-      {ORDEN_TIPOS.map((tipo) => {
-        const pasos = PASOS.filter((p) => p.tipo === tipo);
-        if (pasos.length === 0) return null;
+      {personalizado ? (
+        <RutasPersonalizadas
+          propios={propios}
+          todos={PASOS}
+          etiquetaFormalidad={ETIQUETA_FORMALIDAD[formalidad!] ?? formalidad!}
+        />
+      ) : (
+        ORDEN_TIPOS.map((tipo) => {
+          const pasos = PASOS.filter((p) => p.tipo === tipo);
+          if (pasos.length === 0) return null;
 
-        return (
-          <section key={tipo} className="mt-20 border-t border-tinta/12 pt-10">
-            <h2 className="font-display text-3xl font-medium text-tinta">
-              {ETIQUETA_TIPO[tipo]}
-            </h2>
-            <p className="mt-2 font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
+          return (
+            <section key={tipo} className="mt-20 border-t border-tinta/12 pt-10">
+              <h2 className="font-display text-3xl font-medium text-tinta">
+                {ETIQUETA_TIPO[tipo]}
+              </h2>
+              <p className="mt-2 font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
 
-            <ul className="mt-8 grid gap-6 sm:grid-cols-2">
-              {pasos.map((paso) => (
-                <li
-                  key={paso.id}
-                  className="flex flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota"
-                >
-                  <h3 className="font-display text-xl font-medium text-tinta">
-                    {paso.titulo}
-                  </h3>
+              <ul className="mt-8 grid gap-6 sm:grid-cols-2">
+                {pasos.map((paso) => (
+                  <li
+                    key={paso.id}
+                    className="flex flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota"
+                  >
+                    <h3 className="font-display text-xl font-medium text-tinta">
+                      {paso.titulo}
+                    </h3>
 
-                  <p className="mt-1 font-mono text-xs text-tinta/45">{paso.entidad}</p>
+                    <p className="mt-1 font-mono text-xs text-tinta/45">{paso.entidad}</p>
 
-                  <p className="mt-3 font-sans leading-relaxed text-tinta/70">
-                    {paso.resumen}
-                  </p>
-
-                  <div className="mt-4">
-                    <p className="font-mono text-xs text-tinta/45">Necesitas tener:</p>
-                    <ul className="mt-2 space-y-1">
-                      {paso.requisitos.map((requisito) => (
-                        <li key={requisito} className="font-sans text-sm text-tinta/70">
-                          · {requisito}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* mt-auto pega el enlace al piso: las tarjetas de una misma
-                      fila tienen textos de distinto largo y sin esto cada
-                      enlace queda a una altura diferente. */}
-                  <div className="mt-auto pt-6">
-                    <a
-                      href={paso.fuente}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
-                    >
-                      Ver en la página oficial ↗
-                    </a>
-                    <p className="mt-2 font-mono text-xs text-tinta/35">
-                      Enlace verificado el {paso.verificadoEn}
+                    <p className="mt-3 font-sans leading-relaxed text-tinta/70">
+                      {paso.resumen}
                     </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
+
+                    <div className="mt-4">
+                      <p className="font-mono text-xs text-tinta/45">Necesitas tener:</p>
+                      <ul className="mt-2 space-y-1">
+                        {paso.requisitos.map((requisito) => (
+                          <li key={requisito} className="font-sans text-sm text-tinta/70">
+                            · {requisito}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* mt-auto pega el enlace al piso: las tarjetas de una misma
+                        fila tienen textos de distinto largo y sin esto cada
+                        enlace queda a una altura diferente. */}
+                    <div className="mt-auto pt-6">
+                      <a
+                        href={paso.fuente}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                      >
+                        Ver en la página oficial ↗
+                      </a>
+                      <p className="mt-2 font-mono text-xs text-tinta/35">
+                        Enlace verificado el {paso.verificadoEn}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          );
+        })
+      )}
 
       {/* id: /mi-cuenta enlaza directo a esta sección. */}
       <section id="videos" className="mt-20 border-t border-tinta/12 pt-10 scroll-mt-24">

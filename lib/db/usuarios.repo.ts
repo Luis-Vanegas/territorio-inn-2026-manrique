@@ -85,19 +85,29 @@ export async function ingresarConGoogle(datos: {
 }
 
 /**
- * Los negocios de una cuenta. Devuelve lo mínimo para listarlos en el panel;
- * el detalle se lee por token o por id cuando la persona abre uno.
+ * Los negocios de una cuenta. Devuelve lo mínimo para listarlos en el panel
+ * y personalizar /formalizacion; el detalle completo se lee por token o por
+ * id cuando la persona abre uno.
+ *
+ * `formalidad` viaja acá y no en una query aparte: es el mismo `where` sobre
+ * la misma tabla, así que separarla sería una segunda consulta por nada.
  */
 export async function negociosDe(usuarioId: string): Promise<
-  { id: string; nombre: string; estado: string; token_publico: string }[]
+  { id: string; nombre: string; estado: string; token_publico: string; formalidad: string | null }[]
 > {
   const rows = await sql`
-    select id, nombre, estado, token_publico
+    select id, nombre, estado, token_publico, formalidad
     from portafolios
     where usuario_id = ${usuarioId}
     order by creado_en desc
   `;
-  return rows as { id: string; nombre: string; estado: string; token_publico: string }[];
+  return rows as {
+    id: string;
+    nombre: string;
+    estado: string;
+    token_publico: string;
+    formalidad: string | null;
+  }[];
 }
 
 /**

@@ -18,6 +18,7 @@ import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
+import { ETIQUETA_FORMALIDAD } from '@/lib/formalizacion';
 
 // ─── opciones de los chips ───────────────────────────────────
 // Los `value` (name="horario" / "medios_pago" / "tipo_negocio" / "formalidad"
@@ -49,12 +50,11 @@ const OPCIONES_TIPO_NEGOCIO_UI = [
   { valor: 'otro', etiqueta: 'Otro' },
 ];
 
-const OPCIONES_FORMALIDAD_UI = [
-  { valor: 'rut_camara', etiqueta: 'Tengo RUT o Cámara de Comercio' },
-  { valor: 'en_tramite', etiqueta: 'Estoy en trámite' },
-  { valor: 'no_tengo', etiqueta: 'No tengo' },
-  { valor: 'prefiero_no_decir', etiqueta: 'Prefiero no decir' },
-];
+// La etiqueta vive en lib/formalizacion.ts: /formalizacion la reusa para
+// explicar según qué respuesta se personalizó la lista de trámites.
+const OPCIONES_FORMALIDAD_UI = Object.entries(ETIQUETA_FORMALIDAD).map(
+  ([valor, etiqueta]) => ({ valor, etiqueta }),
+);
 
 const OPCIONES_MAYOR_DOLOR_UI = [
   { valor: 'cuentas_ganancia', etiqueta: 'Llevar las cuentas, las ventas del día y saber si hay ganancias reales.' },

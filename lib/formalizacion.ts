@@ -257,6 +257,19 @@ export const ETIQUETA_TIPO: Record<TipoRuta, string> = {
 };
 
 /**
+ * Etiquetas humanas de la respuesta a "¿Tienes RUT o Cámara de Comercio?" del
+ * registro. Vive acá y no en el formulario porque /formalizacion también la
+ * necesita, para explicarle a la persona por qué ve menos pasos que el total
+ * — mostrar una lista filtrada sin decir según qué se filtró es confuso.
+ */
+export const ETIQUETA_FORMALIDAD: Record<string, string> = {
+  rut_camara: 'Tengo RUT o Cámara de Comercio',
+  en_tramite: 'Estoy en trámite',
+  no_tengo: 'No tengo',
+  prefiero_no_decir: 'Prefiero no decir',
+};
+
+/**
  * Filtra los pasos según lo que la persona respondió al registrarse.
  *
  * Sin `formalidad` (visitante anónimo en la página pública) devuelve todo: no
