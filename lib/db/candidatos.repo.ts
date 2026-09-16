@@ -4,7 +4,7 @@ import { sql } from './neon';
 /**
  * Repositorio del módulo Empleo.
  *
- * A diferencia de `servicios.repo.ts`, no hay un repo "privado" hermano: acá
+ * No hay un repo "privado" hermano: acá
  * no se guarda nada que no se publique. Ver `lib/validation/candidato.schema.ts`.
  */
 

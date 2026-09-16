@@ -1,0 +1,43 @@
+-- 028 · El módulo Servicios se elimina del proyecto
+--
+-- Para qué: quien presta un oficio a domicilio —lava carros, arregla neveras,
+-- organiza eventos— entra por Aliados como cualquier otro negocio, y el
+-- buscador lo encuentra por lo que hace. Tener dos puertas obligaba a la
+-- persona a decidir si era "aliado" o "servicio" antes de empezar, que es una
+-- pregunta sobre nuestra estructura de datos y no sobre su trabajo.
+--
+-- Decisión del cliente: borrar, no apagar. El formulario se rehace desde cero
+-- con preguntas nuevas, así que conservar el esquema viejo no aporta.
+--
+-- ── Estado verificado antes de borrar ──
+--
+-- `servicios`: 0 filas. `servicios_privado`: 0 filas. Consultado contra la base
+-- de producción el 2026-09-15. **No se pierde ningún dato de ninguna persona.**
+--
+-- Si esta migración va a correr contra una base donde esas tablas SÍ tienen
+-- filas, pará: exportá antes. Un `drop table` no se deshace con un revert de
+-- git, a diferencia del código del módulo, que sigue en el historial.
+--
+-- ── Qué NO se toca ──
+--
+-- `categorias` (28 filas) es compartida con Aliados: son los oficios y rubros
+-- que alimentan el registro y el filtro de la vitrina. Las migraciones 012 y
+-- 015 agregaron entradas pensando en Servicios, y se quedan — el zapatero y el
+-- de eventos ahora se registran en Aliados con esas mismas categorías.
+--
+-- Las migraciones 021 a 024 tampoco se borran del repo: están aplicadas y el
+-- runner guarda su checksum. Sacarlas del directorio rompería el control de
+-- versiones del esquema. El historial de migraciones es un registro de lo que
+-- pasó, no una descripción del estado actual.
+
+-- El orden importa: servicios_privado referencia a servicios.
+drop table if exists servicios_privado;
+drop table if exists servicios;
+
+-- ── Ningún `drop type` acá, y es a propósito ──
+--
+-- `servicios.estado` no tenía un enum propio: reusaba `portafolio_estado`, el
+-- de la migración 001, que `portafolios` sigue usando. Un `drop type` sobre él
+-- fallaría por dependencia, y forzarlo con `cascade` se llevaría la columna
+-- `estado` de `portafolios` — o sea el estado de moderación de todo el
+-- directorio. No hay tipo huérfano que limpiar.

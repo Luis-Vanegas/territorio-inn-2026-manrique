@@ -53,7 +53,6 @@ export function validarArchivo(file: File): ErrorFoto | null {
 export async function subirFoto(
   file: File,
   portafolioId: string,
-  carpeta: 'portafolios' | 'servicios' = 'portafolios',
 ): Promise<ResultadoFoto | null> {
   const buffer = Buffer.from(await file.arrayBuffer());
 
@@ -70,20 +69,24 @@ export async function subirFoto(
 
   // El id es un uuid generado por la base, así que el pathname es único sin
   // sufijo aleatorio. Predecible además permite sobrescribir al reemplazar la foto.
-  const pathname = `${carpeta}/${portafolioId}.webp`;
+  const pathname = `portafolios/${portafolioId}.webp`;
 
-  // Salvo en `servicios`: ahí la foto es reservada (migración 023) y el id del
-  // servicio SÍ viaja al cliente en la vitrina pública. Con pathname derivado
-  // del id, cualquiera que vea la ficha arma la URL del blob y ve la foto —
-  // la separación pública/privada que la 023 hizo estructural en la base se
-  // caía acá. El sufijo aleatorio corta la derivación: la URL solo la conoce
-  // quien lee `servicios_privado.foto_url`.
-  const sufijoAleatorio = carpeta === 'servicios';
-
+  // ── Sin sufijo aleatorio, y hay que saber por qué ──
+  //
+  // Un pathname derivado del id significa que cualquiera que vea la ficha
+  // puede armar la URL del blob. Acá está bien: la foto de un negocio de
+  // Aliados es pública, se muestra en la vitrina, y esa es toda su razón de
+  // existir.
+  //
+  // El módulo Servicios pasaba `addRandomSuffix: true` justamente porque ahí
+  // la foto era reservada y el sufijo cortaba la derivación. Ese módulo se
+  // eliminó (migración 028). **Si algún día se agrega otra foto que NO deba
+  // ser pública, no la subas por esta función sin reponer el sufijo**: la
+  // privacidad de un archivo en Blob depende de que su URL no se pueda adivinar.
   const blob = await put(pathname, optimizada, {
     access: 'public',
     contentType: 'image/webp',
-    addRandomSuffix: sufijoAleatorio,
+    addRandomSuffix: false,
     // La foto es pública e inmutable por id: se cachea fuerte.
     cacheControlMaxAge: 60 * 60 * 24 * 365,
   });

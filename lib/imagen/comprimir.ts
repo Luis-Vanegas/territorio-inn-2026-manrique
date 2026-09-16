@@ -98,11 +98,12 @@ export function pesoLegible(bytes: number): string {
  * servidor iba a rechazar, comprime, y reemplaza el archivo del input por la
  * versión liviana — que es la que efectivamente viaja al enviar.
  *
- * Vive acá porque estaba escrito tres veces (registro de Aliados, edición de
- * Aliados y registro de Servicios) y solo la copia de Servicios comprimía. Las
- * otras dos subían el archivo entero: el `bodySizeLimit` las cubría, pero le
- * gastaban los datos móviles a la persona igual. Una sola copia es lo que hace
- * que el próximo formulario con foto no nazca con el mismo olvido.
+ * Vive acá porque estaba escrito tres veces —registro de Aliados, edición de
+ * Aliados, y un tercer formulario de un módulo que ya se eliminó— y solo una
+ * de las tres copias comprimía. Las otras dos subían el archivo entero: el
+ * `bodySizeLimit` las cubría, pero le gastaban los datos móviles a la persona
+ * igual. Una sola copia es lo que hace que el próximo formulario con foto no
+ * nazca con el mismo olvido.
  *
  * `input` se recibe ya resuelto y no como evento: entre el `await` de la
  * compresión y la vuelta, React puede haber limpiado `currentTarget`.

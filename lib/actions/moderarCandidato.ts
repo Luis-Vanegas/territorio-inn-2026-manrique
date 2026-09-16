@@ -12,7 +12,7 @@ export type EstadoModeracionCandidato =
 /**
  * Aprobar o rechazar a alguien que busca trabajo.
  *
- * Igual que `moderarServicio`, la sesión se verifica acá y no solo en el
+ * Igual que el resto de las acciones de moderación, la sesión se verifica acá y no solo en el
  * layout: una server action es un endpoint HTTP invocable sin pasar por
  * ninguna página.
  */

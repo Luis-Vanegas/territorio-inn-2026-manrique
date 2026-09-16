@@ -28,7 +28,6 @@ moderación humana y consentimiento informado.
 | Módulo | Estado | Qué hace |
 |---|---|---|
 | **Aliados** | en vivo | Directorio de negocios con dirección y contacto directo, sobre un mapa real de la comuna. Registro abierto, sin cuenta. |
-| **Servicios** | tras un flag | Personas que prestan su oficio a domicilio y se desplazan por la comuna. |
 | **Inventario predictivo** | próximamente | Seguimiento de unidades productivas en el tiempo. Todavía es un stub. |
 
 Los módulos apagados devuelven **404 real**: no aparecen en el menú ni en el sitemap.
@@ -123,7 +122,7 @@ igual y falla al primer uso real, que es la peor forma de fallar.
 | `IP_HASH_PEPPER` | sí | Pepper del hash de IP en `aliados_consentimiento`. **Si falta, `hashIp()` devuelve `null` y no se guarda el dato** (falla cerrado a propósito — ver [`docs/seguridad.md`](docs/seguridad.md)). |
 | `CRON_SECRET` | sí | Protege `/api/cron/purgar`. **Si falta, el endpoint devuelve 503 y la purga diaria nunca corre**: `intentos_registro` crece sin techo. Vercel manda el header `Authorization` solo si esta variable existe. |
 | `BLOB_READ_WRITE_TOKEN`, `BLOB_STORE_ID` | sí | Fotos en Vercel Blob. Los inyecta la integración al vincular el store. |
-| `NEXT_PUBLIC_MODULO_SERVICIOS`, `NEXT_PUBLIC_MODULO_INVENTARIO` | no | `"true"` prende el módulo. Apagados, la ruta devuelve 404 y no aparece ni en el menú ni en el sitemap. |
+| `NEXT_PUBLIC_MODULO_EMPLEO`, `NEXT_PUBLIC_MODULO_INVENTARIO` | no | `"true"` prende el módulo. Apagados, la ruta devuelve 404 y no aparece ni en el menú ni en el sitemap. |
 | `NEXT_PUBLIC_SITE_URL` | no | Solo si hay dominio propio. Sin ella se usa `VERCEL_PROJECT_PRODUCTION_URL`, correcto mientras el sitio viva en `.vercel.app`. |
 
 Generar un secreto:
@@ -170,7 +169,6 @@ El cron diario de limpieza se declara en [`vercel.json`](vercel.json).
 | [`docs/analitica.md`](docs/analitica.md) | Qué se mide, qué no, y por qué no hace falta banner de cookies. |
 | [`docs/decisiones-diseno.md`](docs/decisiones-diseno.md) | Por qué el sistema visual es como es. |
 | [`docs/sistema-diseno-a11y.md`](docs/sistema-diseno-a11y.md) | Sistema de diseño y accesibilidad. |
-| [`docs/modulo-servicios.md`](docs/modulo-servicios.md) | Alcance y diseño del módulo de Servicios. |
 | [`docs/auditoria-2026-08-16.md`](docs/auditoria-2026-08-16.md) | Auditoría de seguridad y correctness, con el estado de cada hallazgo. |
 | [`TASKS.md`](TASKS.md) | Estado de trabajo: hecho, bloqueado, decisiones abiertas. |
 

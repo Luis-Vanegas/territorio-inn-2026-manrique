@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * Schema del módulo Empleo, compartido entre el formulario y la server action.
  *
- * A diferencia de `servicio.schema.ts`, acá no hay separación público/privado:
+ * No hay separación público/privado en este schema:
  * quien busca trabajo quiere que lo encuentren, así que todo lo que se pide es
  * exactamente lo que se publica. No hay foto, ni correo, ni documento.
  */
@@ -64,7 +64,7 @@ export const candidatoSchema = z
 
 export type DatosCandidato = z.infer<typeof candidatoSchema>;
 
-/** FormData → objeto plano, antes de Zod. Mismo patrón que servicio.schema. */
+/** FormData → objeto plano, antes de Zod. Mismo patrón que portafolio.schema. */
 export function desdeFormData(formData: FormData) {
   const texto = (k: string) => (formData.get(k) ?? '').toString();
   // Un radio sin marcar no manda nada: null explícito, no false silencioso.

@@ -1,7 +1,7 @@
 // Falla si aparece voseo en texto visible al usuario.
 //
 // AGENTS.md pide español colombiano en registro "tú". El voseo ya se coló
-// tres veces —en lib/actions, en la página de Servicios y en la de
+// tres veces —en lib/actions, en una página de módulo y en la de
 // autogestión— y las tres se "verificó a mano" que estaba limpio. Un chequeo
 // que depende de que alguien se acuerde de correrlo con la lista correcta no
 // es un chequeo.
@@ -64,7 +64,7 @@ const CORRIENTES = new Set([
   // está dando una orden. Ej. la opción «Aprendí trabajando».
   'aprendí', 'sentí', 'recibí', 'salí', 'viví', 'conseguí', 'perdí',
   'seguí', 'decidí', 'entendí', 'escribí', 'abrí', 'partí', 'cumplí',
-  'nací', 'trabajé', 'estudié', 'empecé',
+  'nací', 'trabajé', 'estudié', 'empecé', 'registré',
   // «estás» se escribe igual en «tú» y en voseo: no distingue nada.
   'estás',
 ]);
