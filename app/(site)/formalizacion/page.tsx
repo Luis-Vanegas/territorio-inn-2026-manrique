@@ -93,7 +93,7 @@ function VistaPrevia() {
             <div>
               <dt className="font-display text-4xl font-medium text-tinta">{VIDEOS.length}</dt>
               <dd className="mt-1 font-sans text-sm text-tinta/70">
-                canales con videos y tutoriales
+                videos verificados de canales oficiales
               </dd>
             </div>
           </dl>
@@ -242,41 +242,60 @@ export default async function FormalizacionPage() {
         })
       )}
 
-      {/* id: /mi-cuenta enlaza directo a esta sección. */}
+      {/* id: /mi-cuenta enlaza directo a esta sección. Los videos se agrupan
+          por el mismo `tipo` que los trámites de arriba — no es una segunda
+          taxonomía, es la misma, así que quien ya entendió qué es "Trámite"
+          o "Apoyo económico" arriba no tiene que aprender una categoría
+          nueva acá abajo. */}
       <section id="videos" className="mt-20 border-t border-tinta/12 pt-10 scroll-mt-24">
         <h2 className="font-display text-3xl font-medium text-tinta">Videos y tutoriales</h2>
         <p className="mt-2 max-w-xl font-sans text-tinta/60">
-          Canales oficiales donde explican los trámites paso a paso. Se abren en
-          una pestaña nueva.
+          De canales oficiales verificados, agrupados por tema. Se abren en una
+          pestaña nueva.
         </p>
 
-        {/* Las tarjetas usan el mismo flex-col + mt-auto que las de arriba: los
-            textos tienen largos distintos y sin eso cada "Ver" queda a una
-            altura diferente dentro de la misma fila. */}
-        <ul className="mt-8 grid gap-6 sm:grid-cols-3">
-          {VIDEOS.map((video) => (
-            <li
-              key={video.id}
-              className="flex flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota"
-            >
-              <h3 className="font-display text-lg font-medium text-tinta">{video.titulo}</h3>
-              <p className="mt-1 font-mono text-xs text-tinta/45">{video.fuente}</p>
-              <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
-                {video.descripcion}
-              </p>
-              <div className="mt-auto pt-4">
-                <a
-                  href={video.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
-                >
-                  Ver ↗
-                </a>
-              </div>
-            </li>
-          ))}
-        </ul>
+        {ORDEN_TIPOS.map((tipo) => {
+          const videos = VIDEOS.filter((v) => v.tipo === tipo);
+          if (videos.length === 0) return null;
+
+          return (
+            <div key={tipo} className="mt-10 first:mt-8">
+              <h3 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+                {ETIQUETA_TIPO[tipo]}
+              </h3>
+
+              {/* Las tarjetas usan el mismo flex-col + mt-auto que las de
+                  arriba: los textos tienen largos distintos y sin eso cada
+                  "Ver" queda a una altura diferente dentro de la misma fila. */}
+              <ul className="mt-4 grid gap-6 sm:grid-cols-3">
+                {videos.map((video) => (
+                  <li
+                    key={video.id}
+                    className="flex flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota"
+                  >
+                    <h4 className="font-display text-lg font-medium text-tinta">
+                      {video.titulo}
+                    </h4>
+                    <p className="mt-1 font-mono text-xs text-tinta/45">{video.fuente}</p>
+                    <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
+                      {video.descripcion}
+                    </p>
+                    <div className="mt-auto pt-4">
+                      <a
+                        href={video.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                      >
+                        Ver ↗
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
       </section>
 
       {/* Quien llega hasta acá ya entró: el cierre invita a preguntar, no a

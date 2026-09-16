@@ -108,16 +108,20 @@ export const PASOS: PasoFormalizacion[] = [
     verificadoEn: '2026-09-15',
   },
   {
-    id: 'banco-oportunidades',
-    titulo: 'Banco de las Oportunidades',
+    id: 'banco-distrital',
+    titulo: 'Banco Distrital de Medellín',
     resumen:
-      'Créditos de la Alcaldía de Medellín pensados para negocios pequeños que no acceden a la banca tradicional.',
+      'Créditos de la Alcaldía pensados para negocios pequeños que no acceden a la banca tradicional. Antes se llamaba Banco de las Oportunidades — mismo programa, nombre nuevo.',
     tipo: 'fondo',
     entidad: 'Alcaldía de Medellín',
     fuente: 'https://www.medellin.gov.co',
     requisitos: ['Ser mayor de edad', 'Vivir o tener el negocio en Medellín', 'Cédula'],
     aplicaA: ['no_tengo', 'en_tramite', 'rut_camara'],
-    verificadoEn: '2026-09-14',
+    // Renombrado: era "Banco de las Oportunidades", pasó por "Banco de los
+    // Pobres" antes que eso. Verificado contra medellin.gov.co — el nombre
+    // viejo sigue circulando en boca de la gente, por eso se menciona en el
+    // resumen en vez de solo cambiarlo en silencio.
+    verificadoEn: '2026-09-16',
   },
   {
     id: 'fondo-emprender',
@@ -187,13 +191,17 @@ export interface VideoRecurso {
   url: string;
   /** De dónde sale. Se muestra: importa quién lo dice, no solo qué dice. */
   fuente: string;
+  /** Agrupa el video con los pasos del mismo tipo — mismos tres módulos que ya usa la lista de trámites, no una categoría nueva. */
+  tipo: TipoRuta;
+  /** AAAA-MM-DD en que alguien del equipo confirmó que el video sigue publicado y en el canal oficial. */
+  verificadoEn: string;
 }
 
 /**
  * ══════════════════════════════════════════════════════════════════════
  *  ACÁ SE PEGAN LOS VIDEOS DE YOUTUBE. Copiá una entrada y cambiá los
- *  cuatro campos. No hay que tocar ningún componente: la página
- *  /formalizacion los lee de esta lista.
+ *  seis campos. No hay que tocar ningún componente: la página
+ *  /formalizacion los lee de esta lista y los agrupa por `tipo`.
  * ══════════════════════════════════════════════════════════════════════
  *
  *   {
@@ -202,50 +210,74 @@ export interface VideoRecurso {
  *     descripcion: 'Qué necesitas y cuánto se demora.',
  *     url: 'https://www.youtube.com/watch?v=XXXXXXX',
  *     fuente: 'DIAN',                                ← quién lo publicó
+ *     tipo: 'tramite',                                ← 'tramite' | 'fondo' | 'formacion'
+ *     verificadoEn: '2026-09-16',                     ← hoy, si lo revisaste vos
  *   },
  *
- * ── Dos reglas al elegir un video ──
+ * ── Tres reglas al elegir un video ──
  *
- * 1. Que sea de la entidad o de alguien verificable. `fuente` se muestra en la
- *    tarjeta a propósito: acá importa quién lo dice tanto como qué dice, y un
- *    tutorial de un canal cualquiera puede dar información vieja de trámites.
+ * 1. Que sea del canal oficial verificado de la entidad, no de un canal de
+ *    terceros con el nombre parecido. Esto costó dos intentos fallidos reales
+ *    al armar esta lista: un "SENA" con 49 suscriptores que no era el SENA, y
+ *    un video de "Medellín Confía" que sonaba oficial y no lo era. Antes de
+ *    pegar un link, entrá al canal y mirá el número de suscriptores y la
+ *    descripción — no confíes en que el título del video diga la entidad.
  * 2. Que no tenga fecha de vencimiento. Un video de una convocatoria de 2026
  *    queda desactualizado en marzo y nadie se acuerda de sacarlo.
+ * 3. Que el video siga publicado. Uno de los primeros candidatos para esta
+ *    lista ya no existía: "Video no disponible porque se cerró la cuenta de
+ *    YouTube asociada a él" — motivo de más para no confiar en un resultado
+ *    de búsqueda sin abrirlo.
  *
- * Arranca con canales oficiales y no con videos sueltos porque un link a un
- * video puntual se rompe el día que el canal lo baja, y queda una ficha muerta
- * en la página que la gente usa para orientarse. Los canales no se caen.
+ * `fuente` se muestra en la tarjeta a propósito: acá importa quién lo dice
+ * tanto como qué dice.
  */
 export const VIDEOS: VideoRecurso[] = [
   {
-    id: 'canal-camara',
-    titulo: 'Cámara de Comercio de Medellín',
+    id: 'como-sacar-rut',
+    titulo: 'Paso a paso para la inscripción virtual en el RUT',
     descripcion:
-      'Charlas y tutoriales sobre cómo registrar tu negocio, renovar la matrícula y llevar tus cuentas.',
-    url: 'https://www.camaramedellin.com.co',
-    fuente: 'Cámara de Comercio de Medellín para Antioquia',
-  },
-  {
-    id: 'canal-dian',
-    titulo: 'DIAN — trámites en línea',
-    descripcion: 'Cómo sacar el RUT paso a paso y qué hacer después de tenerlo.',
-    url: 'https://www.dian.gov.co',
+      'Cómo inscribirte por internet, sin pedir cita y sin salir de tu casa.',
+    url: 'https://www.youtube.com/watch?v=RVbImixXiEg',
     fuente: 'DIAN',
+    tipo: 'tramite',
+    verificadoEn: '2026-09-16',
   },
   {
-    id: 'canal-sena',
-    titulo: 'SENA — formación para emprendedores',
-    descripcion: 'Cursos cortos y gratuitos sobre administración, ventas y costos.',
-    url: 'https://www.sena.edu.co',
-    fuente: 'SENA',
+    id: 'como-registrar-matricula',
+    titulo: 'Cómo ingresar y registrarte en el aplicativo virtual de matrícula',
+    descripcion: 'El primer paso para crear tu empresa por el aplicativo virtual de la Cámara.',
+    url: 'https://www.youtube.com/watch?v=rkMw3wzjwWU',
+    fuente: 'Cámara de Comercio de Medellín para Antioquia',
+    tipo: 'tramite',
+    verificadoEn: '2026-09-16',
   },
   {
-    id: 'canal-alcaldia',
-    titulo: 'Alcaldía de Medellín — emprendimiento',
-    descripcion:
-      'Programas de apoyo a negocios de la ciudad, convocatorias abiertas y cómo participar.',
-    url: 'https://www.medellin.gov.co',
+    id: 'centro-emprendimiento-cercano',
+    titulo: 'Busca el Centro de Emprendimiento más cercano',
+    descripcion: 'Dónde queda el CEDEZO de tu comuna y qué asesoría te dan ahí.',
+    url: 'https://www.youtube.com/watch?v=J6WKP9VZywU',
     fuente: 'Alcaldía de Medellín',
+    tipo: 'tramite',
+    verificadoEn: '2026-09-16',
+  },
+  {
+    id: 'banco-distrital-requisitos',
+    titulo: 'Acceder a un crédito con el Banco Distrital',
+    descripcion: 'Qué piden para el crédito que antes se conocía como Banco de las Oportunidades.',
+    url: 'https://www.youtube.com/watch?v=ygO5LC_ocEE',
+    fuente: 'Alcaldía de Medellín',
+    tipo: 'fondo',
+    verificadoEn: '2026-09-16',
+  },
+  {
+    id: 'requisitos-estudiar-sena',
+    titulo: 'Requisitos para estudiar en el SENA',
+    descripcion: 'Qué piden para inscribirte a un curso corto y virtual, sin costo.',
+    url: 'https://www.youtube.com/watch?v=oRpwVDaJc8I',
+    fuente: 'SENA',
+    tipo: 'formacion',
+    verificadoEn: '2026-09-16',
   },
 ];
 
