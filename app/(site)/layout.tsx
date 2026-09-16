@@ -1,13 +1,19 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { ContadorVisitas } from "@/components/ContadorVisitas";
+import { sesionActual } from "@/lib/auth/usuario";
 
 /**
  * Layout del sitio público: home, Empleo, Inventario predictivo, Aliados y
  * legal. El route group "(site)" no aparece en la URL — sirve para darle
  * header propio a estas rutas sin tocar /admin, que ya tiene el suyo en
  * app/admin/(panel)/layout.tsx.
+ *
+ * La sesión se lee acá, una vez, y baja al header: `sesionActual` necesita la
+ * cookie y node:crypto, y SiteHeader es 'use client' por usePathname.
  */
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const sesion = await sesionActual();
+
   return (
     <>
       <ContadorVisitas />
@@ -30,7 +36,16 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         Saltar al contenido
       </a>
 
-      <SiteHeader />
+      {/* Se manda SOLO lo que el encabezado pinta: nombre y avatar. NO el
+          identificador, que `sesion` también trae — todo lo que se le pasa a un
+          componente de cliente termina serializado en el HTML de la página.
+
+          No sería una filtración —es el propio id, en la propia página de esa
+          persona, y la autenticación va por cookie firmada— pero la regla es no
+          exponer lo que no hace falta. */}
+      <SiteHeader
+        sesion={sesion ? { nombre: sesion.nombre, foto: sesion.foto } : null}
+      />
 
       <div id="contenido" tabIndex={-1}>
         {children}

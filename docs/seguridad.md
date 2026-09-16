@@ -35,7 +35,51 @@ Todo lo demás es lectura pública o está detrás de la sesión de moderación.
   Los exitosos no gastan cupo, así que trabajar normalmente nunca acerca al
   bloqueo.
 
+## Ingreso de vecinos con Google (OAuth 2.0)
+
+Distinto del login de moderadores: acá no hay contraseña propia. La identidad
+la prueba Google y el sitio solo verifica que la vuelta sea legítima.
+
+- **La identidad es `google_sub`, NUNCA el correo.** `google_sub` es el
+  identificador inmutable que Google asigna a una cuenta; el correo cambia de
+  manos. El upsert de `ingresarConGoogle` resuelve el conflicto por
+  `google_sub`, y si llega una cuenta distinta con un correo ya registrado
+  **se rechaza el ingreso** (`estado: 'correo_tomado'`).
+
+  **No lo "arregles" con `on conflict (correo)`.** Sería la corrección obvia y
+  es un agujero de suplantación: haría que una cuenta nueva se apodere de la
+  fila existente —con sus negocios adentro— solo por traer el mismo correo.
+
+- **Se rechaza un correo sin verificar.** Si `email_verified` viene `false`,
+  no se entra: un correo sin confirmar no identifica a nadie.
+- **PKCE (RFC 7636) con `S256`.** El código de autorización viaja en la URL del
+  navegador —historial, logs de proxy, `Referer`—, así que solo sirve
+  acompañado de un verificador que vive en una cookie `httpOnly` y nunca sale
+  del servidor. Interceptar el código deja de alcanzar.
+- **`state` aleatorio de 32 bytes**, en cookie `httpOnly` de un solo uso
+  (`maxAge` 600 s), comparado con `timingSafeEqual`. Se borra apenas se lee,
+  pase lo que pase después.
+- **Prefijo `__Host-` en las tres cookies** (estado, verificador, sesión), solo
+  en producción porque el prefijo exige HTTPS. Un subdominio comprometido no
+  puede escribirlas.
+- **Sesión de 14 días.** No hay lista de sesiones activas, así que una cookie
+  robada vale hasta que expire; 14 días acota la ventana sin obligar a
+  re-autenticarse a quien entra cada par de semanas. El daño posible está
+  limitado por diseño: una sesión de vecino solo alcanza su propia ficha.
+- **`sameSite=lax`, no `strict`.** Con `strict` la cookie no viaja al volver
+  desde Google y la persona quedaría autenticada y deslogueada a la vez.
+- **El mensaje de `correo_tomado` es vago a propósito.** Confirmar que ese
+  correo ya está registrado le regalaría información sobre la cuenta de otro.
+  El detalle va al log del servidor.
+
 ## Autorización
+
+**Dos poblaciones, dos cookies: `admin_session` (moderadores) y
+`sesion_usuario` (vecinos).** Separadas a propósito. Con una sola cookie y un
+campo "rol" adentro, ese campo sería lo único entre un vecino y el panel de
+moderación. El panel solo lee la suya, así que no existe un camino donde una
+sesión de vecino se convierta en acceso de administrador — ni falsificándola,
+porque el panel nunca la mira.
 
 El guard vive en `app/admin/(panel)/layout.tsx`, no en `middleware.ts`. Se
 decidió así cuando el middleware era Edge-only (Next 14), donde no existen
@@ -105,6 +149,37 @@ Configuradas en `next.config.mjs` para todas las rutas:
 | `Referrer-Policy: strict-origin-when-cross-origin` | que una ruta del panel no aparezca en logs de terceros |
 | `Permissions-Policy` | apaga cámara, micrófono, pagos y USB; deja `geolocation=(self)` |
 | `Strict-Transport-Security` | evita el primer request en texto plano |
+| `Content-Security-Policy-Report-Only` | **anota, todavía no bloquea** — ver abajo |
+
+### La CSP está en modo reporte, no aplicada
+
+`Content-Security-Policy-Report-Only` hace que el navegador anote en su consola
+lo que la política habría frenado, sin frenar nada. Es el paso previo
+obligatorio: una CSP aplicada que se equivoca en un origen rompe el sitio **en
+silencio**, sin un error visible en ninguna parte.
+
+Ese riesgo no es teórico. La primera versión de esta política listaba
+`*.tile.openstreetmap.org` como origen del mapa. El modo reporte marcó 67
+violaciones al abrir `/aliados`: el mapa **no** usa OpenStreetMap, usa
+`services.arcgisonline.com` (ver `TESELAS.url` en `lib/geo/constantes.ts`). En
+modo bloqueo, el mapa se habría quedado gris. Lo mismo con
+`va.vercel-scripts.com`, que sirve Analytics y Speed Insights.
+
+Orígenes verificados con cero violaciones en `/aliados`, `/aliados/registro`,
+`/entrar` y `/admin/login`.
+
+**Antes de pasarla a modo bloqueo** (renombrar la cabecera a
+`Content-Security-Policy`), recorrer con la consola abierta lo que todavía no
+se probó: el panel de moderación con sesión, `/mi-cuenta` con sesión, el asesor
+respondiendo, y el sitio **en producción** — donde los scripts de Vercel no son
+los `.debug.js` de desarrollo.
+
+**Lo que esta política todavía NO protege:** `script-src` lleva
+`'unsafe-inline'` porque Next emite scripts inline para hidratar. Con eso, la
+CSP no defiende contra XSS, que es su razón de ser principal. Quitarlo pide
+nonces por request generados en un middleware — cambio de arquitectura, no una
+línea. Lo que sí acota hoy es de dónde salen imágenes, conexiones, marcos y
+formularios.
 
 ## Datos personales
 

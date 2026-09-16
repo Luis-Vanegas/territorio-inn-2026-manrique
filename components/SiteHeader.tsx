@@ -23,6 +23,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { enfoque } from "@/lib/content";
+import { salir } from "@/lib/actions/sesionUsuario";
+// Una sola lista de accesos privados, compartida con el menú de escritorio:
+// dos copias se desincronizan la primera vez que se agregue un módulo.
+import { MenuUsuario, ENLACES_PRIVADOS } from "@/components/MenuUsuario";
 
 // Se genera de la misma fuente que EnfoqueSection: una sola lista de módulos,
 // no dos que se puedan desincronizar cuando se agregue o quite uno.
@@ -50,7 +54,15 @@ function esActivo(pathname: string, href: string) {
 const BASE_ENLACE =
   "inline-flex min-h-[44px] items-center font-mono text-base uppercase tracking-wide transition-colors";
 
-export function SiteHeader() {
+/**
+ * La sesión la resuelve el layout (Server Component) y baja como prop: este
+ * componente es 'use client' por usePathname y no puede leer la cookie.
+ */
+export function SiteHeader({
+  sesion,
+}: {
+  sesion: { nombre: string; foto: string | null } | null;
+}) {
   const pathname = usePathname();
 
   return (
@@ -99,12 +111,21 @@ export function SiteHeader() {
           })}
         </nav>
 
-        <Link
-          href="/aliados/registro"
-          className="hidden min-h-[44px] shrink-0 items-center border border-terracota-texto bg-terracota-texto text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto px-4 font-mono text-base xl:inline-flex"
-        >
-          Sumar mi negocio →
-        </Link>
+        {/* Con sesión: identidad neutra con su propio menú. Sin sesión: la
+            única acción primaria de la barra, y por eso la única terracota.
+            Nunca los dos a la vez. */}
+        <div className="hidden shrink-0 xl:block">
+          {sesion ? (
+            <MenuUsuario nombre={sesion.nombre} foto={sesion.foto} />
+          ) : (
+            <Link
+              href="/entrar"
+              className="inline-flex min-h-[44px] items-center border border-terracota-texto bg-terracota-texto px-4 font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+            >
+              Registrarme →
+            </Link>
+          )}
+        </div>
 
         {/* Mobile: <details> nativo, cero JavaScript */}
         <details className="group relative xl:hidden">
@@ -137,12 +158,40 @@ export function SiteHeader() {
                 </Link>
               );
             })}
-            <Link
-              href="/aliados/registro"
-              className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-terracota-texto bg-terracota-texto text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto px-3 text-center font-mono text-base"
-            >
-              Sumar mi negocio →
-            </Link>
+            {/* En móvil el desplegable ya está abierto, así que los accesos
+                privados van inline en vez de anidar un <details> dentro de
+                otro — dos menús encastrados son un laberinto con el pulgar. */}
+            {sesion ? (
+              <>
+                <p className="mt-2 border-t border-tinta/12 px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/45">
+                  Tu espacio · {sesion.nombre.trim().split(/\s+/)[0]}
+                </p>
+                {ENLACES_PRIVADOS.map((e) => (
+                  <Link
+                    key={e.href}
+                    href={e.href}
+                    className={`${BASE_ENLACE} border-l-4 border-transparent px-3 text-tinta/70 hover:bg-tinta/[0.03] hover:text-terracota-texto`}
+                  >
+                    {e.etiqueta}
+                  </Link>
+                ))}
+                <form action={salir} className="mt-1 border-t border-tinta/12 pt-1">
+                  <button
+                    type="submit"
+                    className={`${BASE_ENLACE} w-full border-l-4 border-transparent px-3 text-left text-tinta/70 hover:bg-tinta/[0.03] hover:text-terracota-texto`}
+                  >
+                    Cerrar sesión
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link
+                href="/entrar"
+                className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-terracota-texto bg-terracota-texto px-3 text-center font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+              >
+                Registrarme →
+              </Link>
+            )}
           </nav>
         </details>
       </div>
