@@ -89,17 +89,22 @@ export async function ingresarConGoogle(datos: {
  * y personalizar /formalizacion; el detalle completo se lee por token o por
  * id cuando la persona abre uno.
  *
- * `formalidad` viaja acá y no en una query aparte: es el mismo `where` sobre
- * la misma tabla, así que separarla sería una segunda consulta por nada.
+ * `formalidad` NO vive en `portafolios` — vive en `aliados_investigacion`
+ * (migración 010), la tabla privada del paso 4 del registro, uno a uno por
+ * `portafolio_id`. Hace falta el mismo `left join` que ya usa
+ * `obtenerContextoAsesor` en portafolios.repo.ts. `left` y no `join`: el paso
+ * 4 es opcional, así que un negocio sin fila ahí tiene que seguir apareciendo
+ * en la lista, solo que con `formalidad: null`.
  */
 export async function negociosDe(usuarioId: string): Promise<
   { id: string; nombre: string; estado: string; token_publico: string; formalidad: string | null }[]
 > {
   const rows = await sql`
-    select id, nombre, estado, token_publico, formalidad
-    from portafolios
-    where usuario_id = ${usuarioId}
-    order by creado_en desc
+    select p.id, p.nombre, p.estado, p.token_publico, i.formalidad
+    from portafolios p
+    left join aliados_investigacion i on i.portafolio_id = p.id
+    where p.usuario_id = ${usuarioId}
+    order by p.creado_en desc
   `;
   return rows as {
     id: string;
