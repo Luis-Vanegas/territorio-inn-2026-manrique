@@ -18,6 +18,20 @@ ambos agentes repliquen un patrón que ya no existe.
 - Zod para validación de datos
 - Neon (Postgres serverless) como base de datos
 - Vercel Blob para almacenamiento de archivos (fotos)
+- El asesor de formalización (`lib/agente/`) habla con un modelo de lenguaje
+  por `fetch` al formato de OpenAI en `/chat/completions`, **sin SDK**. Los
+  proveedores viven en `lib/agente/proveedores.ts` y se recorren en orden hasta
+  que alguno responda: todos corren con plan gratuito y un plan gratuito se
+  agota. Cada uno se prende con su clave (`GEMINI_API_KEY`, `GROQ_API_KEY`,
+  `OPENROUTER_API_KEY`); el modelo y la URL se pueden pisar con
+  `<PROVEEDOR>_MODELO` y `<PROVEEDOR>_API_URL`. No instales el SDK de ningún
+  proveedor: ata el proyecto a ese proveedor justo donde la portabilidad es el
+  requisito. La llamada sale solo desde una Server Action detrás del token del
+  negocio, nunca desde una ruta pública.
+- Ingreso de vecinos con **Google OAuth 2.0 a mano, sin NextAuth** (`lib/auth/
+  google.ts`): la sesión firmada ya existía en `admin.ts` y una librería
+  dejaría dos sistemas de sesión conviviendo. Con PKCE (`S256`). La identidad
+  es `google_sub`, **nunca el correo** — ver `docs/seguridad.md`.
 - Node >= 20.9.0 — el paquete es ESM (`"type": "module"` en package.json).
   No hay ningún `.js` en el repo: config y scripts son `.mjs`, el resto `.ts`/`.tsx`.
   Si agregás un archivo `.js`, va a interpretarse como ESM, no como CommonJS.
@@ -63,8 +77,9 @@ lib/
   db/                repositorios de acceso a datos (*.repo.ts), uno por tabla/dominio
   validation/        schemas de Zod (*.schema.ts)
   geo/                utilidades geoespaciales
-  auth/               autenticación de admin
+  auth/               sesiones: admin.ts (moderadores), usuario.ts (vecinos), google.ts (OAuth)
   blob/               integración con Vercel Blob
+  agente/             asesor de formalización (prompt y llamada al modelo)
 scripts/             scripts de mantenimiento (migraciones, verificación, admin)
 data/                datasets fuente (DANE, cámara de comercio, etc.) — no tocar sin pedir
 ```
@@ -82,6 +97,21 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 - **Rate limiting**: los endpoints públicos sin auth comparten el límite de
   `lib/db/rateLimit.ts` a propósito — no crear un límite nuevo por endpoint
   salvo que el volumen lo justifique.
+- **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
+  `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
+  Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo
+  único entre un vecino y el panel de moderación. No las unifiques.
+- **Dos puertas, una ficha**: un negocio entra por cuenta de Google
+  (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
+  `token_publico` — para quien registramos en campo y no maneja tecnología.
+  `origen_registro` distingue `propio` de `asistido`; es una columna, no otra
+  tabla. Un registro `asistido` EXIGE `consentimiento_asistido` y
+  `capturado_por` por restricción de base: Ley 1581 de 2012, el consentimiento
+  lo da el titular y hay que poder demostrar cómo.
+- **RLS no se usa acá y no hace falta**: el navegador nunca habla con Postgres.
+  Toda consulta sale de una Server Action o de un Server Component, que ya
+  saben quién es el usuario por su sesión. El control de acceso va en el
+  `where` del repo, no en políticas de fila.
 - **Comentarios**: solo cuando explican el WHY (una decisión no obvia, un
   trade-off). Los shortcuts deliberados se marcan con `ponytail: <qué se
   omitió y cuándo ampliarlo>`. No comentar lo que el código ya dice solo.
@@ -95,6 +125,7 @@ npm run typecheck     # tsc --noEmit
 npm run verificar     # verifica geo, constraints, campos personalizados y entorno
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
+npm run agente:verificar  # prueba que el asesor habla con su proveedor
 ```
 
 ## Qué NO hacer
