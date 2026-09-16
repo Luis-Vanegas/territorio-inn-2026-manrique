@@ -178,15 +178,19 @@ export interface VideoRecurso {
   titulo: string;
   descripcion: string;
   /**
-   * URL del video o del canal oficial.
+   * URL del video en YouTube, siempre con `?v=ID` — de ahí `idDeYoutube` saca
+   * el id para el embed. Sirve doble: reproducir en la página (VideoEmbebido)
+   * y el link «Ver en YouTube ↗» para quien prefiere la app o el sitio real.
    *
-   * ── Por qué no hay videos embebidos ──
+   * ── Por qué se embebe con click-to-load y no con un <iframe> directo ──
    *
-   * Un <iframe> de YouTube carga scripts de terceros y cookies de seguimiento
-   * en una página que le promete a la persona una política de datos clara. El
-   * link abre en una pestaña nueva y no le mete rastreadores a nadie. Si algún
-   * día se quiere embeber, va con youtube-nocookie.com y un click-to-load —
-   * no un iframe directo.
+   * Un <iframe> de YouTube montado apenas carga la página pide scripts y
+   * cookies de terceros a quien solo estaba mirando la sección, sin haber
+   * pedido ver nada todavía — mal encaje con una página que promete una
+   * política de datos clara. `youtube-nocookie.com` ya reduce el rastreo del
+   * lado de YouTube, y el click-to-load (VideoEmbebido.tsx) hace que el
+   * <iframe> ni siquiera exista en el DOM hasta que la persona toca play: la
+   * miniatura que se ve antes es una imagen estática (i.ytimg.com), no el embed.
    */
   url: string;
   /** De dónde sale. Se muestra: importa quién lo dice, no solo qué dice. */
@@ -280,6 +284,19 @@ export const VIDEOS: VideoRecurso[] = [
     verificadoEn: '2026-09-16',
   },
 ];
+
+/**
+ * Saca el id de un link de YouTube para armar el embed y la miniatura.
+ * Cubre `watch?v=ID` (el formato que usa todo `VIDEOS` hoy) y `youtu.be/ID`,
+ * por si algún día se pega un link corto. `null` si no matchea — VideoEmbebido
+ * cae al link de siempre en vez de romper la página por un id mal pegado.
+ */
+export function idDeYoutube(url: string): string | null {
+  const watch = /[?&]v=([\w-]{6,})/.exec(url);
+  if (watch) return watch[1]!;
+  const corto = /youtu\.be\/([\w-]{6,})/.exec(url);
+  return corto ? corto[1]! : null;
+}
 
 /** Etiquetas de `TipoRuta` para la interfaz. En "tú", como todo el sitio. */
 export const ETIQUETA_TIPO: Record<TipoRuta, string> = {

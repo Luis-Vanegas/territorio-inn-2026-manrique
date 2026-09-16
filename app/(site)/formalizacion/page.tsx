@@ -9,9 +9,11 @@ import {
   ETIQUETA_TIPO,
   ETIQUETA_FORMALIDAD,
   pasosPara,
+  idDeYoutube,
   type TipoRuta,
 } from '@/lib/formalizacion';
 import { RutasPersonalizadas } from './_components/RutasPersonalizadas';
+import { VideoEmbebido } from '@/components/VideoEmbebido';
 
 export const metadata: Metadata = {
   title: 'Formalización · Constelaciones',
@@ -250,8 +252,8 @@ export default async function FormalizacionPage() {
       <section id="videos" className="mt-20 border-t border-tinta/12 pt-10 scroll-mt-24">
         <h2 className="font-display text-3xl font-medium text-tinta">Videos y tutoriales</h2>
         <p className="mt-2 max-w-xl font-sans text-tinta/60">
-          De canales oficiales verificados, agrupados por tema. Se abren en una
-          pestaña nueva.
+          De canales oficiales verificados, agrupados por tema. Se reproducen
+          acá mismo, o los abres en YouTube si prefieres verlos allá.
         </p>
 
         {ORDEN_TIPOS.map((tipo) => {
@@ -266,32 +268,43 @@ export default async function FormalizacionPage() {
 
               {/* Las tarjetas usan el mismo flex-col + mt-auto que las de
                   arriba: los textos tienen largos distintos y sin eso cada
-                  "Ver" queda a una altura diferente dentro de la misma fila. */}
+                  "Ver en YouTube" queda a una altura diferente en la misma fila. */}
               <ul className="mt-4 grid gap-6 sm:grid-cols-3">
-                {videos.map((video) => (
-                  <li
-                    key={video.id}
-                    className="flex flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota"
-                  >
-                    <h4 className="font-display text-lg font-medium text-tinta">
-                      {video.titulo}
-                    </h4>
-                    <p className="mt-1 font-mono text-xs text-tinta/45">{video.fuente}</p>
-                    <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
-                      {video.descripcion}
-                    </p>
-                    <div className="mt-auto pt-4">
-                      <a
-                        href={video.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
-                      >
-                        Ver ↗
-                      </a>
-                    </div>
-                  </li>
-                ))}
+                {videos.map((video) => {
+                  const youtubeId = idDeYoutube(video.url);
+
+                  return (
+                    <li
+                      key={video.id}
+                      className="flex flex-col border border-tinta/12 transition-colors hover:border-terracota"
+                    >
+                      {/* Sin id reconocible (link mal pegado), no hay miniatura
+                          que mostrar: se salta directo al link de YouTube en
+                          vez de romper la tarjeta con una imagen rota. */}
+                      {youtubeId && <VideoEmbebido youtubeId={youtubeId} titulo={video.titulo} />}
+
+                      <div className="flex flex-1 flex-col p-6">
+                        <h4 className="font-display text-lg font-medium text-tinta">
+                          {video.titulo}
+                        </h4>
+                        <p className="mt-1 font-mono text-xs text-tinta/45">{video.fuente}</p>
+                        <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
+                          {video.descripcion}
+                        </p>
+                        <div className="mt-auto pt-4">
+                          <a
+                            href={video.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                          >
+                            Ver en YouTube ↗
+                          </a>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           );

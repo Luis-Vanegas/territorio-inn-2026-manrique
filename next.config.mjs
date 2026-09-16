@@ -50,13 +50,20 @@ const csp = [
   // El avatar de Google no siempre sale de lh3: rota entre lh3..lh6 según el
   // centro de datos, así que va con comodín. Un origen fijo funciona hasta que
   // a alguien le toca lh5 y su foto no carga solo para esa persona.
-  "img-src 'self' data: blob: https://services.arcgisonline.com https://*.public.blob.vercel-storage.com https://*.googleusercontent.com",
+  //
+  // i.ytimg.com sirve las miniaturas de los videos de /formalizacion: se
+  // muestran antes de que la persona haga clic en reproducir. Ver frame-src.
+  "img-src 'self' data: blob: https://services.arcgisonline.com https://*.public.blob.vercel-storage.com https://*.googleusercontent.com https://i.ytimg.com",
   "font-src 'self' data:",
   // A dónde puede hablar el navegador: el propio sitio y la telemetría de
   // Vercel. El asesor NO va acá — esa llamada sale del servidor, no del cliente.
   "connect-src 'self' https://*.vercel-insights.com https://*.vercel-analytics.com",
-  // Nada de iframes, ni propios ni ajenos.
-  "frame-src 'none'",
+  // Único origen permitido: youtube-nocookie.com, y solo para los videos de
+  // /formalizacion. El iframe NO se monta al cargar la página — recién entra
+  // al DOM cuando la persona hace clic en reproducir (VideoEmbebido.tsx) — así
+  // que visitar la página no le pide nada a YouTube. Todo lo demás sigue
+  // vetado: nunca un iframe del propio sitio ni de ningún otro origen.
+  "frame-src https://www.youtube-nocookie.com",
   "object-src 'none'",
   // Refuerza X-Frame-Options con la versión moderna del mismo control.
   "frame-ancestors 'none'",
