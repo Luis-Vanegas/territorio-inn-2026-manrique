@@ -1,16 +1,86 @@
 /** @type {import('next').NextConfig} */
 
 /**
- * Cabeceras de seguridad para todas las rutas.
+ * Content-Security-Policy, en modo REPORTE.
  *
- * No hay Content-Security-Policy todavía, y es una omisión consciente: una CSP
- * mal armada rompe en silencio (las tiles del mapa, las fotos del Blob, los
- * estilos inline que emite Next) y una CSP con 'unsafe-inline' en scripts no
- * protege de nada. Hacerla bien pide nonces por request vía middleware y
- * probarla contra el sitio real. Está anotada como el siguiente paso en
- * docs/seguridad.md, no olvidada.
+ * ── Por qué Report-Only y no aplicada ──
+ *
+ * Una CSP aplicada que se equivoca en un origen rompe el sitio EN SILENCIO: el
+ * mapa se queda gris, las fotos no cargan, y nadie ve un error salvo en la
+ * consola del navegador. Este sitio carga teselas de mapa, fotos de Vercel
+ * Blob, avatares de Google y los estilos inline que emite Next, así que la
+ * lista de orígenes hay que descubrirla contra el sitio real, no adivinarla.
+ *
+ * En modo reporte, el navegador NO bloquea nada: solo anota en su consola cada
+ * cosa que la política habría frenado. Eso permite recorrer el sitio, juntar
+ * las violaciones legítimas, ajustar la lista, y recién entonces cambiar la
+ * cabecera a `Content-Security-Policy` para que empiece a bloquear.
+ *
+ * ── El pendiente real: los scripts ──
+ *
+ * `script-src` lleva 'unsafe-inline' porque Next emite scripts inline para
+ * hidratar la página. Con eso, la política NO protege contra XSS, que es lo
+ * único que de verdad importa de una CSP. Quitarlo pide nonces por request
+ * generados en un middleware, y eso es un cambio de arquitectura, no una
+ * línea. Mientras tanto esta política sí acota de dónde salen imágenes,
+ * conexiones, marcos y formularios — que es real y es barato.
+ *
+ * No la pases a modo bloqueo sin antes recorrer el sitio entero con la consola
+ * abierta: el registro con mapa y foto, la vitrina, y el panel de moderación.
+ */
+const csp = [
+  "default-src 'self'",
+  // 'unsafe-inline' y 'unsafe-eval': los emite Next para hidratar. Ver arriba.
+  //
+  // va.vercel-scripts.com sirve @vercel/analytics y @vercel/speed-insights, los
+  // dos paquetes que ya están en package.json y se montan en el layout. También
+  // lo encontró el modo reporte: sin este origen, las dos métricas se cortan en
+  // silencio y el panel de Vercel queda vacío sin que nadie sepa por qué.
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com",
+  // Tailwind y Next inyectan estilos inline; sin esto no queda nada con forma.
+  "style-src 'self' 'unsafe-inline'",
+  // data: para los SVG en línea; blob: para la previsualización de la foto
+  // antes de subirla.
+  //
+  // El origen del mapa es ArcGIS, NO OpenStreetMap: sale de `TESELAS.url` en
+  // lib/geo/constantes.ts. Se descubrió con la política en modo reporte, que
+  // marcó 67 violaciones al abrir /aliados — con la política aplicada, el mapa
+  // se habría quedado gris sin un solo error visible. Si algún día se cambia
+  // el proveedor de teselas, hay que cambiar este origen en el mismo commit.
+  // El avatar de Google no siempre sale de lh3: rota entre lh3..lh6 según el
+  // centro de datos, así que va con comodín. Un origen fijo funciona hasta que
+  // a alguien le toca lh5 y su foto no carga solo para esa persona.
+  "img-src 'self' data: blob: https://services.arcgisonline.com https://*.public.blob.vercel-storage.com https://*.googleusercontent.com",
+  "font-src 'self' data:",
+  // A dónde puede hablar el navegador: el propio sitio y la telemetría de
+  // Vercel. El asesor NO va acá — esa llamada sale del servidor, no del cliente.
+  "connect-src 'self' https://*.vercel-insights.com https://*.vercel-analytics.com",
+  // Nada de iframes, ni propios ni ajenos.
+  "frame-src 'none'",
+  "object-src 'none'",
+  // Refuerza X-Frame-Options con la versión moderna del mismo control.
+  "frame-ancestors 'none'",
+  // Los formularios solo pueden enviarse al propio sitio. Corta el truco de
+  // inyectar un formulario que postea las credenciales a otro dominio.
+  "form-action 'self'",
+  // Impide que un <base> inyectado reescriba todas las URLs relativas.
+  "base-uri 'self'",
+  // Sin `upgrade-insecure-requests`: el navegador lo IGNORA en una política de
+  // solo reporte y ensucia la consola con un error por carga de página, que es
+  // justo lo que no queremos mientras usamos la consola para juntar
+  // violaciones reales. **Reponelo al pasar a modo bloqueo** — ahí sí hace
+  // algo. Mientras tanto, HSTS ya cubre el mismo caso.
+].join('; ');
+
+/**
+ * Cabeceras de seguridad para todas las rutas.
  */
 const cabecerasSeguridad = [
+  {
+    // Report-Only: anota, no bloquea. Ver el comentario largo de arriba.
+    key: 'Content-Security-Policy-Report-Only',
+    value: csp,
+  },
   {
     // El panel de moderación no debe poder embeberse en un iframe ajeno: es
     // la defensa contra clickjacking sobre los botones de aprobar y rechazar.
@@ -75,11 +145,6 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**.public.blob.vercel-storage.com',
         pathname: '/portafolios/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.public.blob.vercel-storage.com',
-        pathname: '/servicios/**',
       },
     ],
     // Solo AVIF y WebP, y en pocos anchos: cada combinación de ancho×formato
