@@ -17,6 +17,7 @@ import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
 import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
+import { Asesor } from './Asesor';
 
 // Misma lista que FormularioRegistro.tsx — copiada, no importada, para no
 // acoplar dos rutas hermanas que solo comparten estos 15 nombres por
@@ -595,12 +596,22 @@ export function EstadoAliado({
   token,
   categorias,
   fotoFallo,
+  asesorActivo,
 }: {
   portafolio: PortafolioAdmin;
   token: string;
   categorias: Categoria[];
   /** Viene de ?foto=error en la URL: la foto del registro original no se pudo subir. */
   fotoFallo?: boolean;
+  /**
+   * Si hay credencial del modelo configurada. Lo resuelve la página (Server
+   * Component) porque `asesorConfigurado()` es server-only: este componente
+   * corre en el cliente y no puede leer process.env.
+   *
+   * Sin credencial no se muestra la sección: ofrecer un formulario que siempre
+   * devuelve "no está disponible" es peor que no ofrecerlo.
+   */
+  asesorActivo: boolean;
 }) {
   const [borrado, setBorrado] = useState(false);
 
@@ -637,6 +648,13 @@ export function EstadoAliado({
 
         {!borrado && <GuardarEnlace nombre={portafolio.nombre} />}
       </div>
+
+      {/* El asesor va antes del formulario: es lo que la persona vino a buscar.
+          Corregir la dirección es mantenimiento; esto es el beneficio de estar
+          registrado. Se muestra incluso con el registro pendiente de moderación
+          — que su ficha todavía no esté pública no le quita el derecho a
+          preguntar cómo formalizarse. */}
+      {mostrarFormulario && asesorActivo && <Asesor token={token} />}
 
       {mostrarFormulario && (
         <>

@@ -15,7 +15,7 @@ import { sql } from './neon';
  * límite es holgado y el mensaje dice cuánto falta en vez de solo negar.
  */
 
-export type OrigenIntento = 'registro' | 'login' | 'estado';
+export type OrigenIntento = 'registro' | 'login' | 'estado' | 'agente';
 
 /**
  * Cupos por origen. Son distintos a propósito:
@@ -30,11 +30,18 @@ export type OrigenIntento = 'registro' | 'login' | 'estado';
  *   parecido a registro — corregir un dato no es algo que se repita muchas
  *   veces en 10 minutos, y esto protege la ruta de intentos automatizados de
  *   adivinar un token válido (aunque el UUID en sí ya lo hace inviable).
+ * - `agente`: preguntas al asesor de formalización. Es el único endpoint del
+ *   sitio que le cuesta plata al proyecto por request, así que tiene cupo
+ *   propio en vez de compartir el de `estado`: quien pregunta mucho no debería
+ *   quedarse sin poder corregir su ficha, ni al revés. Ventana más corta y
+ *   cupo más alto que el resto porque una conversación real son varias
+ *   preguntas seguidas — cortar a la tercera sería inservible.
  */
 const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> = {
   registro: { maximo: 3, ventanaMinutos: 10 },
   login: { maximo: 8, ventanaMinutos: 15 },
   estado: { maximo: 6, ventanaMinutos: 10 },
+  agente: { maximo: 10, ventanaMinutos: 5 },
 };
 
 export type ResultadoLimite =

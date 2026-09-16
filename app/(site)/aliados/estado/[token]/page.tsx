@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { obtenerPorToken, listarCategorias } from '@/lib/db/portafolios.repo';
+import { asesorConfigurado } from '@/lib/agente/asesor';
 import { EstadoAliado } from './_components/EstadoAliado';
 
 // El token es la única credencial de esta página: nunca puede indexarse ni
@@ -44,6 +45,7 @@ export default async function EstadoAliadoPage({
         token={token}
         categorias={categorias}
         fotoFallo={foto === 'error'}
+        asesorActivo={asesorConfigurado()}
       />
     </main>
   );

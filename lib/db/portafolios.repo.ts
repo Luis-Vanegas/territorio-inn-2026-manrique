@@ -300,6 +300,43 @@ export async function obtenerPorToken(token: string): Promise<PortafolioAdmin | 
   return (rows[0] as PortafolioAdmin) ?? null;
 }
 
+/**
+ * Lo mínimo que el asesor de formalización necesita para dar una respuesta
+ * útil: qué hace el negocio, dónde está y qué respondió sobre su formalidad.
+ *
+ * Es una query aparte y no un campo más de `obtenerPorToken` a propósito.
+ * `aliados_investigacion` es privada —nunca se publica— y la ficha pública se
+ * lee en cada carga de /aliados/estado/[token]. Colgarle un LEFT JOIN a esa
+ * lectura arrastraría datos de investigación a un objeto que hoy viaja al
+ * cliente, que es exactamente lo que la separación de tablas evita.
+ *
+ * `mayor_dolor` puede venir null cuando el registro es anterior a la migración
+ * 019 (que lo hizo obligatorio); el coalesce evita que el asesor reciba null
+ * donde espera una lista.
+ */
+export type ContextoAsesor = {
+  nombre: string;
+  categoria_nombre: string;
+  barrio: string | null;
+  formalidad: string | null;
+  mayor_dolor: string[];
+};
+
+export async function obtenerContextoAsesor(token: string): Promise<ContextoAsesor | null> {
+  const rows = await sql`
+    select p.nombre,
+           c.nombre as categoria_nombre,
+           p.barrio,
+           i.formalidad,
+           coalesce(i.mayor_dolor, '{}') as mayor_dolor
+    from portafolios p
+    join categorias c on c.id = p.categoria_id
+    left join aliados_investigacion i on i.portafolio_id = p.id
+    where p.token_publico = ${token} and p.estado <> 'archivado'
+  `;
+  return (rows[0] as ContextoAsesor) ?? null;
+}
+
 export type EdicionPortafolio = {
   nombre: string;
   descripcion: string | null;
