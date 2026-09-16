@@ -20,14 +20,11 @@ export interface ModuloFuturo {
   estado: "activo" | "proximamente";
 }
 
-// Servicios arranca apagado a propósito: se prende en preproducción para
-// revisarlo, y recién después en producción. Con el flag apagado la ruta
-// devuelve 404 real, así que el Hero tampoco puede ofrecer ese camino —
-// mismo flag que usa el menú (SiteHeader) vía enfoque.modulos.
-const SERVICIOS_ACTIVO = process.env.NEXT_PUBLIC_MODULO_SERVICIOS === "true";
-
-// Mismo mecanismo que Servicios: arranca apagado, se prende primero en
-// preproducción para revisarlo. Lo usan el Hero y el menú.
+// Arranca apagado y se prende primero en preproducción para revisarlo. Con el
+// flag apagado la ruta devuelve 404 real, así que el Hero tampoco puede
+// ofrecer ese camino — el mismo flag alimenta el Hero y el menú (SiteHeader,
+// vía enfoque.modulos). Si lo apagás, apagá los dos lugares desde acá: son dos
+// consumidores del mismo valor.
 const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
 
 export const hero = {
@@ -35,15 +32,12 @@ export const hero = {
   titular: "¿Buscas un negocio, un servicio o trabajo en Manrique? ¿O tienes algo para ofrecer?",
   subtitulo:
     "Una propuesta de datos abiertos para entender y fortalecer el empleo local.",
-  // Bifurcación de intención: Aliados (negocios con dirección en el mapa) y
-  // Servicios (oficios a domicilio) son módulos distintos con rutas propias
-  // de búsqueda y de registro — el Hero tiene que separar los 4 caminos, no
-  // mandar todo a Aliados como si fuera uno solo.
+  // Bifurcación de intención, no de módulo: quien llega está buscando algo o
+  // tiene algo que ofrecer, y cada lado abre su camino. Aliados cubre negocios
+  // y oficios por igual — el titular sigue diciendo "un servicio" porque es
+  // lo que la persona busca, aunque del otro lado sea la misma ficha.
   ctas: [
     { tipo: "buscar" as const, etiqueta: "Busco un negocio", href: "/aliados" },
-    ...(SERVICIOS_ACTIVO
-      ? [{ tipo: "buscar" as const, etiqueta: "Busco un servicio a domicilio", href: "/servicios" }]
-      : []),
     // Empleo faltaba entero: no era que el flag lo escondiera, es que nunca se
     // le definió un camino. El módulo existe, tiene menú propio y dos rutas, y
     // desde el inicio no se llegaba a ninguna. Quien entra a buscar trabajo
@@ -55,9 +49,6 @@ export const hero = {
       ? [{ tipo: "buscar" as const, etiqueta: "Busco a quién contratar", href: "/empleo" }]
       : []),
     { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/aliados/registro" },
-    ...(SERVICIOS_ACTIVO
-      ? [{ tipo: "ofrecer" as const, etiqueta: "Ofrezco un servicio a domicilio", href: "/servicios/registro" }]
-      : []),
     // Queda del lado de "ofrecer" —quien busca trabajo está ofreciendo lo
     // suyo, y /empleo/registro es donde se anota— aunque la etiqueta diga
     // "buscando". Decisión de la usuaria, con el desajuste sobre la mesa:
@@ -112,13 +103,24 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
     descripcion: "Negocios y oficios del barrio, en el mapa y con contacto directo.",
     estado: "activo",
   },
+  // Sin flag, a diferencia de los otros tres: no depende de que haya datos en
+  // la base ni de un módulo a medio hacer — es contenido del repo, y funciona
+  // desde el primer deploy. Un flag acá sería una perilla que nadie va a girar.
   {
-    slug: "servicios",
-    nombre: "Servicios",
+    slug: "formalizacion",
+    nombre: "Formalización",
     descripcion:
-      "Personas que prestan su oficio a domicilio y se desplazan por la comuna.",
+      "Trámites, apoyos económicos y formación gratuita para hacer formal tu negocio.",
     estado: "activo",
   },
+  // El módulo Servicios se eliminó del proyecto (no apagado: borrado, con sus
+  // rutas, repos, schema y tablas). Quien presta un oficio a domicilio —lava
+  // carros, arregla neveras, organiza eventos— entra por Aliados como
+  // cualquier otro negocio, y el buscador lo encuentra por lo que hace.
+  //
+  // Tener dos puertas obligaba a la persona a decidir si era "aliado" o
+  // "servicio" antes de empezar, que es una pregunta sobre nuestra estructura
+  // de datos y no sobre su trabajo.
   {
     slug: "empleo",
     nombre: "Empleo",
@@ -132,7 +134,6 @@ export const enfoque = {
   modulos: MODULOS_BASE.filter(
     (m) =>
       (INVENTARIO_ACTIVO || m.slug !== "inventario-predictivo") &&
-      (SERVICIOS_ACTIVO || m.slug !== "servicios") &&
       (EMPLEO_ACTIVO || m.slug !== "empleo"),
   ).map((m, indice) => ({
     ...m,
