@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { sql } from './neon';
+import type { ProductoInput } from '@/lib/validation/portafolio.schema';
 
 export type EstadoPortafolio = 'pendiente' | 'aprobado' | 'rechazado' | 'archivado';
 
@@ -30,6 +31,8 @@ export type Portafolio = {
   instagram: string | null;
   facebook: string | null;
   foto_url: string | null;
+  menu_url: string | null;
+  productos: ProductoInput[];
   creado_en: string;
   punto_referencia: string | null;
   horario: string[];
@@ -46,6 +49,7 @@ export type PortafolioAdmin = Portafolio & {
   moderado_por: string | null;
   moderado_en: string | null;
   foto_blob_pathname: string | null;
+  menu_blob_pathname: string | null;
 };
 
 /**
@@ -74,6 +78,8 @@ const COLUMNAS_PUBLICAS = `
   p.instagram,
   p.facebook,
   p.foto_url,
+  p.menu_url,
+  p.productos,
   p.creado_en,
   p.punto_referencia,
   p.horario,
@@ -176,6 +182,7 @@ export type NuevoPortafolio = {
   punto_referencia: string | null;
   horario: string[];
   medios_pago: string[];
+  productos: ProductoInput[];
 };
 
 export async function crearPortafolio(
@@ -188,7 +195,7 @@ export async function crearPortafolio(
       whatsapp, correo, instagram, facebook,
       acepto_terminos, acepto_habeas_data, version_terminos, ip_registro,
       campos_extra,
-      punto_referencia, horario, medios_pago
+      punto_referencia, horario, medios_pago, productos
     ) values (
       ${datos.nombre}, ${datos.descripcion}, ${datos.categoria_id}, ${datos.categoria_otra},
       ${datos.direccion}, ${datos.barrio},
@@ -197,7 +204,8 @@ export async function crearPortafolio(
       ${datos.instagram}, ${datos.facebook},
       true, true, ${datos.version_terminos}, ${datos.ip_registro},
       ${JSON.stringify(datos.campos_extra)}::jsonb,
-      ${datos.punto_referencia}, ${datos.horario}::text[], ${datos.medios_pago}::text[]
+      ${datos.punto_referencia}, ${datos.horario}::text[], ${datos.medios_pago}::text[],
+      ${JSON.stringify(datos.productos)}::jsonb
     )
     returning id, token_publico
   `;
@@ -206,26 +214,18 @@ export async function crearPortafolio(
 }
 
 /**
- * Investigación — una fila por portafolio. tipo_negocio y mayor_dolor ya
- * vienen garantizados por Zod (obligatorios); el resto sigue opcional.
+ * Investigación — una fila por portafolio. Recortada (029) a los dos campos
+ * con consumidor real: `formalidad` personaliza /formalizacion, `mayor_dolor`
+ * es contexto del asesor. Ambos opcionales.
  */
 export async function guardarInvestigacion(datos: {
   portafolio_id: string;
-  nombre_dueno: string | null;
-  tipo_negocio: string;
-  tipo_negocio_detalle: string | null;
   formalidad: string | null;
   mayor_dolor: string[];
-  necesidad_crecer: string | null;
 }): Promise<void> {
   await sql`
-    insert into aliados_investigacion (
-      portafolio_id, nombre_dueno, tipo_negocio, tipo_negocio_detalle,
-      formalidad, mayor_dolor, necesidad_crecer
-    ) values (
-      ${datos.portafolio_id}, ${datos.nombre_dueno}, ${datos.tipo_negocio}, ${datos.tipo_negocio_detalle},
-      ${datos.formalidad}, ${datos.mayor_dolor}::text[], ${datos.necesidad_crecer}
-    )
+    insert into aliados_investigacion (portafolio_id, formalidad, mayor_dolor)
+    values (${datos.portafolio_id}, ${datos.formalidad}, ${datos.mayor_dolor}::text[])
   `;
 }
 
@@ -282,6 +282,18 @@ export async function adjuntarFoto(
   `;
 }
 
+export async function adjuntarMenu(
+  id: string,
+  url: string,
+  pathname: string,
+): Promise<void> {
+  await sql`
+    update portafolios
+    set menu_url = ${url}, menu_blob_pathname = ${pathname}
+    where id = ${id}
+  `;
+}
+
 // ─── Autoservicio por token ────────────────────────────────────
 // El token es la única credencial: quien lo tiene puede ver y corregir su
 // propio registro sin login. token_publico es uuid v4 (gen_random_uuid()),
@@ -292,7 +304,7 @@ export async function obtenerPorToken(token: string): Promise<PortafolioAdmin | 
   const rows = await sql`
     select ${sql.unsafe(COLUMNAS_PUBLICAS)},
            p.estado, p.motivo_rechazo, p.moderado_por, p.moderado_en,
-           p.foto_blob_pathname
+           p.foto_blob_pathname, p.menu_blob_pathname
     from portafolios p
     join categorias c on c.id = p.categoria_id
     where p.token_publico = ${token}
@@ -353,6 +365,7 @@ export type EdicionPortafolio = {
   facebook: string | null;
   horario: string[];
   medios_pago: string[];
+  productos: ProductoInput[];
 };
 
 /**
@@ -381,6 +394,7 @@ export async function actualizarPorToken(
         facebook = ${datos.facebook},
         horario = ${datos.horario}::text[],
         medios_pago = ${datos.medios_pago}::text[],
+        productos = ${JSON.stringify(datos.productos)}::jsonb,
         estado = 'pendiente',
         motivo_rechazo = null
     where token_publico = ${token}
@@ -391,27 +405,34 @@ export async function actualizarPorToken(
 
 export async function archivarPorToken(
   token: string,
-): Promise<{ id: string; foto_blob_pathname: string | null } | null> {
+): Promise<{ id: string; foto_blob_pathname: string | null; menu_blob_pathname: string | null } | null> {
   // moderado_en sí se marca (queda el "cuándo"), moderado_por se deja null a
   // propósito — no lo archivó ningún admin. chk_moderacion_completa (018) ya
   // sabe que 'archivado' solo necesita el primero.
   //
-  // foto_url/foto_blob_pathname se limpian acá: el blob se borra aparte
-  // (quien llama a esta función), pero si la fila se queda apuntando a un
-  // pathname que ya no existe, la pestaña "Archivados" del panel intenta
-  // mostrar una imagen 404. `from (select ...)` captura el pathname ANTES
-  // del update para poder devolverlo, aunque el update lo deje en null.
+  // foto_url/foto_blob_pathname (y su par de menú) se limpian acá: el blob se
+  // borra aparte (quien llama a esta función), pero si la fila se queda
+  // apuntando a un pathname que ya no existe, la pestaña "Archivados" del
+  // panel intenta mostrar una imagen 404. `from (select ...)` captura los
+  // pathnames ANTES del update para poder devolverlos, aunque el update los
+  // deje en null.
   const rows = await sql`
     update portafolios as p
-    set estado = 'archivado', moderado_en = now(), foto_url = null, foto_blob_pathname = null
+    set estado = 'archivado', moderado_en = now(),
+        foto_url = null, foto_blob_pathname = null,
+        menu_url = null, menu_blob_pathname = null
     from (
-      select foto_blob_pathname from portafolios
+      select foto_blob_pathname, menu_blob_pathname from portafolios
       where token_publico = ${token} and estado <> 'archivado'
     ) as previo
     where p.token_publico = ${token} and p.estado <> 'archivado'
-    returning p.id, previo.foto_blob_pathname
+    returning p.id, previo.foto_blob_pathname, previo.menu_blob_pathname
   `;
-  return (rows[0] as { id: string; foto_blob_pathname: string | null } | undefined) ?? null;
+  return (
+    (rows[0] as
+      | { id: string; foto_blob_pathname: string | null; menu_blob_pathname: string | null }
+      | undefined) ?? null
+  );
 }
 
 // ─── Moderación ──────────────────────────────────────────────
@@ -422,7 +443,7 @@ export async function listarParaModerar(
   const rows = await sql`
     select ${sql.unsafe(COLUMNAS_PUBLICAS)},
            p.estado, p.motivo_rechazo, p.moderado_por, p.moderado_en,
-           p.foto_blob_pathname
+           p.foto_blob_pathname, p.menu_blob_pathname
     from portafolios p
     join categorias c on c.id = p.categoria_id
     where p.estado = ${estado}
@@ -447,7 +468,7 @@ export async function moderar(
   nuevoEstado: Exclude<EstadoPortafolio, 'pendiente'>,
   moderadorEmail: string,
   motivoRechazo?: string,
-): Promise<{ cambio: boolean; foto_blob_pathname: string | null }> {
+): Promise<{ cambio: boolean; foto_blob_pathname: string | null; menu_blob_pathname: string | null }> {
   const rows = await sql`
     update portafolios as p
     set estado = ${nuevoEstado},
@@ -455,13 +476,21 @@ export async function moderar(
         moderado_por = ${moderadorEmail},
         moderado_en = now(),
         foto_url = case when ${nuevoEstado} = 'archivado' then null else p.foto_url end,
-        foto_blob_pathname = case when ${nuevoEstado} = 'archivado' then null else p.foto_blob_pathname end
-    from (select foto_blob_pathname from portafolios where id = ${id}) as previo
+        foto_blob_pathname = case when ${nuevoEstado} = 'archivado' then null else p.foto_blob_pathname end,
+        menu_url = case when ${nuevoEstado} = 'archivado' then null else p.menu_url end,
+        menu_blob_pathname = case when ${nuevoEstado} = 'archivado' then null else p.menu_blob_pathname end
+    from (select foto_blob_pathname, menu_blob_pathname from portafolios where id = ${id}) as previo
     where p.id = ${id} and p.estado <> ${nuevoEstado}
-    returning p.id, previo.foto_blob_pathname
+    returning p.id, previo.foto_blob_pathname, previo.menu_blob_pathname
   `;
-  const fila = rows[0] as { id: string; foto_blob_pathname: string | null } | undefined;
-  return { cambio: Boolean(fila), foto_blob_pathname: fila?.foto_blob_pathname ?? null };
+  const fila = rows[0] as
+    | { id: string; foto_blob_pathname: string | null; menu_blob_pathname: string | null }
+    | undefined;
+  return {
+    cambio: Boolean(fila),
+    foto_blob_pathname: fila?.foto_blob_pathname ?? null,
+    menu_blob_pathname: fila?.menu_blob_pathname ?? null,
+  };
 }
 
 export async function contarPorEstado(): Promise<Record<EstadoPortafolio, number>> {

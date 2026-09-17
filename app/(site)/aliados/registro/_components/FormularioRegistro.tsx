@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useCallback, useState } from 'react';
+import { useActionState, useCallback, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useFormStatus } from 'react-dom';
@@ -9,6 +9,7 @@ import {
   registrarPortafolio,
   type EstadoRegistro,
 } from '@/lib/actions/registrarPortafolio';
+import { geocodificarDireccionAction } from '@/lib/actions/geocodificarDireccion';
 import { manejarSeleccionFoto } from '@/lib/imagen/comprimir';
 import { nombreCampoFormulario } from '@/lib/validation/camposPersonalizados.schema';
 import type { Categoria } from '@/lib/db/portafolios.repo';
@@ -21,9 +22,8 @@ import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 import { ETIQUETA_FORMALIDAD } from '@/lib/formalizacion';
 
 // ─── opciones de los chips ───────────────────────────────────
-// Los `value` (name="horario" / "medios_pago" / "tipo_negocio" / "formalidad"
-// / "mayor_dolor") tienen que calzar exacto con lo que espera `desdeFormData`
-// en el schema.
+// Los `value` (name="horario" / "medios_pago" / "formalidad" / "mayor_dolor")
+// tienen que calzar exacto con lo que espera `desdeFormData` en el schema.
 
 const OPCIONES_HORARIO_UI = [
   { valor: 'mananas', etiqueta: 'Mañanas' },
@@ -42,13 +42,8 @@ const OPCIONES_MEDIOS_PAGO_UI = [
 ];
 
 // ─── investigación (privado, opcional, nunca se publica) ──────
-
-const OPCIONES_TIPO_NEGOCIO_UI = [
-  { valor: 'emprendimiento', etiqueta: 'Emprendimiento' },
-  { valor: 'micronegocio', etiqueta: 'Micronegocio' },
-  { valor: 'local', etiqueta: 'Local establecido' },
-  { valor: 'otro', etiqueta: 'Otro' },
-];
+// Recortada (029) a formalidad y mayor_dolor: los dos únicos campos que
+// alimentan código vivo (/formalizacion y el asesor de IA).
 
 // La etiqueta vive en lib/formalizacion.ts: /formalizacion la reusa para
 // explicar según qué respuesta se personalizó la lista de trámites.
@@ -198,7 +193,13 @@ export function FormularioRegistro({
 
   const [coords, setCoords] = useState<Posicion | null>(null);
   const [ubicacionValida, setUbicacionValida] = useState(false);
+  // El mapa guarda su propia posición en estado interno y solo lee
+  // `valorInicial` al montar (no reacciona a cambios del prop después). Para
+  // que "Ubicar en el mapa" lo reposicione, se lo remonta cambiando `key` —
+  // más simple que convertir el selector en un componente controlado.
+  const [mapKey, setMapKey] = useState(0);
   const [nombreFoto, setNombreFoto] = useState<string | null>(null);
+  const [nombreMenu, setNombreMenu] = useState<string | null>(null);
 
   const [categoriaId, setCategoriaId] = useState('');
   const [barrio, setBarrio] = useState('');
@@ -206,25 +207,56 @@ export function FormularioRegistro({
   const [horario, setHorario] = useState<string[]>([]);
   const [mediosPago, setMediosPago] = useState<string[]>([]);
 
-  // Toggles de bloques colapsados: simples booleanos, sin animación — lo
-  // importante es que sea claro que hay más campos ahí atrás. Se pueden
-  // volver a cerrar (no es una revelación de una sola vía): el botón
-  // alterna el mismo booleano en cada click.
   const [mostrarOtraRed, setMostrarOtraRed] = useState(false);
-  const [mostrarMasInfo, setMostrarMasInfo] = useState(false);
 
   // Investigación — va a aliados_investigacion, no a portafolios, y nunca se
-  // publica. tipo_negocio y mayor_dolor son obligatorios a pedido del
-  // cliente; el resto (nombre del dueño, formalidad) se queda opcional.
-  const [tipoNegocio, setTipoNegocio] = useState('');
+  // publica. Recortada (029) a los dos campos con consumidor real: ambos
+  // opcionales.
   const [formalidad, setFormalidad] = useState('');
   const [mayorDolor, setMayorDolor] = useState<string[]>([]);
+
+  const direccionRef = useRef<HTMLInputElement>(null);
+  const [geocodificando, setGeocodificando] = useState(false);
+  const [errorGeocode, setErrorGeocode] = useState<string | null>(null);
+
+  const ubicarPorDireccion = useCallback(async () => {
+    const valor = direccionRef.current?.value.trim() ?? '';
+    if (valor.length < 5) {
+      setErrorGeocode('Escribe la dirección completa primero.');
+      return;
+    }
+
+    setGeocodificando(true);
+    setErrorGeocode(null);
+
+    // try/finally: si la Server Action rechaza (caída de red, error del
+    // server), el botón tiene que volver a habilitarse igual — sin esto se
+    // queda trabado en "Buscando…" para siempre y no hay forma de reintentar
+    // sin recargar la página.
+    let resultado: Awaited<ReturnType<typeof geocodificarDireccionAction>>;
+    try {
+      resultado = await geocodificarDireccionAction(valor);
+    } catch {
+      setErrorGeocode('Algo falló buscando esa dirección. Intenta de nuevo.');
+      return;
+    } finally {
+      setGeocodificando(false);
+    }
+
+    if (!resultado.ok) {
+      setErrorGeocode(resultado.mensaje);
+      return;
+    }
+
+    setCoords({ lat: resultado.lat, lng: resultado.lng });
+    setUbicacionValida(true);
+    setMapKey((k) => k + 1);
+  }, []);
 
   // Espejo liviano de lo obligatorio, solo para la barra de progreso.
   // La validación de verdad vive en Zod y en la base — esto es orientación.
   const [llenos, setLlenos] = useState({
     nombre: false,
-    categoria: false,
     direccion: false,
     barrio: false,
     contacto: false,
@@ -298,15 +330,12 @@ export function FormularioRegistro({
 
   const camposRequeridos = camposPersonalizados.filter((c) => c.requerido);
 
-  // Dirección, barrio y ubicación son siempre obligatorios — sin condición
-  // según cómo atiende el negocio (eso ya no existe: ver nota en la
-  // sección 01 sobre por qué se sacó tipo_presencia).
+  // Ubicación, nombre, dirección, barrio, contacto y consentimiento son lo
+  // único que de verdad bloquea el envío. Categoría, tipo de negocio y
+  // productos son opcionales a pedido del cliente.
   const REQUISITOS: [boolean, string][] = [
     [Boolean(coords && ubicacionValida), 'ubicación'],
     [llenos.nombre, 'nombre'],
-    [llenos.categoria, 'categoría'],
-    [tipoNegocio !== '', 'tipo de negocio'],
-    [mayorDolor.length > 0, 'qué te complica'],
     [llenos.direccion, 'dirección'],
     [llenos.barrio, 'barrio'],
     [llenos.contacto, 'contacto'],
@@ -317,14 +346,12 @@ export function FormularioRegistro({
   ];
   const faltantes = REQUISITOS.filter(([cumplido]) => !cumplido).map(([, nombre]) => nombre);
 
-  // Investigación ahora es fija, entre "Tu negocio" y "Contacto" (el cliente
-  // la quiere "de las primeras a responder"), así que su número y los de
-  // Contacto/Horario/Foto quedan hardcodeados en el JSX como 01 y 02. Los
-  // campos personalizados van entre "Foto" y "Permisos". Si no hay ninguno
-  // activo, Permisos ocupa el número que Foto no usó — no tiene sentido
-  // reservar un número que ese día no existe.
-  const numeroCampos = '07';
-  const numeroPermisos = camposPersonalizados.length > 0 ? '08' : '07';
+  // Números de sección hardcodeados en el JSX (mismo patrón que ya usaba
+  // este formulario): "Información adicional" y "Antes de enviar" corren su
+  // numeración según si hay campos personalizados activos ese día.
+  const numeroCampos = '08';
+  const numeroDolor = camposPersonalizados.length > 0 ? '09' : '08';
+  const numeroPermisos = camposPersonalizados.length > 0 ? '10' : '09';
 
   // Un registro exitoso hace redirect() del lado del server a
   // /aliados/estado/[token] — no hay estado 'ok' que mostrar acá.
@@ -352,32 +379,19 @@ export function FormularioRegistro({
         </p>
       )}
 
-      {/* La ubicación va primero: es lo que distingue a esta vitrina de una
-          lista de negocios, y es el paso que más se abandona si aparece al
-          final, después de diez campos de texto.
-
-          Antes había acá un ChipsUnica de "cómo atiendes" (tipo_presencia)
-          que condicionaba si mapa/dirección/barrio eran obligatorios. El
-          cliente probó esa versión y pidió sacarla — esa info no le servía.
-          Vuelven a ser siempre obligatorios, como en el diseño original. */}
+      {/* Dirección y barrio van primero: es lo que distingue a esta vitrina
+          de una lista de negocios, y es el paso que más se abandona si
+          aparece al final, después de diez campos de texto. La dirección
+          hace doble función — texto legible para quien te busca en persona,
+          y punto de partida para ubicar el pin sin tener que salir a la
+          calle a activar el GPS. */}
       <Seccion
         numero="01"
         titulo="¿Dónde queda tu negocio?"
-        ayuda="Toca el botón para usar el GPS de tu celular, o marca el punto en el mapa."
+        ayuda="Escribe la dirección y toca «Ubicar en el mapa», usa el GPS de tu celular, o marca el punto vos mismo tocando el mapa."
         completa={Boolean(coords && ubicacionValida && llenos.direccion && llenos.barrio)}
         ancho="completo"
       >
-        <SelectorUbicacion valorInicial={coords} alCambiar={alCambiarUbicacion} />
-
-        <input type="hidden" name="latitud" value={coords?.lat ?? ''} />
-        <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
-
-        {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-terracota-texto">
-            {err('latitud')?.[0] ?? err('longitud')?.[0]}
-          </p>
-        )}
-
         <div className="grid max-w-xl grid-cols-1 gap-6">
           <CampoFormulario
             id="direccion"
@@ -388,6 +402,7 @@ export function FormularioRegistro({
             {(p) => (
               <input
                 {...p}
+                ref={direccionRef}
                 name="direccion"
                 type="text"
                 required
@@ -398,6 +413,23 @@ export function FormularioRegistro({
               />
             )}
           </CampoFormulario>
+
+          <div className="flex flex-col items-start gap-2">
+            <button
+              type="button"
+              onClick={ubicarPorDireccion}
+              disabled={geocodificando}
+              className="inline-flex min-h-11 items-center gap-2 border border-tinta/20 px-4 py-2.5 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto disabled:cursor-wait disabled:opacity-60"
+            >
+              <span aria-hidden="true">📍</span>
+              {geocodificando ? 'Buscando esa dirección…' : 'Ubicar esta dirección en el mapa'}
+            </button>
+            {errorGeocode && (
+              <p role="alert" className="font-mono text-xs text-terracota-texto">
+                {errorGeocode}
+              </p>
+            )}
+          </div>
 
           <CampoFormulario id="barrio" etiqueta="Barrio" requerido errores={err('barrio')}>
             {(p) => (
@@ -413,12 +445,23 @@ export function FormularioRegistro({
             )}
           </CampoFormulario>
         </div>
+
+        <SelectorUbicacion key={mapKey} valorInicial={coords} alCambiar={alCambiarUbicacion} />
+
+        <input type="hidden" name="latitud" value={coords?.lat ?? ''} />
+        <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
+
+        {(err('latitud') || err('longitud')) && (
+          <p className="font-mono text-xs text-terracota-texto">
+            {err('latitud')?.[0] ?? err('longitud')?.[0]}
+          </p>
+        )}
       </Seccion>
 
       <Seccion
         numero="02"
         titulo="Tu negocio"
-        completa={llenos.nombre && llenos.categoria}
+        completa={llenos.nombre}
       >
         <CampoFormulario
           id="nombre"
@@ -442,23 +485,19 @@ export function FormularioRegistro({
 
         <CampoFormulario
           id="categoria_id"
-          etiqueta="Categoría"
-          requerido
+          etiqueta="¿Qué tipo de negocio eres?"
+          ayuda="Opcional — ayuda a que te encuentren por rubro."
           errores={err('categoria_id')}
         >
           {(p) => (
             <select
               {...p}
               name="categoria_id"
-              required
               value={categoriaId}
-              onChange={(e) => {
-                setCategoriaId(e.target.value);
-                marcar('categoria', e.target.value !== '');
-              }}
+              onChange={(e) => setCategoriaId(e.target.value)}
               className={claseInput}
             >
-              <option value="">Elige una…</option>
+              <option value="">Prefiero no elegir</option>
               {categorias.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nombre}
@@ -471,7 +510,7 @@ export function FormularioRegistro({
         {categoriaId === 'otros' && (
           <CampoFormulario
             id="categoria_otra"
-            etiqueta="¿Qué tipo de negocio es?"
+            etiqueta="¿Cuál?"
             requerido
             errores={err('categoria_otra')}
           >
@@ -488,6 +527,26 @@ export function FormularioRegistro({
             )}
           </CampoFormulario>
         )}
+
+        {/* `formalidad` no es un dato de investigación cualquiera: es lo que
+            personaliza /formalizacion (pasosPara()) y lo que lee el asesor
+            de IA — por eso se quedó cuando el resto de esa sección se sacó
+            del formulario. Va acá, junto a la categoría, no al final. */}
+        <CampoFormulario
+          id="formalidad"
+          etiqueta="¿Tienes RUT o Cámara de Comercio?"
+          ayuda="Opcional — te ayuda a ver solo los trámites que todavía te faltan."
+        >
+          {(p) => (
+            <ChipsUnica
+              {...p}
+              name="formalidad"
+              opciones={OPCIONES_FORMALIDAD_UI}
+              valor={formalidad}
+              alCambiar={setFormalidad}
+            />
+          )}
+        </CampoFormulario>
 
         <CampoFormulario
           id="descripcion"
@@ -508,113 +567,23 @@ export function FormularioRegistro({
         </CampoFormulario>
       </Seccion>
 
-      {/* Preguntas que nunca se publican — van a aliados_investigacion, una
-          tabla privada, para el estudio del proyecto sobre los negocios de
-          Manrique. Se movió más arriba y ya no está colapsada: el cliente la
-          quiere de las primeras a responder, no algo que se descubre al
-          final del formulario. */}
       <Seccion
         numero="03"
-        titulo="Para el proyecto de investigación"
-        ayuda="Estas últimas nos ayudan a entender mejor los negocios de Manrique para el proyecto de investigación. Nunca se publica."
-        completa={tipoNegocio !== '' && mayorDolor.length > 0}
+        titulo="Productos y servicios"
+        ayuda="Un producto por línea, en formato PRODUCTO - PRECIO (el precio es opcional). Ejemplo: Empanadas - $2000"
       >
         <CampoFormulario
-          id="nombre_dueno"
-          etiqueta="Nombre del dueño o representante"
-          ayuda="Privado — no se publica, es solo para nuestro estudio."
-          errores={err('nombre_dueno')}
-        >
-          {(p) => (
-            <input
-              {...p}
-              name="nombre_dueno"
-              type="text"
-              maxLength={80}
-              placeholder="Nombre completo"
-              className={claseInput}
-            />
-          )}
-        </CampoFormulario>
-
-        <CampoFormulario
-          id="tipo_negocio"
-          etiqueta="¿Cómo describirías tu negocio?"
-          requerido
-          errores={err('tipo_negocio')}
-        >
-          {(p) => (
-            <ChipsUnica
-              {...p}
-              name="tipo_negocio"
-              opciones={OPCIONES_TIPO_NEGOCIO_UI}
-              valor={tipoNegocio}
-              alCambiar={setTipoNegocio}
-              requerido
-            />
-          )}
-        </CampoFormulario>
-
-        {tipoNegocio === 'otro' && (
-          <CampoFormulario
-            id="tipo_negocio_detalle"
-            etiqueta="¿Cuál?"
-            errores={err('tipo_negocio_detalle')}
-          >
-            {(p) => (
-              <input
-                {...p}
-                name="tipo_negocio_detalle"
-                type="text"
-                maxLength={80}
-                className={claseInput}
-              />
-            )}
-          </CampoFormulario>
-        )}
-
-        <CampoFormulario id="formalidad" etiqueta="¿Tienes RUT o Cámara de Comercio?">
-          {(p) => (
-            <ChipsUnica
-              {...p}
-              name="formalidad"
-              opciones={OPCIONES_FORMALIDAD_UI}
-              valor={formalidad}
-              alCambiar={setFormalidad}
-            />
-          )}
-        </CampoFormulario>
-
-        <CampoFormulario
-          id="mayor_dolor"
-          etiqueta="De las siguientes tareas del día a día, ¿cuál sientes que te quita más tiempo o te genera más dolores de cabeza?"
-          ayuda="Elige hasta 2."
-          requerido
-          errores={err('mayor_dolor')}
-        >
-          {(p) => (
-            <ChipsMultiple
-              {...p}
-              name="mayor_dolor"
-              opciones={OPCIONES_MAYOR_DOLOR_UI}
-              valores={mayorDolor}
-              alCambiar={alCambiarMayorDolor}
-            />
-          )}
-        </CampoFormulario>
-
-        <CampoFormulario
-          id="necesidad_crecer"
-          etiqueta="Pensando en el futuro: ¿qué crees que le hace falta a tu negocio hoy para crecer más, organizarse mejor o dar el siguiente paso?"
-          ayuda="¡Cuéntanos con confianza! Esta información es clave para nuestra investigación sobre las necesidades reales del sector."
-          errores={err('necesidad_crecer')}
+          id="productos"
+          etiqueta="¿Qué productos o servicios ofreces?"
+          errores={err('productos')}
         >
           {(p) => (
             <textarea
               {...p}
-              name="necesidad_crecer"
-              rows={4}
-              maxLength={500}
+              name="productos"
+              rows={5}
+              maxLength={2000}
+              placeholder={'Empanadas - $2000\nJugo natural - $3000\nAsesoría contable'}
               className={`${claseInput} resize-y`}
             />
           )}
@@ -623,6 +592,27 @@ export function FormularioRegistro({
 
       <Seccion
         numero="04"
+        titulo="Menú o flyer"
+        ayuda="Déjale a tus futuros clientes el menú o flyer de tus productos. JPG, PNG o WebP, hasta 5 MB."
+      >
+        <CampoFormulario id="menu" etiqueta="Menú o flyer" errores={err('menu')}>
+          {(p) => (
+            <input
+              {...p}
+              name="menu"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => manejarSeleccionFoto(e.target, setNombreMenu)}
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
+            />
+          )}
+        </CampoFormulario>
+
+        {nombreMenu && <p className="font-mono text-xs text-tinta/50">{nombreMenu}</p>}
+      </Seccion>
+
+      <Seccion
+        numero="05"
         titulo="¿Cómo te contactan?"
         ayuda="El WhatsApp es obligatorio — es el canal que usa la gente para escribirte. Los demás son opcionales."
         completa={llenos.contacto}
@@ -702,68 +692,54 @@ export function FormularioRegistro({
       </Seccion>
 
       <Seccion
-        numero="05"
-        titulo="Horario y medios de pago"
+        numero="06"
+        titulo="Horarios de tu negocio"
         ayuda="Opcional, pero ayuda a que la gente sepa qué esperar antes de escribirte."
       >
-        <button
-          type="button"
-          onClick={() => setMostrarMasInfo((v) => !v)}
-          className="self-start font-mono text-xs text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+        <CampoFormulario id="horario" etiqueta="¿Cuándo atiendes?">
+          {(p) => (
+            <ChipsMultiple
+              {...p}
+              name="horario"
+              opciones={OPCIONES_HORARIO_UI}
+              valores={horario}
+              alCambiar={setHorario}
+            />
+          )}
+        </CampoFormulario>
+
+        <CampoFormulario id="medios_pago" etiqueta="¿Cómo te pagan?">
+          {(p) => (
+            <ChipsMultiple
+              {...p}
+              name="medios_pago"
+              opciones={OPCIONES_MEDIOS_PAGO_UI}
+              valores={mediosPago}
+              alCambiar={setMediosPago}
+            />
+          )}
+        </CampoFormulario>
+
+        <CampoFormulario
+          id="punto_referencia"
+          etiqueta="Punto de referencia"
+          ayuda="Algo fácil de reconocer cerca del lugar."
+          errores={err('punto_referencia')}
         >
-          {mostrarMasInfo
-            ? '− Ocultar'
-            : '+ Agregar más información sobre tu negocio (opcional)'}
-        </button>
-
-        {mostrarMasInfo && (
-          <>
-            <CampoFormulario id="horario" etiqueta="¿Cuándo atiendes?">
-              {(p) => (
-                <ChipsMultiple
-                  {...p}
-                  name="horario"
-                  opciones={OPCIONES_HORARIO_UI}
-                  valores={horario}
-                  alCambiar={setHorario}
-                />
-              )}
-            </CampoFormulario>
-
-            <CampoFormulario id="medios_pago" etiqueta="¿Cómo te pagan?">
-              {(p) => (
-                <ChipsMultiple
-                  {...p}
-                  name="medios_pago"
-                  opciones={OPCIONES_MEDIOS_PAGO_UI}
-                  valores={mediosPago}
-                  alCambiar={setMediosPago}
-                />
-              )}
-            </CampoFormulario>
-
-            <CampoFormulario
-              id="punto_referencia"
-              etiqueta="Punto de referencia"
-              ayuda="Algo fácil de reconocer cerca del lugar."
-              errores={err('punto_referencia')}
-            >
-              {(p) => (
-                <input
-                  {...p}
-                  name="punto_referencia"
-                  type="text"
-                  maxLength={120}
-                  placeholder="Frente a la cancha de La Cruz"
-                  className={claseInput}
-                />
-              )}
-            </CampoFormulario>
-          </>
-        )}
+          {(p) => (
+            <input
+              {...p}
+              name="punto_referencia"
+              type="text"
+              maxLength={120}
+              placeholder="Frente a la cancha de La Cruz"
+              className={claseInput}
+            />
+          )}
+        </CampoFormulario>
       </Seccion>
 
-      <Seccion numero="06" titulo="Una foto" ayuda="Ayuda muchísimo a que te encuentren. JPG, PNG o WebP, hasta 5 MB.">
+      <Seccion numero="07" titulo="Una foto" ayuda="Ayuda muchísimo a que te encuentren. JPG, PNG o WebP, hasta 5 MB.">
         <CampoFormulario id="foto" etiqueta="Fotografía del negocio" errores={err('foto')}>
           {(p) => (
             <input
@@ -863,6 +839,33 @@ export function FormularioRegistro({
           })}
         </Seccion>
       )}
+
+      {/* Última pregunta para el proyecto de investigación de Manrique — el
+          resto de esa sección se sacó del formulario (no tenía ningún
+          consumidor fuera de ella); esta se queda porque el asesor de IA la
+          usa como contexto. Opcional, nunca se publica. */}
+      <Seccion
+        numero={numeroDolor}
+        titulo="Antes de enviar"
+        ayuda="Nos ayuda a entender mejor los negocios de Manrique para el proyecto de investigación. Opcional, nunca se publica."
+      >
+        <CampoFormulario
+          id="mayor_dolor"
+          etiqueta="De las siguientes tareas del día a día, ¿cuál sientes que te quita más tiempo o te genera más dolores de cabeza?"
+          ayuda="Elige hasta 2 (opcional)."
+          errores={err('mayor_dolor')}
+        >
+          {(p) => (
+            <ChipsMultiple
+              {...p}
+              name="mayor_dolor"
+              opciones={OPCIONES_MAYOR_DOLOR_UI}
+              valores={mayorDolor}
+              alCambiar={alCambiarMayorDolor}
+            />
+          )}
+        </CampoFormulario>
+      </Seccion>
 
       <Seccion numero={numeroPermisos} titulo="Permisos" completa={llenos.consentimiento}>
         <div

@@ -10,9 +10,10 @@ import {
   actualizarPorToken,
   archivarPorToken,
   adjuntarFoto,
+  adjuntarMenu,
 } from '@/lib/db/portafolios.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
-import { subirFoto, validarArchivo, blobConfigurado, borrarFoto } from '@/lib/blob/fotos';
+import { subirFoto, subirMenu, validarArchivo, blobConfigurado, borrarFoto } from '@/lib/blob/fotos';
 
 export type EstadoEdicion =
   | { estado: 'inicial' }
@@ -65,6 +66,19 @@ export async function actualizarPortafolio(
     }
   }
 
+  const archivoMenu = formData.get('menu');
+  const menu = archivoMenu instanceof File && archivoMenu.size > 0 ? archivoMenu : null;
+
+  if (menu) {
+    const problema = validarArchivo(menu);
+    if (problema === 'tipo-no-permitido') {
+      return { estado: 'error', errores: { menu: ['Solo se aceptan JPG, PNG o WebP'] } };
+    }
+    if (problema === 'muy-grande') {
+      return { estado: 'error', errores: { menu: ['El menú no puede pesar más de 5 MB'] } };
+    }
+  }
+
   let id: string | null;
   try {
     id = await actualizarPorToken(token, {
@@ -83,6 +97,7 @@ export async function actualizarPortafolio(
       facebook: datos.facebook,
       horario: datos.horario,
       medios_pago: datos.medios_pago,
+      productos: datos.productos,
     });
   } catch (error) {
     console.error('[actualizarPortafolio] update falló', error);
@@ -101,6 +116,7 @@ export async function actualizarPortafolio(
   // pero a diferencia del registro, acá sí hay a dónde volver a mostrar el
   // aviso: esta misma respuesta.
   let fotoFallo = false;
+  let menuFallo = false;
 
   if (foto) {
     if (!blobConfigurado()) {
@@ -120,15 +136,37 @@ export async function actualizarPortafolio(
     }
   }
 
+  if (menu) {
+    if (!blobConfigurado()) {
+      menuFallo = true;
+    } else {
+      try {
+        const subida = await subirMenu(menu, id);
+        if (subida) {
+          await adjuntarMenu(id, subida.url, subida.pathname);
+        } else {
+          menuFallo = true;
+        }
+      } catch (error) {
+        menuFallo = true;
+        console.error('[actualizarPortafolio] subida de menú falló', error);
+      }
+    }
+  }
+
   revalidatePath('/aliados');
   revalidatePath('/admin/aliados');
   revalidatePath(`/aliados/estado/${token}`);
 
   const base = 'Guardado. Como cambiaste datos publicados, un moderador los revisa de nuevo antes de que se vean.';
+  const avisos = [
+    fotoFallo ? 'La foto no se pudo subir — prueba de nuevo.' : null,
+    menuFallo ? 'El menú no se pudo subir — prueba de nuevo.' : null,
+  ].filter(Boolean);
 
   return {
     estado: 'ok',
-    mensaje: fotoFallo ? `${base} La foto no se pudo subir — prueba de nuevo.` : base,
+    mensaje: avisos.length > 0 ? `${base} ${avisos.join(' ')}` : base,
   };
 }
 
@@ -149,7 +187,11 @@ export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
   }
   await registrarIntento(ip, 'estado');
 
-  let resultado: { id: string; foto_blob_pathname: string | null } | null;
+  let resultado: {
+    id: string;
+    foto_blob_pathname: string | null;
+    menu_blob_pathname: string | null;
+  } | null;
   try {
     resultado = await archivarPorToken(token);
   } catch (error) {
@@ -169,6 +211,14 @@ export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
       await borrarFoto(resultado.foto_blob_pathname);
     } catch (error) {
       console.error('[borrarPortafolio] no se pudo borrar la foto', error);
+    }
+  }
+
+  if (resultado.menu_blob_pathname) {
+    try {
+      await borrarFoto(resultado.menu_blob_pathname);
+    } catch (error) {
+      console.error('[borrarPortafolio] no se pudo borrar el menú', error);
     }
   }
 

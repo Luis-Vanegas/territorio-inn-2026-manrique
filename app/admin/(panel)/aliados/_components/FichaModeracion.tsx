@@ -153,19 +153,48 @@ export function FichaModeracion({
               <Dato key={c.etiqueta} etiqueta={c.etiqueta} valor={c.valor} />
             ))}
           </dl>
+
+          {portafolio.productos.length > 0 && (
+            <dl className="mt-4 flex flex-col gap-1">
+              {portafolio.productos.map((prod) => (
+                <div key={prod.nombre} className="flex gap-3">
+                  <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/40">
+                    Producto
+                  </dt>
+                  <dd className="font-sans text-sm text-tinta/75">
+                    {prod.nombre}
+                    {prod.precio && <span className="text-tinta/45"> — {prod.precio}</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
         </div>
 
-        {portafolio.foto_url && (
-          <div className="relative aspect-[4/3] w-full overflow-hidden bg-tinta/5 sm:w-56">
-            <Image
-              src={portafolio.foto_url}
-              alt={`Foto enviada por ${portafolio.nombre}`}
-              fill
-              sizes="224px"
-              className="object-cover"
-            />
-          </div>
-        )}
+        <div className="flex flex-col gap-3 sm:w-56">
+          {portafolio.foto_url && (
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-tinta/5">
+              <Image
+                src={portafolio.foto_url}
+                alt={`Foto enviada por ${portafolio.nombre}`}
+                fill
+                sizes="224px"
+                className="object-cover"
+              />
+            </div>
+          )}
+
+          {portafolio.menu_url && (
+            <a
+              href={portafolio.menu_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-tinta/60 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto"
+            >
+              Ver menú / flyer enviado ↗
+            </a>
+          )}
+        </div>
       </div>
 
       <form action={accion} className="mt-6">

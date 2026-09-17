@@ -21,7 +21,11 @@ export function ModalRegistroExitoso() {
   const [datos] = useState(() => {
     const token = searchParams.get('registrado');
     if (!token) return null;
-    return { token, fotoFallo: searchParams.get('foto') === 'error' };
+    return {
+      token,
+      fotoFallo: searchParams.get('foto') === 'error',
+      menuFallo: searchParams.get('menu') === 'error',
+    };
   });
 
   const [abierto, setAbierto] = useState(Boolean(datos));
@@ -93,6 +97,12 @@ export function ModalRegistroExitoso() {
         {datos.fotoFallo && (
           <p role="alert" className="mt-3 border-l-2 border-terracota bg-terracota/[0.04] px-3 py-2.5 font-sans text-sm leading-relaxed text-tinta">
             La foto no se pudo subir — puedes agregarla más tarde desde el link de abajo.
+          </p>
+        )}
+
+        {datos.menuFallo && (
+          <p role="alert" className="mt-3 border-l-2 border-terracota bg-terracota/[0.04] px-3 py-2.5 font-sans text-sm leading-relaxed text-tinta">
+            El menú no se pudo subir — puedes agregarlo más tarde desde el link de abajo.
           </p>
         )}
 

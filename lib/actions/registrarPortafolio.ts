@@ -11,12 +11,13 @@ import {
 import {
   crearPortafolio,
   adjuntarFoto,
+  adjuntarMenu,
   buscarPosibleDuplicado,
   registrarConsentimiento,
   guardarInvestigacion,
 } from '@/lib/db/portafolios.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders, hashIp } from '@/lib/db/rateLimit';
-import { subirFoto, validarArchivo, blobConfigurado } from '@/lib/blob/fotos';
+import { subirFoto, subirMenu, validarArchivo, blobConfigurado } from '@/lib/blob/fotos';
 import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
 import { extraerCamposPersonalizados } from '@/lib/validation/camposPersonalizados.schema';
 
@@ -80,7 +81,7 @@ export async function registrarPortafolio(
   }
   const datos = parsed.data;
 
-  // 3 · Archivo (opcional)
+  // 3 · Archivos (opcionales)
   const archivo = formData.get('foto');
   const foto = archivo instanceof File && archivo.size > 0 ? archivo : null;
 
@@ -91,6 +92,19 @@ export async function registrarPortafolio(
     }
     if (problema === 'muy-grande') {
       return { estado: 'error', errores: { foto: ['La foto no puede pesar más de 5 MB'] } };
+    }
+  }
+
+  const archivoMenu = formData.get('menu');
+  const menu = archivoMenu instanceof File && archivoMenu.size > 0 ? archivoMenu : null;
+
+  if (menu) {
+    const problema = validarArchivo(menu);
+    if (problema === 'tipo-no-permitido') {
+      return { estado: 'error', errores: { menu: ['Solo se aceptan JPG, PNG o WebP'] } };
+    }
+    if (problema === 'muy-grande') {
+      return { estado: 'error', errores: { menu: ['El menú no puede pesar más de 5 MB'] } };
     }
   }
 
@@ -129,6 +143,7 @@ export async function registrarPortafolio(
       punto_referencia: datos.punto_referencia,
       horario: datos.horario ?? [],
       medios_pago: datos.medios_pago ?? [],
+      productos: datos.productos,
     }));
   } catch (error) {
     console.error('[registrarPortafolio] insert falló', error);
@@ -170,38 +185,37 @@ export async function registrarPortafolio(
     console.error('[registrarPortafolio] registro de consentimiento falló', error);
   }
 
-  // Investigación (privado). tipo_negocio y mayor_dolor ya vinieron
-  // validados como obligatorios; si esto falla, el registro público ya
-  // está guardado — no se pierde por esto.
+  // Investigación (privado, opcional). Recortada (029) a formalidad y
+  // mayor_dolor — los únicos dos campos con consumidor real fuera de esta
+  // sección. Si esto falla, el registro público ya está guardado — no se
+  // pierde por esto.
   try {
     await guardarInvestigacion({
       portafolio_id: id,
-      nombre_dueno: datos.nombre_dueno,
-      tipo_negocio: datos.tipo_negocio,
-      tipo_negocio_detalle: datos.tipo_negocio_detalle,
       formalidad: datos.formalidad,
       mayor_dolor: datos.mayor_dolor,
-      necesidad_crecer: datos.necesidad_crecer,
     });
   } catch (error) {
     console.error('[registrarPortafolio] guardado de investigación falló', error);
   }
 
-  // 5 · Foto
+  // 5 · Foto y menú
   // Si algo falla acá, el registro YA está guardado y no se pierde. Perder el
-  // registro completo por una foto que no subió sería el peor resultado
+  // registro completo por un archivo que no subió sería el peor resultado
   // posible: la persona llenó todo el formulario. Sí hace falta avisar, nomás
   // que no puede ser un mensaje inline (ya no hay página inline) — viaja como
   // query param a la página de estado, que lo muestra una vez.
   let fotoFallo = false;
+  let menuFallo = false;
 
-  if (foto) {
-    if (!blobConfigurado()) {
-      fotoFallo = true;
-      console.warn(
-        '[registrarPortafolio] store de Blob sin conectar: falta BLOB_READ_WRITE_TOKEN o BLOB_STORE_ID',
-      );
-    } else {
+  if ((foto || menu) && !blobConfigurado()) {
+    fotoFallo = Boolean(foto);
+    menuFallo = Boolean(menu);
+    console.warn(
+      '[registrarPortafolio] store de Blob sin conectar: falta BLOB_READ_WRITE_TOKEN o BLOB_STORE_ID',
+    );
+  } else {
+    if (foto) {
       try {
         const subida = await subirFoto(foto, id);
         if (subida) {
@@ -212,6 +226,20 @@ export async function registrarPortafolio(
       } catch (error) {
         fotoFallo = true;
         console.error('[registrarPortafolio] subida de foto falló', error);
+      }
+    }
+
+    if (menu) {
+      try {
+        const subida = await subirMenu(menu, id);
+        if (subida) {
+          await adjuntarMenu(id, subida.url, subida.pathname);
+        } else {
+          menuFallo = true;
+        }
+      } catch (error) {
+        menuFallo = true;
+        console.error('[registrarPortafolio] subida de menú falló', error);
       }
     }
   }
@@ -225,5 +253,7 @@ export async function registrarPortafolio(
   // lo guarda (copiar o WhatsApp) antes de que se pierda. redirect() corta
   // la ejecución acá — no hay código después de esto que dependa de un
   // `return`.
-  redirect(`/?registrado=${token_publico}${fotoFallo ? '&foto=error' : ''}`);
+  const query =
+    (fotoFallo ? '&foto=error' : '') + (menuFallo ? '&menu=error' : '');
+  redirect(`/?registrado=${token_publico}${query}`);
 }

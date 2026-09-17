@@ -35,8 +35,12 @@ export const OPCIONES_MEDIOS_PAGO = [
 ] as const;
 
 // ─── Investigación (privado — nunca se publica, va a aliados_investigacion) ───
+// Recortada a los dos campos que alimentan código vivo (029): `formalidad`
+// personaliza /formalizacion, `mayor_dolor` es contexto del asesor de IA.
+// El resto (nombre del dueño, tipo_negocio viejo, necesidad_crecer) se sacó
+// del formulario y de la base — no tenía ningún consumidor fuera de esta
+// sección.
 
-export const OPCIONES_TIPO_NEGOCIO = ['emprendimiento', 'micronegocio', 'local', 'otro'] as const;
 export const OPCIONES_FORMALIDAD = [
   'rut_camara',
   'en_tramite',
@@ -101,6 +105,36 @@ const normalizarRedSocial = (dominio: string) => (valor: string) => {
   return `https://${dominio}/${sinArroba}`;
 };
 
+export type ProductoInput = { nombre: string; precio: string | null };
+
+/**
+ * "Empanadas - $2000" → { nombre: 'Empanadas', precio: '$2000' }.
+ * Split en el primer guion rodeado de espacios: un nombre con guion propio
+ * ("Combo 2 - para 3 - $15000") cae completo del lado del precio, que es el
+ * error más inofensivo posible acá — no vale un parser real para una
+ * textarea de formato libre.
+ */
+function parseLineaProducto(linea: string): ProductoInput {
+  const [nombre, ...resto] = linea.split(/\s*-\s*/);
+  return { nombre: (nombre ?? '').trim(), precio: resto.join(' - ').trim() || null };
+}
+
+/** Tope de 20 líneas: ni un negocio real tiene una carta de 40 productos, y sin tope un textarea es un vector de payload gigante. */
+export function parseProductos(texto: string): ProductoInput[] {
+  return texto
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .slice(0, 20)
+    .map(parseLineaProducto)
+    .filter((p) => p.nombre.length > 0);
+}
+
+/** Inverso de `parseProductos`, para precargar el textarea al editar. */
+export function serializarProductos(productos: ProductoInput[]): string {
+  return productos.map((p) => (p.precio ? `${p.nombre} - ${p.precio}` : p.nombre)).join('\n');
+}
+
 // Objeto base, separado del `.refine()` de abajo: así `actualizarPortafolioSchema`
 // puede hacer `.omit()` sobre los campos que no aplican a una edición (nada de
 // investigación, nada de re-aceptar consentimiento) sin duplicar cada campo.
@@ -154,19 +188,17 @@ const camposPortafolio = z
     horario: z.array(z.enum(OPCIONES_HORARIO)).optional().default([]),
     medios_pago: z.array(z.enum(OPCIONES_MEDIOS_PAGO)).optional().default([]),
 
+    // Texto libre "PRODUCTO - $PRECIO" por línea, parseado a estructura acá
+    // mismo — el resto de la app (repo, formulario de edición) solo ve el
+    // array ya armado, nunca el texto crudo.
+    productos: z.string().trim().max(2000, 'Máximo 2000 caracteres').transform(parseProductos),
+
     // Investigación — nunca se publica (va a aliados_investigacion, no a
-    // portafolios). tipo_negocio y mayor_dolor pasan a obligatorios a pedido
-    // explícito: el resto (nombre del dueño, formalidad) se queda opcional.
-    nombre_dueno: opcional(z.string().trim().max(80, 'Máximo 80 caracteres')),
-    tipo_negocio: z.enum(OPCIONES_TIPO_NEGOCIO, { error: 'Elige una opción' }),
-    tipo_negocio_detalle: opcional(z.string().trim().max(80, 'Máximo 80 caracteres')),
+    // portafolios). Recortada a los dos campos con consumidor real: ambos
+    // opcionales, a pedido del cliente (antes tipo_negocio y mayor_dolor
+    // eran obligatorios).
     formalidad: opcional(z.enum(OPCIONES_FORMALIDAD)),
-    mayor_dolor: z
-      .array(z.enum(OPCIONES_MAYOR_DOLOR))
-      .min(1, 'Elige al menos una opción'),
-    // Pregunta 7 de la redacción del cliente: abierta, opcional, nunca se
-    // publica — igual que el resto de investigación.
-    necesidad_crecer: opcional(z.string().trim().max(500, 'Máximo 500 caracteres')),
+    mayor_dolor: z.array(z.enum(OPCIONES_MAYOR_DOLOR)).optional().default([]),
 
     acepto_terminos: z.literal(true, {
       error: 'Debes aceptar los términos y condiciones',
@@ -199,12 +231,8 @@ export type PortafolioInput = z.infer<typeof portafolioSchema>;
  * — el consentimiento cubre el tratamiento de los datos, no cada valor puntual).
  */
 export const actualizarPortafolioSchema = camposPortafolio.omit({
-  nombre_dueno: true,
-  tipo_negocio: true,
-  tipo_negocio_detalle: true,
   formalidad: true,
   mayor_dolor: true,
-  necesidad_crecer: true,
   acepto_terminos: true,
   acepto_habeas_data: true,
 });
@@ -227,7 +255,10 @@ export function desdeFormData(formData: FormData) {
   return {
     nombre: texto('nombre'),
     descripcion: texto('descripcion'),
-    categoria_id: texto('categoria_id'),
+    // Categoría opcional a nivel app (029): en blanco cae a 'otros', la
+    // categoría "sin especificar" que ya existe desde la migración 001 —
+    // así la columna sigue not null y ningún JOIN de lectura pública cambia.
+    categoria_id: texto('categoria_id') || 'otros',
     categoria_otra: texto('categoria_otra'),
     direccion: texto('direccion'),
     barrio: texto('barrio'),
@@ -240,12 +271,9 @@ export function desdeFormData(formData: FormData) {
     facebook: texto('facebook'),
     horario: formData.getAll('horario').map(String),
     medios_pago: formData.getAll('medios_pago').map(String),
-    nombre_dueno: texto('nombre_dueno'),
-    tipo_negocio: texto('tipo_negocio'),
-    tipo_negocio_detalle: texto('tipo_negocio_detalle'),
+    productos: texto('productos'),
     formalidad: texto('formalidad'),
     mayor_dolor: formData.getAll('mayor_dolor').map(String),
-    necesidad_crecer: texto('necesidad_crecer'),
     acepto_terminos: formData.get('acepto_terminos') === 'on',
     acepto_habeas_data: formData.get('acepto_habeas_data') === 'on',
   };
@@ -264,7 +292,7 @@ export function desdeFormDataEdicion(formData: FormData) {
   return {
     nombre: texto('nombre'),
     descripcion: texto('descripcion'),
-    categoria_id: texto('categoria_id'),
+    categoria_id: texto('categoria_id') || 'otros',
     categoria_otra: texto('categoria_otra'),
     direccion: texto('direccion'),
     barrio: texto('barrio'),
@@ -277,5 +305,6 @@ export function desdeFormDataEdicion(formData: FormData) {
     facebook: texto('facebook'),
     horario: formData.getAll('horario').map(String),
     medios_pago: formData.getAll('medios_pago').map(String),
+    productos: texto('productos'),
   };
 }

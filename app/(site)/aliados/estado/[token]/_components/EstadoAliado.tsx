@@ -11,6 +11,7 @@ import {
   type EstadoEdicion,
 } from '@/lib/actions/gestionarEstado';
 import { manejarSeleccionFoto } from '@/lib/imagen/comprimir';
+import { serializarProductos } from '@/lib/validation/portafolio.schema';
 import type { Categoria, PortafolioAdmin } from '@/lib/db/portafolios.repo';
 import type { Posicion } from '@/app/(site)/aliados/registro/_components/SelectorUbicacionClient';
 import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
@@ -228,6 +229,8 @@ function FormularioEdicion({
 
   const [mostrarOtraRed, setMostrarOtraRed] = useState(Boolean(portafolio.facebook));
   const [nombreFoto, setNombreFoto] = useState<string | null>(null);
+  const [nombreMenu, setNombreMenu] = useState<string | null>(null);
+  const [productosTexto] = useState(() => serializarProductos(portafolio.productos));
 
   const alCambiarUbicacion = useCallback((p: Posicion | null) => setCoords(p), []);
   const alCambiarBarrio = useCallback((v: string, esOtro: boolean) => {
@@ -314,17 +317,21 @@ function FormularioEdicion({
           )}
         </CampoFormulario>
 
-        <CampoFormulario id="categoria_id" etiqueta="Categoría" requerido errores={err('categoria_id')}>
+        <CampoFormulario
+          id="categoria_id"
+          etiqueta="¿Qué tipo de negocio eres?"
+          ayuda="Opcional — ayuda a que te encuentren por rubro."
+          errores={err('categoria_id')}
+        >
           {(p) => (
             <select
               {...p}
               name="categoria_id"
-              required
               value={categoriaId}
               onChange={(e) => setCategoriaId(e.target.value)}
               className={claseInput}
             >
-              <option value="">Elige una…</option>
+              <option value="">Prefiero no elegir</option>
               {categorias.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.nombre}
@@ -373,6 +380,30 @@ function FormularioEdicion({
 
       <Seccion
         numero="03"
+        titulo="Productos y servicios"
+        ayuda="Un producto por línea, en formato PRODUCTO - PRECIO (el precio es opcional)."
+      >
+        <CampoFormulario
+          id="productos"
+          etiqueta="¿Qué productos o servicios ofreces?"
+          errores={err('productos')}
+        >
+          {(p) => (
+            <textarea
+              {...p}
+              name="productos"
+              rows={5}
+              maxLength={2000}
+              defaultValue={productosTexto}
+              placeholder={'Empanadas - $2000\nJugo natural - $3000\nAsesoría contable'}
+              className={`${claseInput} resize-y`}
+            />
+          )}
+        </CampoFormulario>
+      </Seccion>
+
+      <Seccion
+        numero="04"
         titulo="¿Cómo te contactan?"
         ayuda="El WhatsApp es obligatorio — es el canal que usa la gente para escribirte. Los demás son opcionales."
       >
@@ -454,7 +485,7 @@ function FormularioEdicion({
       </Seccion>
 
       <Seccion
-        numero="04"
+        numero="05"
         titulo="Horario y medios de pago"
         ayuda="Opcional, pero ayuda a que la gente sepa qué esperar antes de escribirte."
       >
@@ -502,7 +533,7 @@ function FormularioEdicion({
         </CampoFormulario>
       </Seccion>
 
-      <Seccion numero="05" titulo="Una foto" ayuda="JPG, PNG o WebP, hasta 5 MB.">
+      <Seccion numero="06" titulo="Una foto" ayuda="JPG, PNG o WebP, hasta 5 MB.">
         {portafolio.foto_url && (
           // eslint-disable-next-line @next/next/no-img-element -- foto chica de referencia, no vale la pena next/image acá.
           <img
@@ -530,6 +561,36 @@ function FormularioEdicion({
         </CampoFormulario>
 
         {nombreFoto && <p className="font-mono text-xs text-tinta/50">{nombreFoto}</p>}
+      </Seccion>
+
+      <Seccion numero="07" titulo="Menú o flyer" ayuda="JPG, PNG o WebP, hasta 5 MB.">
+        {portafolio.menu_url && (
+          // eslint-disable-next-line @next/next/no-img-element -- imagen chica de referencia, no vale la pena next/image acá.
+          <img
+            src={portafolio.menu_url}
+            alt={`Menú actual de ${portafolio.nombre}`}
+            className="h-32 w-32 border border-tinta/15 object-cover"
+          />
+        )}
+
+        <CampoFormulario
+          id="menu"
+          etiqueta={portafolio.menu_url ? 'Reemplazar menú' : 'Menú o flyer'}
+          errores={err('menu')}
+        >
+          {(p) => (
+            <input
+              {...p}
+              name="menu"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) => manejarSeleccionFoto(e.target, setNombreMenu)}
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
+            />
+          )}
+        </CampoFormulario>
+
+        {nombreMenu && <p className="font-mono text-xs text-tinta/50">{nombreMenu}</p>}
       </Seccion>
 
       <div className="sticky bottom-0 -mx-[clamp(1.5rem,5vw,6rem)] border-t border-tinta/12 bg-hueso/95 px-[clamp(1.5rem,5vw,6rem)] py-4 backdrop-blur">
@@ -596,6 +657,7 @@ export function EstadoAliado({
   token,
   categorias,
   fotoFallo,
+  menuFallo,
   asesorActivo,
 }: {
   portafolio: PortafolioAdmin;
@@ -603,6 +665,8 @@ export function EstadoAliado({
   categorias: Categoria[];
   /** Viene de ?foto=error en la URL: la foto del registro original no se pudo subir. */
   fotoFallo?: boolean;
+  /** Viene de ?menu=error en la URL: el menú del registro original no se pudo subir. */
+  menuFallo?: boolean;
   /**
    * Si hay credencial del modelo configurada. Lo resuelve la página (Server
    * Component) porque `asesorConfigurado()` es server-only: este componente
@@ -629,6 +693,12 @@ export function EstadoAliado({
         {fotoFallo && !borrado && (
           <p role="alert" className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta">
             Tu negocio quedó guardado, pero la foto no se pudo subir. Subila de nuevo más abajo, en la sección Una foto.
+          </p>
+        )}
+
+        {menuFallo && !borrado && (
+          <p role="alert" className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta">
+            Tu negocio quedó guardado, pero el menú no se pudo subir. Subilo de nuevo más abajo, en la sección Menú o flyer.
           </p>
         )}
 

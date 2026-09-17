@@ -24,10 +24,10 @@ export default async function EstadoAliadoPage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ foto?: string }>;
+  searchParams: Promise<{ foto?: string; menu?: string }>;
 }) {
   const { token } = await params;
-  const { foto } = await searchParams;
+  const { foto, menu } = await searchParams;
 
   if (!FORMATO_UUID.test(token)) notFound();
 
@@ -45,6 +45,7 @@ export default async function EstadoAliadoPage({
         token={token}
         categorias={categorias}
         fotoFallo={foto === 'error'}
+        menuFallo={menu === 'error'}
         asesorActivo={asesorConfigurado()}
       />
     </main>

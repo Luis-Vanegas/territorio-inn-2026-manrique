@@ -65,14 +65,24 @@ export async function moderarPortafolio(
       };
     }
 
-    // Al archivar se libera el Blob: si no, las fotos de registros retirados
-    // siguen ocupando cuota y siguen siendo públicas por URL directa.
-    if (nuevoEstado === 'archivado' && resultado.foto_blob_pathname) {
-      try {
-        await borrarFoto(resultado.foto_blob_pathname);
-      } catch (error) {
-        // La moderación ya se aplicó; un blob huérfano no justifica revertirla.
-        console.error('[moderarPortafolio] no se pudo borrar la foto', error);
+    // Al archivar se libera el Blob (foto y menú): si no, los archivos de
+    // registros retirados siguen ocupando cuota y siguen siendo públicos
+    // por URL directa.
+    if (nuevoEstado === 'archivado') {
+      if (resultado.foto_blob_pathname) {
+        try {
+          await borrarFoto(resultado.foto_blob_pathname);
+        } catch (error) {
+          // La moderación ya se aplicó; un blob huérfano no justifica revertirla.
+          console.error('[moderarPortafolio] no se pudo borrar la foto', error);
+        }
+      }
+      if (resultado.menu_blob_pathname) {
+        try {
+          await borrarFoto(resultado.menu_blob_pathname);
+        } catch (error) {
+          console.error('[moderarPortafolio] no se pudo borrar el menú', error);
+        }
       }
     }
   } catch (error) {

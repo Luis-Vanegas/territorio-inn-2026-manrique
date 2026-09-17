@@ -44,16 +44,18 @@ export function validarArchivo(file: File): ErrorFoto | null {
 }
 
 /**
- * Optimiza y sube. Devuelve null si el archivo no es una imagen procesable.
+ * Optimiza con sharp y sube al pathname dado. Devuelve null si el archivo no
+ * es una imagen procesable.
  *
  * El `file.type` viene del navegador y se puede falsificar: un .exe renombrado
  * a .jpg pasa la validación de tipo. sharp falla al decodificarlo, y ese fallo
  * es la verificación real de que el contenido es una imagen.
+ *
+ * Privada: `subirFoto` y `subirMenu` son los dos únicos pathnames válidos
+ * hoy, y cada uno decide el suyo — no conviene que cualquier caller pase un
+ * pathname arbitrario acá.
  */
-export async function subirFoto(
-  file: File,
-  portafolioId: string,
-): Promise<ResultadoFoto | null> {
+async function optimizarYSubir(file: File, pathname: string): Promise<ResultadoFoto | null> {
   const buffer = Buffer.from(await file.arrayBuffer());
 
   let optimizada: Buffer;
@@ -67,31 +69,43 @@ export async function subirFoto(
     return null;
   }
 
-  // El id es un uuid generado por la base, así que el pathname es único sin
-  // sufijo aleatorio. Predecible además permite sobrescribir al reemplazar la foto.
-  const pathname = `portafolios/${portafolioId}.webp`;
-
   // ── Sin sufijo aleatorio, y hay que saber por qué ──
   //
   // Un pathname derivado del id significa que cualquiera que vea la ficha
-  // puede armar la URL del blob. Acá está bien: la foto de un negocio de
-  // Aliados es pública, se muestra en la vitrina, y esa es toda su razón de
-  // existir.
+  // puede armar la URL del blob. Acá está bien: tanto la foto como el
+  // menú/flyer de un negocio de Aliados son públicos, se muestran en la
+  // vitrina, y esa es toda su razón de existir.
   //
   // El módulo Servicios pasaba `addRandomSuffix: true` justamente porque ahí
   // la foto era reservada y el sufijo cortaba la derivación. Ese módulo se
-  // eliminó (migración 028). **Si algún día se agrega otra foto que NO deba
-  // ser pública, no la subas por esta función sin reponer el sufijo**: la
+  // eliminó (migración 028). **Si algún día se agrega otro archivo que NO
+  // deba ser público, no lo subas por acá sin reponer el sufijo**: la
   // privacidad de un archivo en Blob depende de que su URL no se pueda adivinar.
   const blob = await put(pathname, optimizada, {
     access: 'public',
     contentType: 'image/webp',
     addRandomSuffix: false,
-    // La foto es pública e inmutable por id: se cachea fuerte.
+    // Público e inmutable por id: se cachea fuerte.
     cacheControlMaxAge: 60 * 60 * 24 * 365,
   });
 
   return { url: blob.url, pathname: blob.pathname };
+}
+
+/** El id es un uuid generado por la base, así que el pathname es único sin sufijo aleatorio — y predecible permite sobrescribir al reemplazar la foto. */
+export async function subirFoto(
+  file: File,
+  portafolioId: string,
+): Promise<ResultadoFoto | null> {
+  return optimizarYSubir(file, `portafolios/${portafolioId}.webp`);
+}
+
+/** Mismo tratamiento que la foto (resize + WebP): un menú fotografiado con el celular pesa igual de mal. */
+export async function subirMenu(
+  file: File,
+  portafolioId: string,
+): Promise<ResultadoFoto | null> {
+  return optimizarYSubir(file, `portafolios/${portafolioId}-menu.webp`);
 }
 
 export async function borrarFoto(pathname: string): Promise<void> {

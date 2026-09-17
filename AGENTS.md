@@ -28,6 +28,15 @@ ambos agentes repliquen un patrón que ya no existe.
   proveedor: ata el proyecto a ese proveedor justo donde la portabilidad es el
   requisito. La llamada sale solo desde una Server Action detrás del token del
   negocio, nunca desde una ruta pública.
+- Geocoding de direcciones (botón "Ubicar en el mapa" del registro,
+  `lib/geo/geocodificar.ts`) usa **Nominatim (OpenStreetMap) por `fetch`, sin
+  SDK ni API key** — mismo criterio que el asesor: gratis, sin atarse a un
+  proveedor pago. La llamada sale server-only (Nominatim exige un User-Agent
+  identificable que un fetch de navegador no puede fijar) y pasa por el rate
+  limit compartido de `lib/db/rateLimit.ts` con su propio origen
+  (`geocodificar`). No instales `mapbox`, `@googlemaps/*` ni similares para
+  esto — si Nominatim empieza a fallar como CARTO (ver comentario de
+  `TESELAS` en `lib/geo/constantes.ts`), se reemplaza este único archivo.
 - Ingreso de vecinos con **Google OAuth 2.0 a mano, sin NextAuth** (`lib/auth/
   google.ts`): la sesión firmada ya existía en `admin.ts` y una librería
   dejaría dos sistemas de sesión conviviendo. Con PKCE (`S256`). La identidad

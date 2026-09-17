@@ -147,6 +147,28 @@ export function TarjetaEmprendimiento({
 
           <Contacto portafolio={portafolio} />
 
+          {portafolio.productos.length > 0 && (
+            <ul className="mt-4 flex flex-col gap-1">
+              {portafolio.productos.map((prod) => (
+                <li key={prod.nombre} className="font-sans text-sm text-tinta/70">
+                  {prod.nombre}
+                  {prod.precio && <span className="text-tinta/45"> — {prod.precio}</span>}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {portafolio.menu_url && (
+            <a
+              href={portafolio.menu_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block font-mono text-xs text-tinta/60 underline decoration-terracota/40 underline-offset-4 transition-colors hover:text-terracota-texto"
+            >
+              Ver menú / flyer ↗
+            </a>
+          )}
+
           {camposExtra.length > 0 && (
             <dl className="mt-4 flex flex-col gap-1">
               {camposExtra.map((c) => (
