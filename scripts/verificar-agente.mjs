@@ -8,8 +8,8 @@
  * Para qué: el asesor recorre una lista de proveedores gratuitos hasta que uno
  * responda. Un plan gratuito puede estar agotado, con la clave vencida o con el
  * modelo renombrado, y el sitio lo disimula pasando al siguiente. Eso es lo que
- * queremos en producción y es exactamente lo que hay que poder auditar: si los
- * tres están caídos, el vecino se queda sin respuesta.
+ * queremos en producción y es exactamente lo que hay que poder auditar: si
+ * todos están caídos, el vecino se queda sin respuesta.
  *
  * Prueba CADA proveedor configurado por separado, con una consulta real. Si el
  * proveedor cobra por uso, esa consulta se paga; en un plan gratuito descuenta

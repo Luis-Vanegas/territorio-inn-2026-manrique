@@ -20,20 +20,21 @@
  * responda. Arriba va el de cupo más holgado, no el "mejor" — de nada sirve un
  * modelo excelente que frena a la cuarta pregunta del día.
  *
- * ── Por qué los tres hablan el mismo formato ──
+ * ── Por qué los cuatro hablan el mismo formato ──
  *
- * Gemini, Groq y OpenRouter exponen el formato de OpenAI en /chat/completions.
- * Por eso el catálogo solo guarda una URL y un nombre de modelo: el cuerpo del
- * pedido y la lectura de la respuesta son idénticos para los tres. Agregar un
- * cuarto proveedor que hable ese formato son seis líneas acá y cero en el resto
- * del código.
+ * Gemini, Groq, OpenRouter y NVIDIA NIM exponen el formato de OpenAI en
+ * /chat/completions. Por eso el catálogo solo guarda una URL y un nombre de
+ * modelo: el cuerpo del pedido y la lectura de la respuesta son idénticos
+ * para los cuatro. Agregar un quinto proveedor que hable ese formato son seis
+ * líneas acá y cero en el resto del código — NVIDIA NIM (2026-09-17) fue
+ * exactamente eso.
  *
  * ── Cómo se prende cada uno ──
  *
- * Con su variable de clave, y nada más. Poné una y funciona; poné las tres y
- * rota entre las tres. El modelo tiene un valor por defecto que se puede pisar
- * con su propia variable, porque los proveedores renombran modelos seguido y
- * eso no debería obligar a un despliegue.
+ * Con su variable de clave, y nada más. Poné una y funciona; poné las cuatro
+ * y rota entre las cuatro. El modelo tiene un valor por defecto que se puede
+ * pisar con su propia variable, porque los proveedores renombran modelos
+ * seguido y eso no debería obligar a un despliegue.
  */
 
 export interface Proveedor {
@@ -98,6 +99,27 @@ export const PROVEEDORES: Proveedor[] = [
     // Va último porque su cupo gratuito es el más volátil de los tres.
     modeloPorDefecto: 'meta-llama/llama-3.3-70b-instruct:free',
     dondeSacarClave: 'https://openrouter.ai/keys',
+  },
+  {
+    id: 'nvidia',
+    nombre: 'NVIDIA NIM',
+    url: 'https://integrate.api.nvidia.com/v1/chat/completions',
+    variableClave: 'NVIDIA_API_KEY',
+    variableModelo: 'NVIDIA_MODELO',
+    variableUrl: 'NVIDIA_API_URL',
+    // El catálogo público de NVIDIA (GET /v1/models) lista ~80 modelos, pero
+    // la cuenta gratuita no tiene entitlement para todos — probar en vivo
+    // contra la cuenta real es la única forma de saberlo: los "nvidia/*"
+    // (Nemotron) devolvían 404 "Function ... Not found for account", 401 en
+    // otros no tenía nada que ver con el modelo (era la clave mal armada en
+    // .env, con "Bearer " de más — ver abajo). De los que sí respondieron,
+    // este es el que además pasó la pregunta trampa del verificador
+    // (Fondo Nacional de Tenderos inventado) sin alucinar. Verificado en vivo
+    // el 2026-09-17 contra la cuenta real del cliente — si un día deja de
+    // responder, correr `npm run agente:verificar` reimprime el catálogo
+    // vigente de esa cuenta específica.
+    modeloPorDefecto: 'google/gemma-4-31b-it',
+    dondeSacarClave: 'https://build.nvidia.com — entrás con una cuenta gratuita, "Get API Key" en cualquier modelo (empieza con nvapi-). Ojo: la clave va SOLA en la variable, sin la palabra "Bearer" adelante — el código ya le agrega ese prefijo.',
   },
 ];
 

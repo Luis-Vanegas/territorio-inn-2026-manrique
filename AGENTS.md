@@ -23,11 +23,12 @@ ambos agentes repliquen un patrón que ya no existe.
   proveedores viven en `lib/agente/proveedores.ts` y se recorren en orden hasta
   que alguno responda: todos corren con plan gratuito y un plan gratuito se
   agota. Cada uno se prende con su clave (`GEMINI_API_KEY`, `GROQ_API_KEY`,
-  `OPENROUTER_API_KEY`); el modelo y la URL se pueden pisar con
-  `<PROVEEDOR>_MODELO` y `<PROVEEDOR>_API_URL`. No instales el SDK de ningún
-  proveedor: ata el proyecto a ese proveedor justo donde la portabilidad es el
-  requisito. La llamada sale solo desde una Server Action detrás del token del
-  negocio, nunca desde una ruta pública.
+  `OPENROUTER_API_KEY`, `NVIDIA_API_KEY` — NVIDIA NIM, la clave empieza con
+  `nvapi-` y se saca gratis en build.nvidia.com); el modelo y la URL se pueden
+  pisar con `<PROVEEDOR>_MODELO` y `<PROVEEDOR>_API_URL`. No instales el SDK de
+  ningún proveedor: ata el proyecto a ese proveedor justo donde la
+  portabilidad es el requisito. La llamada sale solo desde una Server Action
+  detrás del token del negocio, nunca desde una ruta pública.
 - Geocoding de direcciones (botón "Ubicar en el mapa" del registro,
   `lib/geo/geocodificar.ts`) usa **Nominatim (OpenStreetMap) por `fetch`, sin
   SDK ni API key** — mismo criterio que el asesor: gratis, sin atarse a un
