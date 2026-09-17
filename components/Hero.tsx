@@ -12,6 +12,10 @@ import { CarruselFotos } from "./CarruselFotos";
 import { ScrollReveal } from "./ScrollReveal";
 
 export function Hero() {
+  const gruposConCtas = hero.gruposCta.filter((grupo) =>
+    hero.ctas.some((c) => c.tipo === grupo.tipo),
+  );
+
   return (
     <section className="seccion overflow-hidden">
       <div className="grid grid-cols-1 items-center gap-y-12 lg:grid-cols-12 lg:gap-x-10">
@@ -34,27 +38,20 @@ export function Hero() {
             </p>
           </ScrollReveal>
 
-          {/* Bifurcación de intención: negocio vs servicio, buscar vs ofrecer
-              son 4 caminos reales con rutas propias — no un único CTA que
-              asume que todo el mundo llega a registrar algo.
-
-              Iban los cuatro en una fila con flex-wrap, dos rellenos y dos
-              con borde. Eso dejaba la lógica "buscar vs ofrecer" viviendo
-              únicamente en el color (WCAG 1.4.1) y además hacía que dos
-              botones le gritaran más fuerte que los otros dos, sin que nadie
-              hubiera decidido comunicar esa jerarquía.
-
-              Ahora son dos bloques con encabezado de texto y los cuatro
-              botones con el mismo peso: el agrupamiento se comunica por
-              posición y por palabra, que se leen sin depender de distinguir
-              matices. Lo más fuerte del hero vuelve a ser el titular, que es
-              donde está la pregunta que el visitante tiene que responder.
-              Decisión de la usuaria de la prueba (2026-08-28). */}
+          {/* Grilla de 2 columnas pensada para 4 caminos (ver lib/content.ts,
+              hero.ctas v1: bifurcación buscar/ofrecer probada con una
+              usuaria real el 2026-08-28). Desde la v2 el Hero empuja un solo
+              CTA, pero la grilla se queda: `gruposConCtas` filtra los grupos
+              sin botones y `sm:grid-cols-2` solo se aplica si sobra más de
+              uno, así que un único CTA ocupa el ancho entero en vez de dejar
+              la mitad derecha vacía. Si algún día vuelve a haber más de un
+              camino, la grilla de 2 columnas ya está lista sin tocar esto. */}
           <ScrollReveal delay={0.45}>
-            <div className="mt-10 grid gap-8 sm:grid-cols-2 sm:gap-10">
-              {hero.gruposCta.map((grupo) => {
+            <div
+              className={`mt-10 grid gap-8 sm:gap-10 ${gruposConCtas.length > 1 ? 'sm:grid-cols-2' : ''}`}
+            >
+              {gruposConCtas.map((grupo) => {
                 const ctas = hero.ctas.filter((c) => c.tipo === grupo.tipo);
-                if (ctas.length === 0) return null;
 
                 return (
                   <div key={grupo.tipo} className="flex flex-col">

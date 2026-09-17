@@ -44,6 +44,7 @@ export function VitrinaAliados({
   const [ubicacion, setUbicacion] = useState<Coordenada | null>(null);
   const [estadoGeo, setEstadoGeo] = useState<EstadoGeo>('inicial');
   const [seleccionado, setSeleccionado] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState('');
 
   const pedirUbicacion = useCallback(() => {
     if (!('geolocation' in navigator)) {
@@ -72,16 +73,34 @@ export function VitrinaAliados({
    * alguien descubra lo que tiene a la vuelta, y "a la vuelta" es un orden, no
    * un filtro — cortar por radio escondería el único negocio del barrio si
    * queda a 1,2 km.
+   *
+   * La búsqueda de texto filtra acá mismo, en el cliente: `aliados` ya está
+   * completo en memoria (la categoría, que sí necesita su propia consulta
+   * para los conteos, filtra del lado del servidor vía `?categoria=`) y a
+   * escala de barrio no hay volumen que justifique un roundtrip nuevo por
+   * cada letra que alguien escribe.
    */
+  const busquedaNormalizada = busqueda.trim().toLocaleLowerCase('es');
+
   const listados = useMemo(() => {
-    const conDistancia = aliados.map((p) => ({
+    const filtrados = busquedaNormalizada
+      ? aliados.filter((p) =>
+          [p.nombre, p.descripcion, p.categoria_nombre]
+            .filter(Boolean)
+            .some((campo) => campo!.toLocaleLowerCase('es').includes(busquedaNormalizada)),
+        )
+      : aliados;
+
+    const conDistancia = filtrados.map((p) => ({
       portafolio: p,
       distancia: ubicacion ? distanciaMetros(ubicacion, [p.latitud, p.longitud]) : null,
     }));
 
     if (!ubicacion) return conDistancia;
     return conDistancia.sort((a, b) => (a.distancia ?? 0) - (b.distancia ?? 0));
-  }, [aliados, ubicacion]);
+  }, [aliados, ubicacion, busquedaNormalizada]);
+
+  const portafoliosFiltrados = useMemo(() => listados.map((l) => l.portafolio), [listados]);
 
   // Abrir la ficha de un negocio cuenta como vista. Scrollear el listado NO:
   // si contáramos cada tarjeta que pasa por pantalla, el número mediría el
@@ -106,9 +125,22 @@ export function VitrinaAliados({
             Dónde están
           </h2>
           <span className="font-mono text-xs text-tinta/40">
-            {aliados.length} {aliados.length === 1 ? 'negocio' : 'negocios'} en el mapa
+            {busquedaNormalizada
+              ? `${listados.length} de ${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'}`
+              : `${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'} en el mapa`}
           </span>
         </div>
+
+        <label className="mt-4 block max-w-sm">
+          <span className="sr-only">Buscar por nombre, categoría o descripción</span>
+          <input
+            type="search"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            placeholder="Busca por nombre, rubro o qué necesitas…"
+            className="w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/35 focus:border-terracota focus:outline-none focus:ring-0"
+          />
+        </label>
 
         {/* Antes de pedir permiso hay que decir qué se hace con el dato.
             No es cortesía: es lo que hace que la persona diga que sí. */}
@@ -158,7 +190,7 @@ export function VitrinaAliados({
 
         <div className="mt-4 h-[460px] w-full overflow-hidden border border-tinta/12 sm:h-[600px] lg:h-[680px]">
           <MapaAliados
-            portafolios={aliados}
+            portafolios={portafoliosFiltrados}
             alSeleccionar={alSeleccionar}
             ubicacionUsuario={ubicacion}
             seleccionado={seleccionado}
@@ -178,6 +210,20 @@ export function VitrinaAliados({
         </div>
 
         <div className="mt-5">{filtro}</div>
+
+        {busquedaNormalizada && listados.length === 0 && (
+          <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-tinta/60">
+            Nada coincide con «{busqueda.trim()}».{' '}
+            <button
+              type="button"
+              onClick={() => setBusqueda('')}
+              className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+            >
+              Borrar la búsqueda
+            </button>
+            .
+          </p>
+        )}
 
         <div className="mt-10">
           {listados.map((l, i) => (

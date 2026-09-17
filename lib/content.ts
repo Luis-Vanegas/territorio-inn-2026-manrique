@@ -32,34 +32,14 @@ export const hero = {
   titular: "¿Buscas un negocio, un servicio o trabajo en Manrique? ¿O tienes algo para ofrecer?",
   subtitulo:
     "Una propuesta de datos abiertos para entender y fortalecer el empleo local.",
-  // Bifurcación de intención, no de módulo: quien llega está buscando algo o
-  // tiene algo que ofrecer, y cada lado abre su camino. Aliados cubre negocios
-  // y oficios por igual — el titular sigue diciendo "un servicio" porque es
-  // lo que la persona busca, aunque del otro lado sea la misma ficha.
+  // v2 (2026-09-17, pedido del cliente): el Hero baja de 4 caminos a uno solo
+  // — "busco negocio", "busco a quién contratar" y "estoy buscando trabajo"
+  // se sacan de acá. No es que esos caminos dejen de existir: siguen a un
+  // clic en el menú (ALIADOS y EMPLEO en SiteHeader). Lo que se decidió es
+  // que el Hero, que es lo primero que ve cualquiera, empuje una sola acción
+  // — registrar el negocio — en vez de ofrecer cuatro puertas a la vez.
   ctas: [
-    { tipo: "buscar" as const, etiqueta: "Busco un negocio", href: "/aliados" },
-    // Empleo faltaba entero: no era que el flag lo escondiera, es que nunca se
-    // le definió un camino. El módulo existe, tiene menú propio y dos rutas, y
-    // desde el inicio no se llegaba a ninguna. Quien entra a buscar trabajo
-    // —que es media razón de ser del proyecto— no tenía por dónde empezar.
-    //
-    // Va del lado de "buscar" porque quien contrata está buscando a alguien;
-    // /empleo es el listado de vecinos disponibles.
-    ...(EMPLEO_ACTIVO
-      ? [{ tipo: "buscar" as const, etiqueta: "Busco a quién contratar", href: "/empleo" }]
-      : []),
     { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/aliados/registro" },
-    // Queda del lado de "ofrecer" —quien busca trabajo está ofreciendo lo
-    // suyo, y /empleo/registro es donde se anota— aunque la etiqueta diga
-    // "buscando". Decisión de la usuaria, con el desajuste sobre la mesa:
-    // "Ofrezco mi trabajo" era gramaticalmente correcto para el grupo pero
-    // sonaba a transacción, justo en el botón donde más falta hace la
-    // calidez. Entre la coherencia con el encabezado y que la persona
-    // entienda sin dudar para qué es el botón, gana lo segundo: nadie lee
-    // los encabezados de grupo, todo el mundo lee el botón.
-    ...(EMPLEO_ACTIVO
-      ? [{ tipo: "ofrecer" as const, etiqueta: "Estoy buscando trabajo", href: "/empleo/registro" }]
-      : []),
   ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
   // Los cuatro caminos se agrupaban solo por color, y el color era el único
   // portador del significado "buscar" vs "ofrecer" — falla WCAG 1.4.1: quien
