@@ -4,7 +4,9 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useState } from 'react';
 
 import { ScrollReveal } from '@/components/ScrollReveal';
+import { ModuloDesplegable } from '@/components/ModuloDesplegable';
 import { ETIQUETA_TIPO, type PasoFormalizacion, type TipoRuta } from '@/lib/formalizacion';
+import { TarjetaPaso } from './TarjetaPaso';
 
 const ORDEN_TIPOS: TipoRuta[] = ['tramite', 'fondo', 'formacion'];
 
@@ -80,55 +82,22 @@ export function RutasPersonalizadas({
             if (pasos.length === 0) return null;
 
             return (
-              <section key={tipo} className="mt-20 border-t border-tinta/12 pt-10">
-                <h2 className="font-display text-3xl font-medium text-tinta">
-                  {ETIQUETA_TIPO[tipo]}
-                </h2>
-                <p className="mt-2 font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
+              <ModuloDesplegable
+                key={tipo}
+                titulo={ETIQUETA_TIPO[tipo]}
+                cantidad={pasos.length}
+                abierto={tipo === 'tramite'}
+              >
+                <p className="max-w-xl font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
 
                 <ul className="mt-8 grid gap-6 sm:grid-cols-2">
                   {pasos.map((paso, i) => (
                     <ScrollReveal key={paso.id} delay={Math.min(i, 5) * 0.06}>
-                      <li className="flex h-full flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota">
-                        <h3 className="font-display text-xl font-medium text-tinta">
-                          {paso.titulo}
-                        </h3>
-
-                        <p className="mt-1 font-mono text-xs text-tinta/45">{paso.entidad}</p>
-
-                        <p className="mt-3 font-sans leading-relaxed text-tinta/70">
-                          {paso.resumen}
-                        </p>
-
-                        <div className="mt-4">
-                          <p className="font-mono text-xs text-tinta/45">Necesitas tener:</p>
-                          <ul className="mt-2 space-y-1">
-                            {paso.requisitos.map((requisito) => (
-                              <li key={requisito} className="font-sans text-sm text-tinta/70">
-                                · {requisito}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div className="mt-auto pt-6">
-                          <a
-                            href={paso.fuente}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
-                          >
-                            Ver en la página oficial ↗
-                          </a>
-                          <p className="mt-2 font-mono text-xs text-tinta/35">
-                            Enlace verificado el {paso.verificadoEn}
-                          </p>
-                        </div>
-                      </li>
+                      <TarjetaPaso paso={paso} />
                     </ScrollReveal>
                   ))}
                 </ul>
-              </section>
+              </ModuloDesplegable>
             );
           })}
         </motion.div>
