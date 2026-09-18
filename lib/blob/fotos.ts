@@ -43,6 +43,28 @@ export function validarArchivo(file: File): ErrorFoto | null {
   return null;
 }
 
+export type ArchivoValidado = { ok: true; archivo: File | null } | { ok: false; mensaje: string };
+
+/**
+ * Saca un archivo opcional del formulario y lo valida. `registrarPortafolio`
+ * y `actualizarPortafolio` repetían este mismo bloque una vez por foto y otra
+ * por menú — cuatro copias del mismo if/if.
+ */
+export function extraerArchivoValidado(
+  formData: FormData,
+  campo: 'foto' | 'menu',
+  etiqueta: string,
+): ArchivoValidado {
+  const valor = formData.get(campo);
+  const archivo = valor instanceof File && valor.size > 0 ? valor : null;
+  if (!archivo) return { ok: true, archivo: null };
+
+  const problema = validarArchivo(archivo);
+  if (problema === 'tipo-no-permitido') return { ok: false, mensaje: 'Solo se aceptan JPG, PNG o WebP' };
+  if (problema === 'muy-grande') return { ok: false, mensaje: `${etiqueta} no puede pesar más de 5 MB` };
+  return { ok: true, archivo };
+}
+
 /**
  * Optimiza con sharp y sube al pathname dado. Devuelve null si el archivo no
  * es una imagen procesable.

@@ -13,7 +13,7 @@ import {
   adjuntarMenu,
 } from '@/lib/db/portafolios.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
-import { subirFoto, subirMenu, validarArchivo, blobConfigurado, borrarFoto } from '@/lib/blob/fotos';
+import { subirFoto, subirMenu, blobConfigurado, borrarFoto, extraerArchivoValidado } from '@/lib/blob/fotos';
 
 export type EstadoEdicion =
   | { estado: 'inicial' }
@@ -53,31 +53,17 @@ export async function actualizarPortafolio(
   }
   const datos = parsed.data;
 
-  const archivo = formData.get('foto');
-  const foto = archivo instanceof File && archivo.size > 0 ? archivo : null;
-
-  if (foto) {
-    const problema = validarArchivo(foto);
-    if (problema === 'tipo-no-permitido') {
-      return { estado: 'error', errores: { foto: ['Solo se aceptan JPG, PNG o WebP'] } };
-    }
-    if (problema === 'muy-grande') {
-      return { estado: 'error', errores: { foto: ['La foto no puede pesar más de 5 MB'] } };
-    }
+  const validacionFoto = extraerArchivoValidado(formData, 'foto', 'La foto');
+  if (!validacionFoto.ok) {
+    return { estado: 'error', errores: { foto: [validacionFoto.mensaje] } };
   }
+  const foto = validacionFoto.archivo;
 
-  const archivoMenu = formData.get('menu');
-  const menu = archivoMenu instanceof File && archivoMenu.size > 0 ? archivoMenu : null;
-
-  if (menu) {
-    const problema = validarArchivo(menu);
-    if (problema === 'tipo-no-permitido') {
-      return { estado: 'error', errores: { menu: ['Solo se aceptan JPG, PNG o WebP'] } };
-    }
-    if (problema === 'muy-grande') {
-      return { estado: 'error', errores: { menu: ['El menú no puede pesar más de 5 MB'] } };
-    }
+  const validacionMenu = extraerArchivoValidado(formData, 'menu', 'El menú');
+  if (!validacionMenu.ok) {
+    return { estado: 'error', errores: { menu: [validacionMenu.mensaje] } };
   }
+  const menu = validacionMenu.archivo;
 
   let id: string | null;
   try {

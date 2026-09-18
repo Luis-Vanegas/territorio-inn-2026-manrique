@@ -17,7 +17,7 @@ import {
   guardarInvestigacion,
 } from '@/lib/db/portafolios.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders, hashIp } from '@/lib/db/rateLimit';
-import { subirFoto, subirMenu, validarArchivo, blobConfigurado } from '@/lib/blob/fotos';
+import { subirFoto, subirMenu, blobConfigurado, extraerArchivoValidado } from '@/lib/blob/fotos';
 import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
 import { extraerCamposPersonalizados } from '@/lib/validation/camposPersonalizados.schema';
 
@@ -82,31 +82,17 @@ export async function registrarPortafolio(
   const datos = parsed.data;
 
   // 3 · Archivos (opcionales)
-  const archivo = formData.get('foto');
-  const foto = archivo instanceof File && archivo.size > 0 ? archivo : null;
-
-  if (foto) {
-    const problema = validarArchivo(foto);
-    if (problema === 'tipo-no-permitido') {
-      return { estado: 'error', errores: { foto: ['Solo se aceptan JPG, PNG o WebP'] } };
-    }
-    if (problema === 'muy-grande') {
-      return { estado: 'error', errores: { foto: ['La foto no puede pesar más de 5 MB'] } };
-    }
+  const validacionFoto = extraerArchivoValidado(formData, 'foto', 'La foto');
+  if (!validacionFoto.ok) {
+    return { estado: 'error', errores: { foto: [validacionFoto.mensaje] } };
   }
+  const foto = validacionFoto.archivo;
 
-  const archivoMenu = formData.get('menu');
-  const menu = archivoMenu instanceof File && archivoMenu.size > 0 ? archivoMenu : null;
-
-  if (menu) {
-    const problema = validarArchivo(menu);
-    if (problema === 'tipo-no-permitido') {
-      return { estado: 'error', errores: { menu: ['Solo se aceptan JPG, PNG o WebP'] } };
-    }
-    if (problema === 'muy-grande') {
-      return { estado: 'error', errores: { menu: ['El menú no puede pesar más de 5 MB'] } };
-    }
+  const validacionMenu = extraerArchivoValidado(formData, 'menu', 'El menú');
+  if (!validacionMenu.ok) {
+    return { estado: 'error', errores: { menu: [validacionMenu.mensaje] } };
   }
+  const menu = validacionMenu.archivo;
 
   // 3.5 · Campos que definió el admin — se re-consulta cuáles están activos
   // ACÁ, en el server, en vez de confiar en una lista que mandó el cliente.
