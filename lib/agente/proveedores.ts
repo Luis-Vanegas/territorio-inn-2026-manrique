@@ -119,7 +119,7 @@ export const PROVEEDORES: Proveedor[] = [
     // responder, correr `npm run agente:verificar` reimprime el catálogo
     // vigente de esa cuenta específica.
     modeloPorDefecto: 'google/gemma-4-31b-it',
-    dondeSacarClave: 'https://build.nvidia.com — entrás con una cuenta gratuita, "Get API Key" en cualquier modelo (empieza con nvapi-). Ojo: la clave va SOLA en la variable, sin la palabra "Bearer" adelante — el código ya le agrega ese prefijo.',
+    dondeSacarClave: 'https://build.nvidia.com — entra con una cuenta gratuita, "Get API Key" en cualquier modelo (empieza con nvapi-). Ojo: la clave va SOLA en la variable, sin la palabra "Bearer" adelante — el código ya le agrega ese prefijo.',
   },
 ];
 
