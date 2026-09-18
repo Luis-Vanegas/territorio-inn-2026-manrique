@@ -136,6 +136,30 @@ export const PASOS: PasoFormalizacion[] = [
     verificadoEn: '2026-09-14',
   },
   {
+    id: 'bancoldex',
+    titulo: 'Línea de crédito con Bancóldex',
+    resumen:
+      'El banco de desarrollo empresarial del Gobierno no presta directo: respalda líneas de crédito para negocios pequeños a través de bancos aliados.',
+    tipo: 'fondo',
+    entidad: 'Bancóldex',
+    fuente: 'https://www.bancoldex.com',
+    requisitos: ['Cédula', 'RUT', 'Ir a un banco aliado de Bancóldex'],
+    aplicaA: ['no_tengo', 'en_tramite', 'rut_camara'],
+    verificadoEn: '2026-09-17',
+  },
+  {
+    id: 'innpulsa',
+    titulo: 'Convocatorias de iNNpulsa Colombia',
+    resumen:
+      'La agencia del Gobierno para el emprendimiento abre convocatorias todo el año con recursos no reembolsables para unidades productivas.',
+    tipo: 'fondo',
+    entidad: 'iNNpulsa Colombia',
+    fuente: 'https://www.innpulsacolombia.com',
+    requisitos: ['Revisar qué convocatorias están abiertas', 'Cumplir el perfil de la convocatoria vigente'],
+    aplicaA: ['no_tengo', 'en_tramite', 'rut_camara'],
+    verificadoEn: '2026-09-17',
+  },
+  {
     id: 'presupuesto-participativo',
     titulo: 'Presupuesto Participativo de la Comuna 3',
     resumen:
