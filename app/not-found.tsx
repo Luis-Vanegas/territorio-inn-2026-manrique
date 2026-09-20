@@ -1,7 +1,7 @@
 // 404 del sitio. Vale tanto para una URL mal tipeada como para los `notFound()`
 // que ya dispara el código: los módulos detrás de un flag apagado
-// (/servicios, /inventario-predictivo) devuelven 404 real a propósito, y hasta
-// hoy caían en la pantalla default de Next.
+// (/inventario-predictivo) devuelven 404 real a propósito, y hasta hoy caían
+// en la pantalla default de Next.
 //
 // Server Component: no necesita estado ni handlers, así que no paga el "use client".
 
