@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
 
 import { perfilDesdeCodigo, COOKIE_ESTADO, COOKIE_VERIFICADOR } from '@/lib/auth/google';
 import { ingresarConGoogle, vincularNegocio } from '@/lib/db/usuarios.repo';
+import { iniciarSesionAdmin } from '@/lib/auth/admin';
+import { esModeradorGoogle } from '@/lib/auth/moderadoresGoogle';
 import { iniciarSesion } from '@/lib/auth/usuario';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 
@@ -94,6 +96,13 @@ export async function GET(request: Request) {
       nombre: usuario.nombre,
       foto: usuario.foto_url,
     });
+
+    // Moderador por Google: además de la sesión de vecino, se emite la cookie
+    // de moderación — otra cookie, no un permiso dentro de esta. La lista de
+    // `sub` permitidos vive en el entorno (ver lib/auth/moderadoresGoogle.ts).
+    if (esModeradorGoogle(perfil.sub)) {
+      await iniciarSesionAdmin(perfil.correo);
+    }
 
     // Quien venía de su enlace de negocio y entra con Google queda con ese
     // negocio vinculado a su cuenta: es el puente entre las dos puertas, y

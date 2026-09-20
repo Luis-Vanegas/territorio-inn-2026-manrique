@@ -81,6 +81,28 @@ moderación. El panel solo lee la suya, así que no existe un camino donde una
 sesión de vecino se convierta en acceso de administrador — ni falsificándola,
 porque el panel nunca la mira.
 
+**Moderador por Google (`ADMIN_GOOGLE_SUBS`).** Un moderador puede entrar por
+«Entrar con Google» en vez de por `/admin/login`. Cómo se mantiene la
+separación de arriba:
+
+- La concesión es una lista de `google_sub` en la variable de entorno
+  `ADMIN_GOOGLE_SUBS` (separados por coma). **Es el `sub`, no el correo**, por
+  la misma razón de la sección de Google: el correo cambia de manos.
+- Es una variable y no una columna de `usuarios` a propósito: ningún bug de
+  SQL ni de Server Action de la aplicación puede otorgar ese permiso, porque no
+  hay camino desde la aplicación hasta la lista. Agregar o quitar un moderador
+  exige acceso al despliegue.
+- En el retorno de Google, si el `sub` está en la lista, el servidor emite
+  **además** la cookie `admin_session`. La cookie de vecino no cambia ni lleva
+  ningún rol: sigue sin haber un camino donde falsificarla dé acceso al panel.
+- «Cerrar sesión» del vecino cierra también `admin_session`.
+- Sin `ADMIN_GOOGLE_SUBS`, nadie entra por este camino.
+- El `sub` se obtiene con `npm run db:google-sub -- --correo <correo>`.
+
+Riesgo asumido: quien controle esa cuenta de Google controla el panel. Por eso
+la cuenta debe tener verificación en dos pasos. Para revocar: quitar el `sub` de
+la variable y redesplegar; una `admin_session` ya emitida vale hasta 8 h.
+
 El guard vive en `app/admin/(panel)/layout.tsx`, no en `middleware.ts`. Se
 decidió así cuando el middleware era Edge-only (Next 14), donde no existen
 `node:crypto` ni `cookies()` de `next/headers` — justo lo que

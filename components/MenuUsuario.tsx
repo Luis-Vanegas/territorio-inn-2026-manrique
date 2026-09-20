@@ -15,7 +15,11 @@ export const ENLACES_PRIVADOS = [
   { href: '/mi-cuenta', etiqueta: 'Mis negocios' },
   { href: '/formalizacion', etiqueta: 'Rutas y apoyos' },
   { href: '/formalizacion#videos', etiqueta: 'Videos y guías' },
+  { href: '/presencia', etiqueta: 'Tu presencia' },
 ];
+
+/** Solo para quien también tiene sesión de moderación (ver SiteHeader). */
+export const ENLACE_MODERACION = { href: '/admin/aliados', etiqueta: 'Panel de moderación' };
 
 /**
  * Identidad de la persona conectada, y su salida.
@@ -48,9 +52,11 @@ export const ENLACES_PRIVADOS = [
 export function MenuUsuario({
   nombre,
   foto,
+  enlaces,
 }: {
   nombre: string;
   foto: string | null;
+  enlaces: { href: string; etiqueta: string }[];
 }) {
   // La primera letra como reserva cuando Google no dio foto, o cuando la
   // imagen no carga. Un círculo vacío se lee como algo roto.
@@ -118,7 +124,7 @@ export function MenuUsuario({
           Tu espacio
         </p>
 
-        {ENLACES_PRIVADOS.map((enlace) => (
+        {enlaces.map((enlace) => (
           <Link
             key={enlace.href}
             href={enlace.href}

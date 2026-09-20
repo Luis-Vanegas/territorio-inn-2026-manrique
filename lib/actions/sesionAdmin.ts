@@ -1,15 +1,13 @@
 'use server';
 
-import { cookies, headers } from 'next/headers';
+import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { autenticar, crearTokenSesion } from '@/lib/auth/admin';
+import { autenticar, cerrarSesionAdmin, iniciarSesionAdmin } from '@/lib/auth/admin';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 
 export type EstadoSesion =
   | { estado: 'inicial' }
   | { estado: 'error'; mensaje: string };
-
-const DURACION_SEGUNDOS = 8 * 60 * 60;
 
 export async function iniciarSesion(
   _anterior: EstadoSesion,
@@ -47,18 +45,12 @@ export async function iniciarSesion(
     return { estado: 'error', mensaje: 'Credenciales incorrectas.' };
   }
 
-  (await cookies()).set('admin_session', crearTokenSesion(email.toLowerCase()), {
-    httpOnly: true,                                   // fuera del alcance de JS
-    secure: process.env.NODE_ENV === 'production',    // en local no hay HTTPS
-    sameSite: 'lax',                                  // corta CSRF desde otros sitios
-    path: '/',
-    maxAge: DURACION_SEGUNDOS,
-  });
+  await iniciarSesionAdmin(email);
 
   redirect('/admin/aliados');
 }
 
 export async function cerrarSesion(): Promise<void> {
-  (await cookies()).delete('admin_session');
+  await cerrarSesionAdmin();
   redirect('/admin/login');
 }

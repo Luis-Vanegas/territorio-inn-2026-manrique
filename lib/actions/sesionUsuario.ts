@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 
+import { cerrarSesionAdmin } from '@/lib/auth/admin';
 import { cerrarSesion } from '@/lib/auth/usuario';
 
 /**
@@ -14,5 +15,8 @@ import { cerrarSesion } from '@/lib/auth/usuario';
  */
 export async function salir(): Promise<void> {
   await cerrarSesion();
+  // Quien entró como moderador por Google tiene las dos cookies: «Cerrar
+  // sesión» tiene que cerrar las dos, no dejar el panel abierto 8 horas más.
+  await cerrarSesionAdmin();
   redirect('/');
 }

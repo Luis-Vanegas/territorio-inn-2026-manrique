@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { ContadorVisitas } from "@/components/ContadorVisitas";
+import { verificarSesion } from "@/lib/auth/admin";
 import { sesionActual } from "@/lib/auth/usuario";
 
 /**
@@ -44,7 +45,18 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           persona, y la autenticación va por cookie firmada— pero la regla es no
           exponer lo que no hace falta. */}
       <SiteHeader
-        sesion={sesion ? { nombre: sesion.nombre, foto: sesion.foto } : null}
+        sesion={
+          sesion
+            ? {
+                nombre: sesion.nombre,
+                foto: sesion.foto,
+                // Solo se mira si hay sesión de vecino: quien no entró no paga la
+                // verificación, y un moderador sin sesión de vecino entra por
+                // /admin/login como siempre.
+                moderador: (await verificarSesion()) !== null,
+              }
+            : null
+        }
       />
 
       <div id="contenido" tabIndex={-1}>

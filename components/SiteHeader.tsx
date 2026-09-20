@@ -26,7 +26,7 @@ import { enfoque } from "@/lib/content";
 import { salir } from "@/lib/actions/sesionUsuario";
 // Una sola lista de accesos privados, compartida con el menú de escritorio:
 // dos copias se desincronizan la primera vez que se agregue un módulo.
-import { MenuUsuario, ENLACES_PRIVADOS } from "@/components/MenuUsuario";
+import { MenuUsuario, ENLACES_PRIVADOS, ENLACE_MODERACION } from "@/components/MenuUsuario";
 
 // Se genera de la misma fuente que EnfoqueSection: una sola lista de módulos,
 // no dos que se puedan desincronizar cuando se agregue o quite uno.
@@ -61,9 +61,12 @@ const BASE_ENLACE =
 export function SiteHeader({
   sesion,
 }: {
-  sesion: { nombre: string; foto: string | null } | null;
+  sesion: { nombre: string; foto: string | null; moderador: boolean } | null;
 }) {
   const pathname = usePathname();
+  const enlacesPrivados = sesion?.moderador
+    ? [...ENLACES_PRIVADOS, ENLACE_MODERACION]
+    : ENLACES_PRIVADOS;
 
   return (
     <header className="sticky top-0 z-50 border-b border-tinta/10 bg-hueso/90 backdrop-blur">
@@ -116,7 +119,7 @@ export function SiteHeader({
             Nunca los dos a la vez. */}
         <div className="hidden shrink-0 xl:block">
           {sesion ? (
-            <MenuUsuario nombre={sesion.nombre} foto={sesion.foto} />
+            <MenuUsuario nombre={sesion.nombre} foto={sesion.foto} enlaces={enlacesPrivados} />
           ) : (
             <Link
               href="/entrar"
@@ -166,7 +169,7 @@ export function SiteHeader({
                 <p className="mt-2 border-t border-tinta/12 px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/45">
                   Tu espacio · {sesion.nombre.trim().split(/\s+/)[0]}
                 </p>
-                {ENLACES_PRIVADOS.map((e) => (
+                {enlacesPrivados.map((e) => (
                   <Link
                     key={e.href}
                     href={e.href}

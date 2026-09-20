@@ -12,6 +12,8 @@ import { sql } from '@/lib/db/neon';
 
 const DURACION_SESION = 8 * 60 * 60 * 1000; // 8 horas
 
+export const COOKIE_ADMIN = 'admin_session';
+
 /**
  * Diferida a propósito: leerla al importar el módulo hace que `next build`
  * falle con "Failed to collect page data", porque Next importa cada página
@@ -57,7 +59,7 @@ export function crearTokenSesion(email: string): string {
 }
 
 export async function verificarSesion(): Promise<{ email: string } | null> {
-  const token = (await cookies()).get('admin_session')?.value;
+  const token = (await cookies()).get(COOKIE_ADMIN)?.value;
   if (!token) return null;
 
   const [payloadB64, firma] = token.split('.');
@@ -76,6 +78,24 @@ export async function verificarSesion(): Promise<{ email: string } | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Abre la sesión de moderación. Una sola función para las dos puertas de
+ * entrada (contraseña y Google), para que la cookie salga siempre igual.
+ */
+export async function iniciarSesionAdmin(email: string): Promise<void> {
+  (await cookies()).set(COOKIE_ADMIN, crearTokenSesion(email.toLowerCase()), {
+    httpOnly: true, // fuera del alcance de JS
+    secure: process.env.NODE_ENV === 'production', // en local no hay HTTPS
+    sameSite: 'lax', // corta CSRF desde otros sitios
+    path: '/',
+    maxAge: DURACION_SESION / 1000,
+  });
+}
+
+export async function cerrarSesionAdmin(): Promise<void> {
+  (await cookies()).delete(COOKIE_ADMIN);
 }
 
 // ── Login ────────────────────────────────────────────────────
