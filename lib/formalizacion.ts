@@ -329,6 +329,15 @@ export const ETIQUETA_TIPO: Record<TipoRuta, string> = {
   formacion: 'Formación',
 };
 
+/** Orden en que se muestran los tipos: lo primero que necesita quien no tiene nada. */
+export const ORDEN_TIPOS: TipoRuta[] = ['tramite', 'fondo', 'formacion'];
+
+export const INTRO_TIPO: Record<TipoRuta, string> = {
+  tramite: 'Lo que tienes que hacer para que tu negocio sea formal.',
+  fondo: 'Dónde pedir plata o apoyo para crecer.',
+  formacion: 'Dónde aprender, sin pagar nada.',
+};
+
 /**
  * Etiquetas humanas de la respuesta a "¿Tienes RUT o Cámara de Comercio?" del
  * registro. Vive acá y no en el formulario porque /formalizacion también la

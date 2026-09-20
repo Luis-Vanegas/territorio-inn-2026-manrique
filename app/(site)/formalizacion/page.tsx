@@ -3,19 +3,8 @@ import Link from 'next/link';
 
 import { sesionActual } from '@/lib/auth/usuario';
 import { negociosDe } from '@/lib/db/usuarios.repo';
-import {
-  PASOS,
-  VIDEOS,
-  ETIQUETA_TIPO,
-  ETIQUETA_FORMALIDAD,
-  pasosPara,
-  idDeYoutube,
-  type TipoRuta,
-} from '@/lib/formalizacion';
-import { RutasPersonalizadas } from './_components/RutasPersonalizadas';
-import { TarjetaPaso } from './_components/TarjetaPaso';
-import { VideoEmbebido } from '@/components/VideoEmbebido';
-import { ModuloDesplegable } from '@/components/ModuloDesplegable';
+import { PASOS, VIDEOS } from '@/lib/formalizacion';
+import { ContenidoFormalizacion } from '@/components/formalizacion/ContenidoFormalizacion';
 
 export const metadata: Metadata = {
   title: 'Formalización · Constelaciones',
@@ -26,14 +15,6 @@ export const metadata: Metadata = {
 // Lee la sesión en cada carga: el contenido depende de quién está entrando, así
 // que no hay nada que prerenderizar.
 export const dynamic = 'force-dynamic';
-
-const ORDEN_TIPOS: TipoRuta[] = ['tramite', 'fondo', 'formacion'];
-
-const INTRO_TIPO: Record<TipoRuta, string> = {
-  tramite: 'Lo que tienes que hacer para que tu negocio sea formal.',
-  fondo: 'Dónde pedir plata o apoyo para crecer.',
-  formacion: 'Dónde aprender, sin pagar nada.',
-};
 
 /**
  * Puerta de la página: sin sesión se ve QUÉ hay adentro, nunca el contenido.
@@ -146,8 +127,6 @@ export default async function FormalizacionPage() {
   // no la regla: no vale la pena resolverla mejor todavía.
   const negocios = await negociosDe(sesion.id);
   const formalidad = negocios.length === 1 ? negocios[0]!.formalidad : null;
-  const propios = formalidad ? pasosPara(formalidad) : PASOS;
-  const personalizado = Boolean(formalidad) && propios.length < PASOS.length;
 
   return (
     <main className="seccion">
@@ -177,101 +156,7 @@ export default async function FormalizacionPage() {
         </p>
       </header>
 
-      {personalizado ? (
-        <RutasPersonalizadas
-          propios={propios}
-          todos={PASOS}
-          etiquetaFormalidad={ETIQUETA_FORMALIDAD[formalidad!] ?? formalidad!}
-        />
-      ) : (
-        ORDEN_TIPOS.map((tipo) => {
-          const pasos = PASOS.filter((p) => p.tipo === tipo);
-          if (pasos.length === 0) return null;
-
-          return (
-            <ModuloDesplegable
-              key={tipo}
-              titulo={ETIQUETA_TIPO[tipo]}
-              cantidad={pasos.length}
-              // Trámite abre de entrada: es lo primero que necesita quien no
-              // tiene nada. Apoyo económico y Formación arrancan cerrados.
-              abierto={tipo === 'tramite'}
-            >
-              <p className="max-w-xl font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
-
-              <ul className="mt-8 grid gap-6 sm:grid-cols-2">
-                {pasos.map((paso) => (
-                  <TarjetaPaso key={paso.id} paso={paso} />
-                ))}
-              </ul>
-            </ModuloDesplegable>
-          );
-        })
-      )}
-
-      {/* /mi-cuenta enlaza directo a "#videos" — el id vive en el contenido,
-          no en el módulo, para que el navegador lo despliegue solo al llegar
-          por ese link. Ver el comentario de ModuloDesplegable. */}
-      <ModuloDesplegable titulo="Videos y tutoriales" cantidad={VIDEOS.length} id="videos">
-        <p className="max-w-xl font-sans text-tinta/60">
-          De canales oficiales verificados, agrupados por tema. Se reproducen
-          acá mismo, o los abres en YouTube si prefieres verlos allá.
-        </p>
-
-        {ORDEN_TIPOS.map((tipo) => {
-          const videos = VIDEOS.filter((v) => v.tipo === tipo);
-          if (videos.length === 0) return null;
-
-          return (
-            <div key={tipo} className="mt-10 first:mt-8">
-              <h3 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
-                {ETIQUETA_TIPO[tipo]}
-              </h3>
-
-              {/* Las tarjetas usan el mismo flex-col + mt-auto que las de
-                  arriba: los textos tienen largos distintos y sin eso cada
-                  "Ver en YouTube" queda a una altura diferente en la misma fila. */}
-              <ul className="mt-4 grid gap-6 sm:grid-cols-3">
-                {videos.map((video) => {
-                  const youtubeId = idDeYoutube(video.url);
-
-                  return (
-                    <li
-                      key={video.id}
-                      className="flex flex-col border border-tinta/12 transition-colors hover:border-terracota"
-                    >
-                      {/* Sin id reconocible (link mal pegado), no hay miniatura
-                          que mostrar: se salta directo al link de YouTube en
-                          vez de romper la tarjeta con una imagen rota. */}
-                      {youtubeId && <VideoEmbebido youtubeId={youtubeId} titulo={video.titulo} />}
-
-                      <div className="flex flex-1 flex-col p-6">
-                        <h4 className="font-display text-lg font-medium text-tinta">
-                          {video.titulo}
-                        </h4>
-                        <p className="mt-1 font-mono text-xs text-tinta/45">{video.fuente}</p>
-                        <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
-                          {video.descripcion}
-                        </p>
-                        <div className="mt-auto pt-4">
-                          <a
-                            href={video.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
-                          >
-                            Ver en YouTube ↗
-                          </a>
-                        </div>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          );
-        })}
-      </ModuloDesplegable>
+      <ContenidoFormalizacion formalidad={formalidad} />
 
       {/* Quien llega hasta acá ya entró: el cierre invita a preguntar, no a
           registrarse. Ese CTA vive en la vista previa, del otro lado. */}

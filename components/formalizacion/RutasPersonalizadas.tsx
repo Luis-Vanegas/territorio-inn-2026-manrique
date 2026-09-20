@@ -5,16 +5,13 @@ import { useState } from 'react';
 
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { ModuloDesplegable } from '@/components/ModuloDesplegable';
-import { ETIQUETA_TIPO, type PasoFormalizacion, type TipoRuta } from '@/lib/formalizacion';
+import {
+  ETIQUETA_TIPO,
+  INTRO_TIPO,
+  ORDEN_TIPOS,
+  type PasoFormalizacion,
+} from '@/lib/formalizacion';
 import { TarjetaPaso } from './TarjetaPaso';
-
-const ORDEN_TIPOS: TipoRuta[] = ['tramite', 'fondo', 'formacion'];
-
-const INTRO_TIPO: Record<TipoRuta, string> = {
-  tramite: 'Lo que tienes que hacer para que tu negocio sea formal.',
-  fondo: 'Dónde pedir plata o apoyo para crecer.',
-  formacion: 'Dónde aprender, sin pagar nada.',
-};
 
 /**
  * Lista de trámites de /formalizacion, con dos capas:
