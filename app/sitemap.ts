@@ -30,6 +30,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // vista previa real, y es la página por la que la gente llega a registrarse.
     // /entrar y /mi-cuenta NO van — las dos son noindex.
     { ruta: '/formalizacion', prioridad: 0.7 },
+    // Igual que /formalizacion: la vista previa sin sesión es real. Las guías
+    // individuales no van: sin sesión solo muestran la puerta.
+    { ruta: '/presencia', prioridad: 0.6 },
     { ruta: '/contacto', prioridad: 0.5 },
     { ruta: '/legal/terminos', prioridad: 0.3 },
     { ruta: '/legal/politica-datos', prioridad: 0.3 },

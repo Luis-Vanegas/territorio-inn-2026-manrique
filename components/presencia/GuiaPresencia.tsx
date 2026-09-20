@@ -1,0 +1,98 @@
+import Link from 'next/link';
+
+import { EnlaceVolver } from '@/components/EnlaceVolver';
+import { EtiquetaPagina } from '@/components/EtiquetaPagina';
+import { vecinas, type Guia } from '@/lib/presencia';
+import { Secciones } from './Secciones';
+import { VisorLaminas } from './VisorLaminas';
+
+/**
+ * Una guía completa. Compartida entre /presencia/[guia] y
+ * /admin/presencia/[guia]; ver IndicePresencia para el porqué de `base`.
+ */
+export function GuiaPresencia({
+  guia,
+  base,
+  etiqueta,
+}: {
+  guia: Guia;
+  base: string;
+  etiqueta: string;
+}) {
+  const { anterior, siguiente } = vecinas(guia.slug);
+
+  return (
+    <main className="seccion">
+      <EnlaceVolver href={base}>← Tu presencia</EnlaceVolver>
+
+      <header className="mt-10 max-w-3xl">
+        <EtiquetaPagina>{etiqueta}</EtiquetaPagina>
+
+        <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
+          {guia.titulo}
+        </h1>
+
+        <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
+          {guia.bajada}
+        </p>
+
+        {/* La lámina original, a un clic desde el arranque: quien prefiere ver
+            la imagen del equipo en vez de la página no tiene que buscarla. */}
+        <div className="mt-8">
+          <VisorLaminas titulo={guia.titulo} laminas={guia.laminas} />
+        </div>
+
+        {/* Índice de la guía: en pantallas chicas evita bajar a ciegas hasta
+            la sección que interesa. */}
+        <nav aria-label="En esta guía" className="mt-6">
+          <ol
+            role="list"
+            className="flex list-none flex-wrap gap-x-6 font-mono text-sm text-tinta/70"
+          >
+            {guia.secciones.map((seccion, i) => (
+              <li key={seccion.kicker}>
+                <a
+                  href={`#seccion-${i}`}
+                  className="inline-flex min-h-[44px] items-center underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+                >
+                  {seccion.kicker}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </header>
+
+      <Secciones secciones={guia.secciones} />
+
+      <nav
+        aria-label="Otras guías"
+        className="mt-8 flex flex-col gap-6 border-t border-tinta/12 pt-10 sm:flex-row sm:justify-between"
+      >
+        {anterior ? (
+          <Link href={`${base}/${anterior.slug}`} className="max-w-xs">
+            <span className="font-mono text-sm uppercase tracking-wider text-tinta/70">
+              ← Guía anterior
+            </span>
+            <span className="mt-2 block font-display text-xl text-tinta hover:text-terracota-texto">
+              {anterior.titulo}
+            </span>
+          </Link>
+        ) : (
+          <span />
+        )}
+
+        {siguiente && (
+          <Link href={`${base}/${siguiente.slug}`} className="max-w-xs sm:text-right">
+            <span className="font-mono text-sm uppercase tracking-wider text-tinta/70">
+              Siguiente guía →
+            </span>
+            <span className="mt-2 block font-display text-xl text-tinta hover:text-terracota-texto">
+              {siguiente.titulo}
+            </span>
+          </Link>
+        )}
+      </nav>
+    </main>
+  );
+}

@@ -224,3 +224,11 @@ body {
   color: var(--color-tinta) !important;
   border-color: rgb(26 26 26 / 0.15) !important;
 }
+
+/* Visor de láminas (/presencia): con un <dialog> modal abierto, la página de
+   atrás no se desplaza. Sigue al atributo `open` del propio <dialog>, así que
+   no hay estado de JavaScript que pueda quedar desincronizado y dejar la
+   página trabada. */
+body:has(dialog[open]) {
+  overflow: hidden;
+}

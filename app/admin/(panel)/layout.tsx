@@ -4,6 +4,17 @@ import { redirect } from 'next/navigation';
 import { verificarSesion } from '@/lib/auth/admin';
 import { cerrarSesion } from '@/lib/actions/sesionAdmin';
 
+// «Formalización» y «Tu presencia» son lo que ve un negocio registrado: la
+// moderación necesita verlo igual para poder explicarlo y revisar que esté bien.
+const ENLACES = [
+  { href: '/admin/empleo', etiqueta: 'Empleo' },
+  { href: '/admin/estadisticas', etiqueta: 'Estadísticas' },
+  { href: '/admin/campos', etiqueta: 'Campos' },
+  { href: '/admin/peticiones', etiqueta: 'Peticiones' },
+  { href: '/admin/formalizacion', etiqueta: 'Formalización' },
+  { href: '/admin/presencia', etiqueta: 'Tu presencia' },
+];
+
 /**
  * Guard de las rutas de moderación.
  *
@@ -37,36 +48,15 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           >
             Moderación
           </Link>
-          <Link
-            href="/admin/servicios"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
-          >
-            Servicios
-          </Link>
-          <Link
-            href="/admin/empleo"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
-          >
-            Empleo
-          </Link>
-          <Link
-            href="/admin/estadisticas"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
-          >
-            Estadísticas
-          </Link>
-          <Link
-            href="/admin/campos"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
-          >
-            Campos
-          </Link>
-          <Link
-            href="/admin/peticiones"
-            className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
-          >
-            Peticiones
-          </Link>
+          {ENLACES.map(({ href, etiqueta }) => (
+            <Link
+              key={href}
+              href={href}
+              className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
+            >
+              {etiqueta}
+            </Link>
+          ))}
           <Link
             href="/aliados"
             target="_blank"
