@@ -15,7 +15,6 @@ export const ENLACES_PRIVADOS = [
   { href: '/mi-cuenta', etiqueta: 'Mis negocios' },
   { href: '/formalizacion', etiqueta: 'Rutas y apoyos' },
   { href: '/formalizacion#videos', etiqueta: 'Videos y guías' },
-  { href: '/presencia', etiqueta: 'Tu presencia' },
 ];
 
 /** Solo para quien también tiene sesión de moderación (ver SiteHeader). */

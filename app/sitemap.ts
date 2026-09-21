@@ -32,7 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { ruta: '/formalizacion', prioridad: 0.7 },
     // Igual que /formalizacion: la vista previa sin sesión es real. Las guías
     // individuales no van: sin sesión solo muestran la puerta.
-    { ruta: '/presencia', prioridad: 0.6 },
+    { ruta: '/marca', prioridad: 0.6 },
     { ruta: '/contacto', prioridad: 0.5 },
     { ruta: '/legal/terminos', prioridad: 0.3 },
     { ruta: '/legal/politica-datos', prioridad: 0.3 },

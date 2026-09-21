@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useId, useRef, useState } from 'react';
 
-import type { Lamina } from '@/lib/presencia';
+import type { Lamina } from '@/lib/marca';
 
 /**
  * Visor de la lámina original que hizo el equipo.
@@ -24,7 +24,7 @@ import type { Lamina } from '@/lib/presencia';
  * cerrado no cuesta ni un byte de red.
  *
  * Es un componente de cliente porque `showModal()` es una API del navegador;
- * lo demás de /presencia sigue siendo de servidor.
+ * lo demás de /marca sigue siendo de servidor.
  */
 
 const ESTILO_BOTON: Record<'boton' | 'enlace', string> = {

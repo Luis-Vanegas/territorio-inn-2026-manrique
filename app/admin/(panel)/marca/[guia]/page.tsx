@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { GuiaPresencia } from '@/components/presencia/GuiaPresencia';
-import { guiaPorSlug } from '@/lib/presencia';
+import { GuiaMarca } from '@/components/marca/GuiaMarca';
+import { guiaPorSlug } from '@/lib/marca';
 
 type Props = { params: Promise<{ guia: string }> };
 
@@ -19,9 +19,9 @@ export default async function AdminGuiaPage({ params }: Props) {
   if (!guia) notFound();
 
   return (
-    <GuiaPresencia
+    <GuiaMarca
       guia={guia}
-      base="/admin/presencia"
+      base="/admin/marca"
       etiqueta="vista de moderación · lo que ve un negocio"
     />
   );

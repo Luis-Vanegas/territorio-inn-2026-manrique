@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 import { verificarSesion } from '@/lib/auth/admin';
 import { cerrarSesion } from '@/lib/actions/sesionAdmin';
 
-// «Formalización» y «Tu presencia» son lo que ve un negocio registrado: la
+// «Formalización» y «Marca» son lo que ve un negocio registrado: la
 // moderación necesita verlo igual para poder explicarlo y revisar que esté bien.
 const ENLACES = [
   { href: '/admin/empleo', etiqueta: 'Empleo' },
@@ -12,7 +12,7 @@ const ENLACES = [
   { href: '/admin/campos', etiqueta: 'Campos' },
   { href: '/admin/peticiones', etiqueta: 'Peticiones' },
   { href: '/admin/formalizacion', etiqueta: 'Formalización' },
-  { href: '/admin/presencia', etiqueta: 'Tu presencia' },
+  { href: '/admin/marca', etiqueta: 'Marca' },
 ];
 
 /**

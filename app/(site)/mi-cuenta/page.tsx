@@ -6,7 +6,7 @@ import { sesionActual } from '@/lib/auth/usuario';
 import { negociosDe } from '@/lib/db/usuarios.repo';
 import { salir } from '@/lib/actions/sesionUsuario';
 import { PASOS, VIDEOS } from '@/lib/formalizacion';
-import { GUIAS } from '@/lib/presencia';
+import { GUIAS } from '@/lib/marca';
 
 export const metadata: Metadata = {
   title: 'Mi cuenta · Constelaciones',
@@ -154,14 +154,14 @@ export default async function MiCuentaPage() {
           </article>
 
           <article className="flex flex-col border border-tinta/12 p-6">
-            <h3 className="font-display text-lg font-medium text-tinta">Tu presencia</h3>
+            <h3 className="font-display text-lg font-medium text-tinta">Marca</h3>
             <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
               {GUIAS.length} guías del equipo: fotos, redes, contenido y cómo presentar tu
               negocio.
             </p>
             <div className="mt-auto pt-5">
               <Link
-                href="/presencia"
+                href="/marca"
                 className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
               >
                 Ver las guías →

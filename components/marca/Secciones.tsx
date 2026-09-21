@@ -1,10 +1,10 @@
 import Image from 'next/image';
 
-import type { Imagen, Nota, Seccion } from '@/lib/presencia';
+import type { Imagen, Nota, Seccion } from '@/lib/marca';
 
 /**
  * Pinta las secciones de una guía. Un componente por tipo de sección; el
- * contenido vive en `lib/presencia.ts`.
+ * contenido vive en `lib/marca.ts`.
  *
  * Es solo lectura a propósito: nada acá guarda estado ni pide nada. Los
  * checklists se ven como una lista de cosas por revisar (con ✓), no como

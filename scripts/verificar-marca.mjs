@@ -1,16 +1,16 @@
-// Verifica el contenido de /presencia (lib/presencia.ts) antes de que llegue a producción.
+// Verifica el contenido de /marca (lib/marca.ts) antes de que llegue a producción.
 //
 // Es contenido editorial escrito a mano y crece con cada guía nueva: lo que se
 // rompe en silencio es una lámina que no existe (imagen rota en pantalla) o un
 // título repetido (React lo usa como `key` y mezcla tarjetas). Esto lo atrapa.
 //
-// Uso: npm run verificar   (o: node --experimental-strip-types scripts/verificar-presencia.mjs)
+// Uso: npm run verificar   (o: node --experimental-strip-types scripts/verificar-marca.mjs)
 
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { GRUPOS, GUIAS } from '../lib/presencia.ts';
+import { GRUPOS, GUIAS } from '../lib/marca.ts';
 
 const problemas = [];
 const falla = (donde, que) => problemas.push(`${donde}: ${que}`);
@@ -64,7 +64,7 @@ for (const guia of GUIAS) {
 }
 
 if (problemas.length > 0) {
-  console.error(`✗ presencia: ${problemas.length} problema(s)\n  - ${problemas.join('\n  - ')}`);
+  console.error(`✗ marca: ${problemas.length} problema(s)\n  - ${problemas.join('\n  - ')}`);
   process.exit(1);
 }
-console.log(`✓ presencia: ${GUIAS.length} guías, láminas e imágenes presentes, sin claves repetidas`);
+console.log(`✓ marca: ${GUIAS.length} guías, láminas e imágenes presentes, sin claves repetidas`);

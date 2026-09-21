@@ -21,9 +21,9 @@ export default function robots(): MetadataRoute.Robots {
         // como URL rastreada en un log de terceros.
         '/aliados/estado',
         '/api',
-        // Láminas originales de las guías de /presencia: viven en public/ (se
+        // Láminas originales de las guías de /marca: viven en public/ (se
         // sirven sin sesión), así que al menos que un buscador no las indexe.
-        '/presencia/laminas',
+        '/marca/laminas',
       ],
     },
     sitemap: `${urlSitio()}/sitemap.xml`,

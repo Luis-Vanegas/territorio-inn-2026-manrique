@@ -2,15 +2,15 @@ import Link from 'next/link';
 
 import { EnlaceVolver } from '@/components/EnlaceVolver';
 import { EtiquetaPagina } from '@/components/EtiquetaPagina';
-import { vecinas, type Guia } from '@/lib/presencia';
+import { vecinas, type Guia } from '@/lib/marca';
 import { Secciones } from './Secciones';
 import { VisorLaminas } from './VisorLaminas';
 
 /**
- * Una guía completa. Compartida entre /presencia/[guia] y
- * /admin/presencia/[guia]; ver IndicePresencia para el porqué de `base`.
+ * Una guía completa. Compartida entre /marca/[guia] y
+ * /admin/marca/[guia]; ver IndiceMarca para el porqué de `base`.
  */
-export function GuiaPresencia({
+export function GuiaMarca({
   guia,
   base,
   etiqueta,
@@ -23,7 +23,7 @@ export function GuiaPresencia({
 
   return (
     <main className="seccion">
-      <EnlaceVolver href={base}>← Tu presencia</EnlaceVolver>
+      <EnlaceVolver href={base}>← Marca</EnlaceVolver>
 
       <header className="mt-10 max-w-3xl">
         <EtiquetaPagina>{etiqueta}</EtiquetaPagina>

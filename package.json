@@ -18,7 +18,7 @@
     "db:google-sub": "node scripts/buscar-google-sub.mjs",
     "geo:extraer": "node scripts/extraer-manrique.mjs",
     "agente:verificar": "node --experimental-strip-types scripts/verificar-agente.mjs",
-    "verificar": "node scripts/verificar-voseo.mjs && node scripts/verificar-rutas.mjs && node scripts/verificar-geo.mjs && node scripts/verificar-constraints.mjs && node scripts/verificar-campos-personalizados.mjs && node --experimental-strip-types scripts/verificar-presencia.mjs && node --experimental-strip-types scripts/verificar-moderadores-google.mjs && node --experimental-strip-types scripts/verificar-entorno.mjs"
+    "verificar": "node scripts/verificar-voseo.mjs && node scripts/verificar-rutas.mjs && node scripts/verificar-geo.mjs && node scripts/verificar-constraints.mjs && node scripts/verificar-campos-personalizados.mjs && node --experimental-strip-types scripts/verificar-marca.mjs && node --experimental-strip-types scripts/verificar-moderadores-google.mjs && node --experimental-strip-types scripts/verificar-cookies.mjs && node --experimental-strip-types scripts/verificar-entorno.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",

@@ -2,19 +2,19 @@ import Link from 'next/link';
 
 import { EnlaceVolver } from '@/components/EnlaceVolver';
 import { EtiquetaPagina } from '@/components/EtiquetaPagina';
-import { GRUPOS, GUIAS, PRESENCIA_BAJADA } from '@/lib/presencia';
+import { GRUPOS, GUIAS, MARCA_BAJADA } from '@/lib/marca';
 import { VisorLaminas } from './VisorLaminas';
 
 /**
- * Índice de las guías de presencia.
+ * Índice de las guías de marca.
  *
- * Compartido entre /presencia (el negocio registrado) y /admin/presencia (la
+ * Compartido entre /marca (el negocio registrado) y /admin/marca (la
  * moderación). `base` es la ruta donde vive cada copia: los enlaces a cada
  * guía se arman a partir de ella, así que ninguna copia apunta a la otra.
  * Quien llama decide la puerta (sesión de vecino o de moderador); acá no se
  * autoriza nada.
  */
-export function IndicePresencia({
+export function IndiceMarca({
   base,
   etiqueta,
   volver,
@@ -29,11 +29,11 @@ export function IndicePresencia({
         <EtiquetaPagina>{etiqueta}</EtiquetaPagina>
 
         <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
-          Tu presencia
+          Marca
         </h1>
 
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
-          {PRESENCIA_BAJADA}
+          {MARCA_BAJADA}
         </p>
       </header>
 

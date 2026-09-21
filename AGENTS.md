@@ -132,7 +132,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de presencia y entorno
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca y entorno
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)

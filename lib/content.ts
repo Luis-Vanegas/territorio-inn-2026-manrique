@@ -93,6 +93,15 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
       "Trámites, apoyos económicos y formación gratuita para hacer formal tu negocio.",
     estado: "activo",
   },
+  // Sin flag, como Formalización: son guías del repo, no dependen de datos. La
+  // página sirve una vista previa a quien no se registró y el contenido a quien sí.
+  {
+    slug: "marca",
+    nombre: "Marca",
+    descripcion:
+      "Guías del equipo para tus fotos, tus redes y cómo presentar tu negocio.",
+    estado: "activo",
+  },
   // El módulo Servicios se eliminó del proyecto (no apagado: borrado, con sus
   // rutas, repos, schema y tablas). Quien presta un oficio a domicilio —lava
   // carros, arregla neveras, organiza eventos— entra por Aliados como

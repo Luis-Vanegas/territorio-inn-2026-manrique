@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import { GuiaPresencia } from '@/components/presencia/GuiaPresencia';
+import { GuiaMarca } from '@/components/marca/GuiaMarca';
 import { sesionActual } from '@/lib/auth/usuario';
-import { guiaPorSlug } from '@/lib/presencia';
+import { guiaPorSlug } from '@/lib/marca';
 import { PuertaRegistro } from '../_components/PuertaRegistro';
 
 type Props = { params: Promise<{ guia: string }> };
@@ -29,10 +29,10 @@ export default async function GuiaPage({ params }: Props) {
       <PuertaRegistro
         titulo={guia.titulo}
         bajada={guia.bajada}
-        volver={{ href: '/presencia', etiqueta: '← Ver todas las guías' }}
+        volver={{ href: '/marca', etiqueta: '← Ver todas las guías' }}
       />
     );
   }
 
-  return <GuiaPresencia guia={guia} base="/presencia" etiqueta="guía del equipo" />;
+  return <GuiaMarca guia={guia} base="/marca" etiqueta="guía del equipo" />;
 }

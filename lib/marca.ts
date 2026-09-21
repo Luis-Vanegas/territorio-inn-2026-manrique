@@ -1,8 +1,8 @@
 /**
- * Guías de presencia: el regalo del equipo a los negocios registrados.
+ * Guías de marca: el regalo del equipo a los negocios registrados.
  *
  * Es contenido editorial, no lógica: cada guía es una lista de secciones
- * tipadas y `components/presencia/Secciones.tsx` sabe pintar cada
+ * tipadas y `components/marca/Secciones.tsx` sabe pintar cada
  * tipo. Agregar una guía nueva es agregar datos acá, no componentes.
  *
  * ── Por qué las tres guías de canal repiten forma ──
@@ -86,7 +86,7 @@ export type Guia = {
 };
 
 /** Lo que se dice de todo el módulo, tanto en la puerta sin sesión como en el índice. */
-export const PRESENCIA_BAJADA =
+export const MARCA_BAJADA =
   'Un regalo del equipo de Constelaciones: guías sencillas para que tus fotos, tus redes y tu forma de presentarte trabajen a favor de tu negocio. No necesitas ser experto en diseño ni en tecnología.';
 
 export const GRUPOS: { id: GrupoGuia; titulo: string; intro: string }[] = [
@@ -117,10 +117,10 @@ const CIERRE_CANAL = (canal: string, cola: string) =>
 
 const regla = (texto: string): Nota => ({ etiqueta: 'Regla práctica', texto });
 
-/** `/presencia/laminas/<slug>-1.jpg` … `-<n>.jpg`. Un script (`npm run verificar`) comprueba que existan. */
+/** `/marca/laminas/<slug>-1.jpg` … `-<n>.jpg`. Un script (`npm run verificar`) comprueba que existan. */
 const laminasDe = (slug: string, cantidad: number, ancho: number, alto: number): Lamina[] =>
   Array.from({ length: cantidad }, (_, i) => ({
-    src: `/presencia/laminas/${slug}-${i + 1}.jpg`,
+    src: `/marca/laminas/${slug}-${i + 1}.jpg`,
     ancho,
     alto,
   }));
@@ -180,7 +180,7 @@ export const GUIAS: Guia[] = [
         mal: {
           etiqueta: 'Así no',
           imagen: {
-            src: '/presencia/foto-mal.jpg',
+            src: '/marca/foto-mal.jpg',
             alt: 'Vela sobre un escritorio con cuaderno, taza, plantas y libros alrededor que le quitan protagonismo.',
             ancho: 836,
             alto: 1050,
@@ -189,7 +189,7 @@ export const GUIAS: Guia[] = [
         bien: {
           etiqueta: 'Así sí',
           imagen: {
-            src: '/presencia/foto-bien.jpg',
+            src: '/marca/foto-bien.jpg',
             alt: 'La misma vela sobre una base simple, con fondo limpio y sin objetos que distraigan.',
             ancho: 841,
             alto: 1050,
@@ -208,7 +208,7 @@ export const GUIAS: Guia[] = [
             titulo: 'Foto general',
             texto: 'Muestra el producto completo.',
             imagen: {
-              src: '/presencia/toma-general.jpg',
+              src: '/marca/toma-general.jpg',
               alt: 'Celular encuadrando la vela completa sobre su base.',
               ancho: 462,
               alto: 572,
@@ -218,7 +218,7 @@ export const GUIAS: Guia[] = [
             titulo: 'Foto detalle',
             texto: 'Resalta textura, acabado o ingredientes.',
             imagen: {
-              src: '/presencia/toma-detalle.jpg',
+              src: '/marca/toma-detalle.jpg',
               alt: 'Celular acercándose a la etiqueta y la llama de la vela.',
               ancho: 462,
               alto: 558,
@@ -228,7 +228,7 @@ export const GUIAS: Guia[] = [
             titulo: 'Foto en uso',
             texto: 'Deja ver cómo se usa o para quién es.',
             imagen: {
-              src: '/presencia/toma-uso.jpg',
+              src: '/marca/toma-uso.jpg',
               alt: 'Celular fotografiando la vela sostenida en una mano.',
               ancho: 462,
               alto: 550,
