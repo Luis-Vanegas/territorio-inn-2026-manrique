@@ -2,6 +2,7 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import crypto from 'node:crypto';
 import { sql } from '@/lib/db/neon';
+import { opcionesBorrado, opcionesCookie } from '@/lib/auth/cookies';
 
 // Corre solo en Node (Server Components / Server Actions), nunca en Edge.
 // Por eso la protección de /admin vive en app/admin/layout.tsx y NO en
@@ -86,16 +87,13 @@ export async function verificarSesion(): Promise<{ email: string } | null> {
  */
 export async function iniciarSesionAdmin(email: string): Promise<void> {
   (await cookies()).set(COOKIE_ADMIN, crearTokenSesion(email.toLowerCase()), {
-    httpOnly: true, // fuera del alcance de JS
-    secure: process.env.NODE_ENV === 'production', // en local no hay HTTPS
-    sameSite: 'lax', // corta CSRF desde otros sitios
-    path: '/',
+    ...opcionesCookie(),
     maxAge: DURACION_SESION / 1000,
   });
 }
 
 export async function cerrarSesionAdmin(): Promise<void> {
-  (await cookies()).delete(COOKIE_ADMIN);
+  (await cookies()).set(COOKIE_ADMIN, '', opcionesBorrado());
 }
 
 // ── Login ────────────────────────────────────────────────────

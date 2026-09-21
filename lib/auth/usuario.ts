@@ -2,6 +2,8 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import crypto from 'node:crypto';
 
+import { opcionesBorrado, opcionesCookie } from '@/lib/auth/cookies';
+
 /**
  * Sesión de un vecino registrado (no del administrador).
  *
@@ -85,18 +87,18 @@ export function crearToken(usuario: SesionUsuario): string {
 
 export async function iniciarSesion(usuario: SesionUsuario): Promise<void> {
   (await cookies()).set(COOKIE, crearToken(usuario), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    // 'lax' y no 'strict': con 'strict' la cookie no viaja cuando la persona
-    // vuelve desde Google, y quedaría recién autenticada y deslogueada a la vez.
-    sameSite: 'lax',
-    path: '/',
+    ...opcionesCookie(),
     maxAge: DURACION_SESION / 1000,
   });
 }
 
+/**
+ * NO `cookies().delete(COOKIE)`: en producción la cookie es `__Host-…` y ese
+ * borrado no lleva `Secure`, así que el navegador lo rechaza y la sesión no se
+ * cierra. Ver lib/auth/cookies.ts.
+ */
 export async function cerrarSesion(): Promise<void> {
-  (await cookies()).delete(COOKIE);
+  (await cookies()).set(COOKIE, '', opcionesBorrado());
 }
 
 /**

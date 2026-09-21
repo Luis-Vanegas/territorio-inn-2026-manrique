@@ -9,6 +9,7 @@ import {
   COOKIE_ESTADO,
   COOKIE_VERIFICADOR,
 } from '@/lib/auth/google';
+import { opcionesCookie } from '@/lib/auth/cookies';
 
 /**
  * Arranca el ingreso con Google: genera el `state`, lo guarda en una cookie de
@@ -47,13 +48,7 @@ export async function GET(request: Request) {
   const galletas = await cookies();
 
   const opciones = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    // 'lax' es obligatorio acá: con 'strict' la cookie no viaja cuando el
-    // navegador vuelve desde Google, y el retorno no tendría con qué comparar.
-    sameSite: 'lax' as const,
-    // path '/' es requisito del prefijo __Host-, además de lo que necesitamos.
-    path: '/',
+    ...opcionesCookie(),
     // Diez minutos: lo que tarda alguien en elegir cuenta y autorizar. Más
     // tiempo solo alarga la ventana en que estos valores sirven para algo.
     maxAge: 600,

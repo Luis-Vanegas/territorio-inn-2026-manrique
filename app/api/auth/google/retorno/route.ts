@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 import { perfilDesdeCodigo, COOKIE_ESTADO, COOKIE_VERIFICADOR } from '@/lib/auth/google';
 import { ingresarConGoogle, vincularNegocio } from '@/lib/db/usuarios.repo';
 import { iniciarSesionAdmin } from '@/lib/auth/admin';
+import { opcionesBorrado } from '@/lib/auth/cookies';
 import { esModeradorGoogle } from '@/lib/auth/moderadoresGoogle';
 import { iniciarSesion } from '@/lib/auth/usuario';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
@@ -44,8 +45,12 @@ export async function GET(request: Request) {
 
   // De un solo uso: se borran apenas se leen, pase lo que pase después. Un
   // state o un verificador que sobreviven al intercambio se pueden reusar.
-  galletas.delete(COOKIE_ESTADO);
-  galletas.delete(COOKIE_VERIFICADOR);
+  //
+  // Con `set(..., opcionesBorrado())` y no `delete()`: estas cookies son
+  // `__Host-…` en producción y un borrado sin `Secure` lo rechaza el navegador,
+  // que las dejaría vivas hasta que expiren (ver lib/auth/cookies.ts).
+  galletas.set(COOKIE_ESTADO, '', opcionesBorrado());
+  galletas.set(COOKIE_VERIFICADOR, '', opcionesBorrado());
 
   if (!codigo || !estadoRecibido || !estadoGuardado || !verificador) {
     return alError(request, 'estado');
