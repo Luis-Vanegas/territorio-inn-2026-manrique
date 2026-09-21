@@ -13,6 +13,7 @@ const ENLACES = [
   { href: '/admin/peticiones', etiqueta: 'Peticiones' },
   { href: '/admin/formalizacion', etiqueta: 'Formalización' },
   { href: '/admin/marca', etiqueta: 'Marca' },
+  { href: '/admin/asesor', etiqueta: 'Asesor' },
 ];
 
 /**

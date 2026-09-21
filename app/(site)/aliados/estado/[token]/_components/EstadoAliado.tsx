@@ -18,7 +18,7 @@ import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
 import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
-import { Asesor } from './Asesor';
+import { Asesor } from '@/components/Asesor';
 
 // Misma lista que FormularioRegistro.tsx — copiada, no importada, para no
 // acoplar dos rutas hermanas que solo comparten estos 15 nombres por

@@ -9,8 +9,8 @@ import { PROVEEDORES, type ProveedorListo } from './proveedores';
  *
  * ── Por qué un fetch y ningún SDK ──
  *
- * Gemini, Groq, OpenRouter y NVIDIA NIM exponen todos el mismo formato de
- * OpenAI en /chat/completions. Un solo fetch habla con los cuatro. Instalar
+ * Gemini, Groq, OpenRouter, NVIDIA NIM y Routeway exponen todos el mismo
+ * formato de OpenAI en /chat/completions. Un solo fetch habla con los cinco. Instalar
  * el SDK de un proveedor ata el proyecto a ese proveedor, y acá la portabilidad
  * ES el requisito: todos corren con plan gratuito, y un plan gratuito se agota.
  *
@@ -166,7 +166,21 @@ const DOLOR_LEGIBLE: Record<string, string> = {
  * regla 6 del prompt lo declara como datos, y el delimitador hace visible
  * dónde empieza y dónde termina.
  */
-function mensajeUsuario(negocio: ContextoNegocio, pregunta: string): string {
+function mensajeUsuario(negocio: ContextoNegocio | null, pregunta: string): string {
+  // Sin ficha: consulta de moderación. Se dice explícito para que el modelo no
+  // busque un negocio que no existe ni pida datos que no tiene.
+  if (!negocio) {
+    return [
+      '<contexto>',
+      'Pregunta un moderador del equipo. No hay ficha de ningún negocio: responde en general, sobre formalización y apoyos del catálogo.',
+      '</contexto>',
+      '',
+      '<pregunta>',
+      pregunta,
+      '</pregunta>',
+    ].join('\n');
+  }
+
   const dolores = negocio.mayorDolor.map((d) => DOLOR_LEGIBLE[d] ?? d).join('; ');
 
   return [
@@ -253,8 +267,9 @@ async function intentarCon(
   return { tipo: 'ok', texto };
 }
 
+/** `negocio` es `null` en la consulta de moderación: pregunta general, sin ficha. */
 export async function consultarAsesor(
-  negocio: ContextoNegocio,
+  negocio: ContextoNegocio | null,
   pregunta: string,
 ): Promise<RespuestaAsesor> {
   const disponibles = proveedoresListos();

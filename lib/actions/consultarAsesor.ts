@@ -1,11 +1,9 @@
 'use server';
 
-import { headers } from 'next/headers';
-import { z } from 'zod';
-
 import { obtenerContextoAsesor } from '@/lib/db/portafolios.repo';
 import { consultarAsesor as preguntarAlModelo } from '@/lib/agente/asesor';
-import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
+import { gastarCupoAgente } from '@/lib/agente/limite';
+import { preguntaSchema } from '@/lib/validation/asesor.schema';
 
 /**
  * Consulta al asesor de formalización desde el panel del negocio.
@@ -24,12 +22,6 @@ import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rate
  */
 
 const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-const preguntaSchema = z
-  .string()
-  .trim()
-  .min(5, 'Escribe tu pregunta con un poco más de detalle')
-  .max(500, 'Máximo 500 caracteres');
 
 export type EstadoAsesor =
   | { estado: 'inicial' }
@@ -59,21 +51,8 @@ export async function consultarAsesor(
   }
   const pregunta = validacion.data;
 
-  const ip = ipDesdeHeaders(await headers());
-  const limite = await verificarLimite(ip, 'agente');
-  if (!limite.permitido) {
-    return {
-      estado: 'error',
-      mensaje: `Has hecho varias preguntas seguidas. Espera ${limite.minutosRestantes} minuto${
-        limite.minutosRestantes === 1 ? '' : 's'
-      } y vuelve a intentar.`,
-    };
-  }
-
-  // Se cuenta antes de llamar al modelo: si solo contáramos las consultas que
-  // terminan bien, se podría martillar el endpoint con entradas que fallan
-  // después del límite y gastar igual.
-  await registrarIntento(ip, 'agente');
+  const excedido = await gastarCupoAgente();
+  if (excedido) return { estado: 'error', mensaje: excedido };
 
   const negocio = await obtenerContextoAsesor(token);
   if (!negocio) {

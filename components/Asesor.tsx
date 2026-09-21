@@ -19,7 +19,16 @@ import { consultarAsesor, type EstadoAsesor } from '@/lib/actions/consultarAseso
  * autocontenidas.
  *
  * Se convierte en hilo el día que se vea gente escribiendo "¿y lo anterior?".
+ *
+ * ── Una caja, dos puertas ──
+ *
+ * La usa la ficha del negocio (con su `token`, y la acción por defecto) y el
+ * panel de moderación (sin token, con `consultarAsesorAdmin`). Lo que cambia
+ * entre las dos entra por props; el formulario y el manejo de estados son los
+ * mismos, para no mantener dos cajas que se desincronicen.
  */
+
+type AccionAsesor = (anterior: EstadoAsesor, formData: FormData) => Promise<EstadoAsesor>;
 
 const ESTADO_INICIAL: EstadoAsesor = { estado: 'inicial' };
 
@@ -48,8 +57,20 @@ function BotonPreguntar() {
   );
 }
 
-export function Asesor({ token }: { token: string }) {
-  const [estado, accion] = useActionState(consultarAsesor, ESTADO_INICIAL);
+export function Asesor({
+  token,
+  accion: consultar = consultarAsesor,
+  descripcion = 'Pregunta lo que necesites sobre trámites, cámara de comercio, apoyos económicos o formación. Conoce los datos de tu negocio, así que puedes preguntar directo.',
+  hrefRutas = '/formalizacion',
+}: {
+  /** Token del negocio. Sin él (moderación) no hay ficha: la pregunta es general. */
+  token?: string;
+  accion?: AccionAsesor;
+  descripcion?: string;
+  /** Adónde lleva «Ver todas las rutas»: cada puerta apunta a su propia copia. */
+  hrefRutas?: string;
+}) {
+  const [estado, accion] = useActionState(consultar, ESTADO_INICIAL);
   const campo = useRef<HTMLTextAreaElement>(null);
 
   function usarSugerencia(texto: string) {
@@ -64,14 +85,10 @@ export function Asesor({ token }: { token: string }) {
         Asesor de formalización
       </h2>
 
-      <p className="mt-4 max-w-xl font-sans leading-relaxed text-tinta/70">
-        Pregunta lo que necesites sobre trámites, cámara de comercio, apoyos
-        económicos o formación. Conoce los datos de tu negocio, así que puedes
-        preguntar directo.
-      </p>
+      <p className="mt-4 max-w-xl font-sans leading-relaxed text-tinta/70">{descripcion}</p>
 
       <form action={accion} className="mt-6 max-w-xl">
-        <input type="hidden" name="token" value={token} />
+        {token && <input type="hidden" name="token" value={token} />}
 
         <label htmlFor="pregunta" className="block font-mono text-sm text-tinta/70">
           Tu pregunta
@@ -134,7 +151,7 @@ export function Asesor({ token }: { token: string }) {
             contable. Los valores y plazos vigentes están siempre en la página
             oficial de cada entidad.{' '}
             <Link
-              href="/formalizacion"
+              href={hrefRutas}
               className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
             >
               Ver todas las rutas
