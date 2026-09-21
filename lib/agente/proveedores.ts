@@ -20,19 +20,19 @@
  * responda. Arriba va el de cupo más holgado, no el "mejor" — de nada sirve un
  * modelo excelente que frena a la cuarta pregunta del día.
  *
- * ── Por qué los cuatro hablan el mismo formato ──
+ * ── Por qué todos hablan el mismo formato ──
  *
- * Gemini, Groq, OpenRouter y NVIDIA NIM exponen el formato de OpenAI en
- * /chat/completions. Por eso el catálogo solo guarda una URL y un nombre de
+ * Gemini, Groq, OpenRouter, NVIDIA NIM y Routeway exponen el formato de OpenAI
+ * en /chat/completions. Por eso el catálogo solo guarda una URL y un nombre de
  * modelo: el cuerpo del pedido y la lectura de la respuesta son idénticos
- * para los cuatro. Agregar un quinto proveedor que hable ese formato son seis
- * líneas acá y cero en el resto del código — NVIDIA NIM (2026-09-17) fue
- * exactamente eso.
+ * para todos. Agregar un proveedor más que hable ese formato son seis líneas
+ * acá y cero en el resto del código — NVIDIA NIM (2026-09-17) y Routeway
+ * (2026-09-21) fueron exactamente eso.
  *
  * ── Cómo se prende cada uno ──
  *
- * Con su variable de clave, y nada más. Poné una y funciona; poné las cuatro
- * y rota entre las cuatro. El modelo tiene un valor por defecto que se puede
+ * Con su variable de clave, y nada más. Poné una y funciona; poné todas
+ * y rota entre todas. El modelo tiene un valor por defecto que se puede
  * pisar con su propia variable, porque los proveedores renombran modelos
  * seguido y eso no debería obligar a un despliegue.
  */
@@ -120,6 +120,34 @@ export const PROVEEDORES: Proveedor[] = [
     // vigente de esa cuenta específica.
     modeloPorDefecto: 'google/gemma-4-31b-it',
     dondeSacarClave: 'https://build.nvidia.com — entra con una cuenta gratuita, "Get API Key" en cualquier modelo (empieza con nvapi-). Ojo: la clave va SOLA en la variable, sin la palabra "Bearer" adelante — el código ya le agrega ese prefijo.',
+  },
+  {
+    id: 'routeway',
+    nombre: 'Routeway',
+    url: 'https://api.routeway.ai/v1/chat/completions',
+    // Se llama así en el entorno de este proyecto (no sigue el patrón
+    // `<PROVEEDOR>_API_KEY` de los demás). Las variables distinguen mayúsculas.
+    variableClave: 'API_router',
+    variableModelo: 'ROUTEWAY_MODELO',
+    variableUrl: 'ROUTEWAY_API_URL',
+    // Va último a propósito: es el respaldo para cuando los otros fallen.
+    //
+    // Verificado en vivo el 2026-09-21. Su GET /v1/models (público) lista 3
+    // modelos gratuitos (sufijo :free) y los tres respondieron:
+    //   · deepseek-v4-flash:free → ~12 s, respuesta correcta y genérica. ELEGIDO.
+    //   · muse-glimmer-30b:free  → ~3 s, pero dijo que el RUT se usa «ante el
+    //     SII», que es la entidad de CHILE (acá es la DIAN). Más rápido, y por eso
+    //     mismo peor para un asesor de trámites: no se usa.
+    //   · minimax-m2.7:free      → dio 502 en la prueba; sin evaluar.
+    //
+    // Límite del plan gratuito: 5 peticiones por MINUTO por cuenta, compartidas
+    // entre los tres modelos (429 «Account per-minute rate limit exceeded»). Es
+    // poco, y está bien: este proveedor es el último de la lista. Ese 429 hace
+    // que el asesor pase al siguiente (o falle con el mensaje de «saturado»).
+    //
+    // Otro modelo: ROUTEWAY_MODELO. `npm run agente:verificar` lo prueba.
+    modeloPorDefecto: 'deepseek-v4-flash:free',
+    dondeSacarClave: 'https://routeway.ai/dashboard — pestaña "API Keys". Ojo: la clave va SOLA en la variable, sin la palabra "Bearer" adelante — el código ya le agrega ese prefijo.',
   },
 ];
 
