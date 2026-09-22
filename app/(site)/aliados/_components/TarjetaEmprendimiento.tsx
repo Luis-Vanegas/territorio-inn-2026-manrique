@@ -5,6 +5,7 @@ import { enlaceWhatsapp } from '@/lib/contacto';
 import { formatearCamposExtra } from '@/lib/camposExtra';
 import { formatearDistancia } from '@/lib/geo/distancia';
 import { contar } from '@/lib/interacciones';
+import { IconoContacto } from '@/components/iconos/IconoContacto';
 
 /**
  * Ficha de un emprendimiento en el listado.
@@ -19,33 +20,44 @@ import { contar } from '@/lib/interacciones';
  * valor guardado directo como href, y se deriva una etiqueta corta del path
  * para no mostrar la URL entera.
  */
-function enlaceRedSocial(valor: string, etiquetaGenerica: string): { etiqueta: string; href: string } {
+type TipoContacto = 'whatsapp' | 'telefono' | 'correo' | 'instagram' | 'facebook';
+type EnlaceContacto = { tipo: TipoContacto; etiqueta: string; href: string };
+
+function enlaceRedSocial(
+  valor: string,
+  tipo: 'instagram' | 'facebook',
+  etiquetaGenerica: string,
+): EnlaceContacto {
   const href = /^https?:\/\//i.test(valor) ? valor : `https://${valor}`;
   try {
     const usuario = new URL(href).pathname.replace(/^\/+|\/+$/g, '');
-    return { etiqueta: usuario ? `@${usuario}` : etiquetaGenerica, href };
+    return { tipo, etiqueta: usuario ? `@${usuario}` : etiquetaGenerica, href };
   } catch {
-    return { etiqueta: etiquetaGenerica, href };
+    return { tipo, etiqueta: etiquetaGenerica, href };
   }
 }
 
 function Contacto({ portafolio }: { portafolio: Portafolio }) {
-  const enlaces: { etiqueta: string; href: string }[] = [];
+  const enlaces: EnlaceContacto[] = [];
 
   if (portafolio.whatsapp) {
-    enlaces.push({ etiqueta: 'WhatsApp', href: enlaceWhatsapp(portafolio.whatsapp) });
+    enlaces.push({ tipo: 'whatsapp', etiqueta: 'WhatsApp', href: enlaceWhatsapp(portafolio.whatsapp) });
   }
   if (portafolio.telefono) {
-    enlaces.push({ etiqueta: portafolio.telefono, href: `tel:${portafolio.telefono.replace(/\s/g, '')}` });
+    enlaces.push({
+      tipo: 'telefono',
+      etiqueta: portafolio.telefono,
+      href: `tel:${portafolio.telefono.replace(/\s/g, '')}`,
+    });
   }
   if (portafolio.correo) {
-    enlaces.push({ etiqueta: 'Correo', href: `mailto:${portafolio.correo}` });
+    enlaces.push({ tipo: 'correo', etiqueta: 'Correo', href: `mailto:${portafolio.correo}` });
   }
   if (portafolio.instagram) {
-    enlaces.push(enlaceRedSocial(portafolio.instagram, 'Instagram'));
+    enlaces.push(enlaceRedSocial(portafolio.instagram, 'instagram', 'Instagram'));
   }
   if (portafolio.facebook) {
-    enlaces.push(enlaceRedSocial(portafolio.facebook, 'Otra red'));
+    enlaces.push(enlaceRedSocial(portafolio.facebook, 'facebook', 'Otra red'));
   }
 
   if (enlaces.length === 0) return null;
@@ -61,8 +73,9 @@ function Contacto({ portafolio }: { portafolio: Portafolio }) {
             // Tocar un contacto es la señal que le importa al negocio: es
             // alguien que dejó de mirar y decidió escribir.
             onClick={() => contar(portafolio.id, 'contacto')}
-            className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
+            className="inline-flex items-center gap-1.5 font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
           >
+            <IconoContacto tipo={e.tipo} className="h-3.5 w-3.5 shrink-0" />
             {e.etiqueta}
           </a>
         </li>
