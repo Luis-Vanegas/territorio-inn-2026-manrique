@@ -144,9 +144,14 @@ export function FichaModeracion({
             />
             <Dato
               etiqueta="Recibido"
+              // timeZone fijo: sin esto, el servidor (UTC) y el navegador del
+              // moderador (Colombia) arman textos distintos para la misma
+              // fecha, y React tira un error de hidratación (#418) al notar
+              // que no coinciden.
               valor={new Date(portafolio.creado_en).toLocaleString('es-CO', {
                 dateStyle: 'medium',
                 timeStyle: 'short',
+                timeZone: 'America/Bogota',
               })}
             />
             {camposExtra.map((c) => (

@@ -51,9 +51,13 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
             Recibido
           </dt>
           <dd className="font-sans text-sm text-tinta/75">
+            {/* timeZone fijo: mismo motivo que FichaModeracion.tsx — sin esto,
+                servidor y navegador arman textos distintos y React tira un
+                error de hidratación (#418) al notar que no coinciden. */}
             {new Date(peticion.creado_en).toLocaleString('es-CO', {
               dateStyle: 'medium',
               timeStyle: 'short',
+              timeZone: 'America/Bogota',
             })}
           </dd>
         </div>
