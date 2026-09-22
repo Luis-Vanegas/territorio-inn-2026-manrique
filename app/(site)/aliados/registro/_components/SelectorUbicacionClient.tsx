@@ -44,7 +44,17 @@ export type Posicion = { lat: number; lng: number; precision?: number };
 type EstadoGeo =
   | { fase: 'inactivo' }
   | { fase: 'buscando' }
-  | { fase: 'error'; mensaje: string };
+  | { fase: 'error'; mensaje: string }
+  | { fase: 'imprecisa'; mensaje: string };
+
+/**
+ * Con wifi o GPS el navegador entrega ~10-50 m de precisión. Por Ethernet no
+ * hay red que triangular, así que cae a geolocalización por IP — puede errar
+ * por kilómetros y devolver otra ciudad. No hay forma de detectar "estás por
+ * cable" desde el navegador (la Network Information API que lo permitía casi
+ * no tiene soporte real), pero sí el síntoma: una precisión así de mala.
+ */
+const PRECISION_SOSPECHOSA_M = 1000;
 
 function CapturarClicks({ alElegir }: { alElegir: (p: Posicion) => void }) {
   useMapEvents({
@@ -104,8 +114,15 @@ export default function SelectorUbicacionClient({
           precision: pos.coords.accuracy,
         };
 
-        setGeo({ fase: 'inactivo' });
         elegir(p, true);
+        setGeo(
+          pos.coords.accuracy > PRECISION_SOSPECHOSA_M
+            ? {
+                fase: 'imprecisa',
+                mensaje: `Esta ubicación puede estar mal por varios kilómetros (precisión ±${Math.round(pos.coords.accuracy / 1000)} km) — suele pasar en conexiones por cable, sin wifi. Arrastra el punto hasta tu negocio para corregirlo.`,
+              }
+            : { fase: 'inactivo' },
+        );
       },
       (error) => {
         const mensajes: Record<number, string> = {
@@ -148,6 +165,12 @@ export default function SelectorUbicacionClient({
 
       {geo.fase === 'error' && (
         <p role="alert" className="mt-3 font-mono text-xs leading-relaxed text-azul-texto">
+          {geo.mensaje}
+        </p>
+      )}
+
+      {geo.fase === 'imprecisa' && (
+        <p role="status" className="mt-3 font-mono text-xs leading-relaxed text-terracota-texto">
           {geo.mensaje}
         </p>
       )}
