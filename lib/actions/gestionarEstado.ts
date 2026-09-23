@@ -9,11 +9,10 @@ import {
 import {
   actualizarPorToken,
   archivarPorToken,
-  adjuntarFoto,
-  adjuntarMenu,
 } from '@/lib/db/portafolios.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
-import { subirFoto, subirMenu, blobConfigurado, borrarFoto, extraerArchivoValidado } from '@/lib/blob/fotos';
+import { borrarFoto, extraerArchivoValidado } from '@/lib/blob/fotos';
+import { reemplazarArchivos } from '@/lib/blob/reemplazar';
 
 export type EstadoEdicion =
   | { estado: 'inicial' }
@@ -98,76 +97,15 @@ export async function actualizarPortafolio(
   }
 
   // Igual que en el registro: la foto es lo último y lo que menos importa
-  // perder. Si falla, los datos que sí importaban ya quedaron guardados —
-  // pero a diferencia del registro, acá sí hay a dónde volver a mostrar el
+  // perder. A diferencia del registro, acá sí hay a dónde volver a mostrar el
   // aviso: esta misma respuesta.
-  let fotoFallo = false;
-  let menuFallo = false;
-
-  if (foto) {
-    if (!blobConfigurado()) {
-      fotoFallo = true;
-    } else {
-      try {
-        const subida = await subirFoto(foto, id);
-        if (subida) {
-          const { pathnameAnterior } = await adjuntarFoto(id, subida.url, subida.pathname);
-          // La URL nueva ya quedó guardada — recién ahora se borra la vieja
-          // (subirFoto sube con addRandomSuffix, así que es un blob
-          // distinto). Si esto falla, el blob viejo queda huérfano pero
-          // nadie apunta a él: no vale la pena revertir el guardado por eso.
-          if (pathnameAnterior && pathnameAnterior !== subida.pathname) {
-            try {
-              await borrarFoto(pathnameAnterior);
-            } catch (error) {
-              console.error('[actualizarPortafolio] no se pudo borrar la foto anterior', error);
-            }
-          }
-        } else {
-          fotoFallo = true;
-        }
-      } catch (error) {
-        fotoFallo = true;
-        console.error('[actualizarPortafolio] subida de foto falló', error);
-      }
-    }
-  }
-
-  if (menu) {
-    if (!blobConfigurado()) {
-      menuFallo = true;
-    } else {
-      try {
-        const subida = await subirMenu(menu, id);
-        if (subida) {
-          const { pathnameAnterior } = await adjuntarMenu(id, subida.url, subida.pathname);
-          if (pathnameAnterior && pathnameAnterior !== subida.pathname) {
-            try {
-              await borrarFoto(pathnameAnterior);
-            } catch (error) {
-              console.error('[actualizarPortafolio] no se pudo borrar el menú anterior', error);
-            }
-          }
-        } else {
-          menuFallo = true;
-        }
-      } catch (error) {
-        menuFallo = true;
-        console.error('[actualizarPortafolio] subida de menú falló', error);
-      }
-    }
-  }
+  const avisos = await reemplazarArchivos(id, { foto, menu }, 'actualizarPortafolio');
 
   revalidatePath('/aliados');
   revalidatePath('/admin/aliados');
   revalidatePath(`/aliados/estado/${token}`);
 
   const base = 'Guardado. Como cambiaste datos publicados, un moderador los revisa de nuevo antes de que se vean.';
-  const avisos = [
-    fotoFallo ? 'La foto no se pudo subir — prueba de nuevo.' : null,
-    menuFallo ? 'El menú no se pudo subir — prueba de nuevo.' : null,
-  ].filter(Boolean);
-
   return {
     estado: 'ok',
     mensaje: avisos.length > 0 ? `${base} ${avisos.join(' ')}` : base,
