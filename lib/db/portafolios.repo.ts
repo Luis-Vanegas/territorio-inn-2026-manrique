@@ -509,6 +509,49 @@ export async function moderar(
   };
 }
 
+/**
+ * Edición desde el panel de moderación: mismos campos de contenido que
+ * `actualizarPorToken`, pero a propósito NO toca `estado`, `motivo_rechazo`
+ * NI `moderado_por`/`moderado_en` — un moderador corrigiendo una ficha ya
+ * aprobada no la manda de vuelta a revisión (esa es una decisión del dueño,
+ * ver comentario de `actualizarPorToken`) y tampoco se roba la trazabilidad
+ * de quién la aprobó: la migración 002 protege esas dos columnas a propósito
+ * para poder demostrar quién decidió publicar cada ficha, y `moderado_en` ya
+ * queda registrado por el trigger de `actualizado_en`.
+ *
+ * `where estado = 'aprobado'` porque el botón "Editar" del panel solo
+ * aparece en esa pestaña — coherente con eso, no con "cualquier estado menos
+ * archivado": editar un pendiente o un rechazado no tiene UI hoy, así que no
+ * hace falta que el repo lo permita.
+ */
+export async function editarComoModerador(
+  id: string,
+  datos: EdicionPortafolio,
+): Promise<string | null> {
+  const rows = await sql`
+    update portafolios
+    set nombre = ${datos.nombre},
+        descripcion = ${datos.descripcion},
+        categoria_id = ${datos.categoria_id},
+        categoria_otra = ${datos.categoria_otra},
+        direccion = ${datos.direccion},
+        barrio = ${datos.barrio},
+        latitud = ${datos.latitud},
+        longitud = ${datos.longitud},
+        punto_referencia = ${datos.punto_referencia},
+        whatsapp = ${datos.whatsapp},
+        correo = ${datos.correo},
+        instagram = ${datos.instagram},
+        facebook = ${datos.facebook},
+        horario = ${datos.horario}::text[],
+        medios_pago = ${datos.medios_pago}::text[],
+        productos = ${JSON.stringify(datos.productos)}::jsonb
+    where id = ${id} and estado = 'aprobado'
+    returning id
+  `;
+  return (rows[0] as { id: string } | undefined)?.id ?? null;
+}
+
 export async function contarPorEstado(): Promise<Record<EstadoPortafolio, number>> {
   const rows = (await sql`
     select estado, count(*)::int as total

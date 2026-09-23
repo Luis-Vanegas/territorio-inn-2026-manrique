@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { atenderPeticion, type EstadoAtencion } from '@/lib/actions/atenderPeticion';
 import type { Peticion } from '@/lib/db/peticiones.repo';
+import { BadgeEstado } from '@/components/admin/BadgeEstado';
 
 const ESTADO_INICIAL: EstadoAtencion = { estado: 'inicial' };
 
@@ -35,7 +36,14 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
 
   return (
     <article className="border-t border-tinta/12 py-8">
-      <h3 className="font-display text-2xl font-medium leading-tight text-tinta">
+      <div className="flex flex-wrap items-center gap-2">
+        <BadgeEstado
+          etiqueta={peticion.estado === 'atendida' ? 'Atendida' : 'Pendiente'}
+          tono={peticion.estado === 'atendida' ? 'positivo' : 'neutral'}
+        />
+      </div>
+
+      <h3 className="mt-2 font-display text-2xl font-medium leading-tight text-tinta">
         {peticion.nombre}
       </h3>
 
@@ -70,15 +78,17 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
         {peticion.mensaje}
       </p>
 
-      <form action={accion} className="mt-6">
-        <input type="hidden" name="id" value={peticion.id} />
-        {estado.estado === 'error' && (
-          <p role="alert" className="mb-3 font-mono text-xs text-azul-texto">
-            {estado.mensaje}
-          </p>
-        )}
-        <BotonAtender />
-      </form>
+      {peticion.estado !== 'atendida' && (
+        <form action={accion} className="mt-6">
+          <input type="hidden" name="id" value={peticion.id} />
+          {estado.estado === 'error' && (
+            <p role="alert" className="mb-3 font-mono text-xs text-azul-texto">
+              {estado.mensaje}
+            </p>
+          )}
+          <BotonAtender />
+        </form>
+      )}
     </article>
   );
 }
