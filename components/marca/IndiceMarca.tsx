@@ -5,7 +5,6 @@ import { EnlaceVolver } from '@/components/EnlaceVolver';
 import { EtiquetaPagina } from '@/components/EtiquetaPagina';
 import { IconoContacto } from '@/components/iconos/IconoContacto';
 import { GRUPOS, GUIAS, MARCA_BAJADA } from '@/lib/marca';
-import { VisorLaminas } from './VisorLaminas';
 
 /**
  * Índice de las guías de marca.
@@ -92,16 +91,21 @@ export function IndiceMarca({
                       <h3 className="font-display text-xl font-medium text-tinta">{guia.titulo}</h3>
                       <p className="mt-3 font-sans leading-relaxed text-tinta/70">{guia.resumen}</p>
 
-                      {/* Dos caminos a lo mismo, uno al lado del otro: leerla en la
-                          página o ver la lámina tal como la diseñó el equipo. */}
-                      <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-1 pt-6">
+                      {/* Un solo camino, a propósito.
+                          Acá había dos enlaces —«Leer la guía» y «Ver la lámina
+                          original»— y hacían dudar sin ofrecer nada distinto: la
+                          guía ya abre con las láminas originales en miniatura
+                          arriba de todo (ver components/marca/GuiaMarca.tsx), así
+                          que el segundo enlace era una segunda puerta a la misma
+                          habitación. Quien entra ve la original de una, y además
+                          puede leerla. */}
+                      <div className="mt-auto pt-6">
                         <Link
                           href={`${base}/${guia.slug}`}
                           className="inline-flex min-h-[44px] items-center font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
                         >
-                          Leer la guía →
+                          Ver la guía →
                         </Link>
-                        <VisorLaminas titulo={guia.titulo} laminas={guia.laminas} variante="enlace" />
                       </div>
                     </div>
                   </li>
