@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { PestanasEstado } from '@/components/admin/PestanasEstado';
 
 import {
   listarCandidatosPorEstado,
@@ -42,27 +42,7 @@ export default async function AdminEmpleoPage({
         vitrina.
       </p>
 
-      <nav aria-label="Filtrar por estado" className="mt-8 flex flex-wrap gap-2">
-        {ESTADOS.map((e) => {
-          const activo = e.id === estadoActivo;
-          return (
-            <Link
-              key={e.id}
-              href={`/admin/empleo?estado=${e.id}`}
-              aria-current={activo ? 'page' : undefined}
-              className={[
-                'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-mono text-xs transition-colors',
-                activo
-                  ? 'border-azul-texto bg-azul-texto text-hueso'
-                  : 'border-tinta/15 text-tinta/65 hover:border-azul-texto hover:text-azul-texto',
-              ].join(' ')}
-            >
-              {e.etiqueta}
-              <span className="opacity-60">{conteos[e.id]}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      <PestanasEstado ruta="/admin/empleo" estados={ESTADOS} activo={estadoActivo} conteos={conteos} />
 
       <section className="mt-12">
         {registros.length === 0 ? (

@@ -6,8 +6,9 @@ import {
   actualizarPortafolioSchema,
   desdeFormDataEdicion,
 } from '@/lib/validation/portafolio.schema';
-import { editarComoModerador, adjuntarFoto, adjuntarMenu } from '@/lib/db/portafolios.repo';
-import { subirFoto, subirMenu, blobConfigurado, borrarFoto, extraerArchivoValidado } from '@/lib/blob/fotos';
+import { editarComoModerador } from '@/lib/db/portafolios.repo';
+import { extraerArchivoValidado } from '@/lib/blob/fotos';
+import { reemplazarArchivos } from '@/lib/blob/reemplazar';
 import type { EstadoEdicion } from '@/lib/actions/gestionarEstado';
 
 /**
@@ -83,71 +84,10 @@ export async function editarPortafolioModerador(
     return { estado: 'error', mensaje: 'No se pudo guardar el cambio. Intenta de nuevo.' };
   }
 
-  // Mismo criterio que actualizarPortafolio: la foto es lo último y lo que
-  // menos importa perder si falla.
-  let fotoFallo = false;
-  let menuFallo = false;
-
-  if (foto) {
-    if (!blobConfigurado()) {
-      fotoFallo = true;
-    } else {
-      try {
-        const subida = await subirFoto(foto, id);
-        if (subida) {
-          const { pathnameAnterior } = await adjuntarFoto(id, subida.url, subida.pathname);
-          // Mismo criterio que actualizarPortafolio: subirFoto sube con
-          // addRandomSuffix, así que el blob viejo hay que borrarlo aparte
-          // una vez que la URL nueva ya quedó guardada.
-          if (pathnameAnterior && pathnameAnterior !== subida.pathname) {
-            try {
-              await borrarFoto(pathnameAnterior);
-            } catch (error) {
-              console.error('[editarPortafolioModerador] no se pudo borrar la foto anterior', error);
-            }
-          }
-        } else {
-          fotoFallo = true;
-        }
-      } catch (error) {
-        fotoFallo = true;
-        console.error('[editarPortafolioModerador] subida de foto falló', error);
-      }
-    }
-  }
-
-  if (menu) {
-    if (!blobConfigurado()) {
-      menuFallo = true;
-    } else {
-      try {
-        const subida = await subirMenu(menu, id);
-        if (subida) {
-          const { pathnameAnterior } = await adjuntarMenu(id, subida.url, subida.pathname);
-          if (pathnameAnterior && pathnameAnterior !== subida.pathname) {
-            try {
-              await borrarFoto(pathnameAnterior);
-            } catch (error) {
-              console.error('[editarPortafolioModerador] no se pudo borrar el menú anterior', error);
-            }
-          }
-        } else {
-          menuFallo = true;
-        }
-      } catch (error) {
-        menuFallo = true;
-        console.error('[editarPortafolioModerador] subida de menú falló', error);
-      }
-    }
-  }
+  const avisos = await reemplazarArchivos(id, { foto, menu }, 'editarPortafolioModerador');
 
   revalidatePath('/admin/aliados');
   revalidatePath('/aliados');
-
-  const avisos = [
-    fotoFallo ? 'La foto no se pudo subir — prueba de nuevo.' : null,
-    menuFallo ? 'El menú no se pudo subir — prueba de nuevo.' : null,
-  ].filter(Boolean);
 
   return {
     estado: 'ok',
