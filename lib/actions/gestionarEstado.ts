@@ -111,7 +111,18 @@ export async function actualizarPortafolio(
       try {
         const subida = await subirFoto(foto, id);
         if (subida) {
-          await adjuntarFoto(id, subida.url, subida.pathname);
+          const { pathnameAnterior } = await adjuntarFoto(id, subida.url, subida.pathname);
+          // La URL nueva ya quedó guardada — recién ahora se borra la vieja
+          // (subirFoto sube con addRandomSuffix, así que es un blob
+          // distinto). Si esto falla, el blob viejo queda huérfano pero
+          // nadie apunta a él: no vale la pena revertir el guardado por eso.
+          if (pathnameAnterior && pathnameAnterior !== subida.pathname) {
+            try {
+              await borrarFoto(pathnameAnterior);
+            } catch (error) {
+              console.error('[actualizarPortafolio] no se pudo borrar la foto anterior', error);
+            }
+          }
         } else {
           fotoFallo = true;
         }
@@ -129,7 +140,14 @@ export async function actualizarPortafolio(
       try {
         const subida = await subirMenu(menu, id);
         if (subida) {
-          await adjuntarMenu(id, subida.url, subida.pathname);
+          const { pathnameAnterior } = await adjuntarMenu(id, subida.url, subida.pathname);
+          if (pathnameAnterior && pathnameAnterior !== subida.pathname) {
+            try {
+              await borrarFoto(pathnameAnterior);
+            } catch (error) {
+              console.error('[actualizarPortafolio] no se pudo borrar el menú anterior', error);
+            }
+          }
         } else {
           menuFallo = true;
         }

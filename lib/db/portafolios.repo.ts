@@ -270,28 +270,44 @@ export async function registrarConsentimiento(datos: {
   `;
 }
 
+/**
+ * Devuelve el pathname que tenía la foto ANTES de este update (capturado con
+ * `from (select ...)`, mismo patrón que `moderar()`/`archivarPorToken`) para
+ * que quien llama pueda borrar el blob viejo del store. Desde que `subirFoto`
+ * sube con `addRandomSuffix: true` (lib/blob/fotos.ts), cada foto nueva es un
+ * blob distinto — sin este valor de retorno, el anterior queda huérfano.
+ */
 export async function adjuntarFoto(
   id: string,
   url: string,
   pathname: string,
-): Promise<void> {
-  await sql`
-    update portafolios
+): Promise<{ pathnameAnterior: string | null }> {
+  const rows = await sql`
+    update portafolios as p
     set foto_url = ${url}, foto_blob_pathname = ${pathname}
-    where id = ${id}
+    from (select foto_blob_pathname from portafolios where id = ${id}) as previo
+    where p.id = ${id}
+    returning previo.foto_blob_pathname as anterior
   `;
+  const fila = rows[0] as { anterior: string | null } | undefined;
+  return { pathnameAnterior: fila?.anterior ?? null };
 }
 
+/** Mismo criterio que `adjuntarFoto`: devuelve el pathname anterior del menú para que el caller lo borre. */
 export async function adjuntarMenu(
   id: string,
   url: string,
   pathname: string,
-): Promise<void> {
-  await sql`
-    update portafolios
+): Promise<{ pathnameAnterior: string | null }> {
+  const rows = await sql`
+    update portafolios as p
     set menu_url = ${url}, menu_blob_pathname = ${pathname}
-    where id = ${id}
+    from (select menu_blob_pathname from portafolios where id = ${id}) as previo
+    where p.id = ${id}
+    returning previo.menu_blob_pathname as anterior
   `;
+  const fila = rows[0] as { anterior: string | null } | undefined;
+  return { pathnameAnterior: fila?.anterior ?? null };
 }
 
 // ─── Autoservicio por token ────────────────────────────────────
