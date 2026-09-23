@@ -27,7 +27,22 @@ export function Hero() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.15}>
-            <h1 className="mt-6 break-words font-display text-[13vw] font-medium leading-[0.92] tracking-tight text-tinta sm:text-[11vw] lg:text-[5.6vw] xl:text-[6rem]">
+            {/* 10.5vw en móvil y no 13vw: el titular v3 trae «emprendimientos»
+                y a 13vw esa palabra mide 381px contra 327px de ancho útil en un
+                celular de 375px, así que `break-words` la partía al medio y SIN
+                guion —«emprendimien / tos»—, que es justo donde el ojo tropieza.
+                Medido en el navegador, no a ojo.
+                Silabear no alcanzaba: hasta «emprendimien-» mide 334px, o sea
+                que tampoco entraba y el navegador abandonaba la silabación.
+                El cuerpo es la causa, no el guion.
+                El número sale de que la palabra mide 7.8 veces el tamaño de
+                fuente: para que entre hace falta cuerpo ≤ (ancho − 48px de
+                margen) / 7.8, que a 320px —el iPhone SE, el más angosto que
+                importa— da 10.87vw. 10.5vw deja aire.
+                `hyphens-auto` se queda igual: si algún día vuelve a hacer falta
+                la red de `break-words`, que al menos corte por sílaba y con
+                guion. Es CSS nativo, no una librería de tipografía. */}
+            <h1 className="mt-6 hyphens-auto break-words font-display text-[10.5vw] font-medium leading-[0.92] tracking-tight text-tinta sm:text-[11vw] lg:text-[5.6vw] xl:text-[6rem]">
               {hero.titular}
             </h1>
           </ScrollReveal>
