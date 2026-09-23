@@ -4,7 +4,7 @@ import { useId, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { Asesor } from '@/components/Asesor';
-import type { EstadoAsesor } from '@/lib/actions/consultarAsesor';
+import type { EstadoAsesor } from '@/lib/validation/asesor.schema';
 
 /**
  * Botón redondo abajo a la derecha que abre el asesor desde cualquier página.

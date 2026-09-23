@@ -1,12 +1,10 @@
 'use server';
 
-import { consultarAsesor as preguntarAlModelo } from '@/lib/agente/asesor';
-import { gastarCupoAgente } from '@/lib/agente/limite';
+import { prepararPregunta, responder } from '@/lib/agente/responder';
+import type { EstadoAsesor } from '@/lib/validation/asesor.schema';
 import { sesionActual } from '@/lib/auth/usuario';
 import { obtenerContextoAsesor } from '@/lib/db/portafolios.repo';
 import { negociosDe } from '@/lib/db/usuarios.repo';
-import { preguntaSchema } from '@/lib/validation/asesor.schema';
-import type { EstadoAsesor } from '@/lib/actions/consultarAsesor';
 
 /**
  * Consulta al asesor desde el botón flotante, para un vecino con sesión de Google.
@@ -29,32 +27,11 @@ export async function consultarAsesorUsuario(
     return { estado: 'error', mensaje: 'Tu sesión venció. Vuelve a entrar para usar el asesor.' };
   }
 
-  const validacion = preguntaSchema.safeParse((formData.get('pregunta') ?? '').toString());
-  if (!validacion.success) {
-    return {
-      estado: 'error',
-      mensaje: validacion.error.issues[0]?.message ?? 'Revisa tu pregunta e intenta de nuevo.',
-    };
-  }
-  const pregunta = validacion.data;
-
-  const excedido = await gastarCupoAgente();
-  if (excedido) return { estado: 'error', mensaje: excedido };
+  const preparada = await prepararPregunta(formData);
+  if (!preparada.ok) return preparada.estado;
 
   const [negocio] = await negociosDe(sesion.id);
   const contexto = negocio ? await obtenerContextoAsesor(negocio.token_publico) : null;
 
-  const respuesta = await preguntarAlModelo(
-    contexto && {
-      nombre: contexto.nombre,
-      categoria: contexto.categoria_nombre,
-      barrio: contexto.barrio,
-      formalidad: contexto.formalidad,
-      mayorDolor: contexto.mayor_dolor,
-    },
-    pregunta,
-  );
-  if (respuesta.estado === 'error') return { estado: 'error', mensaje: respuesta.mensaje };
-
-  return { estado: 'ok', pregunta, respuesta: respuesta.texto };
+  return responder(contexto, preparada.pregunta);
 }

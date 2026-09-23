@@ -1,12 +1,13 @@
 'use server';
 
+import { prepararPregunta, responder } from '@/lib/agente/responder';
+import type { EstadoAsesor } from '@/lib/validation/asesor.schema';
 import { obtenerContextoAsesor } from '@/lib/db/portafolios.repo';
-import { consultarAsesor as preguntarAlModelo } from '@/lib/agente/asesor';
-import { gastarCupoAgente } from '@/lib/agente/limite';
-import { preguntaSchema } from '@/lib/validation/asesor.schema';
 
 /**
- * Consulta al asesor de formalización desde el panel del negocio.
+ * Consulta al asesor de formalización desde el panel del negocio, con el token
+ * del enlace. Primera de las tres puertas; la parte que comparten las tres vive
+ * en lib/agente/responder.ts.
  *
  * Es Server Action y no route handler porque no hay streaming: la respuesta
  * llega entera y el formulario la muestra. Un route handler solo agregaría un
@@ -23,11 +24,6 @@ import { preguntaSchema } from '@/lib/validation/asesor.schema';
 
 const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export type EstadoAsesor =
-  | { estado: 'inicial' }
-  | { estado: 'ok'; pregunta: string; respuesta: string }
-  | { estado: 'error'; mensaje: string };
-
 export async function consultarAsesor(
   _anterior: EstadoAsesor,
   formData: FormData,
@@ -40,39 +36,13 @@ export async function consultarAsesor(
     return { estado: 'error', mensaje: 'Tu sesión no es válida. Vuelve a abrir tu enlace.' };
   }
 
-  const validacion = preguntaSchema.safeParse((formData.get('pregunta') ?? '').toString());
-  if (!validacion.success) {
-    // `issues` nunca viene vacío cuando success es false, pero el tsconfig
-    // tiene noUncheckedIndexedAccess y el fallback cuesta una línea.
-    return {
-      estado: 'error',
-      mensaje: validacion.error.issues[0]?.message ?? 'Revisa tu pregunta e intenta de nuevo.',
-    };
-  }
-  const pregunta = validacion.data;
-
-  const excedido = await gastarCupoAgente();
-  if (excedido) return { estado: 'error', mensaje: excedido };
+  const preparada = await prepararPregunta(formData);
+  if (!preparada.ok) return preparada.estado;
 
   const negocio = await obtenerContextoAsesor(token);
   if (!negocio) {
     return { estado: 'error', mensaje: 'No encontramos tu negocio. Vuelve a abrir tu enlace.' };
   }
 
-  const respuesta = await preguntarAlModelo(
-    {
-      nombre: negocio.nombre,
-      categoria: negocio.categoria_nombre,
-      barrio: negocio.barrio,
-      formalidad: negocio.formalidad,
-      mayorDolor: negocio.mayor_dolor,
-    },
-    pregunta,
-  );
-
-  if (respuesta.estado === 'error') {
-    return { estado: 'error', mensaje: respuesta.mensaje };
-  }
-
-  return { estado: 'ok', pregunta, respuesta: respuesta.texto };
+  return responder(negocio, preparada.pregunta);
 }

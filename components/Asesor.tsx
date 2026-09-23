@@ -4,7 +4,8 @@ import { useActionState, useId, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 
-import { consultarAsesor, type EstadoAsesor } from '@/lib/actions/consultarAsesor';
+import { consultarAsesor } from '@/lib/actions/consultarAsesor';
+import type { EstadoAsesor } from '@/lib/validation/asesor.schema';
 
 /**
  * Asesor de formalización dentro del panel del negocio.
@@ -20,12 +21,14 @@ import { consultarAsesor, type EstadoAsesor } from '@/lib/actions/consultarAseso
  *
  * Se convierte en hilo el día que se vea gente escribiendo "¿y lo anterior?".
  *
- * ── Una caja, dos puertas ──
+ * ── Una caja, tres puertas ──
  *
- * La usa la ficha del negocio (con su `token`, y la acción por defecto) y el
- * panel de moderación (sin token, con `consultarAsesorAdmin`). Lo que cambia
- * entre las dos entra por props; el formulario y el manejo de estados son los
- * mismos, para no mantener dos cajas que se desincronicen.
+ * La usa la ficha del negocio (con su `token`, y la acción por defecto), el
+ * panel de moderación (sin token, con `consultarAsesorAdmin`) y el botón
+ * flotante del vecino con sesión (`consultarAsesorUsuario`). Lo que cambia
+ * entre las tres entra por props; el formulario y el manejo de estados son los
+ * mismos, para no mantener tres cajas que se desincronicen. La cola común del
+ * lado del servidor está en lib/agente/responder.ts.
  *
  * `variante="panel"` es la misma caja sin el encabezado de sección, para
  * meterla en el botón flotante (AsesorFlotante), que pone su propio título.
