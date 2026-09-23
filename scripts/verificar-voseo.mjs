@@ -44,7 +44,27 @@ const PALABRA = new RegExp(
 );
 
 // Solo texto que la persona ve: literales de cadena y texto suelto de JSX.
+//
+// La última alternativa (texto entre `>` y `<`) solo pescaba texto que
+// convivía con las etiquetas EN LA MISMA LÍNEA. Prettier envuelve el texto
+// largo de un <p>/<label> en su propia línea — ni el `>` de apertura ni el
+// `<` de cierre quedan en esa línea — así que un texto así de común se le
+// escapaba entero. "Explicá qué corregir." en FichaModeracion.tsx pasó por
+// acá: el `<p ...>` cierra una línea y el texto vive solo en la siguiente.
+//
+// LINEA_TEXTO_JSX cubre ese caso por separado, por línea (ver más abajo) en
+// vez de intentar que un regex crucen líneas: cruzar líneas con este mismo
+// patrón `>...<` sería agarrar de comparaciones (`a > b`) hasta genéricos
+// (`Array<string>`) como si fueran texto.
 const VISIBLE = /'([^'\n]{4,})'|"([^"\n]{4,})"|`([^`\n]{4,})`|>\s*([^<>{}\n]{6,})</g;
+
+// Texto de JSX que ocupa su propia línea completa (el caso que a VISIBLE se
+// le escapa). Una línea de código real casi siempre trae alguno de
+// `< > { } ( ) ; =` — asignaciones, llamadas, JSX, genéricos, fin de
+// sentencia. Una línea de texto visible no trae nada de eso. Se exige además
+// más de una palabra (con espacio, chequeado aparte) para no marcar un
+// identificador suelto como `nombre,`.
+const LINEA_TEXTO_JSX = /^[^<>{}()=;]{6,}$/;
 
 // Palabras del español corriente que terminan en vocal acentuada y NO son
 // voseo. Ampliar acá cuando el chequeo marque un falso positivo, con nota.
@@ -87,11 +107,24 @@ for (const raiz of RAICES) {
       // equipo, no los lee ningún vecino.
       if (limpia.startsWith('//') || limpia.startsWith('*') || limpia.startsWith('/*')) return;
 
+      let huboMatchVisible = false;
+
       for (const m of linea.matchAll(VISIBLE)) {
+        huboMatchVisible = true;
         const texto = m.slice(1).find(Boolean) ?? '';
         for (const palabra of texto.match(PALABRA) ?? []) {
           if (CORRIENTES.has(palabra.toLowerCase())) continue;
           hallazgos.push({ ruta, linea: i + 1, palabra, texto: texto.slice(0, 72) });
+        }
+      }
+
+      // Texto JSX en su propia línea (ver comentario de LINEA_TEXTO_JSX).
+      // Solo si VISIBLE no encontró nada arriba, para no marcar dos veces la
+      // misma línea (p. ej. una línea que es un string suelto matchea las dos).
+      if (!huboMatchVisible && /\s/.test(limpia) && LINEA_TEXTO_JSX.test(limpia)) {
+        for (const palabra of limpia.match(PALABRA) ?? []) {
+          if (CORRIENTES.has(palabra.toLowerCase())) continue;
+          hallazgos.push({ ruta, linea: i + 1, palabra, texto: limpia.slice(0, 72) });
         }
       }
     });
