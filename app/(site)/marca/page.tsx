@@ -21,7 +21,7 @@ export default async function MarcaPage() {
       <PuertaRegistro
         titulo="Marca"
         bajada={MARCA_BAJADA}
-        guias={GUIAS.map((g) => g.titulo)}
+        guias={GUIAS.map((g) => ({ titulo: g.titulo, portada: g.laminas[0], red: g.red }))}
         volver={{ href: '/', etiqueta: '← Volver a Constelaciones' }}
       />
     );

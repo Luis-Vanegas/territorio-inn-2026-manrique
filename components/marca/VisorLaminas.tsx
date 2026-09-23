@@ -25,6 +25,13 @@ import type { Lamina } from '@/lib/marca';
  *
  * Es un componente de cliente porque `showModal()` es una API del navegador;
  * lo demás de /marca sigue siendo de servidor.
+ *
+ * ── La variante `miniaturas` ──
+ *
+ * GuiaMarca quiere las láminas visibles de entrada, no escondidas detrás de
+ * un botón de texto. En vez de un visor aparte, esta variante pinta una
+ * grilla de imágenes reales que abren el mismo `<dialog>` en la lámina que
+ * tocaste: un solo modal para todo /marca, cero lógica duplicada.
  */
 
 const ESTILO_BOTON: Record<'boton' | 'enlace', string> = {
@@ -43,7 +50,7 @@ export function VisorLaminas({
 }: {
   titulo: string;
   laminas: Lamina[];
-  variante?: 'boton' | 'enlace';
+  variante?: 'boton' | 'enlace' | 'miniaturas';
 }) {
   const idTitulo = useId();
   const dialogo = useRef<HTMLDialogElement>(null);
@@ -72,19 +79,46 @@ export function VisorLaminas({
     cuerpo.current?.scrollTo({ top: 0 });
   };
 
+  const abrirEn = (n: number) => {
+    setActual(n);
+    setAbierto(true);
+    dialogo.current?.showModal();
+  };
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => {
-          setActual(0);
-          setAbierto(true);
-          dialogo.current?.showModal();
-        }}
-        className={`inline-flex min-h-[44px] items-center gap-2 font-mono text-sm ${ESTILO_BOTON[variante]}`}
-      >
-        Ver la lámina original{total > 1 && ` (${total})`}
-      </button>
+      {variante === 'miniaturas' ? (
+        <ul role="list" className="grid list-none grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
+          {laminas.map((l, i) => (
+            <li key={l.src}>
+              <button
+                type="button"
+                onClick={() => abrirEn(i)}
+                className="group relative block aspect-[3/4] w-full overflow-hidden border border-tinta/15 bg-tinta/[0.04]"
+              >
+                {/* object-contain: son infografías con texto, no fotos — object-cover
+                    en un marco 3:4 fijo se come el texto de las láminas apaisadas
+                    (crea-contenido, ~1.78) y recorta los bordes de las verticales. */}
+                <Image
+                  src={l.src}
+                  alt={`Miniatura ${i + 1} de ${total} de la guía «${titulo}»`}
+                  fill
+                  sizes="(min-width: 1024px) 18vw, (min-width: 640px) 22vw, 30vw"
+                  className="object-contain transition-transform group-hover:scale-105"
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <button
+          type="button"
+          onClick={() => abrirEn(0)}
+          className={`inline-flex min-h-[44px] items-center gap-2 font-mono text-sm ${ESTILO_BOTON[variante]}`}
+        >
+          Ver la lámina original{total > 1 && ` (${total})`}
+        </button>
+      )}
 
       <dialog
         ref={dialogo}

@@ -73,6 +73,9 @@ export type Seccion =
 
 export type GrupoGuia = 'producto' | 'canales' | 'publicar' | 'presentarte';
 
+/** Redes reconocibles por su ícono — ver components/iconos/IconoContacto.tsx. */
+export type RedSocial = 'instagram' | 'facebook' | 'whatsapp' | 'tiktok' | 'youtube';
+
 export type Guia = {
   slug: string;
   titulo: string;
@@ -81,6 +84,8 @@ export type Guia = {
   /** Texto de la tarjeta del índice. */
   resumen: string;
   grupo: GrupoGuia;
+  /** Si la guía es sobre un canal puntual, su ícono — en la tarjeta del índice y en el header de la guía. */
+  red?: RedSocial;
   laminas: Lamina[];
   secciones: Seccion[];
 };
@@ -263,6 +268,7 @@ export const GUIAS: Guia[] = [
     bajada: 'Haz que tu perfil se vea claro, confiable y fácil de entender.',
     resumen: 'Los seis puntos del perfil que un cliente nuevo mira primero.',
     grupo: 'canales',
+    red: 'instagram',
     laminas: laminasDe('instagram', 1, 1055, 1491),
     secciones: [
       {
@@ -348,6 +354,7 @@ export const GUIAS: Guia[] = [
     bajada: 'Haz que tu página se vea clara, confiable y fácil de consultar.',
     resumen: 'Foto, portada, botón de contacto y la información que da confianza.',
     grupo: 'canales',
+    red: 'facebook',
     laminas: laminasDe('facebook', 1, 1055, 1491),
     secciones: [
       {
@@ -432,6 +439,7 @@ export const GUIAS: Guia[] = [
     bajada: 'Haz que tu atención se vea clara, ágil y confiable.',
     resumen: 'El perfil, los mensajes rápidos y cómo atender para que compren.',
     grupo: 'canales',
+    red: 'whatsapp',
     laminas: laminasDe('whatsapp', 1, 1055, 1491),
     secciones: [
       {
