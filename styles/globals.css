@@ -83,7 +83,7 @@ body {
 
 /* Fraunces con el eje SOFT activado: mismo tipo editorial de siempre
    (docs/decisiones-diseno.md), pero con las formas de los títulos grandes
-   menos anguloras — es lo que pidió el cliente al ver el sitio ("muy
+   menos angulosas — es lo que pidió el cliente al ver el sitio ("muy
    rígido"). El eje ya venía registrado en next/font (app/layout.tsx) pero
    nunca se usaba. WONK se deja en 0 a propósito: activa glifos alternativos
    "wonky" que cambian la voz de la marca, no solo la dureza — no es lo que
