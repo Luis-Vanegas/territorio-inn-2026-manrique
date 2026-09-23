@@ -1,5 +1,9 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { ContadorVisitas } from "@/components/ContadorVisitas";
+import { AsesorFlotante } from "@/components/AsesorFlotante";
+import { consultarAsesorAdmin } from "@/lib/actions/consultarAsesorAdmin";
+import { consultarAsesorUsuario } from "@/lib/actions/consultarAsesorUsuario";
+import { asesorConfigurado } from "@/lib/agente/asesor";
 import { verificarSesion } from "@/lib/auth/admin";
 import { sesionActual } from "@/lib/auth/usuario";
 
@@ -14,6 +18,20 @@ import { sesionActual } from "@/lib/auth/usuario";
  */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const sesion = await sesionActual();
+  // Se consulta una sola vez y se reusa abajo. Sin vecino hay que mirarla igual:
+  // el asesor flotante también es para el moderador que entró con contraseña.
+  const moderador = (await verificarSesion()) !== null;
+
+  // El asesor flotante es solo para quien tiene sesión: gasta cupo de un modelo
+  // y no se abre al público anónimo. El vecino va primero porque su action
+  // lleva los datos de su negocio; el moderador pregunta en general.
+  const accionAsesor = !asesorConfigurado()
+    ? null
+    : sesion
+      ? consultarAsesorUsuario
+      : moderador
+        ? consultarAsesorAdmin
+        : null;
 
   return (
     <>
@@ -50,10 +68,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             ? {
                 nombre: sesion.nombre,
                 foto: sesion.foto,
-                // Solo se mira si hay sesión de vecino: quien no entró no paga la
-                // verificación, y un moderador sin sesión de vecino entra por
-                // /admin/login como siempre.
-                moderador: (await verificarSesion()) !== null,
+                moderador,
               }
             : null
         }
@@ -62,6 +77,17 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <div id="contenido" tabIndex={-1}>
         {children}
       </div>
+
+      {accionAsesor && (
+        <AsesorFlotante
+          accion={accionAsesor}
+          descripcion={
+            sesion
+              ? "Pregunta lo que necesites sobre trámites, cámara de comercio, apoyos económicos o formación. Si registraste tu negocio, ya conozco sus datos."
+              : "Vista de moderación: la consulta es general, sin los datos de ningún negocio."
+          }
+        />
+      )}
     </>
   );
 }

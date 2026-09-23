@@ -29,9 +29,11 @@ ambos agentes repliquen un patrón que ya no existe.
   pisar con `<PROVEEDOR>_MODELO` y `<PROVEEDOR>_API_URL`. No instales el SDK de
   ningún proveedor: ata el proyecto a ese proveedor justo donde la
   portabilidad es el requisito. La llamada sale solo desde una Server Action
-  detrás del token del negocio (o de `admin_session`, en el panel), nunca desde
-  una ruta pública. Las dos puertas comparten pregunta (`lib/validation/asesor.
-  schema.ts`) y cupo por IP (`lib/agente/limite.ts`).
+  detrás del token del negocio, de `sesion_usuario` (botón flotante
+  `components/AsesorFlotante.tsx`, que el layout del sitio monta solo con sesión
+  de vecino o de moderador) o de `admin_session`, nunca desde una ruta pública
+  ni para visitantes anónimos. Las tres puertas comparten pregunta
+  (`lib/validation/asesor.schema.ts`) y cupo por IP (`lib/agente/limite.ts`).
 - Geocoding de direcciones (botón "Ubicar en el mapa" del registro,
   `lib/geo/geocodificar.ts`) usa **Nominatim (OpenStreetMap) por `fetch`, sin
   SDK ni API key** — mismo criterio que el asesor: gratis, sin atarse a un

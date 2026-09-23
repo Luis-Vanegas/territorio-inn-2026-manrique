@@ -134,22 +134,15 @@ export default async function MiCuentaPage() {
           <article className="flex flex-col border border-tinta/12 p-6">
             <h3 className="font-display text-lg font-medium text-tinta">Asesor</h3>
             <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
-              Pregunta lo que necesites sobre trámites y apoyos. Está dentro de la ficha de
-              cada negocio.
+              Pregunta lo que necesites sobre trámites y apoyos. Tócalo en el botón redondo
+              de abajo a la derecha, desde cualquier página.
             </p>
             <div className="mt-auto pt-5">
-              {negocios.length > 0 ? (
-                <Link
-                  href={`/aliados/estado/${negocios[0]!.token_publico}`}
-                  className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
-                >
-                  Preguntar →
-                </Link>
-              ) : (
-                <span className="font-mono text-sm text-tinta/60">
-                  Registra tu negocio para usarlo
-                </span>
-              )}
+              <span className="font-mono text-sm text-tinta/60">
+                {negocios.length > 0
+                  ? 'Ya conoce los datos de tu negocio'
+                  : 'Si registras tu negocio, te responde con sus datos'}
+              </span>
             </div>
           </article>
 
