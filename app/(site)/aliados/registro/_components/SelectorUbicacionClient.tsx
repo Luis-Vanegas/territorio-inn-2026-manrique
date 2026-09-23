@@ -170,7 +170,7 @@ export default function SelectorUbicacionClient({
       )}
 
       {geo.fase === 'imprecisa' && (
-        <p role="status" className="mt-3 font-mono text-xs leading-relaxed text-terracota-texto">
+        <p role="status" className="mt-3 border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-mono text-xs leading-relaxed text-tinta">
           {geo.mensaje}
         </p>
       )}
