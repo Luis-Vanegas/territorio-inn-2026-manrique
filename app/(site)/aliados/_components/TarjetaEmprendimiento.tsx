@@ -6,6 +6,7 @@ import { formatearCamposExtra } from '@/lib/camposExtra';
 import { formatearDistancia } from '@/lib/geo/distancia';
 import { contar } from '@/lib/interacciones';
 import { IconoContacto } from '@/components/iconos/IconoContacto';
+import { FotoAmpliable } from '@/components/FotoAmpliable';
 
 /**
  * Ficha de un emprendimiento en el listado.
@@ -195,7 +196,11 @@ export function TarjetaEmprendimiento({
         </div>
 
         {portafolio.foto_url && (
-          <div className="group relative aspect-[4/3] w-full overflow-hidden bg-tinta/5 sm:w-52">
+          <FotoAmpliable
+            src={portafolio.foto_url}
+            alt={`Fotografía de ${portafolio.nombre}`}
+            className="group relative block aspect-[4/3] w-full overflow-hidden bg-tinta/5 sm:w-52"
+          >
             <Image
               src={portafolio.foto_url}
               alt={`Fotografía de ${portafolio.nombre}`}
@@ -203,7 +208,7 @@ export function TarjetaEmprendimiento({
               sizes="(max-width: 640px) 100vw, 208px"
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
-          </div>
+          </FotoAmpliable>
         )}
       </div>
     </article>
