@@ -91,30 +91,42 @@ async function optimizarYSubir(file: File, pathname: string): Promise<ResultadoF
     return null;
   }
 
-  // ── Sin sufijo aleatorio, y hay que saber por qué ──
+  // ── Con sufijo aleatorio, y hay que saber por qué cambió ──
   //
-  // Un pathname derivado del id significa que cualquiera que vea la ficha
-  // puede armar la URL del blob. Acá está bien: tanto la foto como el
+  // Antes esto subía a un pathname fijo derivado del id
+  // (`portafolios/<id>.webp`) sin sufijo, a propósito: la foto y el
   // menú/flyer de un negocio de Aliados son públicos, se muestran en la
-  // vitrina, y esa es toda su razón de existir.
+  // vitrina, y que la URL se pueda derivar no filtraba nada.
   //
-  // El módulo Servicios pasaba `addRandomSuffix: true` justamente porque ahí
-  // la foto era reservada y el sufijo cortaba la derivación. Ese módulo se
-  // eliminó (migración 028). **Si algún día se agrega otro archivo que NO
-  // deba ser público, no lo subas por acá sin reponer el sufijo**: la
-  // privacidad de un archivo en Blob depende de que su URL no se pueda adivinar.
+  // Pero @vercel/blob 2.7.0 tira error si el pathname ya existe y no se pasa
+  // `allowOverwrite` — así que reemplazar la foto de una ficha que ya tenía
+  // una fallaba siempre. Y aun con `allowOverwrite`, un pathname fijo +
+  // `cacheControlMaxAge` de un año significa que la vitrina puede seguir
+  // sirviendo la foto vieja desde caché aunque el blob ya se haya
+  // sobrescrito — la URL no cambió, así que nada invalida el caché.
+  //
+  // `addRandomSuffix: true` resuelve las dos cosas a la vez: cada subida es
+  // un blob nuevo con una URL nueva (no hay caché viejo que invalidar) y no
+  // hace falta `allowOverwrite`. El pathname deja de ser derivable del id,
+  // pero eso nunca fue el mecanismo de privacidad de este archivo — sigue
+  // siendo público a propósito, ver arriba — así que no se pierde nada.
+  // El blob anterior queda huérfano si nadie lo borra: por eso
+  // `adjuntarFoto`/`adjuntarMenu` (lib/db/portafolios.repo.ts) devuelven el
+  // pathname previo, y quien las llama (lib/actions/gestionarEstado.ts,
+  // lib/actions/editarPortafolioModerador.ts) lo borra con `borrarFoto` una
+  // vez que la URL nueva ya quedó guardada.
   const blob = await put(pathname, optimizada, {
     access: 'public',
     contentType: 'image/webp',
-    addRandomSuffix: false,
-    // Público e inmutable por id: se cachea fuerte.
+    addRandomSuffix: true,
+    // Público e inmutable por URL (el sufijo cambia en cada reemplazo): se cachea fuerte.
     cacheControlMaxAge: 60 * 60 * 24 * 365,
   });
 
   return { url: blob.url, pathname: blob.pathname };
 }
 
-/** El id es un uuid generado por la base, así que el pathname es único sin sufijo aleatorio — y predecible permite sobrescribir al reemplazar la foto. */
+/** El pathname base se deriva del id (`addRandomSuffix` en `optimizarYSubir` le suma el sufijo que lo hace único en cada reemplazo). */
 export async function subirFoto(
   file: File,
   portafolioId: string,
