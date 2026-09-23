@@ -104,8 +104,14 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
   switch (seccion.tipo) {
     case 'tarjetas': {
       const Lista = seccion.numeradas ? 'ol' : 'ul';
-      // 3 o 6 tarjetas caben en tres columnas; 4 (o 2) se ven mejor en dos.
-      const columnas = seccion.items.length % 3 === 0 ? 'lg:grid-cols-3' : 'lg:grid-cols-2';
+      // 3 o 6 tarjetas caben en tres columnas; 4 (o 2) se ven mejor en dos —
+      // y en pantallas anchas (xl, 1440+) 4 tarjetas también entran en cuatro.
+      const columnas =
+        seccion.items.length % 3 === 0
+          ? 'lg:grid-cols-3'
+          : seccion.items.length === 4
+            ? 'lg:grid-cols-2 xl:grid-cols-4'
+            : 'lg:grid-cols-2';
 
       return (
         <>
@@ -143,7 +149,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
       return (
         <>
           {cabecera}
-          <ul role="list" className="mt-10 grid list-none gap-3 sm:grid-cols-2">
+          <ul role="list" className="mt-10 grid list-none gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {seccion.items.map((item) => (
               <li
                 key={item}
@@ -240,7 +246,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
       return (
         <>
           {cabecera}
-          <ol role="list" className="mt-10 grid list-none gap-x-10 gap-y-8 sm:grid-cols-2">
+          <ol role="list" className="mt-10 grid list-none gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {seccion.items.map((frase) => (
               <li key={frase}>
                 <span className="font-display text-xl text-tinta">{frase}</span>
@@ -264,7 +270,7 @@ export function Secciones({ secciones }: { secciones: Seccion[] }) {
         <section
           key={seccion.kicker}
           aria-labelledby={`seccion-${i}`}
-          className="scroll-mt-24 py-14 even:-mx-[var(--margen-editorial)] even:bg-tinta/[0.04] even:px-[var(--margen-editorial)] sm:py-20"
+          className="scroll-mt-24 py-10 even:-mx-[var(--margen-editorial)] even:bg-tinta/[0.04] even:px-[var(--margen-editorial)] sm:py-14"
         >
           <VistaSeccion seccion={seccion} id={`seccion-${i}`} />
         </section>

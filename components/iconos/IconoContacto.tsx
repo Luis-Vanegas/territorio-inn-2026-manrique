@@ -1,16 +1,35 @@
-type TipoIcono = 'whatsapp' | 'instagram' | 'facebook' | 'telefono' | 'correo';
+'use client';
+
+import { useId } from 'react';
+
+export type TipoIcono =
+  | 'whatsapp'
+  | 'instagram'
+  | 'facebook'
+  | 'telefono'
+  | 'correo'
+  | 'tiktok'
+  | 'youtube';
 
 /**
- * Íconos de contacto para TarjetaEmprendimiento. Trazos inline en vez de una
- * librería nueva (lucide, react-icons): son cinco glifos fijos que no
- * cambian — no vale la pena una dependencia para eso (mismo criterio que
- * "sin ORM" en AGENTS.md, aplicado a paquetes de UI).
+ * Íconos de contacto para TarjetaEmprendimiento y las guías de marca. Trazos
+ * inline en vez de una librería nueva (lucide, react-icons): son glifos fijos
+ * que no cambian — no vale la pena una dependencia para eso (mismo criterio
+ * que "sin ORM" en AGENTS.md, aplicado a paquetes de UI).
  *
- * WhatsApp/Instagram/Facebook llevan su color de marca a propósito: el
- * pedido de diseño es que se reconozcan de un vistazo, que es lo opuesto a
- * la paleta mono-acento del resto del sitio. Teléfono/correo no tienen
- * marca propia, así que quedan en `currentColor` para heredar el tinta del
- * texto en vez de inventarles un color que no representa nada.
+ * WhatsApp/Instagram/Facebook/YouTube llevan su color de marca a propósito:
+ * el pedido de diseño es que se reconozcan de un vistazo, que es lo opuesto a
+ * la paleta mono-acento del resto del sitio. Teléfono/correo no tienen marca
+ * propia, así que quedan en `currentColor` para heredar el tinta del texto en
+ * vez de inventarles un color que no representa nada. TikTok también queda en
+ * `currentColor`: su marca es el glifo en negro/blanco, no un color propio.
+ *
+ * `'use client'` + `useId`: el degradado de Instagram necesita un id de
+ * `<linearGradient>` único por instancia. Con dos o más íconos de Instagram
+ * en la misma página, un id fijo repetido es HTML inválido y se rompe si el
+ * primer `<svg>` queda oculto (el navegador resuelve `url(#id)` contra el
+ * primer nodo con ese id en el documento, esté o no visible). `useId` da un
+ * id estable y único por render sin tocar cómo se llama al componente.
  */
 export function IconoContacto({
   tipo,
@@ -19,6 +38,8 @@ export function IconoContacto({
   tipo: TipoIcono;
   className?: string;
 }) {
+  const idDegradado = `ig-degradado-${useId()}`;
+
   switch (tipo) {
     case 'whatsapp':
       return (
@@ -33,14 +54,14 @@ export function IconoContacto({
       return (
         <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
           <defs>
-            <linearGradient id="ig-degradado" x1="0" y1="1" x2="1" y2="0">
+            <linearGradient id={idDegradado} x1="0" y1="1" x2="1" y2="0">
               <stop offset="0%" stopColor="#FED576" />
               <stop offset="26%" stopColor="#F47133" />
               <stop offset="61%" stopColor="#BC3081" />
               <stop offset="100%" stopColor="#4C63D2" />
             </linearGradient>
           </defs>
-          <rect x="2" y="2" width="20" height="20" rx="6" fill="url(#ig-degradado)" />
+          <rect x="2" y="2" width="20" height="20" rx="6" fill={`url(#${idDegradado})`} />
           <rect x="6.7" y="6.7" width="10.6" height="10.6" rx="3.4" fill="none" stroke="#fff" strokeWidth="1.6" />
           <circle cx="17.3" cy="6.7" r="1.05" fill="#fff" />
         </svg>
@@ -53,6 +74,22 @@ export function IconoContacto({
             fill="#fff"
             d="M15.4 8.4h-1.3c-.5 0-.6.2-.6.6v1.3h1.9l-.2 2h-1.7V17h-2.3v-4.7H9.6v-2h1.6V9c0-1.6.9-2.6 2.5-2.6h1.7v2Z"
           />
+        </svg>
+      );
+    case 'tiktok':
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.3 0 .59.05.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1Z"
+          />
+        </svg>
+      );
+    case 'youtube':
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="6" fill="#FF0000" />
+          <path fill="#fff" d="M9.8 8.3v7.4l6.4-3.7-6.4-3.7Z" />
         </svg>
       );
     case 'telefono':

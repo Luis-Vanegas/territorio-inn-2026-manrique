@@ -1,15 +1,23 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { EnlaceVolver } from '@/components/EnlaceVolver';
 import { EtiquetaPagina } from '@/components/EtiquetaPagina';
+import { IconoContacto } from '@/components/iconos/IconoContacto';
+import type { Lamina, RedSocial } from '@/lib/marca';
+
+/** Lo mínimo de una guía para mostrar su portada — no el objeto `Guia`
+ *  completo, que trae secciones que acá nunca se renderizan. */
+export type VistaPreviaGuia = { titulo: string; portada?: Lamina; red?: RedSocial };
 
 /**
  * Lo que ve quien llega sin sesión: de qué trata, nunca el contenido.
  *
  * Misma decisión que la vista previa de /formalizacion: pedir la cuenta antes
- * de decir qué gana con ella espanta a quien llega por primera vez. Las guías
- * se nombran; su contenido no viaja al navegador porque el `return` de la
- * página corta antes de renderizarlo.
+ * de decir qué gana con ella espanta a quien llega por primera vez. Las
+ * guías se muestran como portadas (primera lámina de cada una) para que la
+ * primera impresión sea visual, no una lista de texto — pero sin link: son
+ * solo una vista previa, el contenido real queda del otro lado del registro.
  */
 export function PuertaRegistro({
   titulo,
@@ -19,8 +27,8 @@ export function PuertaRegistro({
 }: {
   titulo: string;
   bajada: string;
-  /** Títulos de las guías, para que se vea qué hay adentro. */
-  guias?: string[];
+  /** Portada + título de cada guía, para que se vea qué hay adentro. */
+  guias?: VistaPreviaGuia[];
   volver: { href: string; etiqueta: string };
 }) {
   return (
@@ -37,19 +45,42 @@ export function PuertaRegistro({
         </header>
 
         {guias && (
-          <section className="mt-12 border-t border-tinta/12 pt-10">
+          <section className="mt-10 border-t border-tinta/12 pt-8">
             <h2 className="font-mono text-sm uppercase tracking-wider text-tinta/70">
               Lo que encuentras adentro
             </h2>
-            <ul className="mt-6 space-y-2 font-sans text-lg text-tinta">
+            <ul
+              role="list"
+              className="mt-6 grid list-none grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6"
+            >
               {guias.map((guia) => (
-                <li key={guia}>· {guia}</li>
+                <li key={guia.titulo} className="flex flex-col border border-tinta/15 bg-hueso">
+                  {guia.portada && (
+                    <div className="relative aspect-[4/3] w-full overflow-hidden border-b border-tinta/15 bg-tinta/[0.04]">
+                      {/* object-contain: son infografías con texto — recortarlas
+                          se come lo que las hace reconocibles de un vistazo. */}
+                      <Image
+                        src={guia.portada.src}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1280px) 16vw, (min-width: 640px) 30vw, 45vw"
+                        className="object-contain"
+                      />
+                      {guia.red && (
+                        <span className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center border border-tinta/15 bg-hueso">
+                          <IconoContacto tipo={guia.red} className="h-4 w-4" />
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <p className="p-2.5 font-sans text-sm leading-snug text-tinta">{guia.titulo}</p>
+                </li>
               ))}
             </ul>
           </section>
         )}
 
-        <section className="mt-12 border-t border-tinta/12 pt-10">
+        <section className="mt-10 border-t border-tinta/12 pt-8">
           <p className="font-sans leading-relaxed text-tinta/70">
             Es un regalo del equipo de Constelaciones para los negocios de la
             Comuna 3. Solo pedimos que registres el tuyo, porque así podemos

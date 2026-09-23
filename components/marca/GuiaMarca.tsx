@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import { EnlaceVolver } from '@/components/EnlaceVolver';
 import { EtiquetaPagina } from '@/components/EtiquetaPagina';
+import { IconoContacto } from '@/components/iconos/IconoContacto';
 import { vecinas, type Guia } from '@/lib/marca';
 import { Secciones } from './Secciones';
 import { VisorLaminas } from './VisorLaminas';
@@ -26,7 +27,10 @@ export function GuiaMarca({
       <EnlaceVolver href={base}>← Marca</EnlaceVolver>
 
       <header className="mt-10 max-w-3xl">
-        <EtiquetaPagina>{etiqueta}</EtiquetaPagina>
+        <div className="flex items-center gap-3">
+          <EtiquetaPagina>{etiqueta}</EtiquetaPagina>
+          {guia.red && <IconoContacto tipo={guia.red} className="h-7 w-7 shrink-0" />}
+        </div>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
           {guia.titulo}
@@ -36,10 +40,11 @@ export function GuiaMarca({
           {guia.bajada}
         </p>
 
-        {/* La lámina original, a un clic desde el arranque: quien prefiere ver
-            la imagen del equipo en vez de la página no tiene que buscarla. */}
+        {/* Las láminas originales, visibles de entrada: tocar cualquiera abre
+            el visor en esa lámina. Quien prefiere ver la imagen del equipo en
+            vez de la página no tiene que buscarla detrás de un botón. */}
         <div className="mt-8">
-          <VisorLaminas titulo={guia.titulo} laminas={guia.laminas} />
+          <VisorLaminas titulo={guia.titulo} laminas={guia.laminas} variante="miniaturas" />
         </div>
 
         {/* Índice de la guía: en pantallas chicas evita bajar a ciegas hasta
