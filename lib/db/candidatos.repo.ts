@@ -66,34 +66,78 @@ export async function crearCandidato(datos: NuevoCandidato): Promise<{ id: strin
   return fila;
 }
 
-/** Cola de moderación. */
-export type CandidatoPendiente = Candidato;
+/** Los cuatro estados de moderación — mismo enum `portafolio_estado` que Aliados. */
+export type EstadoCandidato = 'pendiente' | 'aprobado' | 'rechazado' | 'archivado';
 
-export async function listarCandidatosPendientes(): Promise<CandidatoPendiente[]> {
+/** Fila para el panel de moderación: agrega estado y motivo a `Candidato`. */
+export type CandidatoModeracion = Candidato & {
+  estado: EstadoCandidato;
+  motivo_rechazo: string | null;
+};
+
+const COLUMNAS_MODERACION = `
+  id, nombre, telefono, nivel_formacion, programa, graduado, experiencia, busca,
+  estado, motivo_rechazo,
+  to_char(creado_en, 'YYYY-MM-DD') as creado_en
+`;
+
+/** Cola de moderación, filtrada por pestaña (`?estado=` en /admin/empleo). */
+export async function listarCandidatosPorEstado(
+  estado: EstadoCandidato,
+): Promise<CandidatoModeracion[]> {
   const rows = await sql`
-    select ${sql.unsafe(COLUMNAS)}
+    select ${sql.unsafe(COLUMNAS_MODERACION)}
     from candidatos
-    where estado = 'pendiente'
-    order by creado_en
+    where estado = ${estado}
+    order by creado_en asc
   `;
-  return rows as CandidatoPendiente[];
+  return rows as CandidatoModeracion[];
 }
 
+/** Conteo por estado para las pestañas del panel, sin traer filas. */
+export async function contarCandidatosPorEstado(): Promise<Record<EstadoCandidato, number>> {
+  const rows = (await sql`
+    select estado, count(*)::int as total
+    from candidatos
+    group by estado
+  `) as { estado: EstadoCandidato; total: number }[];
+
+  const base: Record<EstadoCandidato, number> = {
+    pendiente: 0, aprobado: 0, rechazado: 0, archivado: 0,
+  };
+  for (const r of rows) base[r.estado] = r.total;
+  return base;
+}
+
+/**
+ * Cambia el estado dejando registro de quién y cuándo.
+ * `archivado` es "retirar" un candidato ya publicado — mismo estado que usa
+ * Aliados para lo mismo, ya existe en el enum `portafolio_estado` y no exige
+ * motivo por constraint (`chk_candidato_rechazo_con_motivo` solo aplica a
+ * 'rechazado'), así que no hace falta una migración nueva.
+ *
+ * `and estado <> $estado` evita que dos moderadores con la pestaña abierta
+ * se pisen — mismo criterio que `moderar()` de portafolios.repo.ts: el
+ * segundo no encuentra fila y la UI se entera de que ya se decidió, en vez
+ * de reescribir en silencio una decisión que ya se había tomado.
+ */
 export async function moderarCandidato(
   id: string,
-  estado: 'aprobado' | 'rechazado',
+  estado: 'aprobado' | 'rechazado' | 'archivado',
   moderador: string,
   motivo?: string,
-): Promise<void> {
-  await sql`
+): Promise<boolean> {
+  const rows = await sql`
     update candidatos
     set estado = ${estado}::portafolio_estado,
         motivo_rechazo = ${motivo ?? null},
         moderado_por = ${moderador},
         moderado_en = now(),
         actualizado_en = now()
-    where id = ${id}
+    where id = ${id} and estado <> ${estado}::portafolio_estado
+    returning id
   `;
+  return rows.length > 0;
 }
 
 /** Conteo para el home y el panel, sin traer filas. */
@@ -102,4 +146,40 @@ export async function contarCandidatosAprobados(): Promise<number> {
     select count(*)::int as total from candidatos where estado = 'aprobado'
   `) as { total: number }[];
   return rows[0]?.total ?? 0;
+}
+
+export type EdicionCandidato = {
+  nombre: string;
+  telefono: string;
+  nivel_formacion: string;
+  programa: string | null;
+  graduado: boolean | null;
+  experiencia: string;
+  busca: string;
+};
+
+/**
+ * Edición por moderador: corrige datos, nunca toca `estado` ni la auditoría
+ * de moderación (moderado_por/moderado_en). `where estado = 'aprobado'`
+ * porque el botón "Editar" del panel solo aparece en esa pestaña — mismo
+ * criterio que `editarComoModerador` de portafolios.repo.ts.
+ */
+export async function editarCandidatoComoModerador(
+  id: string,
+  datos: EdicionCandidato,
+): Promise<boolean> {
+  const rows = await sql`
+    update candidatos
+    set nombre = ${datos.nombre},
+        telefono = ${datos.telefono},
+        nivel_formacion = ${datos.nivel_formacion},
+        programa = ${datos.programa},
+        graduado = ${datos.graduado},
+        experiencia = ${datos.experiencia},
+        busca = ${datos.busca},
+        actualizado_en = now()
+    where id = ${id} and estado = 'aprobado'
+    returning id
+  `;
+  return rows.length > 0;
 }

@@ -30,39 +30,57 @@ const telefonoColombiano = z
 const opcional = <T extends z.ZodTypeAny>(schema: T) =>
   z.union([schema, z.literal('')]).transform((v) => (v === '' ? null : v));
 
-export const candidatoSchema = z
-  .object({
-    nombre: z.string().trim().min(2, 'Escribe tu nombre').max(80, 'Máximo 80 caracteres'),
-    telefono: telefonoColombiano,
+// Objeto base sin `.refine`: separado para poder derivar con `.omit()` el
+// schema de edición del moderador (candidatoModeradorSchema, más abajo) — un
+// ZodEffects (lo que devuelve `.refine`) no admite `.omit`.
+const candidatoBase = z.object({
+  nombre: z.string().trim().min(2, 'Escribe tu nombre').max(80, 'Máximo 80 caracteres'),
+  telefono: telefonoColombiano,
 
-    nivel_formacion: z.enum(OPCIONES_NIVEL_FORMACION, { message: 'Elige una opción' }),
-    programa: opcional(z.string().trim().max(100, 'Máximo 100 caracteres')),
-    graduado: z.boolean().nullable().default(null),
+  nivel_formacion: z.enum(OPCIONES_NIVEL_FORMACION, { message: 'Elige una opción' }),
+  programa: opcional(z.string().trim().max(100, 'Máximo 100 caracteres')),
+  graduado: z.boolean().nullable().default(null),
 
-    experiencia: z
-      .string()
-      .trim()
-      .min(10, 'Cuenta qué sabes hacer — mínimo 10 caracteres')
-      .max(400, 'Máximo 400 caracteres'),
-    busca: z
-      .string()
-      .trim()
-      .min(5, 'Cuenta qué tipo de trabajo buscas')
-      .max(200, 'Máximo 200 caracteres'),
+  experiencia: z
+    .string()
+    .trim()
+    .min(10, 'Cuenta qué sabes hacer — mínimo 10 caracteres')
+    .max(400, 'Máximo 400 caracteres'),
+  busca: z
+    .string()
+    .trim()
+    .min(5, 'Cuenta qué tipo de trabajo buscas')
+    .max(200, 'Máximo 200 caracteres'),
 
-    acepto_terminos: z.literal(true, { message: 'Tienes que aceptar los términos' }),
-    acepto_habeas_data: z.literal(true, {
-      message: 'Tienes que autorizar el tratamiento de datos',
-    }),
-  })
-  // Universitaria/tecnológica/técnica/SENA sin nombrar el programa deja una
-  // ficha inútil para quien busca perfiles concretos.
-  .refine((d) => !NIVELES_CON_PROGRAMA.includes(d.nivel_formacion) || Boolean(d.programa), {
-    message: 'Escribe el nombre del programa o carrera',
-    path: ['programa'],
-  });
+  acepto_terminos: z.literal(true, { message: 'Tienes que aceptar los términos' }),
+  acepto_habeas_data: z.literal(true, {
+    message: 'Tienes que autorizar el tratamiento de datos',
+  }),
+});
+
+// Universitaria/tecnológica/técnica/SENA sin nombrar el programa deja una
+// ficha inútil para quien busca perfiles concretos.
+const requierePrograma = (d: { nivel_formacion: string; programa: string | null }) =>
+  !NIVELES_CON_PROGRAMA.includes(d.nivel_formacion) || Boolean(d.programa);
+const refuerzoPrograma = {
+  message: 'Escribe el nombre del programa o carrera',
+  path: ['programa'],
+};
+
+export const candidatoSchema = candidatoBase.refine(requierePrograma, refuerzoPrograma);
 
 export type DatosCandidato = z.infer<typeof candidatoSchema>;
+
+/**
+ * Edición por un moderador desde el panel: mismos datos que publica la
+ * persona, sin los checkboxes de consentimiento — esos los da el titular en
+ * el registro original (Ley 1581), un moderador no puede otorgarlos por él.
+ */
+export const candidatoModeradorSchema = candidatoBase
+  .omit({ acepto_terminos: true, acepto_habeas_data: true })
+  .refine(requierePrograma, refuerzoPrograma);
+
+export type DatosCandidatoModerador = z.infer<typeof candidatoModeradorSchema>;
 
 /** FormData → objeto plano, antes de Zod. Mismo patrón que portafolio.schema. */
 export function desdeFormData(formData: FormData) {

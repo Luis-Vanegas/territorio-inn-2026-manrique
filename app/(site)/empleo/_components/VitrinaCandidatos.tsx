@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import type { Candidato } from '@/lib/db/candidatos.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
 import { OPCIONES_NIVEL_FORMACION } from '@/lib/validation/candidato.schema';
+import { IconoContacto } from '@/components/iconos/IconoContacto';
 
 /** Filtrado en memoria: a escala barrial son decenas de fichas, mismo criterio que VitrinaServicios. */
 
@@ -42,11 +43,16 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
         href={enlaceWhatsapp(telefono)}
         target="_blank"
         rel="noopener noreferrer"
-        className="min-h-11 border border-azul-texto px-4 py-2 font-mono text-xs text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso"
+        className="inline-flex min-h-11 items-center gap-1.5 border border-azul-texto px-4 py-2 font-mono text-xs text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso"
       >
+        <IconoContacto tipo="whatsapp" className="h-3.5 w-3.5 shrink-0" />
         WhatsApp a {nombre.split(' ')[0]}
       </a>
-      <a href={`tel:${telefono.replace(/\s/g, '')}`} className="font-mono text-xs text-tinta/70">
+      <a
+        href={`tel:${telefono.replace(/\s/g, '')}`}
+        className="inline-flex items-center gap-1.5 font-mono text-xs text-tinta/70"
+      >
+        <IconoContacto tipo="telefono" className="h-3.5 w-3.5 shrink-0" />
         {telefono}
       </a>
     </div>

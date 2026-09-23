@@ -1,10 +1,36 @@
-import { listarCandidatosPendientes } from '@/lib/db/candidatos.repo';
+import Link from 'next/link';
+
+import {
+  listarCandidatosPorEstado,
+  contarCandidatosPorEstado,
+  type EstadoCandidato,
+} from '@/lib/db/candidatos.repo';
 import { FichaCandidato } from './_components/FichaCandidato';
 
+// La cola cambia con cada registro nuevo: no se cachea.
 export const dynamic = 'force-dynamic';
 
-export default async function AdminEmpleoPage() {
-  const pendientes = await listarCandidatosPendientes();
+const ESTADOS: { id: EstadoCandidato; etiqueta: string }[] = [
+  { id: 'pendiente', etiqueta: 'Pendientes' },
+  { id: 'aprobado', etiqueta: 'Publicados' },
+  { id: 'rechazado', etiqueta: 'Rechazados' },
+  { id: 'archivado', etiqueta: 'Retirados' },
+];
+
+export default async function AdminEmpleoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ estado?: string }>;
+}) {
+  const solicitado = (await searchParams).estado;
+  const estadoActivo: EstadoCandidato = ESTADOS.some((e) => e.id === solicitado)
+    ? (solicitado as EstadoCandidato)
+    : 'pendiente';
+
+  const [registros, conteos] = await Promise.all([
+    listarCandidatosPorEstado(estadoActivo),
+    contarCandidatosPorEstado(),
+  ]);
 
   return (
     <main className="margen-editorial py-16">
@@ -16,20 +42,38 @@ export default async function AdminEmpleoPage() {
         vitrina.
       </p>
 
-      <section className="mt-12">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
-          En revisión ({pendientes.length})
-        </h2>
+      <nav aria-label="Filtrar por estado" className="mt-8 flex flex-wrap gap-2">
+        {ESTADOS.map((e) => {
+          const activo = e.id === estadoActivo;
+          return (
+            <Link
+              key={e.id}
+              href={`/admin/empleo?estado=${e.id}`}
+              aria-current={activo ? 'page' : undefined}
+              className={[
+                'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-mono text-xs transition-colors',
+                activo
+                  ? 'border-azul-texto bg-azul-texto text-hueso'
+                  : 'border-tinta/15 text-tinta/65 hover:border-azul-texto hover:text-azul-texto',
+              ].join(' ')}
+            >
+              {e.etiqueta}
+              <span className="opacity-60">{conteos[e.id]}</span>
+            </Link>
+          );
+        })}
+      </nav>
 
-        <div className="mt-6">
-          {pendientes.length === 0 ? (
-            <p className="border-t border-tinta/12 py-10 font-sans text-sm text-tinta/65">
-              No hay registros esperando revisión.
-            </p>
-          ) : (
-            pendientes.map((c) => <FichaCandidato key={c.id} candidato={c} />)
-          )}
-        </div>
+      <section className="mt-12">
+        {registros.length === 0 ? (
+          <p className="border-t border-tinta/12 pt-8 font-sans text-tinta/60">
+            {estadoActivo === 'pendiente'
+              ? 'No hay nada esperando revisión.'
+              : 'No hay registros en este estado.'}
+          </p>
+        ) : (
+          registros.map((c) => <FichaCandidato key={c.id} candidato={c} />)
+        )}
       </section>
     </main>
   );
