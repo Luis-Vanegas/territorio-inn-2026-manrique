@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
 
 import { perfilDesdeCodigo, COOKIE_ESTADO, COOKIE_VERIFICADOR } from '@/lib/auth/google';
 import { ingresarConGoogle, vincularNegocio } from '@/lib/db/usuarios.repo';
-import { iniciarSesionAdmin } from '@/lib/auth/admin';
+import { iniciarSesionAdmin, registrarModeradorGoogle } from '@/lib/auth/admin';
 import { opcionesBorrado } from '@/lib/auth/cookies';
 import { esModeradorGoogle } from '@/lib/auth/moderadoresGoogle';
 import { iniciarSesion } from '@/lib/auth/usuario';
@@ -106,6 +106,7 @@ export async function GET(request: Request) {
     // de moderación — otra cookie, no un permiso dentro de esta. La lista de
     // `sub` permitidos vive en el entorno (ver lib/auth/moderadoresGoogle.ts).
     if (esModeradorGoogle(perfil.sub)) {
+      await registrarModeradorGoogle(perfil.correo, usuario.nombre);
       await iniciarSesionAdmin(perfil.correo);
     }
 

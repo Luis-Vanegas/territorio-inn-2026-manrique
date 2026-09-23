@@ -95,6 +95,14 @@ separación de arriba:
 - En el retorno de Google, si el `sub` está en la lista, el servidor emite
   **además** la cookie `admin_session`. La cookie de vecino no cambia ni lleva
   ningún rol: sigue sin haber un camino donde falsificarla dé acceso al panel.
+- En ese mismo retorno se asegura una fila en `admins` con su correo
+  (`registrarModeradorGoogle`, `activo = false`, `password_hash = 'sin-acceso'`).
+  Es para la auditoría, no para el acceso: `moderado_por`, `atendido_por` y
+  `creado_por` son FK a `admins(email)`, y sin la fila todo lo que modera un
+  moderador por Google falla con `portafolios_moderado_por_fkey`. La fila no
+  concede nada: `verificarSesion()` no lee `admins`, y `autenticar()` descarta
+  las filas inactivas, así que no se puede entrar por contraseña con ella. Si el
+  correo ya era un admin con contraseña, no se toca (`on conflict do nothing`).
 - «Cerrar sesión» del vecino cierra también `admin_session`.
 - Sin `ADMIN_GOOGLE_SUBS`, nadie entra por este camino.
 - El `sub` se obtiene con `npm run db:google-sub -- --correo <correo>`.
