@@ -10,7 +10,12 @@ export type EstadoModeracionCandidato =
   | { estado: 'error'; mensaje: string };
 
 /**
- * Aprobar o rechazar a alguien que busca trabajo.
+ * Aprobar, rechazar o retirar a alguien que busca trabajo.
+ *
+ * "Retirar" (candidato ya publicado que se quita de la vitrina) usa el
+ * estado 'archivado' — mismo estado y mismo criterio que Aliados, sin
+ * necesidad de motivo. "Publicar" funciona también desde 'rechazado' o
+ * 'archivado' (reconsiderar), no solo desde 'pendiente'.
  *
  * Igual que el resto de las acciones de moderación, la sesión se verifica acá y no solo en el
  * layout: una server action es un endpoint HTTP invocable sin pasar por
@@ -28,7 +33,7 @@ export async function moderarCandidatoAction(
   const motivo = String(formData.get('motivo_rechazo') ?? '').trim();
 
   if (!id) return { estado: 'error', mensaje: 'Falta el identificador.' };
-  if (accion !== 'aprobar' && accion !== 'rechazar') {
+  if (accion !== 'aprobar' && accion !== 'rechazar' && accion !== 'retirar') {
     return { estado: 'error', mensaje: 'Acción no reconocida.' };
   }
   if (accion === 'rechazar' && motivo.length < 10) {
@@ -38,13 +43,22 @@ export async function moderarCandidatoAction(
     };
   }
 
+  const nuevoEstado =
+    accion === 'aprobar' ? 'aprobado' : accion === 'rechazar' ? 'rechazado' : 'archivado';
+
   try {
-    await moderarEnBase(
+    const cambio = await moderarEnBase(
       id,
-      accion === 'aprobar' ? 'aprobado' : 'rechazado',
+      nuevoEstado,
       sesion.email,
       accion === 'rechazar' ? motivo : undefined,
     );
+    if (!cambio) {
+      return {
+        estado: 'error',
+        mensaje: 'No encontramos ese registro, o ya estaba en ese estado. Refresca la lista.',
+      };
+    }
   } catch (error) {
     console.error('[moderarCandidato] falló', error);
     return { estado: 'error', mensaje: 'No se pudo aplicar el cambio.' };
@@ -53,8 +67,11 @@ export async function moderarCandidatoAction(
   revalidatePath('/admin/empleo');
   revalidatePath('/empleo');
 
-  return {
-    estado: 'ok',
-    mensaje: accion === 'aprobar' ? 'Publicado en la vitrina.' : 'Registro rechazado.',
-  };
+  const mensajes = {
+    aprobado: 'Publicado en la vitrina.',
+    rechazado: 'Registro rechazado.',
+    archivado: 'Retirado de la vitrina.',
+  } as const;
+
+  return { estado: 'ok', mensaje: mensajes[nuevoEstado] };
 }

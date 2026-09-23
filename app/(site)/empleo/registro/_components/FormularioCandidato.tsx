@@ -1,6 +1,7 @@
 'use client';
 
 import { useActionState, useMemo, useState } from 'react';
+import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 
 import {
@@ -37,6 +38,21 @@ function Error({ mensajes }: { mensajes?: string[] }) {
     <p role="alert" className="mt-2 font-sans text-xs text-azul-texto">
       {mensajes[0]}
     </p>
+  );
+}
+
+// Deshabilitar durante el envío evita el doble registro de un doble clic —
+// mismo patrón que FormularioContacto.
+function BotonPublicar() {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="min-h-11 self-start border border-azul-texto bg-azul-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      {pending ? 'Enviando…' : 'Publicarme →'}
+    </button>
   );
 }
 
@@ -270,12 +286,7 @@ export function FormularioCandidato() {
           <Error mensajes={errores.acepto_habeas_data} />
         </div>
 
-        <button
-          type="submit"
-          className="min-h-11 self-start border border-azul-texto bg-azul-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
-        >
-          Publicarme →
-        </button>
+        <BotonPublicar />
       </div>
     </form>
   );
