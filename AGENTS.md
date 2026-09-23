@@ -22,10 +22,11 @@ ambos agentes repliquen un patrón que ya no existe.
   por `fetch` al formato de OpenAI en `/chat/completions`, **sin SDK**. Los
   proveedores viven en `lib/agente/proveedores.ts` y se recorren en orden hasta
   que alguno responda: todos corren con plan gratuito y un plan gratuito se
-  agota. Cada uno se prende con su clave (`GEMINI_API_KEY`, `GROQ_API_KEY`,
+  agota. Cada uno se prende con su clave (`Gemi_Api` — sí, se llama así en el
+  entorno de este proyecto, no `GEMINI_API_KEY`; las variables distinguen
+  mayúsculas —, `GROQ_API` — también sin el sufijo `_KEY` —,
   `OPENROUTER_API_KEY`, `NVIDIA_API_KEY` — NVIDIA NIM, la clave empieza con
-  `nvapi-` y se saca gratis en build.nvidia.com —, `API_router` (Routeway), último
-  de la lista como respaldo); el modelo y la URL se pueden
+  `nvapi-` y se saca gratis en build.nvidia.com —, `API_router` (Routeway)); el modelo y la URL se pueden
   pisar con `<PROVEEDOR>_MODELO` y `<PROVEEDOR>_API_URL`. No instales el SDK de
   ningún proveedor: ata el proyecto a ese proveedor justo donde la
   portabilidad es el requisito. La llamada sale solo desde una Server Action
