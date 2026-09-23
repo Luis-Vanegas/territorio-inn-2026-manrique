@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {
   listarParaModerar,
   contarPorEstado,
+  listarCategorias,
   type EstadoPortafolio,
 } from '@/lib/db/portafolios.repo';
 import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
@@ -28,10 +29,11 @@ export default async function ModeracionPage({
     ? (solicitado as EstadoPortafolio)
     : 'pendiente';
 
-  const [registros, conteos, definicionesCampos] = await Promise.all([
+  const [registros, conteos, definicionesCampos, categorias] = await Promise.all([
     listarParaModerar(estadoActivo),
     contarPorEstado(),
     listarTodosLosCampos(),
+    listarCategorias(),
   ]);
 
   return (
@@ -75,7 +77,12 @@ export default async function ModeracionPage({
           </p>
         ) : (
           registros.map((r) => (
-            <FichaModeracion key={r.id} portafolio={r} definicionesCampos={definicionesCampos} />
+            <FichaModeracion
+              key={r.id}
+              portafolio={r}
+              definicionesCampos={definicionesCampos}
+              categorias={categorias}
+            />
           ))
         )}
       </section>

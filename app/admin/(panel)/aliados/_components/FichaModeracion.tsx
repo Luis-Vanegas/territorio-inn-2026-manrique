@@ -8,9 +8,12 @@ import {
   moderarPortafolio,
   type EstadoModeracion,
 } from '@/lib/actions/moderarPortafolio';
-import type { PortafolioAdmin } from '@/lib/db/portafolios.repo';
+import { editarPortafolioModerador } from '@/lib/actions/editarPortafolioModerador';
+import type { Categoria, EstadoPortafolio, PortafolioAdmin } from '@/lib/db/portafolios.repo';
 import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import { formatearCamposExtra } from '@/lib/camposExtra';
+import { FormularioEdicionPortafolio } from '@/components/FormularioEdicionPortafolio';
+import { BadgeEstado, type TonoBadge } from '@/components/admin/BadgeEstado';
 
 const ESTADO_INICIAL: EstadoModeracion = { estado: 'inicial' };
 
@@ -18,10 +21,13 @@ function Boton({
   accion,
   etiqueta,
   variante,
+  confirmar,
 }: {
   accion: string;
   etiqueta: string;
   variante: 'primaria' | 'secundaria';
+  /** Si viene, pide confirmación antes de dejar pasar el submit. */
+  confirmar?: string;
 }) {
   const { pending } = useFormStatus();
 
@@ -31,6 +37,9 @@ function Boton({
       name="accion"
       value={accion}
       disabled={pending}
+      onClick={(e) => {
+        if (confirmar && !window.confirm(confirmar)) e.preventDefault();
+      }}
       className={[
         'border px-4 py-2 font-mono text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40',
         variante === 'primaria'
@@ -58,6 +67,35 @@ const ETIQUETA_MEDIO_PAGO: Record<string, string> = {
   datafono: 'Datáfono',
 };
 
+const ETIQUETA_ESTADO: Record<EstadoPortafolio, string> = {
+  pendiente: 'Pendiente',
+  aprobado: 'Publicado',
+  rechazado: 'Rechazado',
+  archivado: 'Archivado',
+};
+
+const TONO_ESTADO: Record<EstadoPortafolio, TonoBadge> = {
+  pendiente: 'neutral',
+  aprobado: 'positivo',
+  rechazado: 'negativo',
+  archivado: 'atenuado',
+};
+
+/** timeZone fijo: servidor (UTC) y navegador del moderador (Colombia) arman
+ * textos distintos para la misma fecha si no se fija, y React tira un error
+ * de hidratación (#418) al notar que no coinciden. El replace es por lo
+ * mismo: el ICU de Node y el de Chrome separan "9:17 p. m." con espacios
+ * distintos — el texto se ve igual y React igual lo marca como distinto. */
+function formatFechaCo(iso: string): string {
+  return new Date(iso)
+    .toLocaleString('es-CO', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'America/Bogota',
+    })
+    .replace(/\s/g, ' ');
+}
+
 /** Solo los campos con valor: una lista con cinco "—" no informa nada. */
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
   if (!valor) return null;
@@ -74,12 +112,15 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
 export function FichaModeracion({
   portafolio,
   definicionesCampos,
+  categorias,
 }: {
   portafolio: PortafolioAdmin;
   definicionesCampos: DefinicionCampo[];
+  categorias: Categoria[];
 }) {
   const [estado, accion] = useActionState(moderarPortafolio, ESTADO_INICIAL);
   const [mostrarRechazo, setMostrarRechazo] = useState(false);
+  const [editando, setEditando] = useState(false);
   const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
 
   // Aprobado o rechazado, la ficha desaparece de la lista al revalidar.
@@ -98,13 +139,29 @@ export function FichaModeracion({
     <article className="border-t border-tinta/12 py-8">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto]">
         <div className="min-w-0">
-          <span className="font-mono text-xs uppercase tracking-wider text-morado-texto">
-            {portafolio.categoria_nombre}
-          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-xs uppercase tracking-wider text-morado-texto">
+              {portafolio.categoria_nombre}
+            </span>
+            <BadgeEstado etiqueta={ETIQUETA_ESTADO[portafolio.estado]} tono={TONO_ESTADO[portafolio.estado]} />
+          </div>
 
           <h3 className="mt-2 font-display text-2xl font-medium leading-tight text-tinta">
             {portafolio.nombre}
           </h3>
+
+          {portafolio.moderado_por && portafolio.moderado_en && (
+            <p className="mt-1 font-mono text-xs text-tinta/60">
+              {ETIQUETA_ESTADO[portafolio.estado]} por {portafolio.moderado_por} ·{' '}
+              {formatFechaCo(portafolio.moderado_en)}
+            </p>
+          )}
+
+          {portafolio.estado === 'rechazado' && portafolio.motivo_rechazo && (
+            <p className="mt-3 max-w-prose border-l-2 border-amarillo bg-amarillo/10 px-4 py-3 font-sans text-sm leading-relaxed text-tinta">
+              {portafolio.motivo_rechazo}
+            </p>
+          )}
 
           {portafolio.descripcion && (
             <p className="mt-3 max-w-prose font-sans text-sm leading-relaxed text-tinta/70">
@@ -142,23 +199,7 @@ export function FichaModeracion({
                   : null
               }
             />
-            <Dato
-              etiqueta="Recibido"
-              // timeZone fijo: sin esto, el servidor (UTC) y el navegador del
-              // moderador (Colombia) arman textos distintos para la misma
-              // fecha, y React tira un error de hidratación (#418) al notar
-              // que no coinciden. El replace es por lo mismo: el ICU de Node y
-              // el de Chrome separan "9:17 p. m." con espacios distintos
-              // (U+202F, U+00A0, espacio común) — el texto se ve igual y React
-              // igual lo marca como distinto.
-              valor={new Date(portafolio.creado_en)
-                .toLocaleString('es-CO', {
-                  dateStyle: 'medium',
-                  timeStyle: 'short',
-                  timeZone: 'America/Bogota',
-                })
-                .replace(/\s/g, ' ')}
-            />
+            <Dato etiqueta="Recibido" valor={formatFechaCo(portafolio.creado_en)} />
             {camposExtra.map((c) => (
               <Dato key={c.etiqueta} etiqueta={c.etiqueta} valor={c.valor} />
             ))}
@@ -207,62 +248,105 @@ export function FichaModeracion({
         </div>
       </div>
 
-      <form action={accion} className="mt-6">
-        <input type="hidden" name="id" value={portafolio.id} />
+      {portafolio.estado !== 'archivado' && (
+        <form action={accion} className="mt-6">
+          <input type="hidden" name="id" value={portafolio.id} />
 
-        {mostrarRechazo && (
-          <div className="mb-4 max-w-xl">
-            <label
-              htmlFor={`motivo-${portafolio.id}`}
-              className="block font-sans text-sm font-medium text-tinta"
-            >
-              Motivo del rechazo
-            </label>
-            <p className="mt-1 font-sans text-xs text-tinta/65">
-              Lo va a leer el emprendedor. Explicá qué corregir.
-            </p>
-            <textarea
-              id={`motivo-${portafolio.id}`}
-              name="motivo_rechazo"
-              rows={3}
-              minLength={10}
-              className="mt-2 w-full border border-tinta/20 bg-transparent p-3 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
-            />
-          </div>
-        )}
-
-        {estado.estado === 'error' && (
-          <p role="alert" className="mb-3 font-mono text-xs text-azul-texto">
-            {estado.mensaje}
-          </p>
-        )}
-
-        <div className="flex flex-wrap gap-2">
-          {!mostrarRechazo ? (
-            <>
-              <Boton accion="aprobar" etiqueta="Aprobar y publicar" variante="primaria" />
-              <button
-                type="button"
-                onClick={() => setMostrarRechazo(true)}
-                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+          {portafolio.estado === 'pendiente' && mostrarRechazo && (
+            <div className="mb-4 max-w-xl">
+              <label
+                htmlFor={`motivo-${portafolio.id}`}
+                className="block font-sans text-sm font-medium text-tinta"
               >
-                Rechazar…
-              </button>
-            </>
-          ) : (
-            <>
-              <Boton accion="rechazar" etiqueta="Confirmar rechazo" variante="primaria" />
-              <button
-                type="button"
-                onClick={() => setMostrarRechazo(false)}
-                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
-              >
-                Cancelar
-              </button>
-            </>
+                Motivo del rechazo
+              </label>
+              <p className="mt-1 font-sans text-xs text-tinta/65">
+                Lo va a leer el emprendedor. Explica qué corregir.
+              </p>
+              <textarea
+                id={`motivo-${portafolio.id}`}
+                name="motivo_rechazo"
+                rows={3}
+                minLength={10}
+                className="mt-2 w-full border border-tinta/20 bg-transparent p-3 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
+              />
+            </div>
           )}
+
+          {estado.estado === 'error' && (
+            <p role="alert" className="mb-3 font-mono text-xs text-azul-texto">
+              {estado.mensaje}
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-2">
+            {portafolio.estado === 'pendiente' &&
+              (!mostrarRechazo ? (
+                <>
+                  <Boton accion="aprobar" etiqueta="Aprobar y publicar" variante="primaria" />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarRechazo(true)}
+                    className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                  >
+                    Rechazar…
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Boton accion="rechazar" etiqueta="Confirmar rechazo" variante="primaria" />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarRechazo(false)}
+                    className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ))}
+
+            {portafolio.estado === 'aprobado' && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setEditando((v) => !v)}
+                  className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                >
+                  {editando ? 'Cerrar edición' : 'Editar ficha'}
+                </button>
+                <Boton
+                  accion="archivar"
+                  etiqueta="Archivar"
+                  variante="secundaria"
+                  confirmar="¿Archivar este registro? Se quita del mapa de Aliados."
+                />
+              </>
+            )}
+
+            {portafolio.estado === 'rechazado' && (
+              <>
+                <Boton accion="aprobar" etiqueta="Aprobar y publicar" variante="primaria" />
+                <Boton
+                  accion="archivar"
+                  etiqueta="Archivar"
+                  variante="secundaria"
+                  confirmar="¿Archivar este registro?"
+                />
+              </>
+            )}
+          </div>
+        </form>
+      )}
+
+      {editando && portafolio.estado === 'aprobado' && (
+        <div className="mt-8 border-t border-tinta/12 pt-8">
+          <FormularioEdicionPortafolio
+            portafolio={portafolio}
+            categorias={categorias}
+            accion={editarPortafolioModerador.bind(null, portafolio.id)}
+          />
         </div>
-      </form>
+      )}
     </article>
   );
 }
