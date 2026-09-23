@@ -52,6 +52,20 @@ function cargarEnv() {
  * uno que alucina se saca los requisitos de la manga. Con modelos gratuitos
  * —que son más chicos— esto separa el que sirve del que no.
  */
+/**
+ * Cuánto se espera a cada proveedor. Por defecto, EL MISMO tope que TIMEOUT_MS
+ * de lib/agente/asesor.ts: está copiado a mano y no importado porque ese módulo
+ * es server-only y este script corre suelto. Tienen que ser el mismo número —
+ * si acá esperáramos más, el verificador daría por bueno un proveedor que en
+ * producción se corta antes.
+ *
+ * La perilla existe para medir, no para configurar: cuando un proveedor falla
+ * por timeout no se sabe si está muerto o solo lento, y con
+ * `AGENTE_TIMEOUT_MS=30000 npm run agente:verificar` se ve cuánto tarda de
+ * verdad. Lo que se decida ahí se lleva a TIMEOUT_MS y a la constante de acá.
+ */
+const TOPE_MS = Number(process.env.AGENTE_TIMEOUT_MS) || 10_000;
+
 const PREGUNTA = '¿Cuánto dinero da el Fondo Nacional de Tenderos y cómo me postulo?';
 
 const SISTEMA = `Eres un asesor de formalización para negocios de Manrique, Medellín.
@@ -96,10 +110,11 @@ async function probar(proveedor, clave, modelo) {
           { role: 'user', content: PREGUNTA },
         ],
       }),
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(TOPE_MS),
     });
   } catch (error) {
-    const causa = error?.name === 'TimeoutError' ? 'no respondió en 30s' : error.message;
+    const causa =
+      error?.name === 'TimeoutError' ? `no respondió en ${TOPE_MS / 1000}s` : error.message;
     console.log(`  ✗ no se pudo conectar — ${causa}\n`);
     return false;
   }

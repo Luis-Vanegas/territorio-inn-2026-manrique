@@ -48,8 +48,21 @@ const TEMPERATURA = 0.2;
 /**
  * Un free tier saturado puede tardar mucho o no responder nunca. Sin tope, la
  * Server Action queda colgada y la persona mira un botón girando sin final.
+ *
+ * Es POR proveedor, no un presupuesto total: cada uno que falla lento le cobra
+ * su espera entera a quien está mirando la pantalla, y se suman. Con tres
+ * claves cargadas y un tope de 30 s eso daba 54 s reales de espera medidos el
+ * 2026-09-22 (Gemini 503 a los 23.7 s → NVIDIA timeout a los 30 s → Routeway
+ * respondiendo en 0.9 s). Conectar MÁS proveedores empeoraba el peor caso, que
+ * es justo lo contrario de para qué existe la lista.
+ *
+ * 10 s porque un proveedor gratuito sano contesta muy por debajo de eso —el que
+ * sirvió ese día tardó 0.9 s— y el que pasa de diez segundos ya le arruinó la
+ * espera a la persona igual. Si alguna vez un proveedor bueno empieza a quedar
+ * afuera por lento, se sube acá y en scripts/verificar-agente.mjs, que replica
+ * este valor a propósito (ver el comentario de allá).
  */
-const TIMEOUT_MS = 30_000;
+const TIMEOUT_MS = 10_000;
 
 /** Catálogo renderizado una sola vez al cargar el módulo: es constante. */
 const CATALOGO = PASOS.map((p) =>
@@ -208,10 +221,8 @@ type RespuestaChat = {
 /** Resultado de un intento contra UN proveedor. */
 type Intento =
   | { tipo: 'ok'; texto: string }
-  /** Este proveedor no puede, pero otro quizás sí. */
-  | { tipo: 'siguiente'; motivo: string }
-  /** El pedido está mal armado: reintentar en otro lado solo esconde el bug. */
-  | { tipo: 'abortar'; motivo: string };
+  /** Este proveedor no puede, pero otro quizás sí. Siempre se prueba el siguiente. */
+  | { tipo: 'siguiente'; motivo: string };
 
 async function intentarCon(
   proveedor: ProveedorListo,
@@ -245,15 +256,22 @@ async function intentarCon(
     // del modelo y datos de la cuenta.
     const detalle = (await respuesta.text().catch(() => '')).slice(0, 300);
 
-    // Un 400 es el pedido mal construido — mismo cuerpo, mismo error en todos.
-    // Recorrer la lista entera para juntar tres veces el mismo fallo solo
-    // gasta cupo y tapa un bug nuestro.
-    if (respuesta.status === 400) {
-      return { tipo: 'abortar', motivo: `400 (pedido inválido): ${detalle}` };
-    }
-
-    // Todo lo demás es del proveedor, no nuestro: 429 sin cupo, 401 clave
-    // vencida, 404 modelo renombrado, 5xx caído. El siguiente puede servir.
+    // Ningún código corta la rotación, tampoco el 400.
+    //
+    // Acá hubo un caso especial que abortaba con 400, razonando que un 400 es
+    // el pedido mal construido y que fallaría igual en todos. La premisa es
+    // falsa: Gemini devuelve 400 con «Please pass a valid API key» para una
+    // clave inválida, y Gemini es el PRIMERO de la lista. Con ese caso
+    // especial, una clave vencida apagaba el asesor entero aunque los otros
+    // proveedores estuvieran sanos — lo contrario de para qué existe la lista.
+    //
+    // Si el bug del pedido llega a ser nuestro, se ve igual: el console.error
+    // final imprime los fallos de todos juntos y ahí aparecen cinco 400
+    // idénticos. Cuesta unos pedidos de más el día que metamos la pata
+    // nosotros; a cambio, una sola clave mala nunca deja sin asesor al vecino.
+    //
+    // 429 sin cupo, 401 clave vencida, 404 modelo renombrado, 5xx caído: el
+    // siguiente puede servir.
     return { tipo: 'siguiente', motivo: `${respuesta.status}: ${detalle}` };
   }
 
@@ -311,11 +329,6 @@ export async function consultarAsesor(
     }
 
     fallos.push(`${proveedor.nombre} (${proveedor.modelo}) → ${intento.motivo}`);
-
-    if (intento.tipo === 'abortar') {
-      console.error(`[asesor] pedido inválido, no se reintenta:\n  ${fallos.join('\n  ')}`);
-      return { estado: 'error', mensaje: 'No pudimos responder ahora. Intenta de nuevo.' };
-    }
   }
 
   // Se agotó la lista. El log lleva el detalle de cada uno: es la única forma
