@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { sesionActual } from '@/lib/auth/usuario';
@@ -51,6 +52,17 @@ function VistaPrevia() {
             casi todos con una entidad distinta detrás. Reunimos el camino
             completo para los negocios de la Comuna 3.
           </p>
+
+          <div className="relative mt-8 aspect-[16/7] w-full overflow-hidden">
+            <Image
+              src="/fotos/manrique-casas-arcoiris.jpg"
+              alt="Casas pintadas de colores en un cerro de Manrique, Comuna 3"
+              fill
+              preload
+              sizes="(max-width: 640px) 100vw, 672px"
+              className="object-cover"
+            />
+          </div>
         </header>
 
         <section className="mt-12 border-t border-tinta/12 pt-10">
@@ -154,6 +166,17 @@ export default async function FormalizacionPage() {
           No publicamos tarifas ni montos: cambian cada año. Cada paso te lleva
           a la página oficial donde está el valor vigente.
         </p>
+
+        <div className="relative mt-8 aspect-[16/7] w-full overflow-hidden sm:aspect-[21/8]">
+          <Image
+            src="/fotos/manrique-iglesia.jpg"
+            alt="Vista de una calle de Manrique con la iglesia del barrio al fondo"
+            fill
+            preload
+            sizes="(max-width: 1024px) 100vw, 768px"
+            className="object-cover"
+          />
+        </div>
       </header>
 
       <ContenidoFormalizacion formalidad={formalidad} />

@@ -87,7 +87,7 @@ export function RutasPersonalizadas({
               >
                 <p className="max-w-xl font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
 
-                <ul className="mt-8 grid gap-6 sm:grid-cols-2">
+                <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {pasos.map((paso, i) => (
                     <ScrollReveal key={paso.id} delay={Math.min(i, 5) * 0.06}>
                       <TarjetaPaso paso={paso} />
