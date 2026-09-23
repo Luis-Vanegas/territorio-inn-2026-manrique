@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useRef } from 'react';
+import { useActionState, useId, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 
@@ -26,6 +26,9 @@ import { consultarAsesor, type EstadoAsesor } from '@/lib/actions/consultarAseso
  * panel de moderación (sin token, con `consultarAsesorAdmin`). Lo que cambia
  * entre las dos entra por props; el formulario y el manejo de estados son los
  * mismos, para no mantener dos cajas que se desincronicen.
+ *
+ * `variante="panel"` es la misma caja sin el encabezado de sección, para
+ * meterla en el botón flotante (AsesorFlotante), que pone su propio título.
  */
 
 type AccionAsesor = (anterior: EstadoAsesor, formData: FormData) => Promise<EstadoAsesor>;
@@ -62,6 +65,7 @@ export function Asesor({
   accion: consultar = consultarAsesor,
   descripcion = 'Pregunta lo que necesites sobre trámites, cámara de comercio, apoyos económicos o formación. Conoce los datos de tu negocio, así que puedes preguntar directo.',
   hrefRutas = '/formalizacion',
+  variante = 'seccion',
 }: {
   /** Token del negocio. Sin él (moderación) no hay ficha: la pregunta es general. */
   token?: string;
@@ -69,9 +73,14 @@ export function Asesor({
   descripcion?: string;
   /** Adónde lleva «Ver todas las rutas»: cada puerta apunta a su propia copia. */
   hrefRutas?: string;
+  variante?: 'seccion' | 'panel';
 }) {
   const [estado, accion] = useActionState(consultar, ESTADO_INICIAL);
   const campo = useRef<HTMLTextAreaElement>(null);
+  // En la ficha del negocio conviven la caja de la página y la del botón
+  // flotante: un id fijo haría que el label de una enfoque el campo de la otra.
+  const idPregunta = useId();
+  const enPanel = variante === 'panel';
 
   function usarSugerencia(texto: string) {
     if (!campo.current) return;
@@ -80,22 +89,26 @@ export function Asesor({
   }
 
   return (
-    <section className="mt-16 border-t border-tinta/12 pt-10">
-      <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
-        Asesor de formalización
-      </h2>
+    <section className={enPanel ? '' : 'mt-16 border-t border-tinta/12 pt-10'}>
+      {!enPanel && (
+        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
+          Asesor de formalización
+        </h2>
+      )}
 
-      <p className="mt-4 max-w-xl font-sans leading-relaxed text-tinta/70">{descripcion}</p>
+      <p className={`max-w-xl font-sans leading-relaxed text-tinta/70 ${enPanel ? 'text-sm' : 'mt-4'}`}>
+        {descripcion}
+      </p>
 
-      <form action={accion} className="mt-6 max-w-xl">
+      <form action={accion} className={`max-w-xl ${enPanel ? 'mt-4' : 'mt-6'}`}>
         {token && <input type="hidden" name="token" value={token} />}
 
-        <label htmlFor="pregunta" className="block font-mono text-sm text-tinta/70">
+        <label htmlFor={idPregunta} className="block font-mono text-sm text-tinta/70">
           Tu pregunta
         </label>
 
         <textarea
-          id="pregunta"
+          id={idPregunta}
           name="pregunta"
           ref={campo}
           rows={3}
