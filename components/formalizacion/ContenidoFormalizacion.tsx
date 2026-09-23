@@ -53,7 +53,7 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
             >
               <p className="max-w-xl font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
 
-              <ul className="mt-8 grid gap-6 sm:grid-cols-2">
+              <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {pasos.map((paso) => (
                   <TarjetaPaso key={paso.id} paso={paso} />
                 ))}
@@ -99,7 +99,7 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
                           vez de romper la tarjeta con una imagen rota. */}
                       {youtubeId && <VideoEmbebido youtubeId={youtubeId} titulo={video.titulo} />}
 
-                      <div className="flex flex-1 flex-col p-6">
+                      <div className="flex flex-1 flex-col p-5">
                         <h4 className="font-display text-lg font-medium text-tinta">
                           {video.titulo}
                         </h4>
