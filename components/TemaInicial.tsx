@@ -1,5 +1,10 @@
 // Setea data-theme antes del primer paint: preferencia guardada o, si no hay,
-// la del sistema. Es un <script> inline en <head> porque es lo único que corre
+// claro. El modo claro es el default del sitio a propósito y no se hereda de
+// `prefers-color-scheme`: la paleta —hueso, tinta, azul— está diseñada en
+// claro, y el vecino que entra por primera vez desde un celular con el modo
+// oscuro del sistema activado veía la versión secundaria del sitio sin haberla
+// pedido. El que la quiere la prende con el selector y queda guardada.
+// Es un <script> inline en <head> porque es lo único que corre
 // mientras el navegador lee el HTML — un useEffect corre después de pintar y
 // next/script (beforeInteractive) encola el código para después, así que los
 // dos dejan ver el tema equivocado un instante.
@@ -12,7 +17,7 @@
 
 'use client';
 
-const CODIGO = `(function(){try{var t=localStorage.getItem('tema');if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
+const CODIGO = `(function(){try{var t=localStorage.getItem('tema');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();`;
 
 export function TemaInicial() {
   return (

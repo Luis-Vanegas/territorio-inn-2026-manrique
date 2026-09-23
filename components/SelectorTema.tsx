@@ -56,9 +56,9 @@ export function SelectorTema() {
   // En producción el atributo sigue ahí y esto no hace nada.
   useLayoutEffect(() => {
     if (document.documentElement.hasAttribute('data-theme')) return;
+    // Mismo criterio que components/TemaInicial: sin preferencia guardada, claro.
     const guardado = localStorage.getItem('tema');
-    const sistema = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', guardado ?? sistema);
+    document.documentElement.setAttribute('data-theme', guardado === 'dark' ? 'dark' : 'light');
     oyentes.forEach((cb) => cb());
   }, []);
 
