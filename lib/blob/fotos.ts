@@ -2,6 +2,7 @@ import 'server-only';
 import { put, del } from '@vercel/blob';
 import sharp from 'sharp';
 import { TIPOS_FOTO_PERMITIDOS, TAMANO_MAX_FOTO } from '@/lib/validation/portafolio.schema';
+import { esFormatoPermitido } from '@/lib/blob/formatoImagen';
 
 /**
  * Fotos de los portafolios en Vercel Blob.
@@ -79,6 +80,10 @@ export function extraerArchivoValidado(
  */
 async function optimizarYSubir(file: File, pathname: string): Promise<ResultadoFoto | null> {
   const buffer = Buffer.from(await file.arrayBuffer());
+
+  // La firma se mira ANTES de sharp: si no es JPEG, PNG ni WebP no se decodifica
+  // nada, así un AVIF/HEIC disfrazado nunca llega a libheif (ver formatoImagen.ts).
+  if (!esFormatoPermitido(buffer)) return null;
 
   let optimizada: Buffer;
   try {
