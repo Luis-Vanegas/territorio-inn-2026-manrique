@@ -1,5 +1,7 @@
 import Image from 'next/image';
 
+import { FotoAmpliable } from '@/components/FotoAmpliable';
+
 import type { Imagen, Nota, Seccion } from '@/lib/marca';
 
 /**
@@ -63,14 +65,16 @@ function Cierre({ texto }: { texto: string }) {
 
 function Foto({ imagen, sizes }: { imagen: Imagen; sizes: string }) {
   return (
-    <Image
-      src={imagen.src}
-      alt={imagen.alt}
-      width={imagen.ancho}
-      height={imagen.alto}
-      sizes={sizes}
-      className="h-auto w-full"
-    />
+    <FotoAmpliable src={imagen.src} alt={imagen.alt} className="relative block w-full">
+      <Image
+        src={imagen.src}
+        alt={imagen.alt}
+        width={imagen.ancho}
+        height={imagen.alto}
+        sizes={sizes}
+        className="h-auto w-full"
+      />
+    </FotoAmpliable>
   );
 }
 

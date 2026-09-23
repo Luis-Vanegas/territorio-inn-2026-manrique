@@ -23,6 +23,8 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 
+import { FotoAmpliable } from '@/components/FotoAmpliable';
+
 const INTERVALO_MS = 6000;
 
 interface Foto {
@@ -113,7 +115,11 @@ export function CarruselFotos({ className }: { className?: string }) {
     >
       {/* min-h en mobile porque ahí la columna no tiene altura propia; en
           escritorio la hereda del texto de al lado y la foto la llena. */}
-      <div className="relative isolate min-h-[260px] flex-1 overflow-hidden">
+      <FotoAmpliable
+        src={foto.src}
+        alt={foto.alt}
+        className="relative isolate block min-h-[260px] w-full flex-1 overflow-hidden"
+      >
         <Image
           key={foto.src}
           src={foto.src}
@@ -129,7 +135,7 @@ export function CarruselFotos({ className }: { className?: string }) {
           sizes="(min-width: 1024px) 42vw, 100vw"
           className="absolute inset-0 h-full w-full object-cover"
         />
-      </div>
+      </FotoAmpliable>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <p className="font-mono text-sm text-tinta/65">{foto.pie}</p>

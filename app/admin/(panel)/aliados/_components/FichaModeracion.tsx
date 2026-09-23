@@ -14,6 +14,7 @@ import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import { formatearCamposExtra } from '@/lib/camposExtra';
 import { FormularioEdicionPortafolio } from '@/components/FormularioEdicionPortafolio';
 import { BadgeEstado, type TonoBadge } from '@/components/admin/BadgeEstado';
+import { FotoAmpliable } from '@/components/FotoAmpliable';
 
 const ESTADO_INICIAL: EstadoModeracion = { estado: 'inicial' };
 
@@ -224,7 +225,11 @@ export function FichaModeracion({
 
         <div className="flex flex-col gap-3 sm:w-56">
           {portafolio.foto_url && (
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-tinta/5">
+            <FotoAmpliable
+              src={portafolio.foto_url}
+              alt={`Foto enviada por ${portafolio.nombre}`}
+              className="relative block aspect-[4/3] w-full overflow-hidden bg-tinta/5"
+            >
               <Image
                 src={portafolio.foto_url}
                 alt={`Foto enviada por ${portafolio.nombre}`}
@@ -232,7 +237,7 @@ export function FichaModeracion({
                 sizes="224px"
                 className="object-cover"
               />
-            </div>
+            </FotoAmpliable>
           )}
 
           {portafolio.menu_url && (
