@@ -92,6 +92,27 @@ export async function iniciarSesionAdmin(email: string): Promise<void> {
   });
 }
 
+/**
+ * Fila en `admins` para un moderador que entra por Google.
+ *
+ * La necesita la auditoría, no el acceso: `moderado_por`, `atendido_por` y
+ * `creado_por` son FK a `admins(email)`, y sin esta fila aprobar, rechazar o
+ * atender algo falla con `portafolios_moderado_por_fkey`. El acceso lo sigue
+ * dando solo ADMIN_GOOGLE_SUBS: verificarSesion() no mira esta tabla, y la
+ * fila no puede entrar por contraseña — `activo = false` la deja fuera de
+ * autenticar() y el hash no es un hash (mismo patrón que scripts/seed-demo.mjs).
+ *
+ * `do nothing` a propósito: si ese correo ya es un admin con contraseña, no se
+ * le toca ni la contraseña ni el `activo`.
+ */
+export async function registrarModeradorGoogle(email: string, nombre: string): Promise<void> {
+  await sql`
+    insert into admins (email, nombre, password_hash, activo)
+    values (${email.toLowerCase().trim()}, ${nombre || email}, 'sin-acceso', false)
+    on conflict (email) do nothing
+  `;
+}
+
 export async function cerrarSesionAdmin(): Promise<void> {
   (await cookies()).set(COOKIE_ADMIN, '', opcionesBorrado());
 }
