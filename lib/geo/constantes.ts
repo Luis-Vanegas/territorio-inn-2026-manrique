@@ -89,7 +89,7 @@ export const BARRIOS_COMUNA_3: string[] = [
  * dos responden 200 con imagen). Pero el OSM estándar es a todo color —verdes
  * de parque, amarillos de vía— y pelea con la paleta editorial de tres
  * colores. World Light Gray Base es un lienzo gris claro, que es justo lo que
- * daba `light_all`: el mapa es el fondo, los puntos terracota son la
+ * daba `light_all`: el mapa es el fondo, los puntos azules son la
  * información.
  *
  * Ojo con el orden: Esri sirve {z}/{y}/{x}, con la Y antes que la X. Y no

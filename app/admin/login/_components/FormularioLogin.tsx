@@ -8,7 +8,7 @@ const ESTADO_INICIAL: EstadoSesion = { estado: 'inicial' };
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] ' +
-  'text-tinta placeholder:text-tinta/30 focus:border-terracota focus:outline-none focus:ring-0';
+  'text-tinta placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0';
 
 function Boton() {
   const { pending } = useFormStatus();
@@ -16,7 +16,7 @@ function Boton() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-8 w-full border border-terracota-texto bg-terracota-texto py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-8 w-full border border-azul-texto bg-azul-texto py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Verificando…' : 'Entrar'}
     </button>
@@ -62,7 +62,7 @@ export function FormularioLogin() {
       </div>
 
       {estado.estado === 'error' && (
-        <p role="alert" className="mt-5 font-mono text-xs text-terracota-texto">
+        <p role="alert" className="mt-5 font-mono text-xs text-azul-texto">
           {estado.mensaje}
         </p>
       )}

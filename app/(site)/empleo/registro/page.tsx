@@ -22,7 +22,7 @@ export default function RegistroCandidatoPage() {
   return (
     <main className="seccion">
       <header className="max-w-3xl">
-        <span className="font-mono text-xs text-tinta/50">Empleo</span>
+        <span className="font-mono text-xs text-tinta/65">Empleo</span>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
           Publica que estás buscando trabajo
@@ -30,7 +30,7 @@ export default function RegistroCandidatoPage() {
 
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
           Contale a la comuna qué sabes hacer y qué tipo de trabajo buscas.
-          Quien necesite a alguien como vos te contacta directo.
+          Quien necesite a alguien como tú te contacta directo.
         </p>
 
         {/* Se dice arriba, no en la letra chica: qué queda público antes de
@@ -48,7 +48,7 @@ export default function RegistroCandidatoPage() {
 
         <p className="mt-6 font-sans text-sm leading-relaxed text-tinta/60">
           Antes de publicarse, un moderador revisa cada registro.{' '}
-          <Link href="/legal/empleo" className="text-terracota-texto underline underline-offset-2">
+          <Link href="/legal/empleo" className="text-azul-texto underline underline-offset-2">
             Términos y tratamiento de datos de este módulo
           </Link>
           .

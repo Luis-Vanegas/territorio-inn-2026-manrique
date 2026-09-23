@@ -30,9 +30,9 @@ export function EquipoSection() {
             <ScrollReveal
               key={`${miembro.nombre}-${indice}`}
               delay={indice * 0.1}
-              className="border-t-2 border-terracota pt-6"
+              className="border-t-2 border-azul pt-6"
             >
-              <span className="font-mono text-xs text-tinta/50">
+              <span className="font-mono text-xs text-tinta/65">
                 {String(indice + 1).padStart(2, "0")}
               </span>
 
@@ -52,7 +52,7 @@ export function EquipoSection() {
                 // ya la tienen cargada.
                 <div
                   aria-hidden
-                  className="mt-4 flex aspect-[4/5] w-full items-center justify-center border border-terracota-texto/35 bg-tinta/[0.04] font-mono text-6xl text-terracota-texto"
+                  className="mt-4 flex aspect-[4/5] w-full items-center justify-center border border-azul-texto/35 bg-tinta/[0.04] font-mono text-6xl text-azul-texto"
                 >
                   {miembro.iniciales}
                 </div>
@@ -65,7 +65,7 @@ export function EquipoSection() {
                 {miembro.programaInstitucion}
               </p>
               {miembro.rol && (
-                <p className="mt-1 font-mono text-xs text-terracota-texto">{miembro.rol}</p>
+                <p className="mt-1 font-mono text-xs text-azul-texto">{miembro.rol}</p>
               )}
             </ScrollReveal>
           ))}

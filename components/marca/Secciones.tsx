@@ -12,8 +12,8 @@ import type { Imagen, Nota, Seccion } from '@/lib/marca';
  * invita a un clic que no hace nada.
  *
  * Contraste: el texto no baja de `tinta/70` (piso del proyecto: `/65`, ver
- * docs/sistema-diseno-a11y.md). Cuando el sitio usa terracota como color de
- * texto es `terracota-texto`, nunca `terracota` a secas.
+ * docs/sistema-diseno-a11y.md). Cuando el sitio usa un color de marca como
+ * texto es la variante `-texto`, nunca el color base a secas.
  */
 
 function Encabezado({
@@ -29,7 +29,7 @@ function Encabezado({
 }) {
   return (
     <header>
-      <p className="font-mono text-sm uppercase tracking-wider text-terracota-texto">{kicker}</p>
+      <p className="font-mono text-sm uppercase tracking-wider text-morado-texto">{kicker}</p>
       <h2
         id={id}
         className="mt-3 max-w-3xl font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl"
@@ -55,7 +55,7 @@ function BarraNota({ nota }: { nota: Nota }) {
 
 function Cierre({ texto }: { texto: string }) {
   return (
-    <p className="mt-8 max-w-2xl border-l-2 border-terracota pl-4 font-display text-xl leading-snug text-tinta">
+    <p className="mt-8 max-w-2xl border-l-2 border-azul pl-4 font-display text-xl leading-snug text-tinta">
       {texto}
     </p>
   );
@@ -80,7 +80,7 @@ function ConCorchetes({ texto }: { texto: string }) {
     <>
       {texto.split(/(\[[^\]]+\])/g).map((trozo, i) =>
         trozo.startsWith('[') ? (
-          <span key={i} className="bg-terracota/10 px-1 font-mono text-[0.85em] text-terracota-texto">
+          <span key={i} className="bg-amarillo/50 px-1 font-mono text-[0.85em] text-tinta">
             {trozo}
           </span>
         ) : (
@@ -112,7 +112,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
           {cabecera}
           <Lista role="list" className={`mt-10 grid list-none gap-6 sm:grid-cols-2 ${columnas}`}>
             {seccion.items.map((item, i) => (
-              <li key={item.titulo} className="flex h-full flex-col border border-tinta/15 bg-white p-6">
+              <li key={item.titulo} className="flex h-full flex-col border border-tinta/15 bg-hueso p-6">
                 {item.imagen && (
                   <div className="mb-5">
                     <Foto
@@ -123,7 +123,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
                 )}
                 {seccion.numeradas && (
                   <span
-                    className="mb-4 grid h-9 w-9 place-items-center rounded-full border border-terracota font-mono text-sm text-terracota-texto"
+                    className="mb-4 grid h-9 w-9 place-items-center rounded-full border border-azul font-mono text-sm text-azul-texto"
                     aria-hidden="true"
                   >
                     {i + 1}
@@ -147,9 +147,9 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
             {seccion.items.map((item) => (
               <li
                 key={item}
-                className="flex items-start gap-3 border border-tinta/15 bg-white px-4 py-3 font-sans text-tinta"
+                className="flex items-start gap-3 border border-tinta/15 bg-hueso px-4 py-3 font-sans text-tinta"
               >
-                <span className="font-mono text-terracota-texto" aria-hidden="true">
+                <span className="font-mono text-azul-texto" aria-hidden="true">
                   ✓
                 </span>
                 {item}
@@ -170,7 +170,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
             className={`mt-10 grid list-none gap-6 ${seccion.items.length > 1 ? 'lg:grid-cols-3' : ''}`}
           >
             {seccion.items.map((item) => (
-              <li key={item.titulo} className="flex h-full flex-col border border-tinta/15 bg-white p-6">
+              <li key={item.titulo} className="flex h-full flex-col border border-tinta/15 bg-hueso p-6">
                 <h3 className="font-mono text-sm uppercase tracking-wider text-tinta/70">
                   {item.titulo}
                 </h3>
@@ -180,7 +180,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
                   </p>
                 )}
                 {item.pasos && (
-                  <ol className="mt-4 list-decimal space-y-2 pl-5 font-display text-xl leading-snug text-tinta marker:font-mono marker:text-terracota-texto">
+                  <ol className="mt-4 list-decimal space-y-2 pl-5 font-display text-xl leading-snug text-tinta marker:font-mono marker:text-morado-texto">
                     {item.pasos.map((paso) => (
                       <li key={paso}>{paso}</li>
                     ))}
@@ -201,10 +201,10 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
             {(
               [
                 { lado: seccion.mal, marca: '✗', borde: 'border-tinta/15' },
-                { lado: seccion.bien, marca: '✓', borde: 'border-terracota' },
+                { lado: seccion.bien, marca: '✓', borde: 'border-azul' },
               ] as const
             ).map(({ lado, marca, borde }) => (
-              <figure key={lado.etiqueta} className={`flex flex-col border ${borde} bg-white p-4 sm:p-6`}>
+              <figure key={lado.etiqueta} className={`flex flex-col border ${borde} bg-hueso p-4 sm:p-6`}>
                 <figcaption className="mb-4 font-mono text-sm uppercase tracking-wider text-tinta">
                   <span aria-hidden="true">{marca} </span>
                   {lado.etiqueta}
@@ -224,7 +224,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
             <ul role="list" className="mt-6 flex list-none flex-wrap gap-x-6 gap-y-2 font-sans text-tinta/70">
               {seccion.senales.map((senal) => (
                 <li key={senal} className="flex gap-2">
-                  <span className="font-mono text-terracota-texto" aria-hidden="true">
+                  <span className="font-mono text-azul-texto" aria-hidden="true">
                     ✓
                   </span>
                   {senal}

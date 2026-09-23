@@ -7,15 +7,15 @@ import type { PasoFormalizacion } from '@/lib/formalizacion';
  */
 export function TarjetaPaso({ paso }: { paso: PasoFormalizacion }) {
   return (
-    <li className="flex h-full flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota">
+    <li className="flex h-full flex-col border border-tinta/12 p-6 transition-colors hover:border-azul">
       <h3 className="font-display text-xl font-medium text-tinta">{paso.titulo}</h3>
 
-      <p className="mt-1 font-mono text-xs text-tinta/45">{paso.entidad}</p>
+      <p className="mt-1 font-mono text-xs text-tinta/60">{paso.entidad}</p>
 
       <p className="mt-3 font-sans leading-relaxed text-tinta/70">{paso.resumen}</p>
 
       <div className="mt-4">
-        <p className="font-mono text-xs text-tinta/45">Necesitas tener:</p>
+        <p className="font-mono text-xs text-tinta/60">Necesitas tener:</p>
         <ul className="mt-2 space-y-1">
           {paso.requisitos.map((requisito) => (
             <li key={requisito} className="font-sans text-sm text-tinta/70">
@@ -33,11 +33,11 @@ export function TarjetaPaso({ paso }: { paso: PasoFormalizacion }) {
           href={paso.fuente}
           target="_blank"
           rel="noopener noreferrer"
-          className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+          className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
         >
           Ver en la página oficial ↗
         </a>
-        <p className="mt-2 font-mono text-xs text-tinta/35">
+        <p className="mt-2 font-mono text-xs text-tinta/60">
           Enlace verificado el {paso.verificadoEn}
         </p>
       </div>

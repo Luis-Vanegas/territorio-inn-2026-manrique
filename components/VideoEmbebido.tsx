@@ -54,10 +54,10 @@ export function VideoEmbebido({
         className="h-full w-full object-cover"
       />
       <span className="absolute inset-0 flex items-center justify-center bg-tinta/25 transition-colors group-hover:bg-tinta/40">
-        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-hueso text-terracota-texto shadow-sm transition-transform group-hover:scale-105">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-hueso text-azul-texto shadow-sm transition-transform group-hover:scale-105">
           {/* Triángulo de play dibujado con borders: cero SVG ni ícono extra para un solo uso. */}
           <span
-            className="ml-1 h-0 w-0 border-y-[10px] border-l-[16px] border-y-transparent border-l-terracota-texto"
+            className="ml-1 h-0 w-0 border-y-[10px] border-l-[16px] border-y-transparent border-l-azul-texto"
             aria-hidden="true"
           />
         </span>

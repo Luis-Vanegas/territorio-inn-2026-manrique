@@ -22,7 +22,7 @@ import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 import { ETIQUETA_FORMALIDAD } from '@/lib/formalizacion';
 
 // ─── opciones de los chips ───────────────────────────────────
-// Los `value` (name="horario" / "medios_pago" / "formalidad" / "mayor_dolor")
+// Los `value` (name="horario" / "medios_pago" / "formalidad")
 // tienen que calzar exacto con lo que espera `desdeFormData` en el schema.
 
 const OPCIONES_HORARIO_UI = [
@@ -42,8 +42,8 @@ const OPCIONES_MEDIOS_PAGO_UI = [
 ];
 
 // ─── investigación (privado, opcional, nunca se publica) ──────
-// Recortada (029) a formalidad y mayor_dolor: los dos únicos campos que
-// alimentan código vivo (/formalizacion y el asesor de IA).
+// Solo queda formalidad: personaliza /formalizacion. La pregunta de
+// mayor_dolor se sacó del formulario; el schema la sigue aceptando vacía.
 
 // La etiqueta vive en lib/formalizacion.ts: /formalizacion la reusa para
 // explicar según qué respuesta se personalizó la lista de trámites.
@@ -51,19 +51,11 @@ const OPCIONES_FORMALIDAD_UI = Object.entries(ETIQUETA_FORMALIDAD).map(
   ([valor, etiqueta]) => ({ valor, etiqueta }),
 );
 
-const OPCIONES_MAYOR_DOLOR_UI = [
-  { valor: 'cuentas_ganancia', etiqueta: 'Llevar las cuentas, las ventas del día y saber si hay ganancias reales.' },
-  { valor: 'inventario_vencimientos', etiqueta: 'Controlar el inventario (saber qué hay, qué falta y qué se vence).' },
-  { valor: 'clientes_redes', etiqueta: 'Conseguir nuevos clientes y manejar la publicidad o redes sociales.' },
-  { valor: 'cobros_facturas', etiqueta: 'Cobrar, organizar las facturas o manejar los fiados.' },
-  { valor: 'todo_bajo_control', etiqueta: 'Todo lo tengo bajo control por ahora.' },
-];
-
 const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
   ssr: false,
   loading: () => (
     <div className="flex h-[440px] w-full items-center justify-center border border-tinta/15 bg-tinta/[0.02] sm:h-[580px]">
-      <span className="font-mono text-xs text-tinta/40">cargando mapa…</span>
+      <span className="font-mono text-xs text-tinta/60">cargando mapa…</span>
     </div>
   ),
 });
@@ -88,7 +80,7 @@ function Seccion({
   children: React.ReactNode;
 }) {
   // Antes solo el ✓ chiquito del título marcaba una sección completa — con la
-  // paleta plana del sitio (hueso/tinta/terracota, sin verdes de "éxito") eso
+  // paleta plana del sitio (hueso/tinta/azul, sin verdes de "éxito") eso
   // se pierde de vista. Ahora la sección entera se resalta con el mismo
   // patrón de borde + fondo tenue que ya usa la página de estado para
   // "Publicado" / "Pendiente" — la misma señal, reutilizada, no una nueva.
@@ -101,24 +93,24 @@ function Seccion({
           'transition-colors',
           ancho === 'angosto' ? 'max-w-xl' : '',
           completa
-            ? 'border-l-2 border-terracota bg-terracota/[0.03] py-3 pl-3 -ml-3 sm:pl-4 sm:-ml-4'
+            ? 'border-l-2 border-azul bg-azul/[0.03] py-3 pl-3 -ml-3 sm:pl-4 sm:-ml-4'
             : '',
         ].join(' ')}
       >
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="font-mono text-xs text-tinta/35">{numero}</span>
+          <span className="font-mono text-xs text-tinta/60">{numero}</span>
           <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
             {titulo}
           </h2>
           {completa && (
-            <span className="font-mono text-xs text-terracota-texto" aria-label="completo">
+            <span className="font-mono text-xs text-azul-texto" aria-label="completo">
               ✓ completo
             </span>
           )}
         </div>
 
         {ayuda && (
-          <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/55">
+          <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/65">
             {ayuda}
           </p>
         )}
@@ -132,8 +124,8 @@ function Seccion({
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-terracota focus:outline-none focus:ring-0 ' +
-  'aria-[invalid=true]:border-terracota';
+  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'aria-[invalid=true]:border-azul';
 
 function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }) {
   const { pending } = useFormStatus();
@@ -147,15 +139,15 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
           moverse es lo que hace que alguien termine un formulario largo. */}
       <div className="h-1 w-full overflow-hidden bg-tinta/8" aria-hidden="true">
         <div
-          className="h-full bg-terracota transition-[width] duration-300 ease-out"
+          className="h-full bg-azul-texto transition-[width] duration-300 ease-out"
           style={{ width: `${porcentaje}%` }}
         />
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
-        <p className="font-mono text-xs text-tinta/50">
+        <p className="font-mono text-xs text-tinta/65">
           {listo ? (
-            <span className="text-terracota-texto">✓ Todo listo para enviar</span>
+            <span className="text-azul-texto">✓ Todo listo para enviar</span>
           ) : (
             <>
               <span className="text-tinta">{porcentaje}%</span> completado · falta{' '}
@@ -167,7 +159,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
         <button
           type="submit"
           disabled={pending}
-          className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
+          className="border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? 'Enviando…' : 'Enviar registro →'}
         </button>
@@ -210,10 +202,8 @@ export function FormularioRegistro({
   const [mostrarOtraRed, setMostrarOtraRed] = useState(false);
 
   // Investigación — va a aliados_investigacion, no a portafolios, y nunca se
-  // publica. Recortada (029) a los dos campos con consumidor real: ambos
-  // opcionales.
+  // publica. Opcional.
   const [formalidad, setFormalidad] = useState('');
-  const [mayorDolor, setMayorDolor] = useState<string[]>([]);
 
   const direccionRef = useRef<HTMLInputElement>(null);
   const [geocodificando, setGeocodificando] = useState(false);
@@ -297,34 +287,6 @@ export function FormularioRegistro({
     [marcar],
   );
 
-  // Máximo 2 elegidas, y "todo bajo control" es excluyente: marcarla suelta
-  // cualquier otra, y marcar cualquier otra estando ella activa la suelta a
-  // ella. Mismo patrón que se usaba para "Toda la comuna" en cobertura.
-  const alCambiarMayorDolor = useCallback(
-    (nuevos: string[]) => {
-      const teniaTodo = mayorDolor.includes('todo_bajo_control');
-      const tieneTodo = nuevos.includes('todo_bajo_control');
-
-      if (tieneTodo && !teniaTodo) {
-        setMayorDolor(['todo_bajo_control']);
-        return;
-      }
-
-      if (teniaTodo && nuevos.length > 1) {
-        setMayorDolor(nuevos.filter((v) => v !== 'todo_bajo_control'));
-        return;
-      }
-
-      if (nuevos.length > 2) {
-        // Ya había 2 marcadas: se ignora el intento de marcar una tercera.
-        return;
-      }
-
-      setMayorDolor(nuevos);
-    },
-    [mayorDolor],
-  );
-
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
 
@@ -347,11 +309,10 @@ export function FormularioRegistro({
   const faltantes = REQUISITOS.filter(([cumplido]) => !cumplido).map(([, nombre]) => nombre);
 
   // Números de sección hardcodeados en el JSX (mismo patrón que ya usaba
-  // este formulario): "Información adicional" y "Antes de enviar" corren su
-  // numeración según si hay campos personalizados activos ese día.
+  // este formulario): "Permisos" corre su numeración según si hay campos
+  // personalizados activos ese día.
   const numeroCampos = '08';
-  const numeroDolor = camposPersonalizados.length > 0 ? '09' : '08';
-  const numeroPermisos = camposPersonalizados.length > 0 ? '10' : '09';
+  const numeroPermisos = camposPersonalizados.length > 0 ? '09' : '08';
 
   // Un registro exitoso hace redirect() del lado del server a
   // /aliados/estado/[token] — no hay estado 'ok' que mostrar acá.
@@ -373,7 +334,7 @@ export function FormularioRegistro({
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota-texto"
+          className="max-w-xl border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-azul-texto"
         >
           {estado.mensaje}
         </p>
@@ -388,7 +349,7 @@ export function FormularioRegistro({
       <Seccion
         numero="01"
         titulo="¿Dónde queda tu negocio?"
-        ayuda="Escribe la dirección y toca «Ubicar en el mapa», usa el GPS de tu celular, o marca el punto vos mismo tocando el mapa."
+        ayuda="Escribe la dirección y toca «Ubicar en el mapa», usa el GPS de tu celular, o marca el punto tú mismo tocando el mapa."
         completa={Boolean(coords && ubicacionValida && llenos.direccion && llenos.barrio)}
         ancho="completo"
       >
@@ -419,13 +380,13 @@ export function FormularioRegistro({
               type="button"
               onClick={ubicarPorDireccion}
               disabled={geocodificando}
-              className="inline-flex min-h-11 items-center gap-2 border border-tinta/20 px-4 py-2.5 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 border border-tinta/20 px-4 py-2.5 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
             >
               <span aria-hidden="true">📍</span>
               {geocodificando ? 'Buscando esa dirección…' : 'Ubicar esta dirección en el mapa'}
             </button>
             {errorGeocode && (
-              <p role="alert" className="font-mono text-xs text-terracota-texto">
+              <p role="alert" className="font-mono text-xs text-azul-texto">
                 {errorGeocode}
               </p>
             )}
@@ -452,7 +413,7 @@ export function FormularioRegistro({
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
 
         {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-terracota-texto">
+          <p className="font-mono text-xs text-azul-texto">
             {err('latitud')?.[0] ?? err('longitud')?.[0]}
           </p>
         )}
@@ -530,8 +491,8 @@ export function FormularioRegistro({
 
         {/* `formalidad` no es un dato de investigación cualquiera: es lo que
             personaliza /formalizacion (pasosPara()) y lo que lee el asesor
-            de IA — por eso se quedó cuando el resto de esa sección se sacó
-            del formulario. Va acá, junto a la categoría, no al final. */}
+            de IA — por eso se quedó cuando el resto de las preguntas de
+            investigación se sacó del formulario. */}
         <CampoFormulario
           id="formalidad"
           etiqueta="¿Tienes RUT o Cámara de Comercio?"
@@ -603,12 +564,12 @@ export function FormularioRegistro({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreMenu)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreMenu && <p className="font-mono text-xs text-tinta/50">{nombreMenu}</p>}
+        {nombreMenu && <p className="font-mono text-xs text-tinta/65">{nombreMenu}</p>}
       </Seccion>
 
       <Seccion
@@ -665,7 +626,7 @@ export function FormularioRegistro({
           <button
             type="button"
             onClick={() => setMostrarOtraRed((v) => !v)}
-            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+            className="self-start font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
           </button>
@@ -748,12 +709,12 @@ export function FormularioRegistro({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreFoto)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreFoto && <p className="font-mono text-xs text-tinta/50">{nombreFoto}</p>}
+        {nombreFoto && <p className="font-mono text-xs text-tinta/65">{nombreFoto}</p>}
       </Seccion>
 
       {camposPersonalizados.length > 0 && (
@@ -767,13 +728,13 @@ export function FormularioRegistro({
                   <input
                     type="checkbox"
                     name={nombre}
-                    className="mt-1 h-4 w-4 shrink-0 accent-terracota"
+                    className="mt-1 h-4 w-4 shrink-0 accent-azul"
                     onChange={(e) => marcarPersonalizado(c.slug, e.target.checked)}
                   />
                   <span className="font-sans text-sm text-tinta/75">
                     {c.etiqueta}
                     {!c.requerido && (
-                      <span className="ml-2 font-mono text-xs text-tinta/35">opcional</span>
+                      <span className="ml-2 font-mono text-xs text-tinta/60">opcional</span>
                     )}
                   </span>
                 </label>
@@ -840,33 +801,6 @@ export function FormularioRegistro({
         </Seccion>
       )}
 
-      {/* Última pregunta para el proyecto de investigación de Manrique — el
-          resto de esa sección se sacó del formulario (no tenía ningún
-          consumidor fuera de ella); esta se queda porque el asesor de IA la
-          usa como contexto. Opcional, nunca se publica. */}
-      <Seccion
-        numero={numeroDolor}
-        titulo="Antes de enviar"
-        ayuda="Nos ayuda a entender mejor los negocios de Manrique para el proyecto de investigación. Opcional, nunca se publica."
-      >
-        <CampoFormulario
-          id="mayor_dolor"
-          etiqueta="De las siguientes tareas del día a día, ¿cuál sientes que te quita más tiempo o te genera más dolores de cabeza?"
-          ayuda="Elige hasta 2 (opcional)."
-          errores={err('mayor_dolor')}
-        >
-          {(p) => (
-            <ChipsMultiple
-              {...p}
-              name="mayor_dolor"
-              opciones={OPCIONES_MAYOR_DOLOR_UI}
-              valores={mayorDolor}
-              alCambiar={alCambiarMayorDolor}
-            />
-          )}
-        </CampoFormulario>
-      </Seccion>
-
       <Seccion numero={numeroPermisos} titulo="Permisos" completa={llenos.consentimiento}>
         <div
           onChange={(e) => {
@@ -884,7 +818,7 @@ export function FormularioRegistro({
               type="checkbox"
               name="acepto_terminos"
               required
-              className="mt-1 h-4 w-4 shrink-0 accent-terracota"
+              className="mt-1 h-4 w-4 shrink-0 accent-azul"
             />
             <span className="font-sans text-sm leading-relaxed text-tinta/75">
               Confirmo que soy dueño o represento este negocio, que la información
@@ -892,7 +826,7 @@ export function FormularioRegistro({
               <Link
                 href="/legal/terminos"
                 target="_blank"
-                className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+                className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
               >
                 términos y condiciones
               </Link>
@@ -900,7 +834,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_terminos') && (
-            <p className="font-mono text-xs text-terracota-texto">{err('acepto_terminos')![0]}</p>
+            <p className="font-mono text-xs text-azul-texto">{err('acepto_terminos')![0]}</p>
           )}
 
           <label className="flex items-start gap-3">
@@ -908,7 +842,7 @@ export function FormularioRegistro({
               type="checkbox"
               name="acepto_habeas_data"
               required
-              className="mt-1 h-4 w-4 shrink-0 accent-terracota"
+              className="mt-1 h-4 w-4 shrink-0 accent-azul"
             />
             <span className="font-sans text-sm leading-relaxed text-tinta/75">
               Autorizo el tratamiento de mis datos conforme a la Ley 1581 de 2012
@@ -916,7 +850,7 @@ export function FormularioRegistro({
               <Link
                 href="/legal/politica-datos"
                 target="_blank"
-                className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+                className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
               >
                 política de tratamiento de datos
               </Link>
@@ -924,7 +858,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_habeas_data') && (
-            <p className="font-mono text-xs text-terracota-texto">
+            <p className="font-mono text-xs text-azul-texto">
               {err('acepto_habeas_data')![0]}
             </p>
           )}
@@ -936,7 +870,7 @@ export function FormularioRegistro({
 
       <Link
         href="/aliados"
-        className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+        className="mt-20 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver al mapa
       </Link>

@@ -29,12 +29,12 @@ import type { Lamina } from '@/lib/marca';
 
 const ESTILO_BOTON: Record<'boton' | 'enlace', string> = {
   boton:
-    'border border-terracota-texto px-5 text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso',
-  enlace: 'text-terracota-texto underline decoration-terracota underline-offset-4',
+    'border border-azul-texto px-5 text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso',
+  enlace: 'text-azul-texto underline decoration-azul underline-offset-4',
 };
 
 const ESTILO_ACCION =
-  'inline-flex min-h-[44px] items-center border border-tinta/40 px-4 font-mono text-sm text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-tinta/40 disabled:hover:text-tinta';
+  'inline-flex min-h-[44px] items-center border border-tinta/40 px-4 font-mono text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-tinta/40 disabled:hover:text-tinta';
 
 export function VisorLaminas({
   titulo,

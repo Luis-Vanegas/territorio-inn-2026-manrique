@@ -58,7 +58,7 @@ export function IndiceMarca({
               {guias.map((guia) => (
                 <li
                   key={guia.slug}
-                  className="flex h-full flex-col border border-tinta/15 bg-white p-6"
+                  className="flex h-full flex-col border border-tinta/15 bg-hueso p-6"
                 >
                   <h3 className="font-display text-xl font-medium text-tinta">{guia.titulo}</h3>
                   <p className="mt-3 font-sans leading-relaxed text-tinta/70">{guia.resumen}</p>
@@ -68,7 +68,7 @@ export function IndiceMarca({
                   <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-1 pt-6">
                     <Link
                       href={`${base}/${guia.slug}`}
-                      className="inline-flex min-h-[44px] items-center font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                      className="inline-flex min-h-[44px] items-center font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
                     >
                       Leer la guía →
                     </Link>

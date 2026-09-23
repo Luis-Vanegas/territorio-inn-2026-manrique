@@ -61,7 +61,7 @@ function Contacto({ portafolio }: { portafolio: Portafolio }) {
             // Tocar un contacto es la señal que le importa al negocio: es
             // alguien que dejó de mirar y decidió escribir.
             onClick={() => contar(portafolio.id, 'contacto')}
-            className="font-mono text-xs text-tinta/60 underline decoration-terracota/40 underline-offset-4 transition-colors hover:text-terracota-texto"
+            className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
           >
             {e.etiqueta}
           </a>
@@ -95,14 +95,14 @@ export function TarjetaEmprendimiento({
       className={[
         'grid scroll-mt-24 grid-cols-1 gap-5 border-t py-8 transition-colors duration-500 sm:grid-cols-[auto_1fr] sm:gap-7',
         activo
-          ? 'border-terracota bg-terracota/[0.05]'
+          ? 'border-azul bg-azul/[0.05]'
           : 'border-tinta/12',
       ].join(' ')}
     >
       {/* La numeración en mono es la convención del sitio: "lo medido" se
           separa de "lo narrado". Ver docs/decisiones-diseno.md. */}
       <span
-        className="font-mono text-xs text-tinta/35 sm:pt-1"
+        className="font-mono text-xs text-tinta/60 sm:pt-1"
         aria-hidden="true"
       >
         {String(indice + 1).padStart(2, '0')}
@@ -111,14 +111,14 @@ export function TarjetaEmprendimiento({
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_auto] sm:gap-8">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="font-mono text-xs uppercase tracking-wider text-terracota-texto">
+            <span className="font-mono text-xs uppercase tracking-wider text-morado-texto">
               {portafolio.categoria_nombre}
             </span>
 
             {/* La distancia es la respuesta a "¿esto me queda cerca?", que es
                 la única pregunta que se hace alguien parado en la calle. */}
             {typeof distancia === 'number' && (
-              <span className="inline-flex items-center gap-1 bg-terracota/10 px-2 py-0.5 font-mono text-xs text-terracota-texto">
+              <span className="inline-flex items-center gap-1 bg-azul/10 px-2 py-0.5 font-mono text-xs text-azul-texto">
                 <span aria-hidden="true">◎</span>
                 {formatearDistancia(distancia)}
               </span>
@@ -138,11 +138,11 @@ export function TarjetaEmprendimiento({
           {/* La ubicación es el dato que distingue a Aliados de una lista de
               texto plano: se destaca con ícono y acento, no como un dato más
               en gris junto a los demás. */}
-          <p className="mt-4 inline-flex items-baseline gap-1.5 border-l-2 border-terracota/40 pl-3 font-mono text-sm text-tinta/75">
+          <p className="mt-4 inline-flex items-baseline gap-1.5 border-l-2 border-azul/40 pl-3 font-mono text-sm text-tinta/75">
             <span aria-hidden="true">📍</span>
             {portafolio.direccion}
-            <span className="text-tinta/30">·</span>
-            <span className="text-tinta/55">{portafolio.barrio}</span>
+            <span className="text-tinta/60">·</span>
+            <span className="text-tinta/65">{portafolio.barrio}</span>
           </p>
 
           <Contacto portafolio={portafolio} />
@@ -152,7 +152,7 @@ export function TarjetaEmprendimiento({
               {portafolio.productos.map((prod) => (
                 <li key={prod.nombre} className="font-sans text-sm text-tinta/70">
                   {prod.nombre}
-                  {prod.precio && <span className="text-tinta/45"> — {prod.precio}</span>}
+                  {prod.precio && <span className="text-tinta/60"> — {prod.precio}</span>}
                 </li>
               ))}
             </ul>
@@ -163,7 +163,7 @@ export function TarjetaEmprendimiento({
               href={portafolio.menu_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-block font-mono text-xs text-tinta/60 underline decoration-terracota/40 underline-offset-4 transition-colors hover:text-terracota-texto"
+              className="mt-3 inline-block font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
             >
               Ver menú / flyer ↗
             </a>
@@ -173,7 +173,7 @@ export function TarjetaEmprendimiento({
             <dl className="mt-4 flex flex-col gap-1">
               {camposExtra.map((c) => (
                 <div key={c.etiqueta} className="flex gap-2 font-sans text-xs">
-                  <dt className="text-tinta/45">{c.etiqueta}:</dt>
+                  <dt className="text-tinta/60">{c.etiqueta}:</dt>
                   <dd className="text-tinta/70">{c.valor}</dd>
                 </div>
               ))}

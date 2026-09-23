@@ -19,7 +19,7 @@ const MapaClient = dynamic(() => import('./MapaAliadosClient'), {
   // cuando el mapa termina de cargar.
   loading: () => (
     <div className="flex h-full w-full items-center justify-center border border-tinta/10 bg-tinta/[0.02]">
-      <span className="font-mono text-xs text-tinta/40">cargando mapa…</span>
+      <span className="font-mono text-xs text-tinta/60">cargando mapa…</span>
     </div>
   ),
 });

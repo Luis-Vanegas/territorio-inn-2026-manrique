@@ -121,10 +121,10 @@ export function VitrinaAliados({
     <>
       <section className="mt-14" aria-label="Mapa de negocios aliados">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
             Dónde están
           </h2>
-          <span className="font-mono text-xs text-tinta/40">
+          <span className="font-mono text-xs text-tinta/60">
             {busquedaNormalizada
               ? `${listados.length} de ${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'}`
               : `${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'} en el mapa`}
@@ -138,7 +138,7 @@ export function VitrinaAliados({
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             placeholder="Busca por nombre, rubro o qué necesitas…"
-            className="w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/35 focus:border-terracota focus:outline-none focus:ring-0"
+            className="w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/35 focus:border-azul focus:outline-none focus:ring-0"
           />
         </label>
 
@@ -149,7 +149,7 @@ export function VitrinaAliados({
             type="button"
             onClick={pedirUbicacion}
             disabled={estadoGeo === 'pidiendo'}
-            className="group inline-flex items-center gap-2 border border-terracota-texto px-4 py-2 font-mono text-xs text-terracota-texto transition-all duration-200 hover:bg-terracota-texto hover:text-hueso active:scale-[0.97] disabled:cursor-wait disabled:opacity-60"
+            className="group inline-flex items-center gap-2 border border-azul-texto px-4 py-2 font-mono text-xs text-azul-texto transition-all duration-200 hover:bg-azul-texto hover:text-hueso active:scale-[0.97] disabled:cursor-wait disabled:opacity-60"
           >
             <span
               aria-hidden="true"
@@ -165,7 +165,7 @@ export function VitrinaAliados({
           </button>
 
           {estadoGeo === 'listo' && (
-            <span className="font-mono text-xs text-tinta/55">
+            <span className="font-mono text-xs text-tinta/65">
               {cercanos > 0
                 ? `${cercanos} ${cercanos === 1 ? 'negocio' : 'negocios'} a menos de 1 km · lista ordenada por cercanía`
                 : 'Ninguno a menos de 1 km — la lista igual va del más cercano al más lejano'}
@@ -175,14 +175,14 @@ export function VitrinaAliados({
           {estadoGeo !== 'inicial' && estadoGeo !== 'listo' && (
             <span
               role="status"
-              className="font-mono text-xs text-tinta/55"
+              className="font-mono text-xs text-tinta/65"
             >
               {MENSAJE_GEO[estadoGeo]}
             </span>
           )}
 
           {estadoGeo === 'inicial' && (
-            <span className="font-mono text-xs text-tinta/40">
+            <span className="font-mono text-xs text-tinta/60">
               Tu ubicación se usa solo en tu navegador. No se envía ni se guarda.
             </span>
           )}
@@ -197,14 +197,14 @@ export function VitrinaAliados({
           />
         </div>
 
-        <p className="mt-3 font-mono text-xs text-tinta/40">
-          Toca un punto terracota para ver el negocio en la lista.
+        <p className="mt-3 font-mono text-xs text-tinta/60">
+          Toca un punto azul para ver el negocio en la lista.
         </p>
       </section>
 
       <section className="mt-20" aria-label="Listado de negocios aliados">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
             {ubicacion ? 'Quiénes son — de lo más cerca a lo más lejos' : 'Quiénes son'}
           </h2>
         </div>
@@ -217,7 +217,7 @@ export function VitrinaAliados({
             <button
               type="button"
               onClick={() => setBusqueda('')}
-              className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+              className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
             >
               Borrar la búsqueda
             </button>

@@ -72,7 +72,7 @@ export default function Error({ error, reset }: ErrorProps) {
 
   return (
     <main className="seccion flex min-h-[70vh] flex-col justify-center">
-      <span className="font-mono text-xs tracking-[0.2em] text-terracota-texto">
+      <span className="font-mono text-xs tracking-[0.2em] text-morado-texto">
         ERROR
       </span>
 
@@ -88,21 +88,21 @@ export default function Error({ error, reset }: ErrorProps) {
         <button
           type="button"
           onClick={reset}
-          className="border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+          className="border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
         >
           Reintentar
         </button>
 
         <Link
           href="/"
-          className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+          className="font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
         >
           Volver al inicio
         </Link>
       </div>
 
       {error.digest && (
-        <p className="mt-12 font-mono text-xs text-tinta/40">
+        <p className="mt-12 font-mono text-xs text-tinta/60">
           Código del error: {error.digest}
         </p>
       )}

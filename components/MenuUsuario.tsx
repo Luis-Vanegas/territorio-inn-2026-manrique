@@ -23,9 +23,9 @@ export const ENLACE_MODERACION = { href: '/admin/aliados', etiqueta: 'Panel de m
 /**
  * Identidad de la persona conectada, y su salida.
  *
- * ── Por qué NO es un botón terracota ──
+ * ── Por qué NO es un botón azul ──
  *
- * Antes el nombre vivía en un botón terracota sólido, igual que "Registrarme".
+ * Antes el nombre vivía en un botón azul sólido, igual que "Registrarme".
  * Eso rompe una regla escrita del sistema (docs/sistema-diseno-a11y.md): «Un
  * solo color de acción por pantalla». Y rompe algo más básico: un nombre no es
  * una acción. Es estado — quién sos ahora mismo. Darle el peso visual de la
@@ -69,7 +69,7 @@ export function MenuUsuario({
   return (
     <details className="group relative">
       <summary
-        className="flex min-h-[44px] cursor-pointer list-none items-center gap-2 pl-1 pr-2 transition-colors hover:text-terracota-texto [&::-webkit-details-marker]:hidden"
+        className="flex min-h-[44px] cursor-pointer list-none items-center gap-2 pl-1 pr-2 transition-colors hover:text-azul-texto [&::-webkit-details-marker]:hidden"
         aria-label={`Cuenta de ${nombre}`}
       >
         {foto ? (
@@ -103,7 +103,7 @@ export function MenuUsuario({
             ya anuncia su estado; el glifo es refuerzo visual. */}
         <span
           aria-hidden="true"
-          className="font-mono text-xs text-tinta/40 transition-transform group-open:rotate-180"
+          className="font-mono text-xs text-tinta/60 transition-transform group-open:rotate-180"
         >
           ▾
         </span>
@@ -119,7 +119,7 @@ export function MenuUsuario({
             Las rutas de acá no están en la barra de navegación: quien no entró
             no las ve ni sabe que existen. Es lo que hace que estar registrado
             se note como un lugar y no como un texto que dice "estás dentro". */}
-        <p className="px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/45">
+        <p className="px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/60">
           Tu espacio
         </p>
 
@@ -127,7 +127,7 @@ export function MenuUsuario({
           <Link
             key={enlace.href}
             href={enlace.href}
-            className="flex min-h-[44px] items-center border-l-4 border-transparent px-3 font-mono text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-terracota-texto"
+            className="flex min-h-[44px] items-center border-l-4 border-transparent px-3 font-mono text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-azul-texto"
           >
             {enlace.etiqueta}
           </Link>
@@ -142,7 +142,7 @@ export function MenuUsuario({
               afuera sin que haya tocado nada. */}
           <button
             type="submit"
-            className="flex min-h-[44px] w-full items-center border-l-4 border-transparent px-3 text-left font-mono text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-terracota-texto"
+            className="flex min-h-[44px] w-full items-center border-l-4 border-transparent px-3 text-left font-mono text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-azul-texto"
           >
             Cerrar sesión
           </button>

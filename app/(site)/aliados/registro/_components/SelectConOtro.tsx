@@ -17,8 +17,8 @@ const OTRO = 'Otro';
 // depende de ese archivo.
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-terracota focus:outline-none focus:ring-0 ' +
-  'aria-[invalid=true]:border-terracota';
+  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'aria-[invalid=true]:border-azul';
 
 export function SelectConOtro({
   id,
@@ -58,7 +58,7 @@ export function SelectConOtro({
         <button
           type="button"
           onClick={() => alCambiar('', false)}
-          className="self-start font-mono text-sm text-tinta/45 underline decoration-tinta/20 underline-offset-4 hover:text-terracota-texto"
+          className="self-start font-mono text-sm text-tinta/60 underline decoration-tinta/20 underline-offset-4 hover:text-azul-texto"
         >
           ← Elegir de la lista
         </button>

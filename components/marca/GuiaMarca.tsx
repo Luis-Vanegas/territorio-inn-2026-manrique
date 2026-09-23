@@ -53,7 +53,7 @@ export function GuiaMarca({
               <li key={seccion.kicker}>
                 <a
                   href={`#seccion-${i}`}
-                  className="inline-flex min-h-[44px] items-center underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+                  className="inline-flex min-h-[44px] items-center underline decoration-azul underline-offset-4 hover:text-azul-texto"
                 >
                   {seccion.kicker}
                 </a>
@@ -74,7 +74,7 @@ export function GuiaMarca({
             <span className="font-mono text-sm uppercase tracking-wider text-tinta/70">
               ← Guía anterior
             </span>
-            <span className="mt-2 block font-display text-xl text-tinta hover:text-terracota-texto">
+            <span className="mt-2 block font-display text-xl text-tinta hover:text-azul-texto">
               {anterior.titulo}
             </span>
           </Link>
@@ -87,7 +87,7 @@ export function GuiaMarca({
             <span className="font-mono text-sm uppercase tracking-wider text-tinta/70">
               Siguiente guía →
             </span>
-            <span className="mt-2 block font-display text-xl text-tinta hover:text-terracota-texto">
+            <span className="mt-2 block font-display text-xl text-tinta hover:text-azul-texto">
               {siguiente.titulo}
             </span>
           </Link>

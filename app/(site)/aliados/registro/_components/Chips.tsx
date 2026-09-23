@@ -2,7 +2,7 @@
 
 /**
  * Chips de selección: el mismo lenguaje visual que el botón "Usar mi
- * ubicación actual" (borde terracota, relleno al seleccionar), pero
+ * ubicación actual" (borde azul, relleno al seleccionar), pero
  * implementado sobre inputs nativos (radio/checkbox) ocultos con `sr-only`
  * en vez de `display:none` — así siguen siendo enfocables por teclado y
  * viajan en el FormData sin JS extra. Un div con onClick no manda nada si
@@ -17,8 +17,8 @@
 const claseChip =
   'flex min-h-11 cursor-pointer select-none items-center justify-center border px-4 py-3 text-center ' +
   'font-mono text-sm leading-snug transition-colors ' +
-  'peer-checked:border-terracota-texto peer-checked:bg-terracota-texto peer-checked:text-hueso ' +
-  'peer-focus-visible:ring-2 peer-focus-visible:ring-terracota peer-focus-visible:ring-offset-2 ' +
+  'peer-checked:border-azul-texto peer-checked:bg-azul-texto peer-checked:text-hueso ' +
+  'peer-focus-visible:ring-2 peer-focus-visible:ring-azul peer-focus-visible:ring-offset-2 ' +
   'border-tinta/20 text-tinta/70 hover:border-tinta/40';
 
 type Opcion = { valor: string; etiqueta: string };

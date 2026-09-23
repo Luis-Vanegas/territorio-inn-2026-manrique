@@ -26,15 +26,15 @@ const NIVELES_CON_PROGRAMA = ['universitaria', 'tecnologica', 'tecnica', 'tecnic
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-terracota focus:outline-none focus:ring-0 ' +
-  'aria-[invalid=true]:border-terracota';
+  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'aria-[invalid=true]:border-azul';
 
 const claseEtiqueta = 'block font-mono text-xs uppercase tracking-wider text-tinta/65';
 
 function Error({ mensajes }: { mensajes?: string[] }) {
   if (!mensajes?.length) return null;
   return (
-    <p role="alert" className="mt-2 font-sans text-xs text-terracota-texto">
+    <p role="alert" className="mt-2 font-sans text-xs text-azul-texto">
       {mensajes[0]}
     </p>
   );
@@ -79,7 +79,7 @@ export function FormularioCandidato() {
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="mb-8 border-l-2 border-terracota bg-terracota/[0.04] px-4 py-3 font-sans text-sm text-tinta"
+          className="mb-8 border-l-2 border-azul bg-azul/[0.04] px-4 py-3 font-sans text-sm text-tinta"
         >
           {estado.mensaje}
         </p>
@@ -181,7 +181,7 @@ export function FormularioCandidato() {
                       name="graduado"
                       value={v}
                       defaultChecked={valoresPrevios.graduado === (v === 'si')}
-                      className="accent-terracota"
+                      className="accent-azul"
                     />
                     {t}
                   </label>
@@ -237,14 +237,14 @@ export function FormularioCandidato() {
               type="checkbox"
               name="acepto_terminos"
               defaultChecked={Boolean(valoresPrevios.acepto_terminos)}
-              className="mt-1 accent-terracota"
+              className="mt-1 accent-azul"
             />
             <span>
               Leí y acepto los{' '}
               <Link
                 href="/legal/empleo"
                 target="_blank"
-                className="text-terracota-texto underline underline-offset-2"
+                className="text-azul-texto underline underline-offset-2"
               >
                 términos del módulo Empleo
               </Link>{' '}
@@ -259,7 +259,7 @@ export function FormularioCandidato() {
               type="checkbox"
               name="acepto_habeas_data"
               defaultChecked={Boolean(valoresPrevios.acepto_habeas_data)}
-              className="mt-1 accent-terracota"
+              className="mt-1 accent-azul"
             />
             <span>
               Autorizo que guarden y traten mis datos, y entiendo que mi
@@ -272,7 +272,7 @@ export function FormularioCandidato() {
 
         <button
           type="submit"
-          className="min-h-11 self-start border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
+          className="min-h-11 self-start border border-azul-texto bg-azul-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
         >
           Publicarme →
         </button>

@@ -50,7 +50,7 @@ function BotonPreguntar() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-4 border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-4 border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Buscando la respuesta…' : 'Preguntar →'}
     </button>
@@ -102,18 +102,18 @@ export function Asesor({
           maxLength={500}
           required
           placeholder="Escribe aquí tu duda…"
-          className="mt-3 w-full resize-y border border-tinta/20 bg-transparent px-4 py-3 font-sans text-tinta placeholder:text-tinta/30 focus:border-terracota focus:outline-none"
+          className="mt-3 w-full resize-y border border-tinta/20 bg-transparent px-4 py-3 font-sans text-tinta placeholder:text-tinta/30 focus:border-azul focus:outline-none"
         />
 
         <div className="mt-4">
-          <p className="font-mono text-xs text-tinta/45">O prueba con una de estas:</p>
+          <p className="font-mono text-xs text-tinta/60">O prueba con una de estas:</p>
           <ul className="mt-2 flex flex-wrap gap-2">
             {SUGERENCIAS.map((sugerencia) => (
               <li key={sugerencia}>
                 <button
                   type="button"
                   onClick={() => usarSugerencia(sugerencia)}
-                  className="border border-tinta/15 px-3 py-1.5 text-left font-sans text-sm text-tinta/70 transition-colors hover:border-terracota hover:text-terracota-texto"
+                  className="border border-tinta/15 px-3 py-1.5 text-left font-sans text-sm text-tinta/70 transition-colors hover:border-azul hover:text-azul-texto"
                 >
                   {sugerencia}
                 </button>
@@ -128,15 +128,15 @@ export function Asesor({
       {estado.estado === 'error' && (
         <p
           role="alert"
-          className="mt-6 max-w-xl border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta"
+          className="mt-6 max-w-xl border-l-2 border-azul bg-azul/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta"
         >
           {estado.mensaje}
         </p>
       )}
 
       {estado.estado === 'ok' && (
-        <article className="mt-8 max-w-xl border-l-2 border-terracota pl-5">
-          <p className="font-mono text-xs text-tinta/45">Preguntaste:</p>
+        <article className="mt-8 max-w-xl border-l-2 border-azul pl-5">
+          <p className="font-mono text-xs text-tinta/60">Preguntaste:</p>
           <p className="mt-1 font-sans text-sm text-tinta/70">{estado.pregunta}</p>
 
           {/* whitespace-pre-line respeta los saltos de línea del modelo sin
@@ -146,13 +146,13 @@ export function Asesor({
             {estado.respuesta}
           </div>
 
-          <p className="mt-6 font-sans text-xs leading-relaxed text-tinta/50">
+          <p className="mt-6 font-sans text-xs leading-relaxed text-tinta/65">
             Esta respuesta es una orientación, no una asesoría legal ni
             contable. Los valores y plazos vigentes están siempre en la página
             oficial de cada entidad.{' '}
             <Link
               href={hrefRutas}
-              className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+              className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
             >
               Ver todas las rutas
             </Link>

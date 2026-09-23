@@ -37,7 +37,7 @@ export default async function MiCuentaPage() {
   return (
     <main className="seccion">
       <header className="max-w-3xl">
-        <span className="font-mono text-xs text-tinta/50">Tu espacio</span>
+        <span className="font-mono text-xs text-tinta/65">Tu espacio</span>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-5xl">
           Hola, {sesion.nombre}
@@ -59,7 +59,7 @@ export default async function MiCuentaPage() {
             </p>
             <Link
               href="/aliados/registro"
-              className="mt-6 inline-block border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+              className="mt-6 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
             >
               Registrar mi negocio →
             </Link>
@@ -69,16 +69,16 @@ export default async function MiCuentaPage() {
             {negocios.map((negocio) => (
               <li
                 key={negocio.id}
-                className="flex flex-col border border-tinta/12 p-6 transition-colors hover:border-terracota"
+                className="flex flex-col border border-tinta/12 p-6 transition-colors hover:border-azul"
               >
                 <h3 className="font-display text-xl font-medium text-tinta">{negocio.nombre}</h3>
-                <p className="mt-1 font-mono text-xs text-tinta/45">
+                <p className="mt-1 font-mono text-xs text-tinta/60">
                   {ETIQUETA_ESTADO[negocio.estado] ?? negocio.estado}
                 </p>
                 <div className="mt-auto pt-5">
                   <Link
                     href={`/aliados/estado/${negocio.token_publico}`}
-                    className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                    className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
                   >
                     Ver y editar →
                   </Link>
@@ -109,7 +109,7 @@ export default async function MiCuentaPage() {
             <div className="mt-auto pt-5">
               <Link
                 href="/formalizacion"
-                className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
               >
                 Ver las rutas →
               </Link>
@@ -124,7 +124,7 @@ export default async function MiCuentaPage() {
             <div className="mt-auto pt-5">
               <Link
                 href="/formalizacion#videos"
-                className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
               >
                 Ver los videos →
               </Link>
@@ -141,12 +141,12 @@ export default async function MiCuentaPage() {
               {negocios.length > 0 ? (
                 <Link
                   href={`/aliados/estado/${negocios[0]!.token_publico}`}
-                  className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                  className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
                 >
                   Preguntar →
                 </Link>
               ) : (
-                <span className="font-mono text-sm text-tinta/40">
+                <span className="font-mono text-sm text-tinta/60">
                   Registra tu negocio para usarlo
                 </span>
               )}
@@ -162,7 +162,7 @@ export default async function MiCuentaPage() {
             <div className="mt-auto pt-5">
               <Link
                 href="/marca"
-                className="font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+                className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
               >
                 Ver las guías →
               </Link>
@@ -175,7 +175,7 @@ export default async function MiCuentaPage() {
         <form action={salir}>
           <button
             type="submit"
-            className="font-mono text-sm text-tinta/60 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+            className="font-mono text-sm text-tinta/60 underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             Cerrar sesión
           </button>

@@ -26,8 +26,8 @@ export function EnfoqueSection() {
                 indice % 2 === 1 ? "sm:pl-16" : ""
               }`}
             >
-              <span className="font-mono text-sm text-tinta/50">{modulo.numero}</span>
-              <p className="font-display text-3xl font-medium text-tinta transition-transform group-hover:translate-x-2 group-hover:text-terracota-texto sm:w-72">
+              <span className="font-mono text-sm text-tinta/65">{modulo.numero}</span>
+              <p className="font-display text-3xl font-medium text-tinta transition-transform group-hover:translate-x-2 group-hover:text-azul-texto sm:w-72">
                 {modulo.nombre}
               </p>
               <p className="max-w-md font-sans text-base text-tinta/70">
@@ -35,17 +35,20 @@ export function EnfoqueSection() {
               </p>
 
               {modulo.estado === "proximamente" ? (
-                <span className="font-mono text-xs text-tinta/40 sm:ml-auto">
+                <span className="font-mono text-xs text-tinta/60 sm:ml-auto">
                   [ Próximamente ]
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota-texto sm:ml-auto">
-                  <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />
+                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-tinta/70 sm:ml-auto">
+                  {/* Amarillo solo acá: es un testigo de estado (como una luz
+                      piloto), no texto — por eso no necesita variante -texto,
+                      el color va en el punto y la palabra queda neutra. */}
+                  <span className="h-1.5 w-1.5 rounded-full bg-amarillo" aria-hidden="true" />
                   en vivo
                 </span>
               )}
 
-              <span className="font-mono text-sm text-terracota-texto opacity-0 transition-opacity group-hover:opacity-100 sm:ml-4">
+              <span className="font-mono text-sm text-azul-texto opacity-0 transition-opacity group-hover:opacity-100 sm:ml-4">
                 →
               </span>
             </Link>

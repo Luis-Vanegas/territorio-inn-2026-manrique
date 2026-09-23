@@ -69,10 +69,10 @@ export function Stepper({
                   <span
                     className={`font-mono text-xs tabular-nums transition-colors ${
                       esActual
-                        ? 'text-terracota-texto'
+                        ? 'text-azul-texto'
                         : yaPaso
                           ? 'text-tinta/65'
-                          : 'text-tinta/35'
+                          : 'text-tinta/60'
                     }`}
                   >
                     {String(i + 1).padStart(2, '0')}
@@ -81,7 +81,7 @@ export function Stepper({
                     className={`font-sans text-sm transition-colors ${
                       esActual
                         ? 'text-tinta'
-                        : 'text-tinta/45 group-hover:text-tinta/75'
+                        : 'text-tinta/60 group-hover:text-tinta/75'
                     }`}
                   >
                     {paso.titulo}
@@ -93,7 +93,7 @@ export function Stepper({
                   // en vez de desaparecer y reaparecer.
                   <motion.div
                     layoutId={`${idBase}-marca`}
-                    className="mt-2 h-px bg-terracota"
+                    className="mt-2 h-px bg-azul-texto"
                     transition={{ type: 'spring', stiffness: 380, damping: 32 }}
                   />
                 )}

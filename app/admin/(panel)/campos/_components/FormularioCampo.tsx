@@ -15,7 +15,7 @@ const TIPOS: { valor: TipoCampoPersonalizado; etiqueta: string }[] = [
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-sm text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-terracota focus:outline-none focus:ring-0';
+  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0';
 
 function Boton({ children }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
@@ -23,7 +23,7 @@ function Boton({ children }: { children: React.ReactNode }) {
     <button
       type="submit"
       disabled={pending}
-      className="border border-terracota-texto bg-terracota-texto px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="border border-azul-texto bg-azul-texto px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Guardando…' : children}
     </button>
@@ -64,7 +64,7 @@ export function FormularioCampo({
       {campoExistente && <input type="hidden" name="id" value={campoExistente.id} />}
 
       {estado.estado === 'error' && estado.mensaje && (
-        <p role="alert" className="font-mono text-xs text-terracota-texto">
+        <p role="alert" className="font-mono text-xs text-azul-texto">
           {estado.mensaje}
         </p>
       )}
@@ -102,7 +102,7 @@ export function FormularioCampo({
           <p className="block font-sans text-sm font-medium text-tinta">Tipo de dato</p>
           <p className="mt-2 font-mono text-sm text-tinta/70">
             {TIPOS.find((t) => t.valor === campoExistente.tipo)?.etiqueta}
-            <span className="ml-2 text-xs text-tinta/35">(no se puede cambiar)</span>
+            <span className="ml-2 text-xs text-tinta/60">(no se puede cambiar)</span>
           </p>
         </div>
       ) : (
@@ -168,7 +168,7 @@ export function FormularioCampo({
           type="checkbox"
           name="requerido"
           defaultChecked={campoExistente?.requerido}
-          className="h-4 w-4 accent-terracota"
+          className="h-4 w-4 accent-azul"
         />
         <span className="font-sans text-sm text-tinta/75">Obligatorio</span>
       </label>

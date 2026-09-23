@@ -21,7 +21,7 @@ export function Hero() {
       <div className="grid grid-cols-1 items-center gap-y-12 lg:grid-cols-12 lg:gap-x-10">
         <div className="lg:col-span-7">
           <ScrollReveal>
-            <span className="font-mono text-xs tracking-[0.2em] text-terracota-texto">
+            <span className="font-mono text-xs tracking-[0.2em] text-morado-texto">
               {hero.etiqueta}
             </span>
           </ScrollReveal>
@@ -69,7 +69,7 @@ export function Hero() {
                         <Link
                           key={cta.href}
                           href={cta.href}
-                          className="group flex min-h-[44px] items-center justify-between gap-3 border border-terracota-texto bg-terracota-texto text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto px-4 py-2.5 font-mono text-base leading-snug"
+                          className="group flex min-h-[44px] items-center justify-between gap-3 border border-azul-texto bg-azul-texto text-hueso transition-colors hover:bg-transparent hover:text-azul-texto px-4 py-2.5 font-mono text-base leading-snug"
                         >
                           {cta.etiqueta}
                           <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">

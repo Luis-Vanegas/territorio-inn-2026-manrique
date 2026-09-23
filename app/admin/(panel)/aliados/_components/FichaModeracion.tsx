@@ -34,8 +34,8 @@ function Boton({
       className={[
         'border px-4 py-2 font-mono text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40',
         variante === 'primaria'
-          ? 'border-terracota-texto bg-terracota-texto text-hueso hover:bg-transparent hover:text-terracota-texto'
-          : 'border-tinta/20 text-tinta/65 hover:border-terracota-texto hover:text-terracota-texto',
+          ? 'border-azul-texto bg-azul-texto text-hueso hover:bg-transparent hover:text-azul-texto'
+          : 'border-tinta/20 text-tinta/65 hover:border-azul-texto hover:text-azul-texto',
       ].join(' ')}
     >
       {etiqueta}
@@ -63,7 +63,7 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
   if (!valor) return null;
   return (
     <div className="flex gap-3">
-      <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/40">
+      <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/60">
         {etiqueta}
       </dt>
       <dd className="font-sans text-sm text-tinta/75">{valor}</dd>
@@ -87,7 +87,7 @@ export function FichaModeracion({
   if (estado.estado === 'ok') {
     return (
       <article className="border-t border-tinta/12 py-6">
-        <p className="font-mono text-xs text-terracota-texto">
+        <p className="font-mono text-xs text-azul-texto">
           {portafolio.nombre} — {estado.mensaje}
         </p>
       </article>
@@ -98,7 +98,7 @@ export function FichaModeracion({
     <article className="border-t border-tinta/12 py-8">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto]">
         <div className="min-w-0">
-          <span className="font-mono text-xs uppercase tracking-wider text-terracota-texto">
+          <span className="font-mono text-xs uppercase tracking-wider text-morado-texto">
             {portafolio.categoria_nombre}
           </span>
 
@@ -147,12 +147,17 @@ export function FichaModeracion({
               // timeZone fijo: sin esto, el servidor (UTC) y el navegador del
               // moderador (Colombia) arman textos distintos para la misma
               // fecha, y React tira un error de hidratación (#418) al notar
-              // que no coinciden.
-              valor={new Date(portafolio.creado_en).toLocaleString('es-CO', {
-                dateStyle: 'medium',
-                timeStyle: 'short',
-                timeZone: 'America/Bogota',
-              })}
+              // que no coinciden. El replace es por lo mismo: el ICU de Node y
+              // el de Chrome separan "9:17 p. m." con espacios distintos
+              // (U+202F, U+00A0, espacio común) — el texto se ve igual y React
+              // igual lo marca como distinto.
+              valor={new Date(portafolio.creado_en)
+                .toLocaleString('es-CO', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                  timeZone: 'America/Bogota',
+                })
+                .replace(/\s/g, ' ')}
             />
             {camposExtra.map((c) => (
               <Dato key={c.etiqueta} etiqueta={c.etiqueta} valor={c.valor} />
@@ -163,12 +168,12 @@ export function FichaModeracion({
             <dl className="mt-4 flex flex-col gap-1">
               {portafolio.productos.map((prod) => (
                 <div key={prod.nombre} className="flex gap-3">
-                  <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/40">
+                  <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/60">
                     Producto
                   </dt>
                   <dd className="font-sans text-sm text-tinta/75">
                     {prod.nombre}
-                    {prod.precio && <span className="text-tinta/45"> — {prod.precio}</span>}
+                    {prod.precio && <span className="text-tinta/60"> — {prod.precio}</span>}
                   </dd>
                 </div>
               ))}
@@ -194,7 +199,7 @@ export function FichaModeracion({
               href={portafolio.menu_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-xs text-tinta/60 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto"
+              className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
             >
               Ver menú / flyer enviado ↗
             </a>
@@ -213,7 +218,7 @@ export function FichaModeracion({
             >
               Motivo del rechazo
             </label>
-            <p className="mt-1 font-sans text-xs text-tinta/50">
+            <p className="mt-1 font-sans text-xs text-tinta/65">
               Lo va a leer el emprendedor. Explicá qué corregir.
             </p>
             <textarea
@@ -221,13 +226,13 @@ export function FichaModeracion({
               name="motivo_rechazo"
               rows={3}
               minLength={10}
-              className="mt-2 w-full border border-tinta/20 bg-transparent p-3 font-sans text-sm text-tinta focus:border-terracota focus:outline-none"
+              className="mt-2 w-full border border-tinta/20 bg-transparent p-3 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
             />
           </div>
         )}
 
         {estado.estado === 'error' && (
-          <p role="alert" className="mb-3 font-mono text-xs text-terracota-texto">
+          <p role="alert" className="mb-3 font-mono text-xs text-azul-texto">
             {estado.mensaje}
           </p>
         )}
@@ -239,7 +244,7 @@ export function FichaModeracion({
               <button
                 type="button"
                 onClick={() => setMostrarRechazo(true)}
-                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
               >
                 Rechazar…
               </button>
@@ -250,7 +255,7 @@ export function FichaModeracion({
               <button
                 type="button"
                 onClick={() => setMostrarRechazo(false)}
-                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+                className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
               >
                 Cancelar
               </button>

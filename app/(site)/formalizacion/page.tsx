@@ -37,8 +37,8 @@ function VistaPrevia() {
     <main className="seccion">
       <div className="mx-auto max-w-2xl">
         <header>
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota-texto">
-            <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />
+          <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
+            <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
             solo para registrados
           </span>
 
@@ -98,7 +98,7 @@ function VistaPrevia() {
 
           <Link
             href="/entrar"
-            className="mt-8 inline-block border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+            className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
           >
             Entrar o registrarme →
           </Link>
@@ -106,7 +106,7 @@ function VistaPrevia() {
 
         <Link
           href="/"
-          className="mt-20 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+          className="mt-20 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
         >
           ← Volver a Constelaciones
         </Link>
@@ -135,8 +135,8 @@ export default async function FormalizacionPage() {
             menú de usuario. Repetirla acá no es redundancia: es lo que le dice
             a la persona que esta página es una de las suyas y no contenido
             público, sin agregar un cartel que lo anuncie. */}
-        <span className="inline-flex items-center gap-1.5 font-mono text-xs text-terracota-texto">
-          <span className="h-1.5 w-1.5 rounded-full bg-terracota" aria-hidden="true" />
+        <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
+          <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
           tu espacio · rutas y apoyos
         </span>
 
@@ -150,7 +150,7 @@ export default async function FormalizacionPage() {
           completo, con el enlace oficial de cada paso.
         </p>
 
-        <p className="mt-4 max-w-xl font-sans text-sm leading-relaxed text-tinta/55">
+        <p className="mt-4 max-w-xl font-sans text-sm leading-relaxed text-tinta/65">
           No publicamos tarifas ni montos: cambian cada año. Cada paso te lleva
           a la página oficial donde está el valor vigente.
         </p>
@@ -171,7 +171,7 @@ export default async function FormalizacionPage() {
 
         <Link
           href="/mi-cuenta"
-          className="mt-8 inline-block border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+          className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
         >
           Ir a mi cuenta →
         </Link>
@@ -179,7 +179,7 @@ export default async function FormalizacionPage() {
 
       <Link
         href="/mi-cuenta"
-        className="mt-24 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+        className="mt-24 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver a mi cuenta
       </Link>

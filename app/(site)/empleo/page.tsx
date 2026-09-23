@@ -34,7 +34,7 @@ export default async function EmpleoPage({
   return (
     <main className="seccion">
       <header className="max-w-3xl">
-        <span className="font-mono text-xs text-tinta/50">Empleo</span>
+        <span className="font-mono text-xs text-tinta/65">Empleo</span>
 
         <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
           Gente de Manrique buscando trabajo
@@ -47,7 +47,7 @@ export default async function EmpleoPage({
       </header>
 
       {registrado && (
-        <p className="mt-8 max-w-3xl border-l-2 border-terracota bg-terracota/[0.04] px-4 py-3 font-sans text-sm leading-relaxed text-tinta">
+        <p className="mt-8 max-w-3xl border-l-2 border-azul bg-azul/[0.04] px-4 py-3 font-sans text-sm leading-relaxed text-tinta">
           ✓ Tu registro quedó guardado. Lo vamos a revisar y vas a aparecer en
           esta lista apenas lo aprobemos.
         </p>
@@ -79,7 +79,7 @@ export default async function EmpleoPage({
         <p className="font-sans text-lg text-tinta">¿Estás buscando trabajo?</p>
         <Link
           href="/empleo/registro"
-          className="mt-4 inline-block min-h-11 border border-terracota-texto bg-terracota-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
+          className="mt-4 inline-block min-h-11 border border-azul-texto bg-azul-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90"
         >
           Publicarme →
         </Link>

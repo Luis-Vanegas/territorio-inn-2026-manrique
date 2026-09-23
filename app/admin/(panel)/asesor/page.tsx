@@ -44,7 +44,7 @@ export default function AdminAsesorPage() {
       ) : (
         <p
           role="alert"
-          className="mt-12 max-w-xl border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta"
+          className="mt-12 max-w-xl border-l-2 border-azul bg-azul/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta"
         >
           El asesor no tiene ningún proveedor configurado en este entorno. Falta
           cargar al menos una clave (por ejemplo <code>GEMINI_API_KEY</code>) en
