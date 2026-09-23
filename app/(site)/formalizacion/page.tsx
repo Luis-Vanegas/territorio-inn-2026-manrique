@@ -142,38 +142,51 @@ export default async function FormalizacionPage() {
 
   return (
     <main className="seccion">
-      <header className="max-w-3xl">
-        {/* «Tu espacio» es la misma etiqueta que encabeza la sección privada del
-            menú de usuario. Repetirla acá no es redundancia: es lo que le dice
-            a la persona que esta página es una de las suyas y no contenido
-            público, sin agregar un cartel que lo anuncie. */}
-        <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
-          <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
-          tu espacio · rutas y apoyos
-        </span>
+      {/* Encabezado en dos columnas, mismo patrón que components/Hero.
+          `.seccion` no tiene ancho máximo (ver styles/globals.css: solo pone
+          márgenes), así que en un monitor ancho la sección mide ~1750px. Con el
+          texto capado en max-w-3xl y la foto colgando debajo, sobraban ~1000px
+          de nada a la derecha mientras el catálogo de abajo sí usaba todo el
+          ancho: el encabezado se leía como una columna suelta en una página
+          que no era suya. Ahora la foto ocupa esa mitad en vez de dejarla
+          vacía, y el texto conserva su medida de lectura. */}
+      <header className="grid grid-cols-1 items-center gap-y-8 lg:grid-cols-12 lg:gap-x-12">
+        <div className="lg:col-span-6 xl:col-span-5">
+          {/* «Tu espacio» es la misma etiqueta que encabeza la sección privada del
+              menú de usuario. Repetirla acá no es redundancia: es lo que le dice
+              a la persona que esta página es una de las suyas y no contenido
+              público, sin agregar un cartel que lo anuncie. */}
+          <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
+            <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
+            tu espacio · rutas y apoyos
+          </span>
 
-        <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
-          Formalización
-        </h1>
+          <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
+            Formalización
+          </h1>
 
-        <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
-          Formalizar un negocio no es un solo trámite: son varios, en orden, y
-          casi todos tienen una entidad distinta detrás. Acá está el camino
-          completo, con el enlace oficial de cada paso.
-        </p>
+          <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
+            Formalizar un negocio no es un solo trámite: son varios, en orden, y
+            casi todos tienen una entidad distinta detrás. Acá está el camino
+            completo, con el enlace oficial de cada paso.
+          </p>
 
-        <p className="mt-4 max-w-xl font-sans text-sm leading-relaxed text-tinta/65">
-          No publicamos tarifas ni montos: cambian cada año. Cada paso te lleva
-          a la página oficial donde está el valor vigente.
-        </p>
+          <p className="mt-4 max-w-xl font-sans text-sm leading-relaxed text-tinta/65">
+            No publicamos tarifas ni montos: cambian cada año. Cada paso te lleva
+            a la página oficial donde está el valor vigente.
+          </p>
+        </div>
 
-        <div className="relative mt-8 aspect-[16/7] w-full overflow-hidden sm:aspect-[21/8]">
+        {/* En móvil sigue siendo una banda ancha bajo el texto; recién en lg
+            pasa a ser la columna de al lado y toma una proporción más alta,
+            que es lo que llena el alto del bloque de texto. */}
+        <div className="relative aspect-[16/7] w-full overflow-hidden lg:col-span-6 lg:aspect-[5/4] xl:col-span-7 xl:aspect-[16/9]">
           <Image
             src="/fotos/manrique-iglesia.jpg"
             alt="Vista de una calle de Manrique con la iglesia del barrio al fondo"
             fill
             preload
-            sizes="(max-width: 1024px) 100vw, 768px"
+            sizes="(max-width: 1024px) 100vw, 55vw"
             className="object-cover"
           />
         </div>

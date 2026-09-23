@@ -40,7 +40,14 @@ export function ModuloDesplegable({
 }) {
   return (
     <details open={abierto} className="group mt-6 border-t border-tinta/12 pt-6 first:mt-0">
-      <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+      {/* El +/− va pegado al título y no contra el borde derecho.
+          Con `justify-between` la fila reparte a los extremos, y como la página
+          de formalización no tiene ancho máximo (`.seccion` solo pone
+          márgenes), en un monitor ancho el signo terminaba a ~1700px de su
+          propio título: nada indicaba que uno abriera al otro. Al lado se lee
+          como lo que es. El `<summary>` sigue siendo clicable entero, así que
+          el área para tocar en el celular no cambia. */}
+      <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-start gap-4 [&::-webkit-details-marker]:hidden">
         <span className="flex items-baseline gap-3">
           <h2 className="font-display text-2xl font-medium text-tinta sm:text-3xl">{titulo}</h2>
           {cantidad !== undefined && (
