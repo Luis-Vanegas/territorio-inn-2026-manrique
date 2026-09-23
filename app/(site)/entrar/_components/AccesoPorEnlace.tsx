@@ -44,11 +44,11 @@ export function AccesoPorEnlace() {
 
   return (
     <details className="group border border-tinta/15">
-      <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between px-5 font-mono text-sm text-tinta transition-colors hover:text-terracota-texto [&::-webkit-details-marker]:hidden">
+      <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between px-5 font-mono text-sm text-tinta transition-colors hover:text-azul-texto [&::-webkit-details-marker]:hidden">
         <span>El equipo registró mi negocio en persona</span>
         {/* aria-hidden: <details> ya anuncia su estado al lector de pantalla.
             El signo es refuerzo visual, no información. */}
-        <span className="font-mono text-lg text-tinta/40" aria-hidden="true">
+        <span className="font-mono text-lg text-tinta/60" aria-hidden="true">
           <span className="group-open:hidden">+</span>
           <span className="hidden group-open:inline">−</span>
         </span>
@@ -73,27 +73,27 @@ export function AccesoPorEnlace() {
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? 'enlace-error' : undefined}
           placeholder="https://… /aliados/estado/…"
-          className="mt-3 w-full border border-tinta/20 bg-transparent px-4 py-3 font-mono text-sm text-tinta placeholder:text-tinta/30 focus:border-terracota focus:outline-none"
+          className="mt-3 w-full border border-tinta/20 bg-transparent px-4 py-3 font-mono text-sm text-tinta placeholder:text-tinta/30 focus:border-azul focus:outline-none"
         />
 
         {error && (
-          <p id="enlace-error" role="alert" className="mt-3 font-sans text-sm text-terracota-texto">
+          <p id="enlace-error" role="alert" className="mt-3 font-sans text-sm text-azul-texto">
             {error}
           </p>
         )}
 
         <button
           type="submit"
-          className="mt-5 min-h-[48px] w-full border border-tinta/25 px-6 font-mono text-sm text-tinta transition-colors hover:border-terracota hover:text-terracota-texto sm:w-auto"
+          className="mt-5 min-h-[48px] w-full border border-tinta/25 px-6 font-mono text-sm text-tinta transition-colors hover:border-azul hover:text-azul-texto sm:w-auto"
         >
           Entrar
         </button>
 
-        <p className="mt-5 font-sans text-sm leading-relaxed text-tinta/55">
+        <p className="mt-5 font-sans text-sm leading-relaxed text-tinta/65">
           ¿Lo perdiste?{' '}
           <a
             href="/contacto"
-            className="underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+            className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             Escríbenos
           </a>{' '}

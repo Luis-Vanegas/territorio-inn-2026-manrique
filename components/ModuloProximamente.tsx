@@ -13,7 +13,7 @@ interface ModuloProximamenteProps {
 export function ModuloProximamente({ modulo }: ModuloProximamenteProps) {
   return (
     <main className="margen-editorial flex min-h-screen flex-col justify-center py-32">
-      <span className="font-mono text-xs text-tinta/50">{modulo.numero}</span>
+      <span className="font-mono text-xs text-tinta/65">{modulo.numero}</span>
 
       <h1 className="mt-4 font-display text-6xl font-medium leading-[0.95] text-tinta sm:text-8xl">
         {modulo.nombre}
@@ -21,11 +21,11 @@ export function ModuloProximamente({ modulo }: ModuloProximamenteProps) {
 
       <p className="mt-6 max-w-lg font-sans text-lg text-tinta/70">{modulo.descripcion}</p>
 
-      <span className="mt-8 font-mono text-sm text-terracota-texto">[ Próximamente ]</span>
+      <span className="mt-8 font-mono text-sm text-azul-texto">[ Próximamente ]</span>
 
       <Link
         href="/#enfoque"
-        className="mt-16 inline-block w-fit font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+        className="mt-16 inline-block w-fit font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver a Constelaciones
       </Link>

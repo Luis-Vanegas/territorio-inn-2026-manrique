@@ -58,7 +58,7 @@ export function PuertaRegistro({
 
           <Link
             href="/entrar"
-            className="mt-8 inline-block border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+            className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
           >
             Entrar o registrarme →
           </Link>

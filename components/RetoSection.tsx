@@ -1,5 +1,5 @@
 // El Reto: título en columna angosta a la izquierda, cuerpo en columna ancha tipo artículo de revista.
-// El pull-quote rompe el grid con una regla vertical terracota en vez de comillas decorativas.
+// El pull-quote rompe el grid con una regla vertical azul en vez de comillas decorativas.
 
 import { reto } from "@/lib/content";
 import { ScrollReveal } from "./ScrollReveal";
@@ -23,8 +23,8 @@ export function RetoSection() {
             ))}
           </ScrollReveal>
 
-          <ScrollReveal delay={0.2} className="mt-10 border-l-2 border-terracota pl-6">
-            <p className="font-display text-3xl italic leading-snug text-terracota-texto sm:text-4xl">
+          <ScrollReveal delay={0.2} className="mt-10 border-l-2 border-azul pl-6">
+            <p className="font-display text-3xl italic leading-snug text-azul-texto sm:text-4xl">
               {reto.cita}
             </p>
           </ScrollReveal>

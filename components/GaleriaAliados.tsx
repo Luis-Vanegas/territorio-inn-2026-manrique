@@ -31,14 +31,16 @@ export async function GaleriaAliados() {
           </h2>
           <Link
             href="/aliados"
-            className="font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+            className="font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             Ver todos →
           </Link>
         </div>
       </ScrollReveal>
 
-      <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      {/* isolate: el zoom al pasar el mouse (scale-105) sube cada foto a una
+          capa de GPU; aislada, esa capa no puede pintarse encima del header. */}
+      <div className="isolate mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {conFoto.map((portafolio, indice) => (
           <ScrollReveal key={portafolio.id} delay={Math.min(indice, 4) * 0.06}>
             <Link

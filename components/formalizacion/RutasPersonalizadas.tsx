@@ -43,9 +43,9 @@ export function RutasPersonalizadas({
 
   return (
     <>
-      <div className="mt-10 flex flex-wrap items-center gap-4 border border-terracota/30 bg-terracota/5 px-5 py-4">
+      <div className="mt-10 flex flex-wrap items-center gap-4 border border-azul/30 bg-amarillo/15 px-5 py-4">
         <p className="font-sans text-sm leading-relaxed text-tinta/70">
-          <span className="font-mono text-xs uppercase tracking-wider text-terracota-texto">
+          <span className="font-mono text-xs uppercase tracking-wider text-morado-texto">
             Según tu negocio
           </span>{' '}
           — respondiste «{etiquetaFormalidad}», así que estos son los que te aplican.
@@ -54,7 +54,7 @@ export function RutasPersonalizadas({
         <button
           type="button"
           onClick={() => setVerTodos((v) => !v)}
-          className="ml-auto shrink-0 font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4"
+          className="ml-auto shrink-0 font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
         >
           {verTodos ? `Ver solo los míos (${propios.length})` : `Ver los ${todos.length} completos`}
         </button>

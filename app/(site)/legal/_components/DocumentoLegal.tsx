@@ -31,7 +31,7 @@ export function DocumentoLegal({
   return (
     <main className="seccion">
       <article className="max-w-2xl">
-        <span className="font-mono text-xs text-tinta/50">
+        <span className="font-mono text-xs text-tinta/65">
           {version} · actualizado {actualizado}
         </span>
 
@@ -40,19 +40,19 @@ export function DocumentoLegal({
         </h1>
 
         {avisoBorrador && (
-          <p className="mt-6 border border-terracota/40 bg-terracota/5 px-4 py-3 font-mono text-xs leading-relaxed text-terracota-texto">
+          <p className="mt-6 border border-amarillo bg-amarillo/15 px-4 py-3 font-mono text-xs leading-relaxed text-azul-texto">
             Borrador técnico, redactado por el equipo del proyecto. Pendiente de
             revisión jurídica antes de su publicación definitiva.
           </p>
         )}
 
-        <div className="mt-10 flex flex-col gap-6 font-sans text-[15px] leading-relaxed text-tinta/75 [&_a]:underline [&_a]:decoration-terracota [&_a]:underline-offset-4 [&_h2]:mt-6 [&_h2]:font-mono [&_h2]:text-xs [&_h2]:uppercase [&_h2]:tracking-wider [&_h2]:text-tinta/50 [&_li]:ml-5 [&_li]:list-disc [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2">
+        <div className="mt-10 flex flex-col gap-6 font-sans text-[15px] leading-relaxed text-tinta/75 [&_a]:underline [&_a]:decoration-azul [&_a]:underline-offset-4 [&_h2]:mt-6 [&_h2]:font-mono [&_h2]:text-xs [&_h2]:uppercase [&_h2]:tracking-wider [&_h2]:text-tinta/50 [&_li]:ml-5 [&_li]:list-disc [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2">
           {children}
         </div>
 
         <Link
           href={volverA.href}
-          className="mt-16 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+          className="mt-16 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
         >
           {volverA.texto}
         </Link>

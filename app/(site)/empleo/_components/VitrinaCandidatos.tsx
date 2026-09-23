@@ -29,7 +29,7 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
       <button
         type="button"
         onClick={() => setVisible(true)}
-        className="min-h-11 border border-tinta/25 px-4 py-2 font-mono text-xs text-tinta transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+        className="min-h-11 border border-tinta/25 px-4 py-2 font-mono text-xs text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
       >
         Mostrar teléfono
       </button>
@@ -42,7 +42,7 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
         href={enlaceWhatsapp(telefono)}
         target="_blank"
         rel="noopener noreferrer"
-        className="min-h-11 border border-terracota-texto px-4 py-2 font-mono text-xs text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso"
+        className="min-h-11 border border-azul-texto px-4 py-2 font-mono text-xs text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso"
       >
         WhatsApp a {nombre.split(' ')[0]}
       </a>
@@ -57,7 +57,7 @@ function Ficha({ candidato }: { candidato: Candidato }) {
   return (
     <article className="border-t border-tinta/12 py-8">
       <div className="flex gap-5">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-tinta/5 font-display text-2xl text-tinta/40">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-tinta/5 font-display text-2xl text-tinta/60">
           {candidato.nombre.charAt(0).toUpperCase()}
         </div>
 
@@ -66,11 +66,11 @@ function Ficha({ candidato }: { candidato: Candidato }) {
             {candidato.nombre}
           </h3>
 
-          <p className="mt-1 font-mono text-xs text-terracota-texto">
+          <p className="mt-1 font-mono text-xs text-azul-texto">
             {ETIQUETAS_NIVEL[candidato.nivel_formacion as (typeof OPCIONES_NIVEL_FORMACION)[number]]}
-            {candidato.programa && <span className="text-tinta/45"> · {candidato.programa}</span>}
+            {candidato.programa && <span className="text-tinta/60"> · {candidato.programa}</span>}
             {candidato.graduado !== null && (
-              <span className="text-tinta/45">
+              <span className="text-tinta/60">
                 {' · '}
                 {candidato.graduado ? 'graduado/a' : 'en curso'}
               </span>
@@ -81,7 +81,7 @@ function Ficha({ candidato }: { candidato: Candidato }) {
             {candidato.experiencia}
           </p>
 
-          <p className="mt-2 font-mono text-xs uppercase tracking-wider text-tinta/45">
+          <p className="mt-2 font-mono text-xs uppercase tracking-wider text-tinta/60">
             Busca: <span className="font-sans text-xs normal-case text-tinta/65">{candidato.busca}</span>
           </p>
 
@@ -105,13 +105,13 @@ export function VitrinaCandidatos({ candidatos }: { candidatos: Candidato[] }) {
   return (
     <div>
       <label className="flex flex-col gap-1.5">
-        <span className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+        <span className="font-mono text-xs uppercase tracking-wider text-tinta/65">
           Nivel de formación
         </span>
         <select
           value={nivel}
           onChange={(e) => setNivel(e.target.value)}
-          className="w-fit border-0 border-b border-tinta/25 bg-transparent py-1.5 pr-6 font-sans text-sm text-tinta focus:border-terracota focus:outline-none"
+          className="w-fit border-0 border-b border-tinta/25 bg-transparent py-1.5 pr-6 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
         >
           <option value="">Todos</option>
           {OPCIONES_NIVEL_FORMACION.map((o) => (
@@ -122,7 +122,7 @@ export function VitrinaCandidatos({ candidatos }: { candidatos: Candidato[] }) {
         </select>
       </label>
 
-      <p className="mt-6 font-mono text-xs text-tinta/50" aria-live="polite">
+      <p className="mt-6 font-mono text-xs text-tinta/65" aria-live="polite">
         {visibles.length} {visibles.length === 1 ? 'persona' : 'personas'}
       </p>
 

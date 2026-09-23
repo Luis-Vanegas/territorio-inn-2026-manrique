@@ -77,7 +77,7 @@ export function CampoFormulario({
       </div>
 
       {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-sm text-terracota-texto">
+        <p id={idError} className="mt-1.5 font-mono text-sm text-azul-texto">
           {errores[0]}
         </p>
       ) : null}

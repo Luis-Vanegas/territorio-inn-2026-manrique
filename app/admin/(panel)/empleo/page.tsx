@@ -17,13 +17,13 @@ export default async function AdminEmpleoPage() {
       </p>
 
       <section className="mt-12">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
           En revisión ({pendientes.length})
         </h2>
 
         <div className="mt-6">
           {pendientes.length === 0 ? (
-            <p className="border-t border-tinta/12 py-10 font-sans text-sm text-tinta/55">
+            <p className="border-t border-tinta/12 py-10 font-sans text-sm text-tinta/65">
               No hay registros esperando revisión.
             </p>
           ) : (

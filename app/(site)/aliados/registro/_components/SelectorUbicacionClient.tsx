@@ -135,19 +135,19 @@ export default function SelectorUbicacionClient({
           type="button"
           onClick={usarMiUbicacion}
           disabled={buscando}
-          className="inline-flex items-center gap-2 border border-terracota-texto bg-terracota-texto px-4 py-2.5 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex items-center gap-2 border border-azul-texto bg-azul-texto px-4 py-2.5 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
         >
           <span aria-hidden="true">◎</span>
           {buscando ? 'Buscando tu ubicación…' : 'Usar mi ubicación actual'}
         </button>
 
-        <span className="font-mono text-xs text-tinta/40">
+        <span className="font-mono text-xs text-tinta/60">
           o toca el mapa donde queda tu negocio
         </span>
       </div>
 
       {geo.fase === 'error' && (
-        <p role="alert" className="mt-3 font-mono text-xs leading-relaxed text-terracota-texto">
+        <p role="alert" className="mt-3 font-mono text-xs leading-relaxed text-azul-texto">
           {geo.mensaje}
         </p>
       )}
@@ -175,7 +175,7 @@ export default function SelectorUbicacionClient({
               color: '#1a1a1a',
               weight: 1.5,
               opacity: 0.6,
-              fillColor: '#c55a3c',
+              fillColor: '#3c8af6',
               fillOpacity: 0.05,
             }}
           />
@@ -192,7 +192,7 @@ export default function SelectorUbicacionClient({
                   center={[posicion.lat, posicion.lng]}
                   radius={posicion.precision}
                   pathOptions={{
-                    color: '#c55a3c',
+                    color: '#3c8af6',
                     weight: 1,
                     opacity: 0.5,
                     fillOpacity: 0.06,
@@ -227,11 +227,11 @@ export default function SelectorUbicacionClient({
         aria-live="polite"
         className={[
           'mt-4 border-l-2 px-4 py-3 transition-colors',
-          !posicion ? 'border-tinta/15 bg-tinta/[0.02]' : 'border-terracota bg-terracota/[0.04]',
+          !posicion ? 'border-tinta/15 bg-tinta/[0.02]' : 'border-azul bg-azul/[0.04]',
         ].join(' ')}
       >
         {!posicion ? (
-          <p className="font-mono text-xs text-tinta/50">
+          <p className="font-mono text-xs text-tinta/65">
             Todavía no marcaste el punto.
           </p>
         ) : (
@@ -240,7 +240,7 @@ export default function SelectorUbicacionClient({
               <span aria-hidden="true">📍</span>
               {posicion.lat.toFixed(6)}, {posicion.lng.toFixed(6)}
             </p>
-            <p className="mt-1 font-mono text-xs text-tinta/45">
+            <p className="mt-1 font-mono text-xs text-tinta/60">
               {posicion.precision && posicion.precision > 25
                 ? `precisión ±${Math.round(posicion.precision)} m — `
                 : ''}

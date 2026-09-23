@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { verificarSesion } from '@/lib/auth/admin';
 import { cerrarSesion } from '@/lib/actions/sesionAdmin';
+import { SelectorTema } from '@/components/SelectorTema';
 
 // «Formalización» y «Marca» son lo que ve un negocio registrado: la
 // moderación necesita verlo igual para poder explicarlo y revisar que esté bien.
@@ -53,7 +54,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             <Link
               key={href}
               href={href}
-              className="font-mono text-xs text-tinta/55 hover:text-terracota-texto"
+              className="font-mono text-xs text-tinta/65 hover:text-azul-texto"
             >
               {etiqueta}
             </Link>
@@ -61,22 +62,23 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <Link
             href="/aliados"
             target="_blank"
-            className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto"
+            className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
           >
             ver mapa ↗
           </Link>
         </nav>
 
-        <div className="flex items-baseline gap-4">
-          <span className="font-mono text-xs text-tinta/45">{sesion.email}</span>
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-xs text-tinta/60">{sesion.email}</span>
           <form action={cerrarSesion}>
             <button
               type="submit"
-              className="font-mono text-xs text-tinta/45 underline decoration-terracota/40 underline-offset-4 hover:text-terracota-texto"
+              className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
             >
               salir
             </button>
           </form>
+          <SelectorTema />
         </div>
       </header>
 

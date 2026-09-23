@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { IndicadorEntorno } from "@/components/IndicadorEntorno";
+import { TemaInicial } from "@/components/TemaInicial";
 import { entornoDesde } from "@/lib/entorno";
 import { urlSitio } from "@/lib/sitio";
 import "@/styles/globals.css";
@@ -71,6 +72,9 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        <TemaInicial />
+      </head>
       <body>
         {children}
 

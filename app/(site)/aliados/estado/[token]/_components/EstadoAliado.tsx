@@ -45,7 +45,7 @@ const SelectorUbicacion = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-[440px] w-full items-center justify-center border border-tinta/15 bg-tinta/[0.02] sm:h-[580px]">
-        <span className="font-mono text-xs text-tinta/40">cargando mapa…</span>
+        <span className="font-mono text-xs text-tinta/60">cargando mapa…</span>
       </div>
     ),
   },
@@ -74,14 +74,14 @@ function Seccion({
       <legend className="sr-only">{titulo}</legend>
 
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-mono text-xs text-tinta/35">{numero}</span>
+        <span className="font-mono text-xs text-tinta/60">{numero}</span>
         <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
           {titulo}
         </h2>
       </div>
 
       {ayuda && (
-        <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/55">
+        <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/65">
           {ayuda}
         </p>
       )}
@@ -98,8 +98,8 @@ function Seccion({
 
 const claseInput =
   'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-terracota focus:outline-none focus:ring-0 ' +
-  'aria-[invalid=true]:border-terracota';
+  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'aria-[invalid=true]:border-azul';
 
 function BotonGuardar() {
   const { pending } = useFormStatus();
@@ -107,7 +107,7 @@ function BotonGuardar() {
     <button
       type="submit"
       disabled={pending}
-      className="min-h-11 border border-terracota-texto bg-terracota-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="min-h-11 border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Guardando…' : 'Guardar cambios'}
     </button>
@@ -121,12 +121,12 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
     return (
       <div className="border-l-2 border-tinta/20 bg-tinta/[0.03] px-5 py-4">
         <p className="font-mono text-sm text-tinta/70">Este registro está borrado.</p>
-        <p className="mt-1 font-sans text-sm text-tinta/55">
+        <p className="mt-1 font-sans text-sm text-tinta/65">
           Si te equivocaste o quieres volver a aparecer en el mapa, registra tu negocio de nuevo.
         </p>
         <Link
           href="/aliados/registro"
-          className="mt-3 inline-block font-mono text-sm text-terracota-texto underline decoration-terracota underline-offset-4 hover:text-terracota-texto/80"
+          className="mt-3 inline-block font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4 hover:text-azul-texto/80"
         >
           Registrar de nuevo →
         </Link>
@@ -136,14 +136,14 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
 
   if (portafolio.estado === 'aprobado') {
     return (
-      <div className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4">
-        <p className="font-mono text-sm text-terracota-texto">¡Publicado!</p>
+      <div className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4">
+        <p className="font-mono text-sm text-azul-texto">¡Publicado!</p>
         <p className="mt-1 font-sans text-sm text-tinta/70">
           Tu negocio ya está en el mapa de Aliados.
         </p>
         <Link
           href="/aliados"
-          className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+          className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-azul underline-offset-4 hover:text-azul-texto"
         >
           Verlo en el mapa →
         </Link>
@@ -153,8 +153,8 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
 
   if (portafolio.estado === 'rechazado') {
     return (
-      <div className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4">
-        <p className="font-mono text-sm text-terracota-texto">No lo pudimos publicar todavía</p>
+      <div className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4">
+        <p className="font-mono text-sm text-azul-texto">No lo pudimos publicar todavía</p>
         {portafolio.motivo_rechazo && (
           <p className="mt-2 font-sans text-sm leading-relaxed text-tinta">
             {portafolio.motivo_rechazo}
@@ -193,7 +193,7 @@ function GuardarEnlace({ nombre }: { nombre: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
     >
       <span aria-hidden="true">↗</span>
       Guardar este enlace por WhatsApp
@@ -246,7 +246,7 @@ function FormularioEdicion({
       {estado.estado !== 'inicial' && estado.mensaje && (
         <p
           role="alert"
-          className="max-w-xl border border-terracota/40 bg-terracota/5 px-4 py-3 font-sans text-sm text-terracota-texto"
+          className="max-w-xl border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-azul-texto"
         >
           {estado.mensaje}
         </p>
@@ -264,7 +264,7 @@ function FormularioEdicion({
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
 
         {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-terracota-texto">
+          <p className="font-mono text-xs text-azul-texto">
             {err('latitud')?.[0] ?? err('longitud')?.[0]}
           </p>
         )}
@@ -457,7 +457,7 @@ function FormularioEdicion({
           <button
             type="button"
             onClick={() => setMostrarOtraRed((v) => !v)}
-            className="self-start font-mono text-sm text-tinta/55 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+            className="self-start font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
           </button>
@@ -555,12 +555,12 @@ function FormularioEdicion({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreFoto)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreFoto && <p className="font-mono text-xs text-tinta/50">{nombreFoto}</p>}
+        {nombreFoto && <p className="font-mono text-xs text-tinta/65">{nombreFoto}</p>}
       </Seccion>
 
       <Seccion numero="07" titulo="Menú o flyer" ayuda="JPG, PNG o WebP, hasta 5 MB.">
@@ -585,12 +585,12 @@ function FormularioEdicion({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreMenu)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-terracota hover:file:text-terracota-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreMenu && <p className="font-mono text-xs text-tinta/50">{nombreMenu}</p>}
+        {nombreMenu && <p className="font-mono text-xs text-tinta/65">{nombreMenu}</p>}
       </Seccion>
 
       <div className="sticky bottom-0 -mx-[clamp(1.5rem,5vw,6rem)] border-t border-tinta/12 bg-hueso/95 px-[clamp(1.5rem,5vw,6rem)] py-4 backdrop-blur">
@@ -627,13 +627,13 @@ function BorrarNegocio({
       <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
         Borrar mi negocio
       </h2>
-      <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/55">
+      <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/65">
         Esto saca tu negocio del directorio y del mapa. No se puede deshacer — si más adelante
         quieres volver a aparecer, tienes que registrarte de nuevo.
       </p>
 
       {estado.estado === 'error' && (
-        <p role="alert" className="mt-3 font-mono text-sm text-terracota-texto">
+        <p role="alert" className="mt-3 font-mono text-sm text-azul-texto">
           {estado.mensaje}
         </p>
       )}
@@ -642,7 +642,7 @@ function BorrarNegocio({
         type="button"
         onClick={handleBorrar}
         disabled={borrando}
-        className="mt-4 min-h-11 border border-terracota-texto px-5 py-2.5 font-mono text-sm text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-4 min-h-11 border border-azul-texto px-5 py-2.5 font-mono text-sm text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso disabled:cursor-not-allowed disabled:opacity-50"
       >
         {borrando ? 'Borrando…' : 'Borrar mi negocio'}
       </button>
@@ -683,7 +683,7 @@ export function EstadoAliado({
 
   return (
     <div className="max-w-3xl">
-      <span className="font-mono text-xs text-tinta/50">Aliados · Tu registro</span>
+      <span className="font-mono text-xs text-tinta/65">Aliados · Tu registro</span>
 
       <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-5xl">
         {portafolio.nombre}
@@ -691,23 +691,23 @@ export function EstadoAliado({
 
       <div className="mt-8 flex flex-col gap-4">
         {fotoFallo && !borrado && (
-          <p role="alert" className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta">
+          <p role="alert" className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta">
             Tu negocio quedó guardado, pero la foto no se pudo subir. Subila de nuevo más abajo, en la sección Una foto.
           </p>
         )}
 
         {menuFallo && !borrado && (
-          <p role="alert" className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta">
+          <p role="alert" className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta">
             Tu negocio quedó guardado, pero el menú no se pudo subir. Subilo de nuevo más abajo, en la sección Menú o flyer.
           </p>
         )}
 
         {borrado ? (
-          <div className="border-l-2 border-terracota bg-terracota/[0.04] px-5 py-4">
-            <p className="font-mono text-sm text-terracota-texto">Tu negocio se borró del directorio.</p>
+          <div className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4">
+            <p className="font-mono text-sm text-azul-texto">Tu negocio se borró del directorio.</p>
             <Link
               href="/aliados"
-              className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+              className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-azul underline-offset-4 hover:text-azul-texto"
             >
               Volver al mapa →
             </Link>
@@ -735,7 +735,7 @@ export function EstadoAliado({
 
       <Link
         href="/aliados"
-        className="mt-16 inline-block font-mono text-sm text-tinta/50 underline decoration-terracota underline-offset-4 hover:text-terracota-texto"
+        className="mt-16 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver al mapa
       </Link>

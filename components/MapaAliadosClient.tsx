@@ -16,7 +16,7 @@ import { contar } from '@/lib/interacciones';
  * Mapa de la vitrina.
  *
  * Los marcadores son divIcon y no <Marker> por defecto por dos razones:
- * la estética (un punto terracota, el único acento del sistema, en vez del pin
+ * la estética (un punto azul, el color de acción del sistema, en vez del pin
  * azul de Leaflet) y porque los íconos default de Leaflet se rompen con
  * bundlers — resuelven sus PNG por ruta relativa y en Next terminan en 404.
  */
@@ -154,7 +154,7 @@ export default function MapaAliadosClient({
           color: '#1a1a1a',
           weight: 1.25,
           opacity: 0.55,
-          fillColor: '#c55a3c',
+          fillColor: '#3c8af6',
           fillOpacity: 0.04,
         }}
       />
@@ -172,7 +172,7 @@ export default function MapaAliadosClient({
             <strong className="block font-display text-sm font-medium text-tinta">
               Estás por acá
             </strong>
-            <span className="mt-1 block font-mono text-xs text-tinta/55">
+            <span className="mt-1 block font-mono text-xs text-tinta/65">
               Posición aproximada de tu dispositivo. No se guarda en ningún lado.
             </span>
           </Popup>
@@ -190,7 +190,7 @@ export default function MapaAliadosClient({
           }
         >
           <Popup minWidth={200}>
-            <span className="block font-mono text-xs uppercase tracking-wide text-terracota-texto">
+            <span className="block font-mono text-xs uppercase tracking-wide text-morado-texto">
               {p.categoria_nombre}
             </span>
             <strong className="mt-1 block font-display text-base font-medium text-tinta">
@@ -203,7 +203,7 @@ export default function MapaAliadosClient({
               <span aria-hidden="true">📍</span>
               <span>
                 {p.direccion}
-                <span className="text-tinta/35"> · {p.barrio}</span>
+                <span className="text-tinta/60"> · {p.barrio}</span>
               </span>
             </span>
 
@@ -213,7 +213,7 @@ export default function MapaAliadosClient({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => contar(p.id, 'contacto')}
-                className="mt-2 inline-block font-mono text-xs text-terracota-texto underline decoration-terracota/40 underline-offset-4 hover:text-tinta"
+                className="mt-2 inline-block font-mono text-xs text-azul-texto underline decoration-azul/40 underline-offset-4 hover:text-tinta"
               >
                 Escribir por WhatsApp →
               </a>

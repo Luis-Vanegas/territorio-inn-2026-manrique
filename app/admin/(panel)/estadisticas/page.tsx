@@ -28,10 +28,10 @@ function Metrica({
   return (
     <div className="border-t border-tinta/12 pt-4">
       <p className="font-mono text-3xl text-tinta">{valor}</p>
-      <p className="mt-1 font-mono text-xs uppercase tracking-wider text-tinta/50">
+      <p className="mt-1 font-mono text-xs uppercase tracking-wider text-tinta/65">
         {etiqueta}
       </p>
-      {nota && <p className="mt-1 font-sans text-xs text-tinta/40">{nota}</p>}
+      {nota && <p className="mt-1 font-sans text-xs text-tinta/60">{nota}</p>}
     </div>
   );
 }
@@ -47,7 +47,7 @@ function Barras({
   sufijoSecundario?: string;
 }) {
   if (filas.length === 0) {
-    return <p className="font-sans text-sm text-tinta/50">{vacio}</p>;
+    return <p className="font-sans text-sm text-tinta/65">{vacio}</p>;
   }
 
   const max = Math.max(...filas.map((f) => f.valor), 1);
@@ -58,10 +58,10 @@ function Barras({
         <li key={f.etiqueta}>
           <div className="flex items-baseline justify-between gap-4">
             <span className="font-sans text-sm text-tinta/75">{f.etiqueta}</span>
-            <span className="font-mono text-xs text-tinta/50">
+            <span className="font-mono text-xs text-tinta/65">
               {f.valor}
               {f.secundario !== undefined && f.secundario !== f.valor && (
-                <span className="text-tinta/35">
+                <span className="text-tinta/60">
                   {' '}
                   · {f.secundario} {sufijoSecundario}
                 </span>
@@ -70,7 +70,7 @@ function Barras({
           </div>
           <div className="mt-1.5 h-1 w-full bg-tinta/8">
             <div
-              className="h-full bg-terracota"
+              className="h-full bg-azul-texto"
               style={{ width: `${(f.valor / max) * 100}%` }}
             />
           </div>
@@ -121,7 +121,7 @@ function SerieDiaria({
                 : `${f.dia}: ${f.total} ${unidad}, ${f.secundario} ${etiquetaSecundaria ?? ''}`
             }
           >
-            <div className="w-full flex-1 bg-terracota/85" />
+            <div className="w-full flex-1 bg-azul/85" />
             {f.secundario !== undefined && f.secundario > 0 && (
               <div
                 className="w-full bg-tinta/70"
@@ -132,7 +132,7 @@ function SerieDiaria({
         ))}
       </div>
 
-      <div className="mt-2 flex justify-between font-mono text-xs text-tinta/35">
+      <div className="mt-2 flex justify-between font-mono text-xs text-tinta/60">
         <span>{filas[0]?.dia.slice(5)}</span>
         <span>{hayDatos ? `máx ${max}/día` : `sin ${unidad} aún`}</span>
         <span>{filas[filas.length - 1]?.dia.slice(5)}</span>
@@ -187,24 +187,24 @@ export default async function EstadisticasPage() {
         <a
           href="/api/admin/exportar?conjunto=aliados"
           download
-          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
         >
           ↓ Aliados en CSV
         </a>
         <a
           href="/api/admin/exportar?conjunto=interacciones"
           download
-          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+          className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
         >
           ↓ Interacciones por día en CSV
         </a>
-        <span className="font-mono text-xs text-tinta/40">
+        <span className="font-mono text-xs text-tinta/60">
           Se abren en Excel · sin teléfonos ni correos
         </span>
       </div>
 
       <section className="mt-12">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
           01 · Resumen
         </h2>
 
@@ -246,7 +246,7 @@ export default async function EstadisticasPage() {
       </section>
 
       <section className="mt-16">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
           02 · Registros por día
         </h2>
         <div className="mt-6 max-w-3xl">
@@ -257,7 +257,7 @@ export default async function EstadisticasPage() {
       {/* Esto es lo que le sirve al aliado, no al equipo: es el número que
           convierte "registrate en el mapa" de un favor en un argumento. */}
       <section className="mt-16">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
           03 · Interés por negocio · últimos 30 días
         </h2>
 
@@ -291,10 +291,10 @@ export default async function EstadisticasPage() {
         </div>
 
         <div className="mt-8 max-w-3xl">
-          <p className="mb-3 font-mono text-xs uppercase tracking-wider text-tinta/45">
+          <p className="mb-3 font-mono text-xs uppercase tracking-wider text-tinta/60">
             Evolución diaria
-            <span className="ml-3 inline-flex items-center gap-1.5 normal-case tracking-normal text-tinta/40">
-              <span className="inline-block h-2 w-2 bg-terracota/85" aria-hidden="true" />
+            <span className="ml-3 inline-flex items-center gap-1.5 normal-case tracking-normal text-tinta/60">
+              <span className="inline-block h-2 w-2 bg-azul/85" aria-hidden="true" />
               fichas abiertas
               <span className="ml-2 inline-block h-2 w-2 bg-tinta/70" aria-hidden="true" />
               de esas, las que contactaron
@@ -327,7 +327,7 @@ export default async function EstadisticasPage() {
 
       <div className="mt-16 grid grid-cols-1 gap-12 lg:grid-cols-2">
         <section>
-          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
             04 · Por categoría
           </h2>
           <div className="mt-6">
@@ -343,7 +343,7 @@ export default async function EstadisticasPage() {
         </section>
 
         <section>
-          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
             05 · Por barrio
           </h2>
           <div className="mt-6">
@@ -357,7 +357,7 @@ export default async function EstadisticasPage() {
 
       {moderadores.length > 0 && (
         <section className="mt-16">
-          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
             06 · Moderación por persona
           </h2>
           <div className="mt-6 max-w-lg">
@@ -373,7 +373,7 @@ export default async function EstadisticasPage() {
       )}
 
       <section className="mt-16 max-w-2xl border-t border-tinta/12 pt-8">
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/50">
+        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
           07 · Tráfico del sitio
         </h2>
 
@@ -405,14 +405,14 @@ export default async function EstadisticasPage() {
             href="https://vercel.com/dashboard"
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             Abrir Vercel Analytics ↗
           </a>
 
           <Link
             href="/admin/aliados"
-            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+            className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             ← Volver a la cola
           </Link>

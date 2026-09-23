@@ -1,5 +1,7 @@
 # Sistema de diseño y accesibilidad · Constelaciones (Manrique, Comuna 3)
 
+> **Paleta desactualizada en este documento.** Las secciones 0, 1 y 3 calculan contraste sobre hueso `#F7F5F0` y terracota `#C55A3C`, que ya no existen: el sitio usa blanco/`#1A1A1A` con modo claro y oscuro, y la paleta de marca azul/morado/amarillo. La fuente vigente de colores, funciones y pisos de contraste es [`docs/decisiones-diseno.md`](decisiones-diseno.md). El método (fórmula WCAG, script de consola, reglas de movimiento, modal, formularios) sigue valiendo tal cual.
+
 Este documento adapta el sistema de accesibilidad, movimiento y componentes a lo que **ya existe** en este repo: paleta editorial de 3 colores (`tailwind.config.ts`), breakpoints custom (`sm 640 / lg 1024 / xl 1440`, sin `md`), Fraunces + Geist Sans + JetBrains Mono, mapa en Leaflet, y componentes reales (`ModalRegistroExitoso`, `ScrollReveal`, `FiltroCategorias`, `FormularioRegistro`). No es un doc genérico: cada número de contraste está calculado sobre los colores exactos de `[tailwind.config.ts](tailwind.config.ts)`, y cada regla de movimiento se compara contra el código que ya corre en `[components/](components/)`.
 
 Complementa — no reemplaza — a `[docs/decisiones-diseno.md](docs/decisiones-diseno.md)`. Ese documento explica el *por qué* de la paleta editorial; este explica cómo usarla sin romper accesibilidad.

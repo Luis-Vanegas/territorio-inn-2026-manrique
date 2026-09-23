@@ -27,6 +27,7 @@ import { salir } from "@/lib/actions/sesionUsuario";
 // Una sola lista de accesos privados, compartida con el menú de escritorio:
 // dos copias se desincronizan la primera vez que se agregue un módulo.
 import { MenuUsuario, ENLACES_PRIVADOS, ENLACE_MODERACION } from "@/components/MenuUsuario";
+import { SelectorTema } from "@/components/SelectorTema";
 
 // Se genera de la misma fuente que EnfoqueSection: una sola lista de módulos,
 // no dos que se puedan desincronizar cuando se agregue o quite uno.
@@ -49,7 +50,7 @@ function esActivo(pathname: string, href: string) {
 
 // El estado activo se comunica con TRES señales, no solo con color: peso
 // tipográfico, subrayado grueso y color. WCAG 1.4.1 — quien no distingue bien
-// la terracota sobre el hueso necesita otra pista, y aria-current es la que
+// el azul sobre el fondo necesita otra pista, y aria-current es la que
 // escucha el lector de pantalla.
 const BASE_ENLACE =
   "inline-flex min-h-[44px] items-center font-mono text-base uppercase tracking-wide transition-colors";
@@ -69,7 +70,12 @@ export function SiteHeader({
     : ENLACES_PRIVADOS;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-tinta/10 bg-hueso/90 backdrop-blur">
+    // Fondo opaco y sin backdrop-blur a propósito: con bg-hueso/90 + blur, un
+    // navegador que apaga backdrop-filter (Edge en modo eficiencia, sin
+    // aceleración por hardware) dejaba ver las fotos a través del menú.
+    // transform-gpu le da capa propia: sin ella, Chromium a veces compone por
+    // encima una foto que se está animando (zoom de la galería, ScrollReveal).
+    <header className="sticky top-0 z-50 transform-gpu border-b border-tinta/10 bg-hueso">
       <div className="margen-editorial flex h-16 items-center justify-between gap-4 sm:h-[4.5rem]">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
@@ -104,8 +110,8 @@ export function SiteHeader({
                 aria-current={activo ? 'page' : undefined}
                 className={
                   activo
-                    ? `${BASE_ENLACE} border-b-2 border-terracota font-medium text-tinta`
-                    : `${BASE_ENLACE} border-b-2 border-transparent text-tinta/65 hover:text-terracota-texto`
+                    ? `${BASE_ENLACE} border-b-2 border-azul font-medium text-tinta`
+                    : `${BASE_ENLACE} border-b-2 border-transparent text-tinta/65 hover:text-morado-texto`
                 }
               >
                 {e.etiqueta}
@@ -115,24 +121,33 @@ export function SiteHeader({
         </nav>
 
         {/* Con sesión: identidad neutra con su propio menú. Sin sesión: la
-            única acción primaria de la barra, y por eso la única terracota.
+            única acción primaria de la barra, y por eso la única en azul.
             Nunca los dos a la vez. */}
-        <div className="hidden shrink-0 xl:block">
+        <div className="hidden shrink-0 items-center gap-3 xl:flex">
+          <SelectorTema />
           {sesion ? (
-            <MenuUsuario nombre={sesion.nombre} foto={sesion.foto} enlaces={enlacesPrivados} />
+            <MenuUsuario key={pathname} nombre={sesion.nombre} foto={sesion.foto} enlaces={enlacesPrivados} />
           ) : (
             <Link
               href="/entrar"
-              className="inline-flex min-h-[44px] items-center border border-terracota-texto bg-terracota-texto px-4 font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+              className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto px-4 font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
             >
               Registrarme →
             </Link>
           )}
         </div>
 
-        {/* Mobile: <details> nativo, cero JavaScript */}
-        <details className="group relative xl:hidden">
-          <summary
+        {/* Mobile: <details> nativo, cero JavaScript. El toggle de tema va
+            afuera del <details>: es una acción de utilidad, no un ítem de
+            navegación, y no tiene sentido que cierre el menú al tocarlo. */}
+        <div className="flex items-center gap-2 xl:hidden">
+          <SelectorTema />
+          {/* key={pathname}: el header vive en el layout y no se desmonta al
+              navegar, así que un <details> abierto seguía abierto encima de la
+              página nueva después de tocar un link. Con la key, cada ruta
+              monta uno nuevo, que arranca cerrado. Mismo motivo en MenuUsuario. */}
+          <details key={pathname} className="group relative">
+            <summary
             className="flex h-11 w-11 cursor-pointer list-none items-center justify-center border border-tinta/15 text-tinta [&::-webkit-details-marker]:hidden"
             aria-label="Abrir menú"
           >
@@ -153,8 +168,8 @@ export function SiteHeader({
                   aria-current={activo ? 'page' : undefined}
                   className={
                     activo
-                      ? `${BASE_ENLACE} border-l-4 border-terracota bg-tinta/[0.04] px-3 font-medium text-tinta`
-                      : `${BASE_ENLACE} border-l-4 border-transparent px-3 text-tinta/70 hover:bg-tinta/[0.03] hover:text-terracota-texto`
+                      ? `${BASE_ENLACE} border-l-4 border-azul bg-tinta/[0.04] px-3 font-medium text-tinta`
+                      : `${BASE_ENLACE} border-l-4 border-transparent px-3 text-tinta/70 hover:bg-tinta/[0.03] hover:text-morado-texto`
                   }
                 >
                   {e.etiqueta}
@@ -166,14 +181,14 @@ export function SiteHeader({
                 otro — dos menús encastrados son un laberinto con el pulgar. */}
             {sesion ? (
               <>
-                <p className="mt-2 border-t border-tinta/12 px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/45">
+                <p className="mt-2 border-t border-tinta/12 px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/60">
                   Tu espacio · {sesion.nombre.trim().split(/\s+/)[0]}
                 </p>
                 {enlacesPrivados.map((e) => (
                   <Link
                     key={e.href}
                     href={e.href}
-                    className={`${BASE_ENLACE} border-l-4 border-transparent px-3 text-tinta/70 hover:bg-tinta/[0.03] hover:text-terracota-texto`}
+                    className={`${BASE_ENLACE} border-l-4 border-transparent px-3 text-tinta/70 hover:bg-tinta/[0.03] hover:text-morado-texto`}
                   >
                     {e.etiqueta}
                   </Link>
@@ -181,7 +196,7 @@ export function SiteHeader({
                 <form action={salir} className="mt-1 border-t border-tinta/12 pt-1">
                   <button
                     type="submit"
-                    className={`${BASE_ENLACE} w-full border-l-4 border-transparent px-3 text-left text-tinta/70 hover:bg-tinta/[0.03] hover:text-terracota-texto`}
+                    className={`${BASE_ENLACE} w-full border-l-4 border-transparent px-3 text-left text-tinta/70 hover:bg-tinta/[0.03] hover:text-morado-texto`}
                   >
                     Cerrar sesión
                   </button>
@@ -190,13 +205,14 @@ export function SiteHeader({
             ) : (
               <Link
                 href="/entrar"
-                className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-terracota-texto bg-terracota-texto px-3 text-center font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-terracota-texto"
+                className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-azul-texto bg-azul-texto px-3 text-center font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
               >
                 Registrarme →
               </Link>
             )}
           </nav>
         </details>
+        </div>
       </div>
     </header>
   );

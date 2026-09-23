@@ -23,23 +23,23 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
   return (
     <article className="border-t border-tinta/12 py-8">
       <div className="flex gap-5">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-tinta/5 font-mono text-xs text-tinta/40">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center bg-tinta/5 font-mono text-xs text-tinta/60">
           {candidato.nombre.charAt(0).toUpperCase()}
         </div>
 
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-2xl font-medium text-tinta">{candidato.nombre}</h3>
 
-          <p className="mt-1 font-mono text-xs text-terracota-texto">
+          <p className="mt-1 font-mono text-xs text-azul-texto">
             {ETIQUETAS_NIVEL[candidato.nivel_formacion] ?? candidato.nivel_formacion}
-            {candidato.programa && <span className="text-tinta/45"> · {candidato.programa}</span>}
+            {candidato.programa && <span className="text-tinta/60"> · {candidato.programa}</span>}
             {candidato.graduado !== null && (
-              <span className="text-tinta/45">
+              <span className="text-tinta/60">
                 {' · '}
                 {candidato.graduado ? 'graduado/a' : 'en curso'}
               </span>
             )}
-            <span className="text-tinta/45"> · registrado {candidato.creado_en}</span>
+            <span className="text-tinta/60"> · registrado {candidato.creado_en}</span>
           </p>
 
           <p className="mt-3 max-w-2xl font-sans text-sm leading-relaxed text-tinta/75">
@@ -58,7 +58,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
                 name="motivo_rechazo"
                 rows={2}
                 placeholder="Por qué se rechaza — la persona lo va a leer"
-                className="w-full max-w-xl border border-tinta/20 bg-transparent px-3 py-2 font-sans text-sm text-tinta focus:border-terracota focus:outline-none"
+                className="w-full max-w-xl border border-tinta/20 bg-transparent px-3 py-2 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
               />
             )}
 
@@ -69,14 +69,14 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
                     type="submit"
                     name="accion"
                     value="aprobar"
-                    className="min-h-11 border border-terracota-texto bg-terracota-texto px-5 py-2 font-mono text-xs text-hueso transition-opacity hover:opacity-90"
+                    className="min-h-11 border border-azul-texto bg-azul-texto px-5 py-2 font-mono text-xs text-hueso transition-opacity hover:opacity-90"
                   >
                     Publicar
                   </button>
                   <button
                     type="button"
                     onClick={() => setRechazando(true)}
-                    className="min-h-11 border border-tinta/25 px-5 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-terracota-texto hover:text-terracota-texto"
+                    className="min-h-11 border border-tinta/25 px-5 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
                   >
                     Rechazar
                   </button>
@@ -87,14 +87,14 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
                     type="submit"
                     name="accion"
                     value="rechazar"
-                    className="min-h-11 border border-terracota-texto px-5 py-2 font-mono text-xs text-terracota-texto transition-colors hover:bg-terracota-texto hover:text-hueso"
+                    className="min-h-11 border border-azul-texto px-5 py-2 font-mono text-xs text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso"
                   >
                     Confirmar rechazo
                   </button>
                   <button
                     type="button"
                     onClick={() => setRechazando(false)}
-                    className="min-h-11 font-mono text-xs text-tinta/55 hover:text-tinta"
+                    className="min-h-11 font-mono text-xs text-tinta/65 hover:text-tinta"
                   >
                     Cancelar
                   </button>
@@ -105,7 +105,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoPendiente })
             {estadoMod.estado !== 'inicial' && (
               <p
                 role="status"
-                className={`font-mono text-xs ${estadoMod.estado === 'ok' ? 'text-tinta/60' : 'text-terracota-texto'}`}
+                className={`font-mono text-xs ${estadoMod.estado === 'ok' ? 'text-tinta/60' : 'text-azul-texto'}`}
               >
                 {estadoMod.mensaje}
               </p>

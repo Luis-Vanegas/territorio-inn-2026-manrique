@@ -20,9 +20,9 @@ export const alt = 'Constelaciones · Manrique — Comuna 3, Medellín';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const HUESO = '#f7f5f0';
+const HUESO = '#ffffff';
 const TINTA = '#1a1a1a';
-const TERRACOTA = '#c55a3c';
+const AZUL = '#0957c3'; // azul-texto: 6.6:1 sobre blanco, el kicker es texto chico
 
 export default function Imagen() {
   return new ImageResponse(
@@ -38,7 +38,7 @@ export default function Imagen() {
           padding: '72px 80px',
         }}
       >
-        <div style={{ display: 'flex', color: TERRACOTA, fontSize: 26, letterSpacing: 6 }}>
+        <div style={{ display: 'flex', color: AZUL, fontSize: 26, letterSpacing: 6 }}>
           COMUNA 3 · MEDELLÍN · 2026
         </div>
 
@@ -56,9 +56,9 @@ export default function Imagen() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          {/* La barra terracota reemplaza al isotipo: en una miniatura de
+          {/* La barra azul reemplaza al isotipo: en una miniatura de
               300px un logo chico no se lee, una barra de color sí. */}
-          <div style={{ display: 'flex', width: 10, height: 44, backgroundColor: TERRACOTA }} />
+          <div style={{ display: 'flex', width: 10, height: 44, backgroundColor: AZUL }} />
           <div style={{ display: 'flex', color: TINTA, fontSize: 34, letterSpacing: 1 }}>
             CONSTELACIONES
           </div>
