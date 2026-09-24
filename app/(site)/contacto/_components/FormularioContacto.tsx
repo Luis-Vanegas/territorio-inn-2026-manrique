@@ -17,7 +17,7 @@ function BotonEnviar() {
     <button
       type="submit"
       disabled={pending}
-      className="border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Enviando…' : 'Enviar mensaje →'}
     </button>
@@ -32,7 +32,7 @@ export function FormularioContacto() {
   if (estado.estado === 'ok') {
     return (
       <div className="mt-14 max-w-xl border-t border-tinta/12 pt-10">
-        <span className="font-mono text-xs uppercase tracking-wider text-morado-texto">
+        <span className="font-sans text-xs uppercase tracking-wider text-morado-texto">
           Mensaje recibido
         </span>
         <h2 className="mt-3 font-display text-3xl font-medium leading-tight text-tinta">
@@ -71,7 +71,7 @@ export function FormularioContacto() {
           className={`mt-2 ${claseInput}`}
         />
         {err('nombre') && (
-          <p className="mt-1.5 font-mono text-xs text-azul-texto">{err('nombre')![0]}</p>
+          <p className="mt-1.5 font-sans text-xs text-azul-texto">{err('nombre')![0]}</p>
         )}
       </div>
 
@@ -91,7 +91,7 @@ export function FormularioContacto() {
           className={`mt-2 ${claseInput}`}
         />
         {err('contacto') && (
-          <p className="mt-1.5 font-mono text-xs text-azul-texto">{err('contacto')![0]}</p>
+          <p className="mt-1.5 font-sans text-xs text-azul-texto">{err('contacto')![0]}</p>
         )}
       </div>
 
@@ -111,7 +111,7 @@ export function FormularioContacto() {
           className={`mt-2 resize-y ${claseInput}`}
         />
         {err('mensaje') && (
-          <p className="mt-1.5 font-mono text-xs text-azul-texto">{err('mensaje')![0]}</p>
+          <p className="mt-1.5 font-sans text-xs text-azul-texto">{err('mensaje')![0]}</p>
         )}
       </div>
 

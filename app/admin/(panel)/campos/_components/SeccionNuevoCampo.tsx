@@ -13,7 +13,7 @@ export function SeccionNuevoCampo() {
       <button
         type="button"
         onClick={() => setAbierto(true)}
-        className="border border-azul-texto bg-azul-texto px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
+        className="border border-azul-texto bg-azul-texto px-4 py-2 font-sans text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
       >
         + Agregar campo
       </button>
@@ -26,7 +26,7 @@ export function SeccionNuevoCampo() {
       <button
         type="button"
         onClick={() => setAbierto(false)}
-        className="mt-4 font-mono text-xs text-tinta/60 hover:text-azul-texto"
+        className="mt-4 font-sans text-xs text-tinta/60 hover:text-azul-texto"
       >
         Cancelar
       </button>

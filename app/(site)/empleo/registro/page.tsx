@@ -22,7 +22,7 @@ export default function RegistroCandidatoPage() {
   return (
     <main className="seccion">
       <header className="max-w-3xl">
-        <span className="font-mono text-xs text-tinta/65">Empleo</span>
+        <span className="font-sans text-xs text-tinta/65">Empleo</span>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
           Publica que estás buscando trabajo
@@ -36,7 +36,7 @@ export default function RegistroCandidatoPage() {
         {/* Se dice arriba, no en la letra chica: qué queda público antes de
             empezar a llenar. */}
         <div className="mt-8 border-l-2 border-tinta/20 pl-4">
-          <p className="font-mono text-xs uppercase tracking-wider text-tinta/65">
+          <p className="font-sans text-xs uppercase tracking-wider text-tinta/65">
             Qué te pedimos
           </p>
           <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">

@@ -38,7 +38,7 @@ function VistaPrevia() {
     <main className="seccion">
       <div className="mx-auto max-w-2xl">
         <header>
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
+          <span className="inline-flex items-center gap-1.5 font-sans text-xs text-azul-texto">
             <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
             solo para registrados
           </span>
@@ -66,7 +66,7 @@ function VistaPrevia() {
         </header>
 
         <section className="mt-12 border-t border-tinta/12 pt-10">
-          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
+          <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/60">
             Lo que encuentras adentro
           </h2>
 
@@ -110,7 +110,7 @@ function VistaPrevia() {
 
           <Link
             href="/entrar"
-            className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
+            className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
           >
             Entrar o registrarme →
           </Link>
@@ -118,7 +118,7 @@ function VistaPrevia() {
 
         <Link
           href="/"
-          className="mt-20 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+          className="mt-20 inline-block font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
         >
           ← Volver a Constelaciones
         </Link>
@@ -156,7 +156,7 @@ export default async function FormalizacionPage() {
               menú de usuario. Repetirla acá no es redundancia: es lo que le dice
               a la persona que esta página es una de las suyas y no contenido
               público, sin agregar un cartel que lo anuncie. */}
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
+          <span className="inline-flex items-center gap-1.5 font-sans text-xs text-azul-texto">
             <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
             tu espacio · rutas y apoyos
           </span>
@@ -207,7 +207,7 @@ export default async function FormalizacionPage() {
 
         <Link
           href="/mi-cuenta"
-          className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
+          className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
         >
           Ir a mi cuenta →
         </Link>
@@ -215,7 +215,7 @@ export default async function FormalizacionPage() {
 
       <Link
         href="/mi-cuenta"
-        className="mt-24 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+        className="mt-24 inline-block font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver a mi cuenta
       </Link>

@@ -30,7 +30,7 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
       <button
         type="button"
         onClick={() => setVisible(true)}
-        className="min-h-11 border border-tinta/25 px-4 py-2 font-mono text-xs text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
+        className="min-h-11 border border-tinta/25 px-4 py-2 font-sans text-xs text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
       >
         Mostrar teléfono
       </button>
@@ -43,14 +43,14 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
         href={enlaceWhatsapp(telefono)}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex min-h-11 items-center gap-1.5 border border-azul-texto px-4 py-2 font-mono text-xs text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso"
+        className="inline-flex min-h-11 items-center gap-1.5 border border-azul-texto px-4 py-2 font-sans text-xs text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso"
       >
         <IconoContacto tipo="whatsapp" className="h-3.5 w-3.5 shrink-0" />
         WhatsApp a {nombre.split(' ')[0]}
       </a>
       <a
         href={`tel:${telefono.replace(/\s/g, '')}`}
-        className="inline-flex items-center gap-1.5 font-mono text-xs text-tinta/70"
+        className="inline-flex items-center gap-1.5 font-sans text-xs text-tinta/70"
       >
         <IconoContacto tipo="telefono" className="h-3.5 w-3.5 shrink-0" />
         {telefono}
@@ -72,7 +72,7 @@ function Ficha({ candidato }: { candidato: Candidato }) {
             {candidato.nombre}
           </h3>
 
-          <p className="mt-1 font-mono text-xs text-azul-texto">
+          <p className="mt-1 font-sans text-xs text-azul-texto">
             {ETIQUETAS_NIVEL[candidato.nivel_formacion as (typeof OPCIONES_NIVEL_FORMACION)[number]]}
             {candidato.programa && <span className="text-tinta/60"> · {candidato.programa}</span>}
             {candidato.graduado !== null && (
@@ -87,7 +87,7 @@ function Ficha({ candidato }: { candidato: Candidato }) {
             {candidato.experiencia}
           </p>
 
-          <p className="mt-2 font-mono text-xs uppercase tracking-wider text-tinta/60">
+          <p className="mt-2 font-sans text-xs uppercase tracking-wider text-tinta/60">
             Busca: <span className="font-sans text-xs normal-case text-tinta/65">{candidato.busca}</span>
           </p>
 
@@ -111,7 +111,7 @@ export function VitrinaCandidatos({ candidatos }: { candidatos: Candidato[] }) {
   return (
     <div>
       <label className="flex flex-col gap-1.5">
-        <span className="font-mono text-xs uppercase tracking-wider text-tinta/65">
+        <span className="font-sans text-xs uppercase tracking-wider text-tinta/65">
           Nivel de formación
         </span>
         <select
@@ -128,7 +128,7 @@ export function VitrinaCandidatos({ candidatos }: { candidatos: Candidato[] }) {
         </select>
       </label>
 
-      <p className="mt-6 font-mono text-xs text-tinta/65" aria-live="polite">
+      <p className="mt-6 font-sans text-xs text-tinta/65" aria-live="polite">
         {visibles.length} {visibles.length === 1 ? 'persona' : 'personas'}
       </p>
 

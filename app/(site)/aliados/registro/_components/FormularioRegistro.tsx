@@ -55,7 +55,7 @@ const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
   ssr: false,
   loading: () => (
     <div className="flex h-[440px] w-full items-center justify-center border border-tinta/15 bg-tinta/[0.02] sm:h-[580px]">
-      <span className="font-mono text-xs text-tinta/60">cargando mapa…</span>
+      <span className="font-sans text-xs text-tinta/60">cargando mapa…</span>
     </div>
   ),
 });
@@ -98,12 +98,12 @@ function Seccion({
         ].join(' ')}
       >
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="font-mono text-xs text-tinta/60">{numero}</span>
-          <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
+          <span className="font-sans text-xs text-tinta/60">{numero}</span>
+          <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/60">
             {titulo}
           </h2>
           {completa && (
-            <span className="font-mono text-xs text-azul-texto" aria-label="completo">
+            <span className="font-sans text-xs text-azul-texto" aria-label="completo">
               ✓ completo
             </span>
           )}
@@ -145,7 +145,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-4">
-        <p className="font-mono text-xs text-tinta/65">
+        <p className="font-sans text-xs text-tinta/65">
           {listo ? (
             <span className="text-azul-texto">✓ Todo listo para enviar</span>
           ) : (
@@ -159,7 +159,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
         <button
           type="submit"
           disabled={pending}
-          className="border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
+          className="border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? 'Enviando…' : 'Enviar registro →'}
         </button>
@@ -380,13 +380,13 @@ export function FormularioRegistro({
               type="button"
               onClick={ubicarPorDireccion}
               disabled={geocodificando}
-              className="inline-flex min-h-11 items-center gap-2 border border-tinta/20 px-4 py-2.5 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 border border-tinta/20 px-4 py-2.5 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
             >
               <span aria-hidden="true">📍</span>
               {geocodificando ? 'Buscando esa dirección…' : 'Ubicar esta dirección en el mapa'}
             </button>
             {errorGeocode && (
-              <p role="alert" className="font-mono text-xs text-azul-texto">
+              <p role="alert" className="font-sans text-xs text-azul-texto">
                 {errorGeocode}
               </p>
             )}
@@ -413,7 +413,7 @@ export function FormularioRegistro({
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
 
         {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-azul-texto">
+          <p className="font-sans text-xs text-azul-texto">
             {err('latitud')?.[0] ?? err('longitud')?.[0]}
           </p>
         )}
@@ -564,12 +564,12 @@ export function FormularioRegistro({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreMenu)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-sans file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreMenu && <p className="font-mono text-xs text-tinta/65">{nombreMenu}</p>}
+        {nombreMenu && <p className="font-sans text-xs text-tinta/65">{nombreMenu}</p>}
       </Seccion>
 
       <Seccion
@@ -626,7 +626,7 @@ export function FormularioRegistro({
           <button
             type="button"
             onClick={() => setMostrarOtraRed((v) => !v)}
-            className="self-start font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+            className="self-start font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
           </button>
@@ -709,12 +709,12 @@ export function FormularioRegistro({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreFoto)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-sans file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreFoto && <p className="font-mono text-xs text-tinta/65">{nombreFoto}</p>}
+        {nombreFoto && <p className="font-sans text-xs text-tinta/65">{nombreFoto}</p>}
       </Seccion>
 
       {camposPersonalizados.length > 0 && (
@@ -734,7 +734,7 @@ export function FormularioRegistro({
                   <span className="font-sans text-sm text-tinta/75">
                     {c.etiqueta}
                     {!c.requerido && (
-                      <span className="ml-2 font-mono text-xs text-tinta/60">opcional</span>
+                      <span className="ml-2 font-sans text-xs text-tinta/60">opcional</span>
                     )}
                   </span>
                 </label>
@@ -834,7 +834,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_terminos') && (
-            <p className="font-mono text-xs text-azul-texto">{err('acepto_terminos')![0]}</p>
+            <p className="font-sans text-xs text-azul-texto">{err('acepto_terminos')![0]}</p>
           )}
 
           <label className="flex items-start gap-3">
@@ -858,7 +858,7 @@ export function FormularioRegistro({
             </span>
           </label>
           {err('acepto_habeas_data') && (
-            <p className="font-mono text-xs text-azul-texto">
+            <p className="font-sans text-xs text-azul-texto">
               {err('acepto_habeas_data')![0]}
             </p>
           )}
@@ -870,7 +870,7 @@ export function FormularioRegistro({
 
       <Link
         href="/aliados"
-        className="mt-20 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+        className="mt-20 inline-block font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver al mapa
       </Link>

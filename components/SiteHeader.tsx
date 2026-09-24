@@ -53,7 +53,7 @@ function esActivo(pathname: string, href: string) {
 // el azul sobre el fondo necesita otra pista, y aria-current es la que
 // escucha el lector de pantalla.
 const BASE_ENLACE =
-  "inline-flex min-h-[44px] items-center font-mono text-base uppercase tracking-wide transition-colors";
+  "inline-flex min-h-[44px] items-center font-sans text-base uppercase tracking-wide transition-colors";
 
 /**
  * La sesión la resuelve el layout (Server Component) y baja como prop: este
@@ -90,7 +90,7 @@ export function SiteHeader({
             <span className="font-display text-lg font-medium tracking-wide text-tinta">
               CONSTELACIONES
             </span>
-            <span className="font-mono text-xs tracking-[0.15em] text-tinta/60">
+            <span className="font-sans text-xs tracking-[0.15em] text-tinta/60">
               COMUNA 3 · MANRIQUE
             </span>
           </span>
@@ -130,7 +130,7 @@ export function SiteHeader({
           ) : (
             <Link
               href="/entrar"
-              className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto px-4 font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
+              className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto px-4 font-sans text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
             >
               Registrarme →
             </Link>
@@ -151,8 +151,8 @@ export function SiteHeader({
             className="flex h-11 w-11 cursor-pointer list-none items-center justify-center border border-tinta/15 text-tinta [&::-webkit-details-marker]:hidden"
             aria-label="Abrir menú"
           >
-            <span className="font-mono text-base group-open:hidden">☰</span>
-            <span className="hidden font-mono text-base group-open:inline">✕</span>
+            <span className="font-sans text-base group-open:hidden">☰</span>
+            <span className="hidden font-sans text-base group-open:inline">✕</span>
           </summary>
 
           <nav
@@ -181,7 +181,7 @@ export function SiteHeader({
                 otro — dos menús encastrados son un laberinto con el pulgar. */}
             {sesion ? (
               <>
-                <p className="mt-2 border-t border-tinta/12 px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/60">
+                <p className="mt-2 border-t border-tinta/12 px-3 pb-1 pt-3 font-sans text-xs uppercase tracking-wider text-tinta/60">
                   Tu espacio · {sesion.nombre.trim().split(/\s+/)[0]}
                 </p>
                 {enlacesPrivados.map((e) => (
@@ -205,7 +205,7 @@ export function SiteHeader({
             ) : (
               <Link
                 href="/entrar"
-                className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-azul-texto bg-azul-texto px-3 text-center font-mono text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
+                className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-azul-texto bg-azul-texto px-3 text-center font-sans text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
               >
                 Registrarme →
               </Link>

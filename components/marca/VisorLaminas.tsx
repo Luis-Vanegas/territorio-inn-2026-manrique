@@ -41,7 +41,7 @@ const ESTILO_BOTON: Record<'boton' | 'enlace', string> = {
 };
 
 const ESTILO_ACCION =
-  'inline-flex min-h-[44px] items-center border border-tinta/40 px-4 font-mono text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-tinta/40 disabled:hover:text-tinta';
+  'inline-flex min-h-[44px] items-center border border-tinta/40 px-4 font-sans text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-tinta/40 disabled:hover:text-tinta';
 
 export function VisorLaminas({
   titulo,
@@ -114,7 +114,7 @@ export function VisorLaminas({
         <button
           type="button"
           onClick={() => abrirEn(0)}
-          className={`inline-flex min-h-[44px] items-center gap-2 font-mono text-sm ${ESTILO_BOTON[variante]}`}
+          className={`inline-flex min-h-[44px] items-center gap-2 font-sans text-sm ${ESTILO_BOTON[variante]}`}
         >
           Ver la lámina original{total > 1 && ` (${total})`}
         </button>
@@ -177,7 +177,7 @@ export function VisorLaminas({
                   ← Anterior
                 </button>
                 {/* aria-live: al cambiar de lámina, el lector de pantalla anuncia dónde está. */}
-                <p aria-live="polite" className="font-mono text-sm text-tinta/70">
+                <p aria-live="polite" className="font-sans text-sm text-tinta/70">
                   Lámina {actual + 1} de {total}
                 </p>
                 <button

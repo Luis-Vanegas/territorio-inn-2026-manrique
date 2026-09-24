@@ -28,7 +28,7 @@ export default async function RegistroPage() {
   return (
     <main className="seccion">
       <header className="max-w-3xl">
-        <span className="font-mono text-xs text-tinta/65">{modulo.numero} · Aliados</span>
+        <span className="font-sans text-xs text-tinta/65">{modulo.numero} · Aliados</span>
 
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
           Suma tu negocio al mapa
@@ -39,7 +39,7 @@ export default async function RegistroPage() {
           este formulario lo suma al mapa público de Aliados.
         </p>
 
-        <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-2 font-mono text-xs text-tinta/65">
+        <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-2 font-sans text-xs text-tinta/65">
           <li>
             <span className="text-azul-texto">·</span> Toma menos de 3 minutos
           </li>

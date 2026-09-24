@@ -26,7 +26,7 @@ export function EnfoqueSection() {
                 indice % 2 === 1 ? "sm:pl-16" : ""
               }`}
             >
-              <span className="font-mono text-sm text-tinta/65">{modulo.numero}</span>
+              <span className="font-sans text-sm text-tinta/65">{modulo.numero}</span>
               <p className="font-display text-3xl font-medium text-tinta transition-transform group-hover:translate-x-2 group-hover:text-azul-texto sm:w-72">
                 {modulo.nombre}
               </p>
@@ -35,11 +35,11 @@ export function EnfoqueSection() {
               </p>
 
               {modulo.estado === "proximamente" ? (
-                <span className="font-mono text-xs text-tinta/60 sm:ml-auto">
+                <span className="font-sans text-xs text-tinta/60 sm:ml-auto">
                   [ Próximamente ]
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 font-mono text-xs text-tinta/70 sm:ml-auto">
+                <span className="inline-flex items-center gap-1.5 font-sans text-xs text-tinta/70 sm:ml-auto">
                   {/* Amarillo solo acá: es un testigo de estado (como una luz
                       piloto), no texto — por eso no necesita variante -texto,
                       el color va en el punto y la palabra queda neutra. */}
@@ -48,7 +48,7 @@ export function EnfoqueSection() {
                 </span>
               )}
 
-              <span className="font-mono text-sm text-azul-texto opacity-0 transition-opacity group-hover:opacity-100 sm:ml-4">
+              <span className="font-sans text-sm text-azul-texto opacity-0 transition-opacity group-hover:opacity-100 sm:ml-4">
                 →
               </span>
             </Link>

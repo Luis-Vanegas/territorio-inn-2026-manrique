@@ -19,7 +19,7 @@ function BotonToggle({ activo }: { activo: boolean }) {
     <button
       type="submit"
       disabled={pending}
-      className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto disabled:opacity-40"
+      className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto disabled:opacity-40"
     >
       {activo ? 'desactivar' : 'reactivar'}
     </button>
@@ -32,7 +32,7 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
   if (editando) {
     return (
       <div className="border-t border-tinta/12 py-6">
-        <p className="mb-4 font-mono text-xs uppercase tracking-wider text-tinta/65">
+        <p className="mb-4 font-sans text-xs uppercase tracking-wider text-tinta/65">
           Editando · {campo.etiqueta}
         </p>
         <div className="max-w-md">
@@ -45,7 +45,7 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         <button
           type="button"
           onClick={() => setEditando(false)}
-          className="mt-4 font-mono text-xs text-tinta/60 hover:text-azul-texto"
+          className="mt-4 font-sans text-xs text-tinta/60 hover:text-azul-texto"
         >
           Cancelar
         </button>
@@ -63,13 +63,13 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         <div className="flex items-center gap-2">
           <p className="font-sans text-sm font-medium text-tinta">{campo.etiqueta}</p>
           {campo.requerido && (
-            <span className="font-mono text-xs uppercase text-morado-texto">obligatorio</span>
+            <span className="font-sans text-xs uppercase text-morado-texto">obligatorio</span>
           )}
           {!campo.activo && (
-            <span className="font-mono text-xs uppercase text-tinta/60">inactivo</span>
+            <span className="font-sans text-xs uppercase text-tinta/60">inactivo</span>
           )}
         </div>
-        <p className="mt-1 font-mono text-xs text-tinta/60">
+        <p className="mt-1 font-sans text-xs text-tinta/60">
           {ETIQUETA_TIPO[campo.tipo]}
           {campo.opciones && ` · ${campo.opciones.join(' · ')}`}
         </p>
@@ -80,7 +80,7 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         <button
           type="button"
           onClick={() => setEditando(true)}
-          className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
+          className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
         >
           editar
         </button>

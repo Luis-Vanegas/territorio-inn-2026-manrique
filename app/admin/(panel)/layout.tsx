@@ -46,7 +46,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         <nav className="flex flex-wrap items-baseline gap-5">
           <Link
             href="/admin/aliados"
-            className="font-mono text-xs uppercase tracking-wider text-tinta"
+            className="font-sans text-xs uppercase tracking-wider text-tinta"
           >
             Moderación
           </Link>
@@ -54,7 +54,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
             <Link
               key={href}
               href={href}
-              className="font-mono text-xs text-tinta/65 hover:text-azul-texto"
+              className="font-sans text-xs text-tinta/65 hover:text-azul-texto"
             >
               {etiqueta}
             </Link>
@@ -62,18 +62,18 @@ export default async function PanelLayout({ children }: { children: React.ReactN
           <Link
             href="/aliados"
             target="_blank"
-            className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
+            className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
           >
             ver mapa ↗
           </Link>
         </nav>
 
         <div className="flex items-center gap-4">
-          <span className="font-mono text-xs text-tinta/60">{sesion.email}</span>
+          <span className="font-sans text-xs text-tinta/60">{sesion.email}</span>
           <form action={cerrarSesion}>
             <button
               type="submit"
-              className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
+              className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
             >
               salir
             </button>

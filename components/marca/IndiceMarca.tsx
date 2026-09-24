@@ -102,7 +102,7 @@ export function IndiceMarca({
                       <div className="mt-auto pt-6">
                         <Link
                           href={`${base}/${guia.slug}`}
-                          className="inline-flex min-h-[44px] items-center font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
+                          className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline decoration-azul underline-offset-4"
                         >
                           Ver la guía →
                         </Link>

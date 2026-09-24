@@ -78,7 +78,7 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
 
           return (
             <div key={tipo} className="mt-10 first:mt-8">
-              <h3 className="font-mono text-xs uppercase tracking-wider text-tinta/65">
+              <h3 className="font-sans text-xs uppercase tracking-wider text-tinta/65">
                 {ETIQUETA_TIPO[tipo]}
               </h3>
 
@@ -103,7 +103,7 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
                         <h4 className="font-display text-lg font-medium text-tinta">
                           {video.titulo}
                         </h4>
-                        <p className="mt-1 font-mono text-xs text-tinta/60">{video.fuente}</p>
+                        <p className="mt-1 font-sans text-xs text-tinta/60">{video.fuente}</p>
                         <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
                           {video.descripcion}
                         </p>
@@ -112,7 +112,7 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
                             href={video.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4"
+                            className="font-sans text-sm text-azul-texto underline decoration-azul underline-offset-4"
                           >
                             Ver en YouTube ↗
                           </a>

@@ -42,7 +42,7 @@ function Boton({
         if (confirmar && !window.confirm(confirmar)) e.preventDefault();
       }}
       className={[
-        'border px-4 py-2 font-mono text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40',
+        'border px-4 py-2 font-sans text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40',
         variante === 'primaria'
           ? 'border-azul-texto bg-azul-texto text-hueso hover:bg-transparent hover:text-azul-texto'
           : 'border-tinta/20 text-tinta/65 hover:border-azul-texto hover:text-azul-texto',
@@ -102,7 +102,7 @@ function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
   if (!valor) return null;
   return (
     <div className="flex gap-3">
-      <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/60">
+      <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
         {etiqueta}
       </dt>
       <dd className="font-sans text-sm text-tinta/75">{valor}</dd>
@@ -129,7 +129,7 @@ export function FichaModeracion({
   if (estado.estado === 'ok') {
     return (
       <article className="border-t border-tinta/12 py-6">
-        <p className="font-mono text-xs text-azul-texto">
+        <p className="font-sans text-xs text-azul-texto">
           {portafolio.nombre} — {estado.mensaje}
         </p>
       </article>
@@ -141,7 +141,7 @@ export function FichaModeracion({
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-[1fr_auto]">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-xs uppercase tracking-wider text-morado-texto">
+            <span className="font-sans text-xs uppercase tracking-wider text-morado-texto">
               {portafolio.categoria_nombre}
             </span>
             <BadgeEstado etiqueta={ETIQUETA_ESTADO[portafolio.estado]} tono={TONO_ESTADO[portafolio.estado]} />
@@ -152,7 +152,7 @@ export function FichaModeracion({
           </h3>
 
           {portafolio.moderado_por && portafolio.moderado_en && (
-            <p className="mt-1 font-mono text-xs text-tinta/60">
+            <p className="mt-1 font-sans text-xs text-tinta/60">
               {ETIQUETA_ESTADO[portafolio.estado]} por {portafolio.moderado_por} ·{' '}
               {formatFechaCo(portafolio.moderado_en)}
             </p>
@@ -210,7 +210,7 @@ export function FichaModeracion({
             <dl className="mt-4 flex flex-col gap-1">
               {portafolio.productos.map((prod) => (
                 <div key={prod.nombre} className="flex gap-3">
-                  <dt className="w-24 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/60">
+                  <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
                     Producto
                   </dt>
                   <dd className="font-sans text-sm text-tinta/75">
@@ -245,7 +245,7 @@ export function FichaModeracion({
               href={portafolio.menu_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
+              className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
             >
               Ver menú / flyer enviado ↗
             </a>
@@ -279,7 +279,7 @@ export function FichaModeracion({
           )}
 
           {estado.estado === 'error' && (
-            <p role="alert" className="mb-3 font-mono text-xs text-azul-texto">
+            <p role="alert" className="mb-3 font-sans text-xs text-azul-texto">
               {estado.mensaje}
             </p>
           )}
@@ -292,7 +292,7 @@ export function FichaModeracion({
                   <button
                     type="button"
                     onClick={() => setMostrarRechazo(true)}
-                    className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
                   >
                     Rechazar…
                   </button>
@@ -303,7 +303,7 @@ export function FichaModeracion({
                   <button
                     type="button"
                     onClick={() => setMostrarRechazo(false)}
-                    className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
                   >
                     Cancelar
                   </button>
@@ -315,7 +315,7 @@ export function FichaModeracion({
                 <button
                   type="button"
                   onClick={() => setEditando((v) => !v)}
-                  className="border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                  className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
                 >
                   {editando ? 'Cerrar edición' : 'Editar ficha'}
                 </button>

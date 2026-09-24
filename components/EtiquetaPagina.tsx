@@ -9,7 +9,7 @@ import type { ReactNode } from 'react';
  */
 export function EtiquetaPagina({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 font-mono text-sm text-azul-texto">
+    <span className="inline-flex items-center gap-1.5 font-sans text-sm text-azul-texto">
       <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
       {children}
     </span>

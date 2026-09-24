@@ -77,7 +77,7 @@ html {
 body {
   background-color: rgb(var(--hueso-rgb));
   color: rgb(var(--tinta-rgb));
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -247,7 +247,7 @@ body {
 
 .leaflet-container {
   background-color: rgb(var(--hueso-rgb));
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   /* Leaflet apila sus capas hasta z-index 1000 (controles). Sin aislar el
      contenedor, esas capas compiten con el header sticky (z-50) y en algún
      navegador le pueden ganar. isolate las encierra dentro del mapa. */
@@ -277,7 +277,7 @@ body {
 
 .leaflet-control-attribution {
   background-color: rgb(var(--hueso-rgb)) !important;
-  font-family: var(--font-jetbrains-mono), monospace;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
   /* 12px y no los 10px que tenía: es la atribución que la licencia de
      OpenStreetMap obliga a mostrar, y una atribución ilegible cumple la letra
      y no el propósito. 12px es el piso que usa el resto del sitio. */

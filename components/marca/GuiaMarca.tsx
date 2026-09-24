@@ -52,7 +52,7 @@ export function GuiaMarca({
         <nav aria-label="En esta guía" className="mt-6">
           <ol
             role="list"
-            className="flex list-none flex-wrap gap-x-6 font-mono text-sm text-tinta/70"
+            className="flex list-none flex-wrap gap-x-6 font-sans text-sm text-tinta/70"
           >
             {guia.secciones.map((seccion, i) => (
               <li key={seccion.kicker}>
@@ -76,7 +76,7 @@ export function GuiaMarca({
       >
         {anterior ? (
           <Link href={`${base}/${anterior.slug}`} className="max-w-xs">
-            <span className="font-mono text-sm uppercase tracking-wider text-tinta/70">
+            <span className="font-sans text-sm uppercase tracking-wider text-tinta/70">
               ← Guía anterior
             </span>
             <span className="mt-2 block font-display text-xl text-tinta hover:text-azul-texto">
@@ -89,7 +89,7 @@ export function GuiaMarca({
 
         {siguiente && (
           <Link href={`${base}/${siguiente.slug}`} className="max-w-xs sm:text-right">
-            <span className="font-mono text-sm uppercase tracking-wider text-tinta/70">
+            <span className="font-sans text-sm uppercase tracking-wider text-tinta/70">
               Siguiente guía →
             </span>
             <span className="mt-2 block font-display text-xl text-tinta hover:text-azul-texto">

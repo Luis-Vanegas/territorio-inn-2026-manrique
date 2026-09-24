@@ -30,7 +30,7 @@ const claseInput =
   'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
   'aria-[invalid=true]:border-azul';
 
-const claseEtiqueta = 'block font-mono text-xs uppercase tracking-wider text-tinta/65';
+const claseEtiqueta = 'block font-sans text-xs uppercase tracking-wider text-tinta/65';
 
 function Error({ mensajes }: { mensajes?: string[] }) {
   if (!mensajes?.length) return null;
@@ -49,7 +49,7 @@ function BotonPublicar() {
     <button
       type="submit"
       disabled={pending}
-      className="min-h-11 self-start border border-azul-texto bg-azul-texto px-6 py-2.5 font-mono text-sm text-hueso transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+      className="min-h-11 self-start border border-azul-texto bg-azul-texto px-6 py-2.5 font-sans text-sm text-hueso transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Enviando…' : 'Publicarme →'}
     </button>

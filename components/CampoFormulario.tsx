@@ -56,7 +56,7 @@ export function CampoFormulario({
       <label htmlFor={id} className="block font-sans text-sm font-medium text-tinta">
         {etiqueta}
         {!requerido && (
-          <span className="ml-2 font-mono text-sm font-normal text-tinta/65">
+          <span className="ml-2 font-sans text-sm font-normal text-tinta/65">
             opcional
           </span>
         )}
@@ -77,7 +77,7 @@ export function CampoFormulario({
       </div>
 
       {errores?.length ? (
-        <p id={idError} className="mt-1.5 font-mono text-sm text-azul-texto">
+        <p id={idError} className="mt-1.5 font-sans text-sm text-azul-texto">
           {errores[0]}
         </p>
       ) : null}

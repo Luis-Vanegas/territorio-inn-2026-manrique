@@ -16,7 +16,7 @@
 // quejó de ver en el celular.
 const claseChip =
   'flex min-h-11 cursor-pointer select-none items-center justify-center border px-4 py-3 text-center ' +
-  'font-mono text-sm leading-snug transition-colors ' +
+  'font-sans text-sm leading-snug transition-colors ' +
   'peer-checked:border-azul-texto peer-checked:bg-azul-texto peer-checked:text-hueso ' +
   'peer-focus-visible:ring-2 peer-focus-visible:ring-azul peer-focus-visible:ring-offset-2 ' +
   'border-tinta/20 text-tinta/70 hover:border-tinta/40';

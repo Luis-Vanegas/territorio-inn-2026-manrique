@@ -52,7 +52,7 @@ export default async function EntrarPage({
           separados que hay que barrer la pantalla para compararlos. */}
       <div className="mx-auto max-w-md">
         <header>
-          <span className="font-mono text-xs text-azul-texto">Constelaciones</span>
+          <span className="font-sans text-xs text-azul-texto">Constelaciones</span>
           <h1 className="mt-3 font-display text-4xl font-medium leading-[1.05] text-tinta">
             Entra a tu cuenta
           </h1>
@@ -75,7 +75,7 @@ export default async function EntrarPage({
           <>
             <a
               href="/api/auth/google/iniciar"
-              className="mt-8 flex min-h-[52px] w-full items-center justify-center gap-3 border border-tinta/25 px-6 font-mono text-sm text-tinta transition-colors hover:border-azul hover:text-azul-texto"
+              className="mt-8 flex min-h-[52px] w-full items-center justify-center gap-3 border border-tinta/25 px-6 font-sans text-sm text-tinta transition-colors hover:border-azul hover:text-azul-texto"
             >
               {/* aria-hidden: el texto del enlace ya dice qué hace; un lector de
                   pantalla no gana nada anunciando el logotipo. */}
@@ -116,7 +116,7 @@ export default async function EntrarPage({
             encabezados y controles. */}
         <div className="my-8 flex items-center gap-4" aria-hidden="true">
           <span className="h-px flex-1 bg-tinta/12" />
-          <span className="font-mono text-xs text-tinta/60">o</span>
+          <span className="font-sans text-xs text-tinta/60">o</span>
           <span className="h-px flex-1 bg-tinta/12" />
         </div>
 

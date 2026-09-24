@@ -23,7 +23,7 @@ function Boton({ children }: { children: React.ReactNode }) {
     <button
       type="submit"
       disabled={pending}
-      className="border border-azul-texto bg-azul-texto px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="border border-azul-texto bg-azul-texto px-4 py-2 font-sans text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Guardando…' : children}
     </button>
@@ -64,7 +64,7 @@ export function FormularioCampo({
       {campoExistente && <input type="hidden" name="id" value={campoExistente.id} />}
 
       {estado.estado === 'error' && estado.mensaje && (
-        <p role="alert" className="font-mono text-xs text-azul-texto">
+        <p role="alert" className="font-sans text-xs text-azul-texto">
           {estado.mensaje}
         </p>
       )}
@@ -100,7 +100,7 @@ export function FormularioCampo({
       {campoExistente ? (
         <div>
           <p className="block font-sans text-sm font-medium text-tinta">Tipo de dato</p>
-          <p className="mt-2 font-mono text-sm text-tinta/70">
+          <p className="mt-2 font-sans text-sm text-tinta/70">
             {TIPOS.find((t) => t.valor === campoExistente.tipo)?.etiqueta}
             <span className="ml-2 text-xs text-tinta/60">(no se puede cambiar)</span>
           </p>
@@ -141,7 +141,7 @@ export function FormularioCampo({
               required
               defaultValue={campoExistente?.opciones?.join('\n')}
               placeholder={'Sí\nNo\nA veces'}
-              className={`${claseInput} resize-y font-mono`}
+              className={`${claseInput} resize-y font-sans`}
             />
           )}
         </CampoFormulario>

@@ -31,7 +31,7 @@ function Encabezado({
 }) {
   return (
     <header>
-      <p className="font-mono text-sm uppercase tracking-wider text-morado-texto">{kicker}</p>
+      <p className="font-sans text-sm uppercase tracking-wider text-morado-texto">{kicker}</p>
       <h2
         id={id}
         className="mt-3 max-w-3xl font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl"
@@ -49,7 +49,7 @@ function Encabezado({
 function BarraNota({ nota }: { nota: Nota }) {
   return (
     <p className="mt-8 bg-tinta px-5 py-4 font-sans leading-relaxed text-hueso">
-      <span className="font-mono text-sm uppercase tracking-wider">{nota.etiqueta}:</span>{' '}
+      <span className="font-sans text-sm uppercase tracking-wider">{nota.etiqueta}:</span>{' '}
       {nota.texto}
     </p>
   );
@@ -84,7 +84,7 @@ function ConCorchetes({ texto }: { texto: string }) {
     <>
       {texto.split(/(\[[^\]]+\])/g).map((trozo, i) =>
         trozo.startsWith('[') ? (
-          <span key={i} className="bg-amarillo/50 px-1 font-mono text-[0.85em] text-tinta">
+          <span key={i} className="bg-amarillo/50 px-1 font-sans text-[0.85em] text-tinta">
             {trozo}
           </span>
         ) : (
@@ -133,7 +133,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
                 )}
                 {seccion.numeradas && (
                   <span
-                    className="mb-4 grid h-9 w-9 place-items-center rounded-full border border-azul font-mono text-sm text-azul-texto"
+                    className="mb-4 grid h-9 w-9 place-items-center rounded-full border border-azul font-sans text-sm text-azul-texto"
                     aria-hidden="true"
                   >
                     {i + 1}
@@ -159,7 +159,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
                 key={item}
                 className="flex items-start gap-3 border border-tinta/15 bg-hueso px-4 py-3 font-sans text-tinta"
               >
-                <span className="font-mono text-azul-texto" aria-hidden="true">
+                <span className="font-sans text-azul-texto" aria-hidden="true">
                   ✓
                 </span>
                 {item}
@@ -181,7 +181,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
           >
             {seccion.items.map((item) => (
               <li key={item.titulo} className="flex h-full flex-col border border-tinta/15 bg-hueso p-6">
-                <h3 className="font-mono text-sm uppercase tracking-wider text-tinta/70">
+                <h3 className="font-sans text-sm uppercase tracking-wider text-tinta/70">
                   {item.titulo}
                 </h3>
                 {item.texto && (
@@ -190,7 +190,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
                   </p>
                 )}
                 {item.pasos && (
-                  <ol className="mt-4 list-decimal space-y-2 pl-5 font-display text-xl leading-snug text-tinta marker:font-mono marker:text-morado-texto">
+                  <ol className="mt-4 list-decimal space-y-2 pl-5 font-display text-xl leading-snug text-tinta marker:font-sans marker:text-morado-texto">
                     {item.pasos.map((paso) => (
                       <li key={paso}>{paso}</li>
                     ))}
@@ -215,7 +215,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
               ] as const
             ).map(({ lado, marca, borde }) => (
               <figure key={lado.etiqueta} className={`flex flex-col border ${borde} bg-hueso p-4 sm:p-6`}>
-                <figcaption className="mb-4 font-mono text-sm uppercase tracking-wider text-tinta">
+                <figcaption className="mb-4 font-sans text-sm uppercase tracking-wider text-tinta">
                   <span aria-hidden="true">{marca} </span>
                   {lado.etiqueta}
                 </figcaption>
@@ -234,7 +234,7 @@ function VistaSeccion({ seccion, id }: { seccion: Seccion; id: string }) {
             <ul role="list" className="mt-6 flex list-none flex-wrap gap-x-6 gap-y-2 font-sans text-tinta/70">
               {seccion.senales.map((senal) => (
                 <li key={senal} className="flex gap-2">
-                  <span className="font-mono text-azul-texto" aria-hidden="true">
+                  <span className="font-sans text-azul-texto" aria-hidden="true">
                     ✓
                   </span>
                   {senal}

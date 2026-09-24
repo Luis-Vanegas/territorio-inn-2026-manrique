@@ -20,13 +20,13 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
   if (portafolio.estado === 'archivado') {
     return (
       <div className="border-l-2 border-tinta/20 bg-tinta/[0.03] px-5 py-4">
-        <p className="font-mono text-sm text-tinta/70">Este registro está borrado.</p>
+        <p className="font-sans text-sm text-tinta/70">Este registro está borrado.</p>
         <p className="mt-1 font-sans text-sm text-tinta/65">
           Si te equivocaste o quieres volver a aparecer en el mapa, registra tu negocio de nuevo.
         </p>
         <Link
           href="/aliados/registro"
-          className="mt-3 inline-block font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4 hover:text-azul-texto/80"
+          className="mt-3 inline-block font-sans text-sm text-azul-texto underline decoration-azul underline-offset-4 hover:text-azul-texto/80"
         >
           Registrar de nuevo →
         </Link>
@@ -37,13 +37,13 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
   if (portafolio.estado === 'aprobado') {
     return (
       <div className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4">
-        <p className="font-mono text-sm text-azul-texto">¡Publicado!</p>
+        <p className="font-sans text-sm text-azul-texto">¡Publicado!</p>
         <p className="mt-1 font-sans text-sm text-tinta/70">
           Tu negocio ya está en el mapa de Aliados.
         </p>
         <Link
           href="/aliados"
-          className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+          className="mt-3 inline-block font-sans text-sm text-tinta/60 underline decoration-azul underline-offset-4 hover:text-azul-texto"
         >
           Verlo en el mapa →
         </Link>
@@ -54,7 +54,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
   if (portafolio.estado === 'rechazado') {
     return (
       <div className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4">
-        <p className="font-mono text-sm text-azul-texto">No lo pudimos publicar todavía</p>
+        <p className="font-sans text-sm text-azul-texto">No lo pudimos publicar todavía</p>
         {portafolio.motivo_rechazo && (
           <p className="mt-2 font-sans text-sm leading-relaxed text-tinta">
             {portafolio.motivo_rechazo}
@@ -70,7 +70,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
   // pendiente
   return (
     <div className="border-l-2 border-tinta/20 bg-tinta/[0.02] px-5 py-4">
-      <p className="font-mono text-sm text-tinta">Lo estamos revisando</p>
+      <p className="font-sans text-sm text-tinta">Lo estamos revisando</p>
       <p className="mt-1 font-sans text-sm text-tinta/60">
         Tu negocio va a aparecer en el mapa apenas lo aprobemos.
       </p>
@@ -93,7 +93,7 @@ function GuardarEnlace({ nombre }: { nombre: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
     >
       <span aria-hidden="true">↗</span>
       Guardar este enlace por WhatsApp
@@ -125,7 +125,7 @@ function BorrarNegocio({
 
   return (
     <div className="border-t border-tinta/12 pt-8">
-      <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
+      <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/60">
         Borrar mi negocio
       </h2>
       <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/65">
@@ -134,7 +134,7 @@ function BorrarNegocio({
       </p>
 
       {estado.estado === 'error' && (
-        <p role="alert" className="mt-3 font-mono text-sm text-azul-texto">
+        <p role="alert" className="mt-3 font-sans text-sm text-azul-texto">
           {estado.mensaje}
         </p>
       )}
@@ -143,7 +143,7 @@ function BorrarNegocio({
         type="button"
         onClick={handleBorrar}
         disabled={borrando}
-        className="mt-4 min-h-11 border border-azul-texto px-5 py-2.5 font-mono text-sm text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-4 min-h-11 border border-azul-texto px-5 py-2.5 font-sans text-sm text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso disabled:cursor-not-allowed disabled:opacity-50"
       >
         {borrando ? 'Borrando…' : 'Borrar mi negocio'}
       </button>
@@ -184,7 +184,7 @@ export function EstadoAliado({
 
   return (
     <div className="max-w-3xl">
-      <span className="font-mono text-xs text-tinta/65">Aliados · Tu registro</span>
+      <span className="font-sans text-xs text-tinta/65">Aliados · Tu registro</span>
 
       <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-5xl">
         {portafolio.nombre}
@@ -205,10 +205,10 @@ export function EstadoAliado({
 
         {borrado ? (
           <div className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4">
-            <p className="font-mono text-sm text-azul-texto">Tu negocio se borró del directorio.</p>
+            <p className="font-sans text-sm text-azul-texto">Tu negocio se borró del directorio.</p>
             <Link
               href="/aliados"
-              className="mt-3 inline-block font-mono text-sm text-tinta/60 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+              className="mt-3 inline-block font-sans text-sm text-tinta/60 underline decoration-azul underline-offset-4 hover:text-azul-texto"
             >
               Volver al mapa →
             </Link>
@@ -240,7 +240,7 @@ export function EstadoAliado({
 
       <Link
         href="/aliados"
-        className="mt-16 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+        className="mt-16 inline-block font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver al mapa
       </Link>

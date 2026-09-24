@@ -89,13 +89,13 @@ export function MenuUsuario({
         ) : (
           <span
             aria-hidden="true"
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-tinta/10 font-mono text-xs text-tinta/70"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-tinta/10 font-sans text-xs text-tinta/70"
           >
             {inicial}
           </span>
         )}
 
-        <span className="max-w-[9rem] truncate font-mono text-base text-tinta/70">
+        <span className="max-w-[9rem] truncate font-sans text-base text-tinta/70">
           {primerNombre}
         </span>
 
@@ -103,7 +103,7 @@ export function MenuUsuario({
             ya anuncia su estado; el glifo es refuerzo visual. */}
         <span
           aria-hidden="true"
-          className="font-mono text-xs text-tinta/60 transition-transform group-open:rotate-180"
+          className="font-sans text-xs text-tinta/60 transition-transform group-open:rotate-180"
         >
           ▾
         </span>
@@ -119,7 +119,7 @@ export function MenuUsuario({
             Las rutas de acá no están en la barra de navegación: quien no entró
             no las ve ni sabe que existen. Es lo que hace que estar registrado
             se note como un lugar y no como un texto que dice "estás dentro". */}
-        <p className="px-3 pb-1 pt-3 font-mono text-xs uppercase tracking-wider text-tinta/60">
+        <p className="px-3 pb-1 pt-3 font-sans text-xs uppercase tracking-wider text-tinta/60">
           Tu espacio
         </p>
 
@@ -127,7 +127,7 @@ export function MenuUsuario({
           <Link
             key={enlace.href}
             href={enlace.href}
-            className="flex min-h-[44px] items-center border-l-4 border-transparent px-3 font-mono text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-azul-texto"
+            className="flex min-h-[44px] items-center border-l-4 border-transparent px-3 font-sans text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-azul-texto"
           >
             {enlace.etiqueta}
           </Link>
@@ -142,7 +142,7 @@ export function MenuUsuario({
               afuera sin que haya tocado nada. */}
           <button
             type="submit"
-            className="flex min-h-[44px] w-full items-center border-l-4 border-transparent px-3 text-left font-mono text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-azul-texto"
+            className="flex min-h-[44px] w-full items-center border-l-4 border-transparent px-3 text-left font-sans text-base text-tinta/70 transition-colors hover:bg-tinta/[0.03] hover:text-azul-texto"
           >
             Cerrar sesión
           </button>

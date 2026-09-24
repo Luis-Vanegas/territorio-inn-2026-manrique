@@ -23,14 +23,14 @@ export function Footer() {
 
       <div className="mt-14 flex flex-col gap-6 border-t border-white/20 pt-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.15em] text-white/65">Créditos</p>
+          <p className="font-sans text-xs uppercase tracking-[0.15em] text-white/65">Créditos</p>
           <p className="mt-1 font-sans text-sm text-white/80">
             {equipo.map((miembro) => miembro.nombre).join(" · ")}
           </p>
         </div>
 
         <div>
-          <p className="font-mono text-xs uppercase tracking-[0.15em] text-white/65">Contacto</p>
+          <p className="font-sans text-xs uppercase tracking-[0.15em] text-white/65">Contacto</p>
           <Link
             href="/contacto"
             className="mt-1 inline-block font-sans text-sm underline decoration-azul underline-offset-4 hover:text-azul"
@@ -40,11 +40,11 @@ export function Footer() {
         </div>
 
         <div className="flex items-center gap-6">
-          <p className="font-mono text-xs text-white/65">Licencia {footer.licencia}</p>
+          <p className="font-sans text-xs text-white/65">Licencia {footer.licencia}</p>
           {/* Mismo tratamiento visual que "Licencia": discreto, sin destacar, pero con
               texto legible — un link sin texto reconocible es un problema de accesibilidad,
               no solo de diseño. */}
-          <Link href="/admin/login" className="font-mono text-xs text-white/65 hover:text-azul">
+          <Link href="/admin/login" className="font-sans text-xs text-white/65 hover:text-azul">
             Equipo
           </Link>
         </div>

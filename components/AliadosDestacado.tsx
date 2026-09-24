@@ -35,13 +35,13 @@ export async function AliadosDestacado() {
       <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-12 lg:items-center lg:gap-x-10">
         <ScrollReveal className="lg:col-span-5">
           <div className="flex flex-wrap items-baseline justify-between gap-4">
-            <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
+            <span className="inline-flex items-center gap-1.5 font-sans text-xs text-azul-texto">
               <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
               {modulo.numero} · Aliados · en vivo
             </span>
 
             {total > 0 && (
-              <span className="font-mono text-xs text-tinta/60">
+              <span className="font-sans text-xs text-tinta/60">
                 {total} {total === 1 ? "negocio" : "negocios"} ya en el mapa
               </span>
             )}
@@ -62,7 +62,7 @@ export async function AliadosDestacado() {
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
               href="/aliados/registro"
-              className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto text-hueso transition-colors hover:bg-transparent hover:text-azul-texto px-6 py-3 font-mono text-base"
+              className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto text-hueso transition-colors hover:bg-transparent hover:text-azul-texto px-6 py-3 font-sans text-base"
             >
               Sumar mi negocio →
             </Link>
@@ -70,7 +70,7 @@ export async function AliadosDestacado() {
             {total > 0 && (
               <Link
                 href="/aliados"
-                className="font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+                className="font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
               >
                 Ver el mapa completo
               </Link>
@@ -82,7 +82,7 @@ export async function AliadosDestacado() {
           <MapaAliadosDestacado portafolios={aliados.slice(0, MAXIMO_EN_MAPA)} />
 
           {total === 0 && (
-            <p className="mt-3 font-mono text-xs text-tinta/60">
+            <p className="mt-3 font-sans text-xs text-tinta/60">
               El mapa está vacío por ahora — sé el primer punto marcado.
             </p>
           )}

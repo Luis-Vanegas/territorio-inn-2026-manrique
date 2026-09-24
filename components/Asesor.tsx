@@ -56,7 +56,7 @@ function BotonPreguntar() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-4 border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-4 border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Buscando la respuesta…' : 'Preguntar →'}
     </button>
@@ -94,7 +94,7 @@ export function Asesor({
   return (
     <section className={enPanel ? '' : 'mt-16 border-t border-tinta/12 pt-10'}>
       {!enPanel && (
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
+        <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/60">
           Asesor de formalización
         </h2>
       )}
@@ -106,7 +106,7 @@ export function Asesor({
       <form action={accion} className={`max-w-xl ${enPanel ? 'mt-4' : 'mt-6'}`}>
         {token && <input type="hidden" name="token" value={token} />}
 
-        <label htmlFor={idPregunta} className="block font-mono text-sm text-tinta/70">
+        <label htmlFor={idPregunta} className="block font-sans text-sm text-tinta/70">
           Tu pregunta
         </label>
 
@@ -122,7 +122,7 @@ export function Asesor({
         />
 
         <div className="mt-4">
-          <p className="font-mono text-xs text-tinta/60">O prueba con una de estas:</p>
+          <p className="font-sans text-xs text-tinta/60">O prueba con una de estas:</p>
           <ul className="mt-2 flex flex-wrap gap-2">
             {SUGERENCIAS.map((sugerencia) => (
               <li key={sugerencia}>
@@ -152,7 +152,7 @@ export function Asesor({
 
       {estado.estado === 'ok' && (
         <article className="mt-8 max-w-xl border-l-2 border-azul pl-5">
-          <p className="font-mono text-xs text-tinta/60">Preguntaste:</p>
+          <p className="font-sans text-xs text-tinta/60">Preguntaste:</p>
           <p className="mt-1 font-sans text-sm text-tinta/70">{estado.pregunta}</p>
 
           {/* whitespace-pre-line respeta los saltos de línea del modelo sin

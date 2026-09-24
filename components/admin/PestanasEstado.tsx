@@ -26,7 +26,7 @@ export function PestanasEstado<T extends string>({
             href={`${ruta}?estado=${e.id}`}
             aria-current={esActivo ? 'page' : undefined}
             className={[
-              'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-mono text-xs transition-colors',
+              'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-sans text-xs transition-colors',
               esActivo
                 ? 'border-azul-texto bg-azul-texto text-hueso'
                 : 'border-tinta/15 text-tinta/65 hover:border-azul-texto hover:text-azul-texto',

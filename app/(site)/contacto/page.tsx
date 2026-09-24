@@ -10,7 +10,7 @@ export default function ContactoPage() {
   return (
     <main className="seccion">
       <header className="max-w-2xl">
-        <span className="font-mono text-xs text-tinta/65">Contacto</span>
+        <span className="font-sans text-xs text-tinta/65">Contacto</span>
         <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
           Escríbenos
         </h1>

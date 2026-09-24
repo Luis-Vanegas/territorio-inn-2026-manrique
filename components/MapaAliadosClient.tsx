@@ -172,7 +172,7 @@ export default function MapaAliadosClient({
             <strong className="block font-display text-sm font-medium text-tinta">
               Estás por acá
             </strong>
-            <span className="mt-1 block font-mono text-xs text-tinta/65">
+            <span className="mt-1 block font-sans text-xs text-tinta/65">
               Posición aproximada de tu dispositivo. No se guarda en ningún lado.
             </span>
           </Popup>
@@ -190,7 +190,7 @@ export default function MapaAliadosClient({
           }
         >
           <Popup minWidth={200}>
-            <span className="block font-mono text-xs uppercase tracking-wide text-morado-texto">
+            <span className="block font-sans text-xs uppercase tracking-wide text-morado-texto">
               {p.categoria_nombre}
             </span>
             <strong className="mt-1 block font-display text-base font-medium text-tinta">
@@ -199,7 +199,7 @@ export default function MapaAliadosClient({
 
             {/* La ubicación "canta" acá también: ícono + mono, no un dato
                 perdido entre el resto del popup. */}
-            <span className="mt-1.5 flex items-start gap-1 font-mono text-xs text-tinta/65">
+            <span className="mt-1.5 flex items-start gap-1 font-sans text-xs text-tinta/65">
               <span aria-hidden="true">📍</span>
               <span>
                 {p.direccion}
@@ -213,7 +213,7 @@ export default function MapaAliadosClient({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => contar(p.id, 'contacto')}
-                className="mt-2 inline-block font-mono text-xs text-azul-texto underline decoration-azul/40 underline-offset-4 hover:text-tinta"
+                className="mt-2 inline-block font-sans text-xs text-azul-texto underline decoration-azul/40 underline-offset-4 hover:text-tinta"
               >
                 Escribir por WhatsApp →
               </a>

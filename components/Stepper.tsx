@@ -67,7 +67,7 @@ export function Stepper({
                   className="group flex items-baseline gap-2 text-left"
                 >
                   <span
-                    className={`font-mono text-xs tabular-nums transition-colors ${
+                    className={`font-sans text-xs tabular-nums transition-colors ${
                       esActual
                         ? 'text-azul-texto'
                         : yaPaso

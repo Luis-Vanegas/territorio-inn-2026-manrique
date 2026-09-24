@@ -19,7 +19,7 @@ const CLASE_TONO: Record<TonoBadge, string> = {
 export function BadgeEstado({ etiqueta, tono }: { etiqueta: string; tono: TonoBadge }) {
   return (
     <span
-      className={`inline-block border px-2 py-0.5 font-mono text-xs uppercase tracking-wide ${CLASE_TONO[tono]}`}
+      className={`inline-block border px-2 py-0.5 font-sans text-xs uppercase tracking-wide ${CLASE_TONO[tono]}`}
     >
       {etiqueta}
     </span>

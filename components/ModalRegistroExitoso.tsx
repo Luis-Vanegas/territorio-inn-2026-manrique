@@ -84,7 +84,7 @@ export function ModalRegistroExitoso() {
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-md border border-tinta/15 bg-hueso p-6 shadow-[0_8px_40px_rgb(26_26_26/0.15)] sm:p-8"
       >
-        <span className="font-mono text-xs text-azul-texto">✓ Registro guardado</span>
+        <span className="font-sans text-xs text-azul-texto">✓ Registro guardado</span>
 
         <h2 id="modal-registro-titulo" className="mt-2 font-display text-2xl font-medium text-tinta">
           ¡Listo! Tu negocio quedó registrado.
@@ -106,7 +106,7 @@ export function ModalRegistroExitoso() {
           </p>
         )}
 
-        <p className="mt-5 font-mono text-xs uppercase tracking-wide text-tinta/65">
+        <p className="mt-5 font-sans text-xs uppercase tracking-wide text-tinta/65">
           Guarda este link — es la única forma de editarlo o borrarlo después
         </p>
 
@@ -115,12 +115,12 @@ export function ModalRegistroExitoso() {
             readOnly
             value={urlEstado}
             onFocus={(e) => e.target.select()}
-            className="min-w-0 flex-1 border border-tinta/55 bg-transparent px-3 py-2 font-mono text-xs text-tinta"
+            className="min-w-0 flex-1 border border-tinta/55 bg-transparent px-3 py-2 font-sans text-xs text-tinta"
           />
           <button
             type="button"
             onClick={copiarLink}
-            className="shrink-0 border border-tinta/20 px-4 py-2 font-mono text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="shrink-0 border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             {copiado ? 'Copiado ✓' : 'Copiar'}
           </button>
@@ -130,7 +130,7 @@ export function ModalRegistroExitoso() {
           href={hrefWhatsapp}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-mono text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+          className="mt-3 inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
         >
           <span aria-hidden="true">↗</span>
           Guardar este enlace por WhatsApp
@@ -139,7 +139,7 @@ export function ModalRegistroExitoso() {
         <div className="mt-6 flex items-center justify-between gap-4 border-t border-tinta/12 pt-5">
           <Link
             href={`/aliados/estado/${datos.token}`}
-            className="font-mono text-sm text-azul-texto underline decoration-azul underline-offset-4 hover:text-azul-texto/80"
+            className="font-sans text-sm text-azul-texto underline decoration-azul underline-offset-4 hover:text-azul-texto/80"
           >
             Ver mi registro →
           </Link>
@@ -147,7 +147,7 @@ export function ModalRegistroExitoso() {
           <button
             type="button"
             onClick={() => setAbierto(false)}
-            className="font-mono text-sm text-tinta/65 hover:text-tinta"
+            className="font-sans text-sm text-tinta/65 hover:text-tinta"
           >
             Cerrar
           </button>

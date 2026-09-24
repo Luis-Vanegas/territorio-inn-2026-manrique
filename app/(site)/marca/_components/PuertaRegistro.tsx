@@ -46,7 +46,7 @@ export function PuertaRegistro({
 
         {guias && (
           <section className="mt-10 border-t border-tinta/12 pt-8">
-            <h2 className="font-mono text-sm uppercase tracking-wider text-tinta/70">
+            <h2 className="font-sans text-sm uppercase tracking-wider text-tinta/70">
               Lo que encuentras adentro
             </h2>
             <ul
@@ -89,7 +89,7 @@ export function PuertaRegistro({
 
           <Link
             href="/entrar"
-            className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
+            className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
           >
             Entrar o registrarme →
           </Link>

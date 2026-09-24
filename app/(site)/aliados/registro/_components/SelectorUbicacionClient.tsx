@@ -152,25 +152,25 @@ export default function SelectorUbicacionClient({
           type="button"
           onClick={usarMiUbicacion}
           disabled={buscando}
-          className="inline-flex items-center gap-2 border border-azul-texto bg-azul-texto px-4 py-2.5 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
+          className="inline-flex items-center gap-2 border border-azul-texto bg-azul-texto px-4 py-2.5 font-sans text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
         >
           <span aria-hidden="true">◎</span>
           {buscando ? 'Buscando tu ubicación…' : 'Usar mi ubicación actual'}
         </button>
 
-        <span className="font-mono text-xs text-tinta/60">
+        <span className="font-sans text-xs text-tinta/60">
           o toca el mapa donde queda tu negocio
         </span>
       </div>
 
       {geo.fase === 'error' && (
-        <p role="alert" className="mt-3 font-mono text-xs leading-relaxed text-azul-texto">
+        <p role="alert" className="mt-3 font-sans text-xs leading-relaxed text-azul-texto">
           {geo.mensaje}
         </p>
       )}
 
       {geo.fase === 'imprecisa' && (
-        <p role="status" className="mt-3 border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-mono text-xs leading-relaxed text-tinta">
+        <p role="status" className="mt-3 border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-sans text-xs leading-relaxed text-tinta">
           {geo.mensaje}
         </p>
       )}
@@ -254,16 +254,16 @@ export default function SelectorUbicacionClient({
         ].join(' ')}
       >
         {!posicion ? (
-          <p className="font-mono text-xs text-tinta/65">
+          <p className="font-sans text-xs text-tinta/65">
             Todavía no marcaste el punto.
           </p>
         ) : (
           <>
-            <p className="flex items-center gap-2 font-mono text-sm text-tinta">
+            <p className="flex items-center gap-2 font-sans text-sm text-tinta">
               <span aria-hidden="true">📍</span>
               {posicion.lat.toFixed(6)}, {posicion.lng.toFixed(6)}
             </p>
-            <p className="mt-1 font-mono text-xs text-tinta/60">
+            <p className="mt-1 font-sans text-xs text-tinta/60">
               {posicion.precision && posicion.precision > 25
                 ? `precisión ±${Math.round(posicion.precision)} m — `
                 : ''}

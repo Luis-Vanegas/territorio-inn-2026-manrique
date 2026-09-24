@@ -74,7 +74,7 @@ export function AsesorFlotante({
         <div className="flex max-h-[88dvh] flex-col">
           <div className="flex items-center justify-between gap-4 border-b border-tinta/15 px-5 py-3">
             <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-morado-texto">Asesor</p>
+              <p className="font-sans text-xs uppercase tracking-wider text-morado-texto">Asesor</p>
               <h2 id={idTitulo} className="font-display text-lg font-medium leading-tight">
                 ¿En qué te ayudo?
               </h2>
@@ -82,7 +82,7 @@ export function AsesorFlotante({
             <button
               type="button"
               onClick={cerrar}
-              className="inline-flex min-h-[44px] shrink-0 items-center border border-tinta/40 px-4 font-mono text-sm transition-colors hover:border-azul-texto hover:text-azul-texto"
+              className="inline-flex min-h-[44px] shrink-0 items-center border border-tinta/40 px-4 font-sans text-sm transition-colors hover:border-azul-texto hover:text-azul-texto"
             >
               Cerrar <span aria-hidden="true">&nbsp;✕</span>
             </button>

@@ -16,7 +16,7 @@ function Boton() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-8 w-full border border-azul-texto bg-azul-texto py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-8 w-full border border-azul-texto bg-azul-texto py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Verificando…' : 'Entrar'}
     </button>
@@ -62,7 +62,7 @@ export function FormularioLogin() {
       </div>
 
       {estado.estado === 'error' && (
-        <p role="alert" className="mt-5 font-mono text-xs text-azul-texto">
+        <p role="alert" className="mt-5 font-sans text-xs text-azul-texto">
           {estado.mensaje}
         </p>
       )}

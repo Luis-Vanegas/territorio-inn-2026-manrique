@@ -49,7 +49,7 @@ export default async function AliadosPage({
   return (
     <main className="seccion">
       <header className="max-w-3xl">
-        <span className="inline-flex items-center gap-1.5 font-mono text-xs text-azul-texto">
+        <span className="inline-flex items-center gap-1.5 font-sans text-xs text-azul-texto">
           <span className="h-1.5 w-1.5 rounded-full bg-azul-texto" aria-hidden="true" />
           {modulo.numero} · en vivo
         </span>
@@ -66,12 +66,12 @@ export default async function AliadosPage({
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link
             href="/aliados/registro"
-            className="border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
+            className="border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
           >
             Poner mi negocio en el mapa →
           </Link>
 
-          <span className="font-mono text-xs text-tinta/60">
+          <span className="font-sans text-xs text-tinta/60">
             Gratis · menos de 3 minutos · lo revisamos antes de publicarlo
           </span>
         </div>
@@ -141,7 +141,7 @@ export default async function AliadosPage({
 
       <Link
         href="/#enfoque"
-        className="mt-24 inline-block font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+        className="mt-24 inline-block font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
         ← Volver a Constelaciones
       </Link>

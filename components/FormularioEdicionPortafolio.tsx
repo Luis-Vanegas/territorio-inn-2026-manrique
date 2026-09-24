@@ -39,7 +39,7 @@ const SelectorUbicacion = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex h-[440px] w-full items-center justify-center border border-tinta/15 bg-tinta/[0.02] sm:h-[580px]">
-        <span className="font-mono text-xs text-tinta/60">cargando mapa…</span>
+        <span className="font-sans text-xs text-tinta/60">cargando mapa…</span>
       </div>
     ),
   },
@@ -68,8 +68,8 @@ function Seccion({
       <legend className="sr-only">{titulo}</legend>
 
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="font-mono text-xs text-tinta/60">{numero}</span>
-        <h2 className="font-mono text-xs uppercase tracking-wider text-tinta/60">
+        <span className="font-sans text-xs text-tinta/60">{numero}</span>
+        <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/60">
           {titulo}
         </h2>
       </div>
@@ -100,7 +100,7 @@ function BotonGuardar() {
     <button
       type="submit"
       disabled={pending}
-      className="min-h-11 border border-azul-texto bg-azul-texto px-6 py-3 font-mono text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className="min-h-11 border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
     >
       {pending ? 'Guardando…' : 'Guardar cambios'}
     </button>
@@ -182,7 +182,7 @@ export function FormularioEdicionPortafolio({
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
 
         {(err('latitud') || err('longitud')) && (
-          <p className="font-mono text-xs text-azul-texto">
+          <p className="font-sans text-xs text-azul-texto">
             {err('latitud')?.[0] ?? err('longitud')?.[0]}
           </p>
         )}
@@ -375,7 +375,7 @@ export function FormularioEdicionPortafolio({
           <button
             type="button"
             onClick={() => setMostrarOtraRed((v) => !v)}
-            className="self-start font-mono text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+            className="self-start font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             {mostrarOtraRed ? '− Ocultar' : '+ Agregar otra red o página'}
           </button>
@@ -473,12 +473,12 @@ export function FormularioEdicionPortafolio({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreFoto)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-sans file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreFoto && <p className="font-mono text-xs text-tinta/65">{nombreFoto}</p>}
+        {nombreFoto && <p className="font-sans text-xs text-tinta/65">{nombreFoto}</p>}
       </Seccion>
 
       <Seccion numero="07" titulo="Menú o flyer" ayuda="JPG, PNG o WebP, hasta 5 MB.">
@@ -503,12 +503,12 @@ export function FormularioEdicionPortafolio({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => manejarSeleccionFoto(e.target, setNombreMenu)}
-              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-mono file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
+              className="w-full font-sans text-sm text-tinta/70 file:mr-4 file:border file:border-tinta/20 file:bg-transparent file:px-4 file:py-2 file:font-sans file:text-xs file:text-tinta hover:file:border-azul hover:file:text-azul-texto"
             />
           )}
         </CampoFormulario>
 
-        {nombreMenu && <p className="font-mono text-xs text-tinta/65">{nombreMenu}</p>}
+        {nombreMenu && <p className="font-sans text-xs text-tinta/65">{nombreMenu}</p>}
       </Seccion>
 
       <div className="sticky bottom-0 -mx-[clamp(1.5rem,5vw,6rem)] border-t border-tinta/12 bg-hueso/95 px-[clamp(1.5rem,5vw,6rem)] py-4 backdrop-blur">

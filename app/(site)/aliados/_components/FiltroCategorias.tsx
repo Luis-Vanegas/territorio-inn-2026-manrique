@@ -28,7 +28,7 @@ export function FiltroCategorias({
 
   const estilo = (seleccionada: boolean) =>
     [
-      'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-mono text-xs transition-colors',
+      'inline-flex items-baseline gap-1.5 border px-3 py-1.5 font-sans text-xs transition-colors',
       seleccionada
         // bg-azul-texto + text-hueso da 3.93:1 — falla AA en text-xs (WCAG pide 4.5:1).
         // azul-texto es el mismo azul calibrado para texto/fills (4.5:1+ en los dos modos).

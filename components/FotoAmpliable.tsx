@@ -70,13 +70,13 @@ export function FotoAmpliable({
         className="m-auto w-[min(96vw,72rem)] max-w-none border border-tinta/20 bg-hueso p-0 text-tinta backdrop:bg-tinta/75"
       >
         <div className="flex items-center justify-between gap-4 border-b border-tinta/15 px-4 py-3">
-          <h2 id={idTitulo} className="min-w-0 truncate font-mono text-sm text-tinta/70">
+          <h2 id={idTitulo} className="min-w-0 truncate font-sans text-sm text-tinta/70">
             {alt}
           </h2>
           <button
             type="button"
             onClick={cerrar}
-            className="inline-flex min-h-[44px] shrink-0 items-center border border-tinta/40 px-4 font-mono text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="inline-flex min-h-[44px] shrink-0 items-center border border-tinta/40 px-4 font-sans text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             Cerrar <span aria-hidden="true">&nbsp;✕</span>
           </button>

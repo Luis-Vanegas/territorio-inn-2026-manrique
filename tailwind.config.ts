@@ -31,8 +31,11 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-fraunces)", "serif"],
-        sans: ["var(--font-geist-sans)", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "monospace"],
+        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        // `mono` queda apuntando a la del sistema, sin descargar ninguna: no se
+        // usa en el cromo (ver DESIGN.md), pero un <code> o una columna de
+        // números que tenga que cuadrar todavía tiene a dónde ir.
+        mono: ["ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
   },

@@ -14,7 +14,7 @@ function BotonAtender() {
     <button
       type="submit"
       disabled={pending}
-      className="border border-azul-texto bg-azul-texto px-4 py-2 font-mono text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-40"
+      className="border border-azul-texto bg-azul-texto px-4 py-2 font-sans text-xs text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-40"
     >
       {pending ? 'Guardando…' : 'Marcar como atendida'}
     </button>
@@ -29,7 +29,7 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
   if (estado.estado === 'ok') {
     return (
       <article className="border-t border-tinta/12 py-6">
-        <p className="font-mono text-xs text-azul-texto">{peticion.nombre} — atendida.</p>
+        <p className="font-sans text-xs text-azul-texto">{peticion.nombre} — atendida.</p>
       </article>
     );
   }
@@ -49,13 +49,13 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
 
       <dl className="mt-4 flex flex-col gap-1.5">
         <div className="flex gap-3">
-          <dt className="w-20 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/60">
+          <dt className="w-20 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
             Contacto
           </dt>
           <dd className="font-sans text-sm text-tinta/75">{peticion.contacto}</dd>
         </div>
         <div className="flex gap-3">
-          <dt className="w-20 shrink-0 font-mono text-xs uppercase tracking-wide text-tinta/60">
+          <dt className="w-20 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
             Recibido
           </dt>
           <dd className="font-sans text-sm text-tinta/75">
@@ -82,7 +82,7 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
         <form action={accion} className="mt-6">
           <input type="hidden" name="id" value={peticion.id} />
           {estado.estado === 'error' && (
-            <p role="alert" className="mb-3 font-mono text-xs text-azul-texto">
+            <p role="alert" className="mb-3 font-sans text-xs text-azul-texto">
               {estado.mensaje}
             </p>
           )}

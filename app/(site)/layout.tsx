@@ -50,7 +50,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           justo lo que necesita el lector de pantalla. */}
       <a
         href="#contenido"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:border focus:border-tinta focus:bg-hueso focus:px-4 focus:py-3 focus:font-mono focus:text-base focus:text-tinta"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:border focus:border-tinta focus:bg-hueso focus:px-4 focus:py-3 focus:font-sans focus:text-base focus:text-tinta"
       >
         Saltar al contenido
       </a>

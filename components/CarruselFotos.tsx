@@ -138,7 +138,7 @@ export function CarruselFotos({ className }: { className?: string }) {
       </FotoAmpliable>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <p className="font-mono text-sm text-tinta/65">{foto.pie}</p>
+        <p className="font-sans text-sm text-tinta/65">{foto.pie}</p>
 
         <div className="flex items-center gap-1">
           {/* El botón de pausa es lo que hace que el avance automático cumpla
@@ -148,7 +148,7 @@ export function CarruselFotos({ className }: { className?: string }) {
             type="button"
             onClick={() => setPausaManual(!detenido)}
             aria-label={detenido ? 'Reanudar el paso automático de fotos' : 'Detener el paso automático de fotos'}
-            className="flex h-11 w-11 items-center justify-center border border-tinta/55 font-mono text-base text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="flex h-11 w-11 items-center justify-center border border-tinta/55 font-sans text-base text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             <span aria-hidden="true">{detenido ? '▶' : '❚❚'}</span>
           </button>
@@ -157,14 +157,14 @@ export function CarruselFotos({ className }: { className?: string }) {
             type="button"
             onClick={() => moverAMano(-1)}
             aria-label="Foto anterior"
-            className="flex h-11 w-11 items-center justify-center border border-tinta/55 font-mono text-base text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="flex h-11 w-11 items-center justify-center border border-tinta/55 font-sans text-base text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             ←
           </button>
 
           {/* El contador es texto, no puntitos de color: se lee sin depender
               de distinguir un tono de otro. */}
-          <p className="w-14 text-center font-mono text-sm text-tinta/65">
+          <p className="w-14 text-center font-sans text-sm text-tinta/65">
             {indice + 1} / {FOTOS.length}
           </p>
 
@@ -172,7 +172,7 @@ export function CarruselFotos({ className }: { className?: string }) {
             type="button"
             onClick={() => moverAMano(1)}
             aria-label="Foto siguiente"
-            className="flex h-11 w-11 items-center justify-center border border-tinta/55 font-mono text-base text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="flex h-11 w-11 items-center justify-center border border-tinta/55 font-sans text-base text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             →
           </button>

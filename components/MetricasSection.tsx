@@ -63,14 +63,14 @@ export async function MetricasSection() {
               <p
                 role="text"
                 aria-label={kpi.valor}
-                className="font-mono text-5xl font-medium text-azul-texto sm:text-6xl"
+                className="font-sans text-5xl font-medium text-azul-texto sm:text-6xl"
               >
                 <NumeroAnimado numero={kpi.numero} decimales={kpi.decimales} sufijo={kpi.sufijo} />
               </p>
               <p className="mt-3 font-sans text-base font-medium text-tinta">
                 {kpi.etiqueta}
               </p>
-              <p className="mt-1 font-mono text-xs text-tinta/65">{kpi.contexto}</p>
+              <p className="mt-1 font-sans text-xs text-tinta/65">{kpi.contexto}</p>
             </ScrollReveal>
           ))}
         </div>

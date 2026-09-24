@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, JetBrains_Mono } from "next/font/google";
-import { GeistSans } from "geist/font/sans";
+import { DM_Sans, Fraunces } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { IndicadorEntorno } from "@/components/IndicadorEntorno";
@@ -16,9 +15,26 @@ const fraunces = Fraunces({
   axes: ["opsz", "SOFT", "WONK"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+// DM Sans para TODO lo que no es titular: cuerpo, botones, etiquetas, menú y
+// formularios. Reemplaza a dos familias a la vez y el porqué está en DESIGN.md.
+//
+// Antes acá vivía JetBrains_Mono, que terminó siendo la familia más usada del
+// sitio (331 clases `font-mono` contra 171 de `font-sans`). Es una monoespaciada
+// para escribir CÓDIGO: nada en este producto es código y el público son
+// tenderos de Manrique, no programadores. En cuerpos de 12–16px, en mayúsculas
+// y con tracking abierto, se lee más lento y comunica «panel técnico» justo
+// donde hacía falta decir «esto es fácil». Las láminas de marca del equipo no
+// la usan en ningún lado.
+//
+// Y reemplaza también a Geist, que funcionaba pero es una grotesca neutra de
+// origen técnico. DM Sans es geométrica y redonda: es lo más parecido a la sans
+// que el equipo ya usa en las láminas que los vecinos recibieron por WhatsApp.
+// Dos familias en vez de tres, y una menos para descargar.
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
+  variable: "--font-dm-sans",
+  // Solo los pesos que se usan: 400 cuerpo, 500 etiquetas y controles.
+  weight: ["400", "500"],
 });
 
 const DESCRIPCION =
@@ -65,7 +81,7 @@ export default function RootLayout({
     // <body> y todo el árbol de adentro se siguen verificando igual.
     <html
       lang="es"
-      className={`${fraunces.variable} ${jetbrainsMono.variable} ${GeistSans.variable}`}
+      className={`${fraunces.variable} ${dmSans.variable}`}
       // El scroll suave lo define styles/globals.css. Declararlo acá también es
       // lo que pide Next 16 para no aplicarlo en los cambios de ruta: sin esto,
       // navegar entre páginas anima el salto al tope y se ve como un tirón.

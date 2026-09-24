@@ -62,7 +62,7 @@ export function IndicadorEntorno({ entorno }: { entorno: Entorno }) {
             ? { width: 12, height: 12, borderRadius: 9999, padding: 0 }
             : {}),
         }}
-        className={`pointer-events-auto flex shrink-0 items-center border bg-hueso/95 font-mono text-[10px] uppercase tracking-wider shadow-sm backdrop-blur-sm transition-colors ${
+        className={`pointer-events-auto flex shrink-0 items-center border bg-hueso/95 font-sans text-[10px] uppercase tracking-wider shadow-sm backdrop-blur-sm transition-colors ${
           minimizado ? '' : 'gap-2 px-2.5 py-1.5'
         }`}
         title={

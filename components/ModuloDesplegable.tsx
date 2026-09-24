@@ -51,12 +51,12 @@ export function ModuloDesplegable({
         <span className="flex items-baseline gap-3">
           <h2 className="font-display text-2xl font-medium text-tinta sm:text-3xl">{titulo}</h2>
           {cantidad !== undefined && (
-            <span className="font-mono text-xs text-tinta/60">{cantidad}</span>
+            <span className="font-sans text-xs text-tinta/60">{cantidad}</span>
           )}
         </span>
 
         {/* aria-hidden: <details> ya anuncia su estado al lector de pantalla. */}
-        <span className="shrink-0 font-mono text-xl text-tinta/60" aria-hidden="true">
+        <span className="shrink-0 font-sans text-xl text-tinta/60" aria-hidden="true">
           <span className="group-open:hidden">+</span>
           <span className="hidden group-open:inline">−</span>
         </span>
