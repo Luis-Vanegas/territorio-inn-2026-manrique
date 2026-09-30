@@ -169,6 +169,7 @@ El cron diario de limpieza se declara en [`vercel.json`](vercel.json).
 | [`docs/analitica.md`](docs/analitica.md) | Qué se mide, qué no, y por qué no hace falta banner de cookies. |
 | [`docs/decisiones-diseno.md`](docs/decisiones-diseno.md) | Por qué el sistema visual es como es. |
 | [`docs/sistema-diseno-a11y.md`](docs/sistema-diseno-a11y.md) | Sistema de diseño y accesibilidad. |
+| [`docs/arquitectura-y-costos.md`](docs/arquitectura-y-costos.md) | Arquitectura, stack, límites de escala y costos por escenario (precios consultados el 2026-09-29). |
 | [`docs/auditoria-2026-08-16.md`](docs/auditoria-2026-08-16.md) | Auditoría de seguridad y correctness, con el estado de cada hallazgo. |
 | [`TASKS.md`](TASKS.md) | Estado de trabajo: hecho, bloqueado, decisiones abiertas. |
 
@@ -177,7 +178,7 @@ El cron diario de limpieza se declara en [`vercel.json`](vercel.json).
 ## Equipo
 
 Estudiantes del ITM y del Tecnológico de Antioquia.
-Los integrantes y sus roles están en la [sección Equipo del sitio](https://territorio-inn-2026-manrique.vercel.app/#equipo).
+Los integrantes y sus roles están en la [sección Equipo del sitio](https://territorio-inn-2026-manrique.vercel.app/nosotros#equipo).
 
 ## Licencia
 

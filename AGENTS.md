@@ -112,7 +112,16 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `lib/validation/` antes de tocar la base de datos.
 - **Rate limiting**: los endpoints públicos sin auth comparten el límite de
   `lib/db/rateLimit.ts` a propósito — no crear un límite nuevo por endpoint
-  salvo que el volumen lo justifique.
+  salvo que el volumen lo justifique. Excepción: `/api/interacciones` (se
+  dispara en cada página vista) usa `lib/limiteMemoria.ts`, un contador en
+  memoria sin base de datos, porque el límite de Postgres escribe una fila por
+  llamada y duplicaría las escrituras justo ahí.
+- **Caché de lecturas públicas**: `listarAprobados`, `listarCategorias`,
+  `contarAprobadosPorCategoria` y `listarTodosLosCampos` van envueltas en
+  `cachearVitrina()` (`lib/db/cache.ts`, `unstable_cache` con etiqueta). Toda
+  Server Action que escriba en portafolios, categorías o campos personalizados
+  DEBE llamar `invalidarVitrina()`; si no, lo público queda viejo hasta 10
+  minutos. Lo que vuelve de la caché es JSON: nada de columnas `Date` ahí.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo
