@@ -2,9 +2,7 @@ import { Suspense } from "react";
 import { Hero } from "@/components/Hero";
 import { AliadosDestacado } from "@/components/AliadosDestacado";
 import { GaleriaAliados } from "@/components/GaleriaAliados";
-import { RetoSection } from "@/components/RetoSection";
 import { MetricasSection } from "@/components/MetricasSection";
-import { EquipoSection } from "@/components/EquipoSection";
 import { EnfoqueSection } from "@/components/EnfoqueSection";
 import { Footer } from "@/components/Footer";
 import { ModalRegistroExitoso } from "@/components/ModalRegistroExitoso";
@@ -28,9 +26,7 @@ export default function Home() {
           lo primero que alguien ve al bajar. */}
       <AliadosDestacado />
       <GaleriaAliados />
-      <RetoSection />
       <MetricasSection />
-      <EquipoSection />
       <EnfoqueSection />
       <Footer />
     </main>

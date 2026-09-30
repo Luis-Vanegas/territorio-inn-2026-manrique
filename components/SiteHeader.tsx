@@ -37,6 +37,8 @@ import { SelectorTema } from "@/components/SelectorTema";
 const ENLACES = [
   { href: '/', etiqueta: 'Inicio' },
   ...enfoque.modulos.map((m) => ({ href: `/${m.slug}`, etiqueta: m.nombre })),
+  // Reto y equipo salieron de la home: van como página aparte, antes del buzón.
+  { href: '/nosotros', etiqueta: 'Nosotros' },
   { href: '/contacto', etiqueta: 'Escríbenos' },
 ];
 
