@@ -83,7 +83,8 @@ export type Guia = {
   bajada: string;
   /** Texto de la tarjeta del índice. */
   resumen: string;
-  grupo: GrupoGuia;
+  /** Id de uno de los `grupos` de su colección (lo comprueba verificar-marca). */
+  grupo: string;
   /** Si la guía es sobre un canal puntual, su ícono — en la tarjeta del índice y en el header de la guía. */
   red?: RedSocial;
   laminas: Lamina[];
@@ -790,12 +791,26 @@ export const GUIAS: Guia[] = [
   },
 ];
 
-export function guiaPorSlug(slug: string): Guia | undefined {
-  return GUIAS.find((g) => g.slug === slug);
+/**
+ * Un módulo de guías: Marca, Ventas, y los que vengan para los aliados. Los
+ * componentes de components/marca/ reciben la colección y no importan ninguna
+ * lista fija, así que un módulo nuevo es un archivo de datos y dos páginas.
+ */
+export type Coleccion = {
+  nombre: string;
+  bajada: string;
+  grupos: { id: string; titulo: string; intro: string }[];
+  guias: Guia[];
+};
+
+export const MARCA: Coleccion = { nombre: 'Marca', bajada: MARCA_BAJADA, grupos: GRUPOS, guias: GUIAS };
+
+export function guiaPorSlug(coleccion: Coleccion, slug: string): Guia | undefined {
+  return coleccion.guias.find((g) => g.slug === slug);
 }
 
 /** Guía anterior y siguiente en el orden de lectura, para el pie de cada guía. */
-export function vecinas(slug: string): { anterior?: Guia; siguiente?: Guia } {
-  const i = GUIAS.findIndex((g) => g.slug === slug);
-  return { anterior: GUIAS[i - 1], siguiente: GUIAS[i + 1] };
+export function vecinas(coleccion: Coleccion, slug: string): { anterior?: Guia; siguiente?: Guia } {
+  const i = coleccion.guias.findIndex((g) => g.slug === slug);
+  return { anterior: coleccion.guias[i - 1], siguiente: coleccion.guias[i + 1] };
 }

@@ -127,6 +127,16 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   la usan el buscador de la portada y la vitrina de `/aliados`. No escribir
   otro filtro de texto por componente. Los sinónimos se amplían en `SINONIMOS`
   y se prueban con `scripts/verificar-busqueda.mjs`.
+- **Módulos de guías** (Marca, Ventas y los que vengan para aliados): son
+  datos, no componentes. Cada módulo es una `Coleccion` (`lib/marca.ts`) en su
+  propio archivo (`lib/ventas.ts`), con sus láminas en `public/<modulo>/laminas/`.
+  `IndiceMarca`, `GuiaMarca` y `PuertaRegistro` (`components/marca/`) reciben la
+  colección por prop. Un módulo nuevo = archivo de datos + `app/(site)/<modulo>/`
+  y `app/admin/(panel)/<modulo>/` (copiar los de ventas) + entrada en
+  `lib/content.ts`, `app/sitemap.ts`, el menú del panel y la lista de
+  `scripts/verificar-marca.mjs`. Ojo: el archivo de datos importa de `./marca`
+  SOLO tipos (`import type`): el verificador corre con `--experimental-strip-types`,
+  que no resuelve imports de valor sin extensión.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo

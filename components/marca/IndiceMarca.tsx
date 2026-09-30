@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { EnlaceVolver } from '@/components/EnlaceVolver';
 import { EtiquetaPagina } from '@/components/EtiquetaPagina';
 import { IconoContacto } from '@/components/iconos/IconoContacto';
-import { GRUPOS, GUIAS, MARCA_BAJADA } from '@/lib/marca';
+import type { Coleccion } from '@/lib/marca';
 
 /**
- * Índice de las guías de marca.
+ * Índice de un módulo de guías (Marca, Ventas…): `coleccion` trae qué mostrar.
  *
  * Compartido entre /marca (el negocio registrado) y /admin/marca (la
  * moderación). `base` es la ruta donde vive cada copia: los enlaces a cada
@@ -16,10 +16,12 @@ import { GRUPOS, GUIAS, MARCA_BAJADA } from '@/lib/marca';
  * autoriza nada.
  */
 export function IndiceMarca({
+  coleccion,
   base,
   etiqueta,
   volver,
 }: {
+  coleccion: Coleccion;
   base: string;
   etiqueta: string;
   volver: { href: string; etiqueta: string };
@@ -30,16 +32,16 @@ export function IndiceMarca({
         <EtiquetaPagina>{etiqueta}</EtiquetaPagina>
 
         <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
-          Marca
+          {coleccion.nombre}
         </h1>
 
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
-          {MARCA_BAJADA}
+          {coleccion.bajada}
         </p>
       </header>
 
-      {GRUPOS.map((grupo) => {
-        const guias = GUIAS.filter((g) => g.grupo === grupo.id);
+      {coleccion.grupos.map((grupo) => {
+        const guias = coleccion.guias.filter((g) => g.grupo === grupo.id);
 
         return (
           <section

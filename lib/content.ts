@@ -113,6 +113,14 @@ const MODULOS_BASE: Omit<ModuloFuturo, "numero">[] = [
       "Guías del equipo para tus fotos, tus redes y cómo presentar tu negocio.",
     estado: "activo",
   },
+  // Mismo formato que Marca (lib/ventas.ts reusa sus componentes).
+  {
+    slug: "ventas",
+    nombre: "Ventas",
+    descripcion:
+      "Guías para entender a tu cliente, conversar con él y cerrar más ventas sin presionar.",
+    estado: "activo",
+  },
   // El módulo Servicios se eliminó del proyecto (no apagado: borrado, con sus
   // rutas, repos, schema y tablas). Quien presta un oficio a domicilio —lava
   // carros, arregla neveras, organiza eventos— entra por Aliados como

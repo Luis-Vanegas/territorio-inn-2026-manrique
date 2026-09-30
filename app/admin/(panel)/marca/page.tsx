@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { IndiceMarca } from '@/components/marca/IndiceMarca';
+import { MARCA } from '@/lib/marca';
 
 export const metadata: Metadata = { title: 'Marca · Moderación' };
 
@@ -9,6 +10,7 @@ export const metadata: Metadata = { title: 'Marca · Moderación' };
 export default function AdminMarcaPage() {
   return (
     <IndiceMarca
+      coleccion={MARCA}
       base="/admin/marca"
       etiqueta="vista de moderación · lo que ve un negocio"
       volver={{ href: '/admin/estadisticas', etiqueta: '← Volver al panel' }}

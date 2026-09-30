@@ -196,6 +196,21 @@ tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
 
+### Módulo Ventas — 2026-09-30
+
+- [x] `/ventas` con dos guías: «Identifica a tu cliente» (lámina del equipo) y
+      «Vende mejor» (PDF de 5 páginas → `public/ventas/laminas/`). Puerta para
+      quien no tiene sesión, contenido para quien sí, copia en `/admin/ventas`.
+- [x] Refactor: los componentes de Marca reciben una `Coleccion` por prop en
+      vez de importar la lista fija. Marca queda igual por fuera.
+- [x] Tercera guía: «Organiza, CRM y embudo» (4 láminas, grupo «Organiza tus
+      ventas»). Cuando «Mis clientes» esté en producción, sumarlo a la lista
+      de herramientas de la sección «Rutina recomendada».
+- Correcciones al texto del PDF: «call tu action» → «propón el siguiente
+  paso», «conversacionesy» → «conversaciones y».
+- [ ] Decidir si Ventas va en `ENLACES_PRIVADOS` (menú de usuario) — hoy Marca
+      tampoco está ahí; entra por el menú principal y la portada.
+
 ### Buscador de negocios en la portada — 2026-09-29
 
 - [x] `lib/busqueda.ts`: buscador por puntaje sin ML (nombre > categoría >

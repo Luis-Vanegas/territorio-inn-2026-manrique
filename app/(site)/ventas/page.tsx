@@ -1,27 +1,27 @@
 import type { Metadata } from 'next';
 
 import { IndiceMarca } from '@/components/marca/IndiceMarca';
-import { sesionActual } from '@/lib/auth/usuario';
 import { PuertaRegistro } from '@/components/marca/PuertaRegistro';
-import { MARCA } from '@/lib/marca';
+import { sesionActual } from '@/lib/auth/usuario';
+import { VENTAS } from '@/lib/ventas';
 
 export const metadata: Metadata = {
-  title: 'Marca · Constelaciones',
+  title: 'Ventas · Constelaciones',
   description:
-    'Guías del equipo para que tus fotos, tus redes y tu forma de presentarte trabajen a favor de tu negocio.',
+    'Guías del equipo para entender a tu cliente, conversar con él y cerrar más ventas sin presionar.',
 };
 
-// Lee la sesión en cada carga: sin sesión se ve QUÉ hay, con sesión el contenido.
+// Mismo criterio que /marca: sin sesión se ve QUÉ hay, con sesión el contenido.
 export const dynamic = 'force-dynamic';
 
-export default async function MarcaPage() {
+export default async function VentasPage() {
   const sesion = await sesionActual();
   if (!sesion) {
     return (
       <PuertaRegistro
-        titulo="Marca"
-        bajada={MARCA.bajada}
-        guias={MARCA.guias.map((g) => ({ titulo: g.titulo, portada: g.laminas[0], red: g.red }))}
+        titulo={VENTAS.nombre}
+        bajada={VENTAS.bajada}
+        guias={VENTAS.guias.map((g) => ({ titulo: g.titulo, portada: g.laminas[0] }))}
         volver={{ href: '/', etiqueta: '← Volver a Constelaciones' }}
       />
     );
@@ -29,8 +29,8 @@ export default async function MarcaPage() {
 
   return (
     <IndiceMarca
-      coleccion={MARCA}
-      base="/marca"
+      coleccion={VENTAS}
+      base="/ventas"
       etiqueta="tu espacio · guías del equipo"
       volver={{ href: '/mi-cuenta', etiqueta: '← Volver a mi cuenta' }}
     />

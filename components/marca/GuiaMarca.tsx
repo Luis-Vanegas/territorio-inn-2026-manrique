@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { EnlaceVolver } from '@/components/EnlaceVolver';
 import { EtiquetaPagina } from '@/components/EtiquetaPagina';
 import { IconoContacto } from '@/components/iconos/IconoContacto';
-import { vecinas, type Guia } from '@/lib/marca';
+import { vecinas, type Coleccion, type Guia } from '@/lib/marca';
 import { Secciones } from './Secciones';
 import { VisorLaminas } from './VisorLaminas';
 
@@ -12,19 +12,21 @@ import { VisorLaminas } from './VisorLaminas';
  * /admin/marca/[guia]; ver IndiceMarca para el porqué de `base`.
  */
 export function GuiaMarca({
+  coleccion,
   guia,
   base,
   etiqueta,
 }: {
+  coleccion: Coleccion;
   guia: Guia;
   base: string;
   etiqueta: string;
 }) {
-  const { anterior, siguiente } = vecinas(guia.slug);
+  const { anterior, siguiente } = vecinas(coleccion, guia.slug);
 
   return (
     <main className="seccion">
-      <EnlaceVolver href={base}>← Marca</EnlaceVolver>
+      <EnlaceVolver href={base}>← {coleccion.nombre}</EnlaceVolver>
 
       <header className="mt-10 max-w-3xl">
         <div className="flex items-center gap-3">
