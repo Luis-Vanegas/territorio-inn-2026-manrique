@@ -401,5 +401,112 @@ export const VENTAS: Coleccion = {
         },
       ],
     },
+    {
+      slug: 'mide-para-crecer',
+      titulo: 'Mide para crecer',
+      bajada: 'Indicadores básicos para conocer cómo va tu negocio, sin ser experto en datos.',
+      resumen: 'Cinco números que todo negocio debe medir, cómo calcularlos y un ejemplo mes a mes.',
+      grupo: 'organizar',
+      laminas: laminas('mide-para-crecer', 1, 900, 1600),
+      secciones: [
+        {
+          tipo: 'tarjetas',
+          kicker: '01 · Qué es un indicador',
+          titulo: 'Medir te ayuda a decidir mejor.',
+          bajada:
+            'Medir te ayuda a tomar mejores decisiones, encontrar oportunidades y saber qué está funcionando. No necesitas ser experto en datos: solo enfocarte en unos indicadores clave.',
+          items: [
+            {
+              titulo: '¿Qué es un indicador?',
+              texto:
+                'Un dato que te muestra cómo va una parte de tu negocio. Te ayuda a entender si estás creciendo, si algo necesita mejorar o si estás alcanzando tus objetivos.',
+            },
+          ],
+          nota: {
+            etiqueta: 'Tip',
+            texto: 'no necesitas medir todo. Empieza con pocos indicadores y revísalos de forma constante.',
+          },
+        },
+        {
+          tipo: 'tarjetas',
+          kicker: '02 · Los indicadores básicos',
+          titulo: 'Cinco números que todo negocio debe medir.',
+          items: [
+            {
+              titulo: 'Ventas',
+              texto: 'Cuánto estás ingresando. Cómo calcularlo: suma todas tus ventas en un periodo (día, semana o mes).',
+            },
+            {
+              titulo: 'Clientes',
+              texto: 'Cuántas personas te compran. Cómo calcularlo: cuenta los clientes distintos en un periodo.',
+            },
+            {
+              titulo: 'Ticket promedio',
+              texto: 'Cuánto gasta en promedio cada cliente. Cómo calcularlo: ventas totales ÷ número de clientes.',
+            },
+            {
+              titulo: 'Margen de ganancia',
+              texto:
+                'Cuánto ganas de verdad por cada venta. Cómo calcularlo: (precio de venta − costo del producto) ÷ precio de venta × 100.',
+            },
+            {
+              titulo: 'Recompra',
+              texto:
+                'Cuántos clientes vuelven a comprar. Cómo calcularlo: clientes que compran más de una vez ÷ total de clientes × 100.',
+            },
+          ],
+        },
+        {
+          tipo: 'tarjetas',
+          kicker: '03 · Cómo usar esta información',
+          titulo: 'Mide, compara y ajusta.',
+          numeradas: true,
+          items: [
+            {
+              titulo: 'Registra tus datos',
+              texto: 'Puedes hacerlo en una hoja de Excel, en Google Sheets o en una aplicación.',
+            },
+            { titulo: 'Analiza', texto: 'Compara tus indicadores mes a mes para ver tendencias.' },
+            { titulo: 'Toma decisiones', texto: 'Identifica qué está funcionando y qué puedes mejorar.' },
+            { titulo: 'Ajusta y mejora', texto: 'Prueba nuevas acciones y sigue midiendo su impacto.' },
+          ],
+        },
+        {
+          // El ticket promedio sale de ventas ÷ clientes: la lámina lo
+          // redondea ($13.300 y $13.600); acá va la cuenta exacta para que
+          // quien la repita con su calculadora llegue al mismo número.
+          tipo: 'tarjetas',
+          kicker: 'Ejemplo práctico',
+          titulo: 'Un negocio de snacks para mascotas, mes a mes.',
+          items: [
+            {
+              titulo: 'Mes 1',
+              texto: 'Ventas: $1.000.000 · Clientes: 80 · Ticket promedio: $12.500 · Margen: 35 % · Recompra: 20 %',
+            },
+            {
+              titulo: 'Mes 2',
+              texto: 'Ventas: $1.200.000 · Clientes: 90 · Ticket promedio: $13.333 · Margen: 38 % · Recompra: 25 %',
+            },
+            {
+              titulo: 'Mes 3',
+              texto: 'Ventas: $1.500.000 · Clientes: 110 · Ticket promedio: $13.636 · Margen: 40 % · Recompra: 32 %',
+            },
+          ],
+        },
+        {
+          tipo: 'checklist',
+          kicker: '¿Qué puedes concluir?',
+          titulo: 'Lo que te dicen esos números.',
+          items: [
+            'Tus ventas están creciendo.',
+            'Estás atrayendo más clientes.',
+            'Tus clientes están gastando más.',
+            'Tu margen de ganancia mejora.',
+            'Cada vez más clientes vuelven a comprar: buena señal de fidelización.',
+          ],
+          cierre: 'No necesitas medir todo de una vez. Empieza por las ventas y los clientes, y revísalos cada mes.',
+        },
+      ],
+    },
   ],
 };
