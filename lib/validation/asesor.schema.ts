@@ -15,6 +15,17 @@ export const preguntaSchema = z
   .max(500, 'Máximo 500 caracteres');
 
 /**
+ * Las últimas preguntas del mismo chat, para que el modelo entienda un
+ * "¿y eso cuánto cuesta?". Solo preguntas, sin respuestas: las respuestas son
+ * lo que pesa en tokens, y la pregunta anterior ya dice de qué se hablaba.
+ *
+ * Las manda el navegador, así que se pueden falsificar: tope de cantidad y de
+ * largo acá, y en el prompt van marcadas como datos (regla 7), nunca como
+ * mensajes del asistente.
+ */
+export const anterioresSchema = z.array(z.string().trim().min(1).max(500)).max(3);
+
+/**
  * Estado del formulario del asesor, el que devuelven las tres Server Actions y
  * lee `components/Asesor`.
  *

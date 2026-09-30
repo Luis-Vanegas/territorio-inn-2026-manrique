@@ -3,7 +3,7 @@
 import { useId, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
-import { Asesor } from '@/components/Asesor';
+import { Asesor, IconoAgente } from '@/components/Asesor';
 import type { EstadoAsesor } from '@/lib/validation/asesor.schema';
 
 /**
@@ -44,53 +44,41 @@ export function AsesorFlotante({
         title="Asesor de formalización"
         className="fixed bottom-4 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-azul-texto text-hueso shadow-lg ring-4 ring-hueso transition-transform hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-azul sm:bottom-6 sm:right-6 sm:h-16 sm:w-16"
       >
-        {/* Burbuja de conversación con un destello: "alguien que te responde". */}
-        <svg viewBox="0 0 24 24" className="h-7 w-7 sm:h-8 sm:w-8" fill="none" aria-hidden="true">
-          <path
-            d="M4 5.5A2.5 2.5 0 0 1 6.5 3h8A2.5 2.5 0 0 1 17 5.5v6a2.5 2.5 0 0 1-2.5 2.5H9l-4 3.5V14h-.5A.5.5 0 0 1 4 13.5v-8Z"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M19 11.5v3a2.5 2.5 0 0 1-2.5 2.5H13l3 3v-3"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-            opacity=".55"
-          />
-          <path d="M10.5 6l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7.7-1.6Z" fill="currentColor" />
-        </svg>
+        <IconoAgente className="h-7 w-7 sm:h-8 sm:w-8" />
       </button>
 
       <dialog
         ref={dialogo}
         aria-labelledby={idTitulo}
         onClick={(e) => e.target === dialogo.current && cerrar()}
-        // Móvil: hoja a lo ancho desde abajo. Escritorio: panel pegado al botón.
-        // `inset-auto` anula el centrado del <dialog> modal para poder anclarlo.
-        className="inset-auto bottom-0 left-0 right-0 m-0 max-h-[88dvh] w-full max-w-none border border-tinta/20 bg-hueso p-0 text-tinta shadow-2xl backdrop:bg-tinta/40 sm:bottom-24 sm:left-auto sm:right-6 sm:w-[26rem]"
+        // Móvil: pantalla completa, que con el teclado abierto es lo único
+        // que deja ver la conversación. Escritorio: panel a todo el alto
+        // pegado a la derecha. `inset-0` + `max-*-none` anulan el centrado y
+        // los topes que el navegador le pone al <dialog> modal.
+        className="inset-0 m-0 h-dvh max-h-none w-full max-w-none border-tinta/15 bg-hueso p-0 text-tinta shadow-2xl backdrop:bg-tinta/40 sm:left-auto sm:w-[28rem] sm:border-l"
       >
-        <div className="flex max-h-[88dvh] flex-col">
-          <div className="flex items-center justify-between gap-4 border-b border-tinta/15 px-5 py-3">
-            <div>
-              <p className="font-sans text-xs uppercase tracking-wider text-morado-texto">Asesor</p>
+        <div className="flex h-full flex-col">
+          <div className="flex items-center gap-3 border-b border-tinta/15 px-4 py-3 sm:px-5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-azul-texto text-hueso">
+              <IconoAgente className="h-6 w-6" />
+            </span>
+            <div className="min-w-0 flex-1">
               <h2 id={idTitulo} className="font-display text-lg font-medium leading-tight">
-                ¿En qué te ayudo?
+                Asesor de formalización
               </h2>
+              <p className="font-sans text-xs text-tinta/60">Trámites, apoyos y formación</p>
             </div>
             <button
               type="button"
               onClick={cerrar}
-              className="inline-flex min-h-[44px] shrink-0 items-center border border-tinta/40 px-4 font-sans text-sm transition-colors hover:border-azul-texto hover:text-azul-texto"
+              aria-label="Cerrar el asesor"
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-tinta/70 transition-colors hover:bg-tinta/[0.06] hover:text-tinta"
             >
-              Cerrar <span aria-hidden="true">&nbsp;✕</span>
+              <span aria-hidden="true" className="font-sans text-xl">✕</span>
             </button>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6 pt-4">
-            <Asesor accion={accion} descripcion={descripcion} variante="panel" />
-          </div>
+          <Asesor accion={accion} descripcion={descripcion} variante="panel" />
         </div>
       </dialog>
     </>

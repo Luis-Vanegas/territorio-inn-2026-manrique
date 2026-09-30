@@ -1,42 +1,41 @@
 'use client';
 
-import { useActionState, useId, useRef } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useActionState, useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
 
 import { consultarAsesor } from '@/lib/actions/consultarAsesor';
 import type { EstadoAsesor } from '@/lib/validation/asesor.schema';
 
 /**
- * Asesor de formalización dentro del panel del negocio.
+ * Asesor de formalización, con forma de conversación.
  *
- * ── Por qué no es un chat con historial ──
+ * ── Qué recuerda y qué no ──
  *
- * Una pregunta, una respuesta. Sin hilo, sin historial, sin scroll infinito.
- * El historial obligaría a guardar conversaciones (tabla nueva, política de
- * datos nueva, purga nueva) y a reenviar el hilo completo en cada request, que
- * es lo que hace que estas cosas se vuelvan caras. Las preguntas reales de
- * este público —"¿qué necesito para el RUT?", "¿dónde pido un crédito?"— son
- * autocontenidas.
+ * El hilo vive solo en el estado del navegador: se pierde al recargar y no se
+ * guarda en ningún lado (guardarlo pediría tabla, política de datos y purga).
+ * Con cada pregunta viajan las últimas 3 que tuvieron respuesta —sin las
+ * respuestas—: alcanza para entender un "¿y eso cuánto cuesta?" por ~10% más
+ * de tokens. Reenviar también las respuestas costaba ~47% más.
  *
- * Se convierte en hilo el día que se vea gente escribiendo "¿y lo anterior?".
+ * ponytail: memoria de solo preguntas. Si el asesor se pierde con algo que
+ * dijo él mismo, se suman las respuestas (anterioresSchema).
  *
  * ── Una caja, tres puertas ──
  *
  * La usa la ficha del negocio (con su `token`, y la acción por defecto), el
  * panel de moderación (sin token, con `consultarAsesorAdmin`) y el botón
  * flotante del vecino con sesión (`consultarAsesorUsuario`). Lo que cambia
- * entre las tres entra por props; el formulario y el manejo de estados son los
- * mismos, para no mantener tres cajas que se desincronicen. La cola común del
- * lado del servidor está en lib/agente/responder.ts.
+ * entre las tres entra por props. La cola común del lado del servidor está en
+ * lib/agente/responder.ts.
  *
- * `variante="panel"` es la misma caja sin el encabezado de sección, para
- * meterla en el botón flotante (AsesorFlotante), que pone su propio título.
+ * `variante="panel"` ocupa todo el alto de su contenedor (el <dialog> de
+ * AsesorFlotante, que pone su propio título); `seccion` va en una caja de alto
+ * fijo dentro de la página.
  */
 
 type AccionAsesor = (anterior: EstadoAsesor, formData: FormData) => Promise<EstadoAsesor>;
 
-const ESTADO_INICIAL: EstadoAsesor = { estado: 'inicial' };
+type Mensaje = { rol: 'vecino' | 'asesor' | 'error'; texto: string };
 
 /**
  * Arrancar en blanco frente a alguien que nunca usó algo así es la forma más
@@ -49,17 +48,56 @@ const SUGERENCIAS = [
   '¿Me conviene matricularme en la cámara de comercio?',
 ];
 
-function BotonPreguntar() {
-  const { pending } = useFormStatus();
+/** Cara de agente: la usan el botón flotante y el avatar de cada respuesta. */
+export function IconoAgente({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <path d="M12 2.5v2.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="12" cy="2.5" r="1.2" fill="currentColor" />
+      <rect x="4" y="6" width="16" height="13" rx="4" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M2 11.5v3M22 11.5v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="9" cy="11.5" r="1.4" fill="currentColor" />
+      <circle cx="15" cy="11.5" r="1.4" fill="currentColor" />
+      <path d="M9.5 15.2c1.4 1 3.6 1 5 0" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function Avatar() {
+  return (
+    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-azul-texto text-hueso">
+      <IconoAgente className="h-5 w-5" />
+    </span>
+  );
+}
+
+function Burbuja({ mensaje }: { mensaje: Mensaje }) {
+  if (mensaje.rol === 'vecino') {
+    return (
+      <li className="flex justify-end">
+        <p className="max-w-[85%] whitespace-pre-line rounded-2xl rounded-br-sm bg-azul-texto px-4 py-2.5 font-sans text-base leading-relaxed text-hueso">
+          <span className="sr-only">Tú: </span>
+          {mensaje.texto}
+        </p>
+      </li>
+    );
+  }
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="mt-4 border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
-    >
-      {pending ? 'Buscando la respuesta…' : 'Preguntar →'}
-    </button>
+    <li className="flex items-end gap-2">
+      <Avatar />
+      {/* whitespace-pre-line respeta los saltos de línea del modelo sin
+          interpretar el texto como HTML — renderizar markdown acá sería una
+          dependencia y una superficie de inyección por una negrita. */}
+      <p
+        className={`max-w-[85%] whitespace-pre-line rounded-2xl rounded-bl-sm px-4 py-2.5 font-sans text-base leading-relaxed text-tinta ${
+          mensaje.rol === 'error' ? 'border-l-2 border-azul bg-azul/[0.06]' : 'bg-tinta/[0.06]'
+        }`}
+      >
+        <span className="sr-only">Asesor: </span>
+        {mensaje.texto}
+      </p>
+    </li>
   );
 }
 
@@ -78,104 +116,154 @@ export function Asesor({
   hrefRutas?: string;
   variante?: 'seccion' | 'panel';
 }) {
-  const [estado, accion] = useActionState(consultar, ESTADO_INICIAL);
+  const [hilo, enviar, pendiente] = useActionState(
+    async (previo: Mensaje[], formData: FormData): Promise<Mensaje[]> => {
+      const pregunta = (formData.get('pregunta') ?? '').toString().trim();
+      const r = await consultar({ estado: 'inicial' }, formData);
+      if (r.estado === 'ok') {
+        return [...previo, { rol: 'vecino', texto: r.pregunta }, { rol: 'asesor', texto: r.respuesta }];
+      }
+      if (r.estado === 'error') {
+        return [...previo, { rol: 'vecino', texto: pregunta }, { rol: 'error', texto: r.mensaje }];
+      }
+      return previo;
+    },
+    [],
+  );
+  // La pregunta se ve en pantalla apenas se envía, no cuando vuelve la
+  // respuesta: onSubmit corre antes que la action y el form se vacía después.
+  const [enEspera, setEnEspera] = useState('');
+
+  const formulario = useRef<HTMLFormElement>(null);
   const campo = useRef<HTMLTextAreaElement>(null);
+  const fin = useRef<HTMLDivElement>(null);
   // En la ficha del negocio conviven la caja de la página y la del botón
   // flotante: un id fijo haría que el label de una enfoque el campo de la otra.
   const idPregunta = useId();
   const enPanel = variante === 'panel';
+  // Solo las que tuvieron respuesta: una pregunta que dio error no es contexto.
+  const anteriores = hilo
+    .flatMap((m, i) => (m.rol === 'vecino' && hilo[i + 1]?.rol === 'asesor' ? [m.texto] : []))
+    .slice(-3);
 
-  function usarSugerencia(texto: string) {
+  useEffect(() => {
+    fin.current?.scrollIntoView({ block: 'end' });
+  }, [hilo.length, pendiente]);
+
+  function preguntarSugerencia(texto: string) {
     if (!campo.current) return;
     campo.current.value = texto;
-    campo.current.focus();
+    formulario.current?.requestSubmit();
   }
 
   return (
-    <section className={enPanel ? '' : 'mt-16 border-t border-tinta/12 pt-10'}>
+    <section className={enPanel ? 'flex min-h-0 flex-1 flex-col' : 'mt-16 border-t border-tinta/12 pt-10'}>
       {!enPanel && (
         <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/60">
           Asesor de formalización
         </h2>
       )}
 
-      <p className={`max-w-xl font-sans leading-relaxed text-tinta/70 ${enPanel ? 'text-sm' : 'mt-4'}`}>
-        {descripcion}
-      </p>
-
-      <form action={accion} className={`max-w-xl ${enPanel ? 'mt-4' : 'mt-6'}`}>
-        {token && <input type="hidden" name="token" value={token} />}
-
-        <label htmlFor={idPregunta} className="block font-sans text-sm text-tinta/70">
-          Tu pregunta
-        </label>
-
-        <textarea
-          id={idPregunta}
-          name="pregunta"
-          ref={campo}
-          rows={3}
-          maxLength={500}
-          required
-          placeholder="Escribe aquí tu duda…"
-          className="mt-3 w-full resize-y border border-tinta/20 bg-transparent px-4 py-3 font-sans text-tinta placeholder:text-tinta/30 focus:border-azul focus:outline-none"
-        />
-
-        <div className="mt-4">
-          <p className="font-sans text-xs text-tinta/60">O prueba con una de estas:</p>
-          <ul className="mt-2 flex flex-wrap gap-2">
-            {SUGERENCIAS.map((sugerencia) => (
-              <li key={sugerencia}>
-                <button
-                  type="button"
-                  onClick={() => usarSugerencia(sugerencia)}
-                  className="border border-tinta/15 px-3 py-1.5 text-left font-sans text-sm text-tinta/70 transition-colors hover:border-azul hover:text-azul-texto"
-                >
-                  {sugerencia}
-                </button>
-              </li>
+      <div
+        className={
+          enPanel
+            ? 'flex min-h-0 flex-1 flex-col'
+            : 'mt-6 flex h-[34rem] max-h-[80dvh] max-w-2xl flex-col border border-tinta/15'
+        }
+      >
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-5">
+          <ul role="log" aria-live="polite" aria-label="Conversación con el asesor" className="space-y-4">
+            <Burbuja mensaje={{ rol: 'asesor', texto: descripcion }} />
+            {hilo.map((m, i) => (
+              <Burbuja key={i} mensaje={m} />
             ))}
+            {pendiente && enEspera && <Burbuja mensaje={{ rol: 'vecino', texto: enEspera }} />}
+            {pendiente && (
+              <li className="flex items-end gap-2">
+                <Avatar />
+                <p className="rounded-2xl rounded-bl-sm bg-tinta/[0.06] px-4 py-2.5 font-sans text-base text-tinta/65">
+                  Buscando la respuesta…
+                </p>
+              </li>
+            )}
           </ul>
+
+          {hilo.length === 0 && !pendiente && (
+            <div className="mt-5 pl-10">
+              <p className="font-sans text-xs text-tinta/60">Prueba con una de estas:</p>
+              <ul className="mt-2 flex flex-col items-start gap-2">
+                {SUGERENCIAS.map((sugerencia) => (
+                  <li key={sugerencia}>
+                    <button
+                      type="button"
+                      onClick={() => preguntarSugerencia(sugerencia)}
+                      disabled={pendiente}
+                      className="min-h-[44px] rounded-2xl border border-tinta/15 px-4 py-2 text-left font-sans text-sm text-tinta/75 transition-colors hover:border-azul hover:text-azul-texto disabled:opacity-50"
+                    >
+                      {sugerencia}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div ref={fin} />
         </div>
 
-        <BotonPreguntar />
-      </form>
+        <form
+          ref={formulario}
+          action={enviar}
+          onSubmit={() => setEnEspera(campo.current?.value.trim() ?? '')}
+          className="border-t border-tinta/15 px-4 pb-4 pt-3 sm:px-5">
+          {token && <input type="hidden" name="token" value={token} />}
+          {anteriores.map((a, i) => (
+            <input key={i} type="hidden" name="anterior" value={a} />
+          ))}
 
-      {estado.estado === 'error' && (
-        <p
-          role="alert"
-          className="mt-6 max-w-xl border-l-2 border-azul bg-azul/[0.04] px-5 py-4 font-sans text-sm leading-relaxed text-tinta"
-        >
-          {estado.mensaje}
-        </p>
-      )}
-
-      {estado.estado === 'ok' && (
-        <article className="mt-8 max-w-xl border-l-2 border-azul pl-5">
-          <p className="font-sans text-xs text-tinta/60">Preguntaste:</p>
-          <p className="mt-1 font-sans text-sm text-tinta/70">{estado.pregunta}</p>
-
-          {/* whitespace-pre-line respeta los saltos de línea del modelo sin
-              interpretar el texto como HTML — renderizar markdown acá sería
-              una dependencia y una superficie de inyección por una negrita. */}
-          <div className="mt-5 whitespace-pre-line font-sans leading-relaxed text-tinta">
-            {estado.respuesta}
+          <label htmlFor={idPregunta} className="sr-only">
+            Tu pregunta
+          </label>
+          <div className="flex items-end gap-2">
+            {/* field-sizing crece con el texto sin JS; donde no existe (Safari),
+                queda en una línea con scroll y funciona igual. */}
+            <textarea
+              id={idPregunta}
+              name="pregunta"
+              ref={campo}
+              rows={1}
+              maxLength={500}
+              required
+              placeholder="Escribe tu pregunta…"
+              onKeyDown={(e) => {
+                // Enter envía, Shift+Enter hace salto de línea: lo que la gente
+                // ya espera de cualquier chat.
+                if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  if (!pendiente) formulario.current?.requestSubmit();
+                }
+              }}
+              className="max-h-32 min-h-[44px] flex-1 resize-none rounded-2xl border border-tinta/20 bg-transparent px-4 py-2.5 font-sans text-base text-tinta [field-sizing:content] placeholder:text-tinta/40 focus:border-azul focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={pendiente}
+              aria-label="Enviar pregunta"
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-azul-texto text-hueso transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+                <path d="M5 12h13M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
 
-          <p className="mt-6 font-sans text-xs leading-relaxed text-tinta/65">
-            Esta respuesta es una orientación, no una asesoría legal ni
-            contable. Los valores y plazos vigentes están siempre en la página
-            oficial de cada entidad.{' '}
-            <Link
-              href={hrefRutas}
-              className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
-            >
+          <p className="mt-2 font-sans text-xs leading-relaxed text-tinta/60">
+            Es una orientación, no asesoría legal ni contable.{' '}
+            <Link href={hrefRutas} className="underline decoration-azul underline-offset-4 hover:text-azul-texto">
               Ver todas las rutas
             </Link>
-            .
           </p>
-        </article>
-      )}
+        </form>
+      </div>
     </section>
   );
 }

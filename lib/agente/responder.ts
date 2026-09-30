@@ -1,7 +1,7 @@
 import 'server-only';
 
 import type { ContextoAsesor } from '@/lib/db/portafolios.repo';
-import { preguntaSchema, type EstadoAsesor } from '@/lib/validation/asesor.schema';
+import { anterioresSchema, preguntaSchema, type EstadoAsesor } from '@/lib/validation/asesor.schema';
 import { consultarAsesor } from './asesor';
 import { gastarCupoAgente } from './limite';
 
@@ -32,7 +32,7 @@ import { gastarCupoAgente } from './limite';
  */
 export async function prepararPregunta(
   formData: FormData,
-): Promise<{ ok: true; pregunta: string } | { ok: false; estado: EstadoAsesor }> {
+): Promise<{ ok: true; pregunta: string; anteriores: string[] } | { ok: false; estado: EstadoAsesor }> {
   const validacion = preguntaSchema.safeParse((formData.get('pregunta') ?? '').toString());
 
   if (!validacion.success) {
@@ -50,7 +50,11 @@ export async function prepararPregunta(
   const excedido = await gastarCupoAgente();
   if (excedido) return { ok: false, estado: { estado: 'error', mensaje: excedido } };
 
-  return { ok: true, pregunta: validacion.data };
+  // Un historial mal armado no justifica cortarle la pregunta a nadie: se
+  // descarta y la pregunta viaja sola, como antes.
+  const anteriores = anterioresSchema.safeParse(formData.getAll('anterior'));
+
+  return { ok: true, pregunta: validacion.data, anteriores: anteriores.success ? anteriores.data : [] };
 }
 
 /**
@@ -63,6 +67,7 @@ export async function prepararPregunta(
 export async function responder(
   negocio: ContextoAsesor | null,
   pregunta: string,
+  anteriores: string[],
 ): Promise<EstadoAsesor> {
   const respuesta = await consultarAsesor(
     negocio && {
@@ -73,6 +78,7 @@ export async function responder(
       mayorDolor: negocio.mayor_dolor,
     },
     pregunta,
+    anteriores,
   );
 
   if (respuesta.estado === 'error') return { estado: 'error', mensaje: respuesta.mensaje };

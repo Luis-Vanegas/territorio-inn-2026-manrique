@@ -44,5 +44,5 @@ export async function consultarAsesor(
     return { estado: 'error', mensaje: 'No encontramos tu negocio. Vuelve a abrir tu enlace.' };
   }
 
-  return responder(negocio, preparada.pregunta);
+  return responder(negocio, preparada.pregunta, preparada.anteriores);
 }

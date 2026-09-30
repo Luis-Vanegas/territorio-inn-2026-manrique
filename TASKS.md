@@ -196,6 +196,22 @@ tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
 
+### Asesor con forma de chat — 2026-09-29
+
+- [x] `components/Asesor.tsx` pasa de formulario a conversación (burbujas,
+      sugerencias como chips, Enter envía, campo fijo abajo). Aplica a las
+      tres puertas: botón flotante, ficha del negocio y moderación.
+- [x] `AsesorFlotante`: panel derecho a todo el alto en PC, pantalla completa
+      en celular, ícono de agente (`IconoAgente`).
+- Decisión: el hilo vive solo en el navegador (nada en base). Con cada
+  pregunta viajan las **últimas 3 preguntas con respuesta, sin las
+  respuestas** (~+10% tokens; con respuestas era ~+47%). Van en
+  `<preguntas_anteriores>` dentro del mensaje del usuario, cubiertas por la
+  regla 7 del prompt, y `anterioresSchema` las topea (3 × 500); si llegan mal
+  armadas se descartan. Se suman las respuestas solo si el asesor se pierde.
+- [ ] Pendiente: menú con grupos expandibles (Aliados como grupo para los
+      módulos nuevos). El usuario lo quiere pensar después.
+
 ### Cierre de tareas previo a producción — 2026-08-30 (segunda vuelta)
 
 Verificado en el navegador con el dev server, no solo por código.

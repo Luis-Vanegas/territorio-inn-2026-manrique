@@ -33,5 +33,5 @@ export async function consultarAsesorUsuario(
   const [negocio] = await negociosDe(sesion.id);
   const contexto = negocio ? await obtenerContextoAsesor(negocio.token_publico) : null;
 
-  return responder(contexto, preparada.pregunta);
+  return responder(contexto, preparada.pregunta, preparada.anteriores);
 }

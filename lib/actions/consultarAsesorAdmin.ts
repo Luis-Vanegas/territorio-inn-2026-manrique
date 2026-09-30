@@ -32,5 +32,5 @@ export async function consultarAsesorAdmin(
   const preparada = await prepararPregunta(formData);
   if (!preparada.ok) return preparada.estado;
 
-  return responder(null, preparada.pregunta);
+  return responder(null, preparada.pregunta, preparada.anteriores);
 }
