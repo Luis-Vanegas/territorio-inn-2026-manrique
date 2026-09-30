@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { flushSync } from 'react-dom';
 
 import { MapaAliados } from '@/components/MapaAliados';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
@@ -32,6 +33,13 @@ const MENSAJE_GEO: Record<Exclude<EstadoGeo, 'inicial' | 'listo'>, string> = {
   error: 'No pudimos ubicarte. Prueba de nuevo o revisa el GPS del dispositivo.',
 };
 
+// El listado se pinta por tandas: con cientos de negocios, una tarjeta por
+// cada uno hacía la página pesada de renderizar. El mapa y la búsqueda siguen
+// trabajando sobre TODOS (están en memoria), así que nada queda inalcanzable.
+// ponytail: el payload sigue llevando todas las fichas; si pasa de unos
+// cientos, la paginación pasa al servidor (?pagina=) y el mapa pide solo puntos.
+const POR_TANDA = 24;
+
 export function VitrinaAliados({
   aliados,
   definicionesCampos,
@@ -45,6 +53,7 @@ export function VitrinaAliados({
   const [estadoGeo, setEstadoGeo] = useState<EstadoGeo>('inicial');
   const [seleccionado, setSeleccionado] = useState<string | null>(null);
   const [busqueda, setBusqueda] = useState('');
+  const [visibles, setVisibles] = useState(POR_TANDA);
 
   const pedirUbicacion = useCallback(() => {
     if (!('geolocation' in navigator)) {
@@ -105,13 +114,23 @@ export function VitrinaAliados({
   // Abrir la ficha de un negocio cuenta como vista. Scrollear el listado NO:
   // si contáramos cada tarjeta que pasa por pantalla, el número mediría el
   // scroll de la página y no el interés en un negocio.
-  const alSeleccionar = useCallback((id: string) => {
-    setSeleccionado(id);
-    contar(id, 'vista');
-    document
-      .getElementById(id)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, []);
+  const alSeleccionar = useCallback(
+    (id: string) => {
+      setSeleccionado(id);
+      contar(id, 'vista');
+
+      // Un punto del mapa puede ser de una tarjeta que aún no se pintó: se
+      // abre la tanda hasta ella, y flushSync la deja en el DOM antes de
+      // buscarla para hacer scroll.
+      const posicion = listados.findIndex((l) => l.portafolio.id === id);
+      if (posicion >= visibles) flushSync(() => setVisibles(posicion + 1));
+
+      document
+        .getElementById(id)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    },
+    [listados, visibles],
+  );
 
   const cercanos = ubicacion
     ? listados.filter((l) => (l.distancia ?? Infinity) < 1000).length
@@ -136,7 +155,10 @@ export function VitrinaAliados({
           <input
             type="search"
             value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
+            onChange={(e) => {
+              setBusqueda(e.target.value);
+              setVisibles(POR_TANDA);
+            }}
             placeholder="Busca por nombre, rubro o qué necesitas…"
             className="w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/35 focus:border-azul focus:outline-none focus:ring-0"
           />
@@ -226,7 +248,7 @@ export function VitrinaAliados({
         )}
 
         <div className="mt-10">
-          {listados.map((l, i) => (
+          {listados.slice(0, visibles).map((l, i) => (
             <TarjetaEmprendimiento
               key={l.portafolio.id}
               portafolio={l.portafolio}
@@ -237,6 +259,16 @@ export function VitrinaAliados({
             />
           ))}
         </div>
+
+        {listados.length > visibles && (
+          <button
+            type="button"
+            onClick={() => setVisibles((v) => v + POR_TANDA)}
+            className="mt-10 border border-azul-texto px-6 py-3 font-sans text-sm text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso"
+          >
+            Ver más negocios ({listados.length - visibles} más)
+          </button>
+        )}
       </section>
     </>
   );
