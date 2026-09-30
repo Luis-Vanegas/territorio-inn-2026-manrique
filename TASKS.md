@@ -196,6 +196,29 @@ tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
 
+### Mis clientes (CRM de cada aliado) — 2026-09-30
+
+- [x] Migración `031_clientes_negocio.sql` (nombre, teléfono, nota, etapa,
+      próximo contacto; cascade al borrar el negocio). Aplicada en producción
+      (Neon `main`, la única rama activa) el 2026-09-30.
+- [x] Repo con filtro por dueño en cada consulta + `verificar-clientes.mjs`.
+- [x] `/mi-cuenta/clientes`: alta/edición/borrado, «Para escribirles hoy»,
+      botón de WhatsApp con el mensaje de seguimiento de la guía Vende mejor.
+      Entradas en Mi cuenta y en el menú de usuario.
+- [x] Política de datos: sección 09 «Mis clientes» (responsable = el negocio,
+      encargado = el proyecto) y `VERSION_TERMINOS` a `2026-09-v4`. Aprobada
+      por el usuario el 2026-09-30.
+- Decisión del usuario: SIN casilla «mi cliente me autorizó» en el formulario.
+  La autorización queda como deber del negocio, dicho en la política y en el
+  aviso de la pantalla. No hay constancia guardada de ella.
+- [ ] Pendientes legales del equipo (art. 18): manual interno de políticas y
+      procedimiento para avisar a la SIC ante un incidente de seguridad.
+- [ ] Solo entra la puerta de Google; el registro asistido (token) no la
+      tiene. Sumar si alguien de campo lo pide.
+- [ ] Qué pasa con los clientes de un negocio ARCHIVADO: hoy quedan guardados
+      (cascade solo al borrar). Decidir purga.
+- [ ] Exportar mis clientes (CSV) — derecho de portabilidad; no está.
+
 ### Módulo Ventas — 2026-09-30
 
 - [x] `/ventas` con dos guías: «Identifica a tu cliente» (lámina del equipo) y
@@ -206,6 +229,9 @@ tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
 - [x] Tercera guía: «Organiza, CRM y embudo» (4 láminas, grupo «Organiza tus
       ventas»). Cuando «Mis clientes» esté en producción, sumarlo a la lista
       de herramientas de la sección «Rutina recomendada».
+- [x] Cuarta guía: «Mide para crecer» (1 lámina, grupo «Organiza tus
+      ventas»). El ticket promedio del ejemplo va exacto ($13.333 y $13.636):
+      la lámina lo redondea a $13.300 y $13.600.
 - Correcciones al texto del PDF: «call tu action» → «propón el siguiente
   paso», «conversacionesy» → «conversaciones y».
 - [ ] Decidir si Ventas va en `ENLACES_PRIVADOS` (menú de usuario) — hoy Marca

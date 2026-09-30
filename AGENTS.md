@@ -137,6 +137,13 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `scripts/verificar-marca.mjs`. Ojo: el archivo de datos importa de `./marca`
   SOLO tipos (`import type`): el verificador corre con `--experimental-strip-types`,
   que no resuelve imports de valor sin extensión.
+- **Mis clientes (CRM de cada aliado)**: `lib/db/clientes.repo.ts` guarda datos
+  de TERCEROS (los clientes del negocio, que no se registraron acá). Toda
+  consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
+  sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
+  falla si una consulta nueva lo olvida. Lo mínimo por Ley 1581: nombre,
+  teléfono y nota; nada de cédula, dirección ni correo. El contacto sale por
+  WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo

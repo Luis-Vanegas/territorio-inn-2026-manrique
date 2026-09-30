@@ -112,7 +112,42 @@ export default function PoliticaDatosPage() {
         la fotografía asociada se elimina del almacenamiento.
       </p>
 
-      <h2>09 · Cambios</h2>
+      <h2>09 · Mis clientes: datos de los clientes de cada negocio</h2>
+      <p>
+        Los negocios registrados pueden anotar a sus propios clientes en la
+        herramienta «Mis clientes» para hacerles seguimiento. Sobre esos datos,
+        cada negocio es el <strong>responsable del tratamiento</strong>: decide
+        a quién anota y para qué. El equipo del proyecto actúa como{' '}
+        <strong>encargado</strong>: los guarda y protege por cuenta del negocio,
+        conforme a los artículos 3 y 18 de la Ley 1581 de 2012.
+      </p>
+      <ul>
+        <li>
+          Solo se guarda el nombre del cliente, un teléfono, en qué etapa va,
+          la fecha para volver a contactarlo y una nota. Nunca documento de
+          identidad, dirección, correo ni datos financieros.
+        </li>
+        <li>
+          El negocio debe contar con la autorización de su cliente antes de
+          anotarlo.
+        </li>
+        <li>
+          Esos datos no se publican, no aparecen en la vitrina y solo los ve el
+          negocio que los anotó. El equipo no los usa para ningún otro fin.
+        </li>
+        <li>
+          El negocio puede corregirlos o borrarlos cuando quiera. Si se elimina
+          el negocio, se eliminan también sus clientes.
+        </li>
+        <li>
+          Si eres cliente de un negocio y quieres que borren tus datos, puedes
+          pedírselo directamente al negocio o escribirnos por el{' '}
+          <Link href="/contacto">formulario de contacto</Link>, indicando el
+          nombre del negocio y tu número de teléfono.
+        </li>
+      </ul>
+
+      <h2>10 · Cambios</h2>
       <p>
         Cada registro guarda la versión de la política vigente al momento de
         aceptarla. Si esta política cambia, los consentimientos previos quedan

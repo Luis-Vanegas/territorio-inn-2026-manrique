@@ -14,7 +14,9 @@ import { z } from 'zod';
 // la ubicación a cualquier punto del mundo (antes limitada a Manrique).
 // v3: se agrega la cláusula de transferencia internacional de datos (Decreto
 // 1377 de 2013, art. 26) — la base y el Blob viven fuera de Colombia.
-export const VERSION_TERMINOS = '2026-09-v3';
+// v4: sección «Mis clientes» — el proyecto pasa a ser encargado de los datos
+// de los clientes que cada negocio anota (Ley 1581, arts. 3 y 18).
+export const VERSION_TERMINOS = '2026-09-v4';
 
 export const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export const TAMANO_MAX_FOTO = 5 * 1024 * 1024;
@@ -83,13 +85,13 @@ export const OPCIONES_MAYOR_DOLOR = [
  * "604 1234567". Se guarda como lo escribió la persona; normalizar acá haría
  * que el número mostrado no coincida con el que dictó.
  */
-const telefonoColombiano = z
+export const telefonoColombiano = z
   .string()
   .trim()
   .regex(/^\+?[0-9][0-9\s-]{6,14}$/, 'Número inválido. Ej: 300 123 4567');
 
 /** Campo opcional que llega como "" desde un input vacío. */
-const opcional = <T extends z.ZodTypeAny>(schema: T) =>
+export const opcional = <T extends z.ZodTypeAny>(schema: T) =>
   z.union([schema, z.literal('')]).transform((v) => (v === '' ? null : v));
 
 /**

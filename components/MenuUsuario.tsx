@@ -13,6 +13,7 @@ import { salir } from '@/lib/actions/sesionUsuario';
  */
 export const ENLACES_PRIVADOS = [
   { href: '/mi-cuenta', etiqueta: 'Mis negocios' },
+  { href: '/mi-cuenta/clientes', etiqueta: 'Mis clientes' },
   { href: '/formalizacion', etiqueta: 'Rutas y apoyos' },
   { href: '/formalizacion#videos', etiqueta: 'Videos y guías' },
 ];

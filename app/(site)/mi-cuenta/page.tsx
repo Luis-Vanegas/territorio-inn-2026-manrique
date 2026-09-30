@@ -99,6 +99,22 @@ export default async function MiCuentaPage() {
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <article className="flex flex-col border border-tinta/12 p-6">
+            <h3 className="font-display text-lg font-medium text-tinta">Mis clientes</h3>
+            <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
+              Anota quién te compró o te preguntó, y te recordamos a quién escribirle hoy por
+              WhatsApp.
+            </p>
+            <div className="mt-auto pt-5">
+              <Link
+                href="/mi-cuenta/clientes"
+                className="font-sans text-sm text-azul-texto underline decoration-azul underline-offset-4"
+              >
+                Ver mis clientes →
+              </Link>
+            </div>
+          </article>
+
+          <article className="flex flex-col border border-tinta/12 p-6">
             <h3 className="font-display text-lg font-medium text-tinta">
               Rutas de formalización
             </h3>
