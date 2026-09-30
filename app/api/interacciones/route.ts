@@ -5,6 +5,14 @@ import {
   type TipoInteraccion,
 } from '@/lib/db/interacciones.repo';
 import { sumarVisita } from '@/lib/db/visitas.repo';
+import { ipDesdeHeaders } from '@/lib/db/rateLimit';
+import { excedeLimite } from '@/lib/limiteMemoria';
+
+// 120 por minuto y por IP: una persona navegando genera unas pocas, y detrás de
+// un NAT compartido (biblioteca, colegio) sigue sobrando. Pasado el tope se
+// pierde un conteo, que es barato; lo caro es dejar que un script mantenga
+// despierta la base. Ver lib/limiteMemoria.ts para el techo de este enfoque.
+const MAX_POR_MINUTO = 120;
 
 /**
  * Endpoint de conteo anónimo.
@@ -27,6 +35,11 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
+  // Antes que cualquier lectura o escritura: rechazar no debe costar una query.
+  if (excedeLimite(ipDesdeHeaders(request.headers), MAX_POR_MINUTO, 60_000)) {
+    return new NextResponse(null, { status: 429 });
+  }
+
   let cuerpo: unknown;
   try {
     cuerpo = JSON.parse(await request.text());
