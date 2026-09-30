@@ -136,7 +136,7 @@ export function Asesor({
 
   const formulario = useRef<HTMLFormElement>(null);
   const campo = useRef<HTMLTextAreaElement>(null);
-  const fin = useRef<HTMLDivElement>(null);
+  const lista = useRef<HTMLDivElement>(null);
   // En la ficha del negocio conviven la caja de la página y la del botón
   // flotante: un id fijo haría que el label de una enfoque el campo de la otra.
   const idPregunta = useId();
@@ -146,8 +146,10 @@ export function Asesor({
     .flatMap((m, i) => (m.rol === 'vecino' && hilo[i + 1]?.rol === 'asesor' ? [m.texto] : []))
     .slice(-3);
 
+  // Se mueve solo la caja de mensajes. scrollIntoView movería también la
+  // página, y en la ficha del negocio la bajaría hasta el chat apenas carga.
   useEffect(() => {
-    fin.current?.scrollIntoView({ block: 'end' });
+    if (lista.current) lista.current.scrollTop = lista.current.scrollHeight;
   }, [hilo.length, pendiente]);
 
   function preguntarSugerencia(texto: string) {
@@ -171,7 +173,7 @@ export function Asesor({
             : 'mt-6 flex h-[34rem] max-h-[80dvh] max-w-2xl flex-col border border-tinta/15'
         }
       >
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-5">
+        <div ref={lista} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-5">
           <ul role="log" aria-live="polite" aria-label="Conversación con el asesor" className="space-y-4">
             <Burbuja mensaje={{ rol: 'asesor', texto: descripcion }} />
             {hilo.map((m, i) => (
@@ -207,7 +209,6 @@ export function Asesor({
               </ul>
             </div>
           )}
-          <div ref={fin} />
         </div>
 
         <form
