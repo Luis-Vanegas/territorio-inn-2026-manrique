@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { invalidarVitrina } from '@/lib/db/cache';
 import { verificarSesion } from '@/lib/auth/admin';
 import { moderar } from '@/lib/db/portafolios.repo';
 import { borrarFoto } from '@/lib/blob/fotos';
@@ -92,6 +93,7 @@ export async function moderarPortafolio(
 
   revalidatePath('/admin/aliados');
   revalidatePath('/aliados');
+  invalidarVitrina();
 
   const mensajes = {
     aprobado: 'Publicado en la vitrina.',

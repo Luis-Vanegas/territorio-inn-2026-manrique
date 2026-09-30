@@ -19,12 +19,10 @@ export const metadata: Metadata = {
     'Aliados: el mapa de negocios y oficios de la Comuna 3 — Manrique, Medellín. Registro gratuito con revisión previa.',
 };
 
-// Sin cache de ruta: el mapa refleja lo que hay en la base ahora.
-//
-// Se intentó `revalidate = 300` y el resultado fue que un negocio recién
-// aprobado no aparecía hasta cinco minutos después. Son tres queries a un
-// índice parcial sobre una tabla de escala barrial — cachear eso es optimizar
-// lo que no duele y romper lo que sí importa.
+// Sin cache de ruta: se renderiza por request. Las lecturas sí van cacheadas
+// con etiqueta (lib/db/cache.ts) y se invalidan al moderar, así que un negocio
+// recién aprobado se ve ya. Lo que NO funcionó fue `revalidate = 300` a nivel
+// de ruta: sin invalidación por etiqueta, el negocio tardaba cinco minutos.
 export const dynamic = 'force-dynamic';
 
 export default async function AliadosPage({

@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { invalidarVitrina } from '@/lib/db/cache';
 import { verificarSesion } from '@/lib/auth/admin';
 import {
   actualizarPortafolioSchema,
@@ -88,6 +89,7 @@ export async function editarPortafolioModerador(
 
   revalidatePath('/admin/aliados');
   revalidatePath('/aliados');
+  invalidarVitrina();
 
   return {
     estado: 'ok',

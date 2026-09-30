@@ -8,6 +8,7 @@
 // visitante que el sitio no sirve, y además es información comercial de los
 // negocios. Sigue completa en /admin/estadisticas, sección 03.
 
+import { unstable_cache } from "next/cache";
 import { contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
 import { totalVisitas } from "@/lib/db/visitas.repo";
 import type { Kpi } from "@/lib/content";
@@ -17,10 +18,18 @@ import { NumeroAnimado } from "./NumeroAnimado";
 const DESPLAZAMIENTOS = ["lg:mt-0", "lg:mt-10"];
 const DIAS = 30;
 
+// Cambia con cada visita, pero acá es una cifra de 30 días: cinco minutos de
+// retraso no se notan y ahorran una consulta por carga de la portada. Sin
+// etiqueta a propósito — no hay acción que la invalide, solo el tiempo. El
+// panel de estadísticas llama a totalVisitas directo, sin este retraso.
+const visitasCacheadas = unstable_cache(() => totalVisitas(DIAS), ["visitas-30d"], {
+  revalidate: 300,
+});
+
 export async function MetricasSection() {
   const [conteos, visitas] = await Promise.all([
     contarAprobadosPorCategoria(),
-    totalVisitas(DIAS),
+    visitasCacheadas(),
   ]);
 
   const negocios = Object.values(conteos).reduce((a, b) => a + b, 0);

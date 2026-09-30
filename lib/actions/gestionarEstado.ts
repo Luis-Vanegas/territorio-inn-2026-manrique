@@ -2,6 +2,7 @@
 
 import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
+import { invalidarVitrina } from '@/lib/db/cache';
 import {
   actualizarPortafolioSchema,
   desdeFormDataEdicion,
@@ -102,6 +103,7 @@ export async function actualizarPortafolio(
   const avisos = await reemplazarArchivos(id, { foto, menu }, 'actualizarPortafolio');
 
   revalidatePath('/aliados');
+  invalidarVitrina();
   revalidatePath('/admin/aliados');
   revalidatePath(`/aliados/estado/${token}`);
 
@@ -165,6 +167,7 @@ export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
   }
 
   revalidatePath('/aliados');
+  invalidarVitrina();
   revalidatePath('/admin/aliados');
   revalidatePath(`/aliados/estado/${token}`);
 

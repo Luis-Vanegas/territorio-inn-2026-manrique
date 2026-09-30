@@ -1,6 +1,6 @@
 import 'server-only';
-import { cache } from 'react';
 import { sql } from './neon';
+import { cachearVitrina } from './cache';
 import type { ProductoInput } from '@/lib/validation/portafolio.schema';
 
 export type EstadoPortafolio = 'pendiente' | 'aprobado' | 'rechazado' | 'archivado';
@@ -94,15 +94,14 @@ const COLUMNAS_PUBLICAS = `
  * Vitrina pública. El filtro por categoría es opcional y va en la misma query:
  * dos ramas separadas se desincronizan en cuanto alguien toca las columnas.
  *
- * Envuelta en `cache()` de React porque el inicio la pide DOS veces por
- * visita: una desde AliadosDestacado y otra desde GaleriaAliados, que traen
- * sus propios datos para que la página no tenga que ser async. Sin esto son
- * dos consultas idénticas a Neon en cada carga. `cache()` deduplica dentro
- * del mismo request y no entre requests: no es caché de contenido, así que un
- * negocio recién aprobado sigue apareciendo en la visita siguiente — que es
- * justo por lo que estas rutas son force-dynamic.
+ * Cacheada con etiqueta (lib/db/cache.ts): el inicio la pide DOS veces por
+ * visita (AliadosDestacado y GaleriaAliados) y /aliados otra más, y antes cada
+ * una era una consulta a Neon. Ahora la base solo se lee al cambiar algo
+ * (`invalidarVitrina()`) o cada 10 minutos. Los valores vuelven de la caché
+ * serializados como JSON: por eso las columnas son strings, números y jsonb —
+ * si algún día se agrega una columna `Date`, llegará como string.
  */
-export const listarAprobados = cache(
+export const listarAprobados = cachearVitrina(
   async (categoriaId?: string): Promise<Portafolio[]> => {
     const filtro = categoriaId ?? null;
 
@@ -117,6 +116,7 @@ export const listarAprobados = cache(
 
     return rows as Portafolio[];
   },
+  'listarAprobados',
 );
 
 export async function obtenerAprobadoPorId(id: string): Promise<Portafolio | null> {
@@ -136,7 +136,7 @@ export async function obtenerAprobadoPorId(id: string): Promise<Portafolio | nul
   return (rows[0] as Portafolio) ?? null;
 }
 
-export async function listarCategorias(): Promise<Categoria[]> {
+export const listarCategorias = cachearVitrina(async (): Promise<Categoria[]> => {
   const rows = await sql`
     select id, nombre, icono, orden
     from categorias
@@ -144,19 +144,22 @@ export async function listarCategorias(): Promise<Categoria[]> {
     order by orden, nombre
   `;
   return rows as Categoria[];
-}
+}, 'listarCategorias');
 
 /** Conteo por categoría para los filtros. Solo cuenta lo que se ve. */
-export async function contarAprobadosPorCategoria(): Promise<Record<string, number>> {
-  const rows = (await sql`
-    select categoria_id, count(*)::int as total
-    from portafolios
-    where estado = 'aprobado'
-    group by categoria_id
-  `) as { categoria_id: string; total: number }[];
+export const contarAprobadosPorCategoria = cachearVitrina(
+  async (): Promise<Record<string, number>> => {
+    const rows = (await sql`
+      select categoria_id, count(*)::int as total
+      from portafolios
+      where estado = 'aprobado'
+      group by categoria_id
+    `) as { categoria_id: string; total: number }[];
 
-  return Object.fromEntries(rows.map((r) => [r.categoria_id, r.total]));
-}
+    return Object.fromEntries(rows.map((r) => [r.categoria_id, r.total]));
+  },
+  'contarAprobadosPorCategoria',
+);
 
 // ─── Escritura pública ───────────────────────────────────────
 

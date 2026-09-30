@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { invalidarVitrina } from '@/lib/db/cache';
 import { verificarSesion } from '@/lib/auth/admin';
 import {
   crearCampo,
@@ -83,6 +84,7 @@ export async function crearCampoAction(
 
   revalidatePath('/admin/campos');
   revalidatePath('/aliados/registro');
+  invalidarVitrina();
   return { estado: 'ok', mensaje: `Campo "${parsed.data.etiqueta}" creado.` };
 }
 
@@ -123,6 +125,7 @@ export async function editarCampoAction(
 
   revalidatePath('/admin/campos');
   revalidatePath('/aliados/registro');
+  invalidarVitrina();
   return { estado: 'ok', mensaje: 'Campo actualizado.' };
 }
 
@@ -138,4 +141,5 @@ export async function cambiarActivoCampoAction(formData: FormData): Promise<void
   await cambiarActivo(id, activo);
   revalidatePath('/admin/campos');
   revalidatePath('/aliados/registro');
+  invalidarVitrina();
 }

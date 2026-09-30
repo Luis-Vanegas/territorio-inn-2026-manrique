@@ -1,5 +1,6 @@
 import 'server-only';
 import { sql } from './neon';
+import { cachearVitrina } from './cache';
 
 export type TipoCampoPersonalizado = 'texto' | 'numero' | 'si_no' | 'seleccion';
 
@@ -27,14 +28,14 @@ export async function listarCamposActivos(): Promise<DefinicionCampo[]> {
 }
 
 /** Lo que ve el admin: todo, para poder reactivar un campo desactivado. */
-export async function listarTodosLosCampos(): Promise<DefinicionCampo[]> {
+export const listarTodosLosCampos = cachearVitrina(async (): Promise<DefinicionCampo[]> => {
   const rows = await sql`
     select id, slug, etiqueta, tipo, opciones, requerido, ayuda, orden, activo
     from definiciones_campo
     order by activo desc, orden, etiqueta
   `;
   return rows as DefinicionCampo[];
-}
+}, 'listarTodosLosCampos');
 
 export async function obtenerCampo(id: string): Promise<DefinicionCampo | null> {
   const rows = await sql`
