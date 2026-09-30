@@ -10,6 +10,7 @@ import Link from "next/link";
 import { hero } from "@/lib/content";
 import { CarruselFotos } from "./CarruselFotos";
 import { ScrollReveal } from "./ScrollReveal";
+import { BuscadorInicio } from "./BuscadorInicio";
 
 export function Hero() {
   const gruposConCtas = hero.gruposCta.filter((grupo) =>
@@ -51,6 +52,14 @@ export function Hero() {
             <p className="mt-8 max-w-md font-sans text-lg leading-relaxed text-tinta/80">
               {hero.subtitulo}
             </p>
+          </ScrollReveal>
+
+          {/* Buscar es lo primero que viene a hacer un vecino: va antes que el
+              botón de registrarse, que es para quien ofrece. */}
+          <ScrollReveal delay={0.4}>
+            <div className="mt-10 max-w-xl">
+              <BuscadorInicio />
+            </div>
           </ScrollReveal>
 
           {/* Grilla de 2 columnas pensada para 4 caminos (ver lib/content.ts,

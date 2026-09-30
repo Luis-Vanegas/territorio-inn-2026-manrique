@@ -28,9 +28,9 @@ export const dynamic = 'force-dynamic';
 export default async function AliadosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categoria?: string }>;
+  searchParams: Promise<{ categoria?: string; q?: string }>;
 }) {
-  const categoriaActiva = (await searchParams).categoria;
+  const { categoria: categoriaActiva, q } = await searchParams;
 
   // Las tres consultas son independientes: en serie sumarían tres viajes a la
   // base antes del primer byte.
@@ -124,6 +124,8 @@ export default async function AliadosPage({
             <VitrinaAliados
               aliados={aliados}
               definicionesCampos={definicionesCampos}
+              // Viene del buscador de la portada. Tope de largo: es texto de la URL.
+              busquedaInicial={typeof q === 'string' ? q.slice(0, 100) : ''}
               filtro={
                 <FiltroCategorias
                   categorias={categorias}

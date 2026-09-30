@@ -9,6 +9,7 @@ import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Coordenada } from '@/lib/geo/constantes';
 import { distanciaMetros } from '@/lib/geo/distancia';
 import { contar } from '@/lib/interacciones';
+import { buscarNegocios } from '@/lib/busqueda';
 import { TarjetaEmprendimiento } from './TarjetaEmprendimiento';
 
 /**
@@ -44,15 +45,17 @@ export function VitrinaAliados({
   aliados,
   definicionesCampos,
   filtro,
+  busquedaInicial = '',
 }: {
   aliados: Portafolio[];
   definicionesCampos: DefinicionCampo[];
   filtro: ReactNode;
+  busquedaInicial?: string;
 }) {
   const [ubicacion, setUbicacion] = useState<Coordenada | null>(null);
   const [estadoGeo, setEstadoGeo] = useState<EstadoGeo>('inicial');
   const [seleccionado, setSeleccionado] = useState<string | null>(null);
-  const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState(busquedaInicial);
   const [visibles, setVisibles] = useState(POR_TANDA);
 
   const pedirUbicacion = useCallback(() => {
@@ -88,18 +91,16 @@ export function VitrinaAliados({
    * para los conteos, filtra del lado del servidor vía `?categoria=`) y a
    * escala de barrio no hay volumen que justifique un roundtrip nuevo por
    * cada letra que alguien escribe.
+   *
+   * Sin ubicación, el orden es el de relevancia de la búsqueda (lib/busqueda.ts,
+   * el mismo algoritmo del buscador de la portada).
    */
-  const busquedaNormalizada = busqueda.trim().toLocaleLowerCase('es');
+  const { resultados: filtrados, parcial } = useMemo(
+    () => buscarNegocios(aliados, busqueda),
+    [aliados, busqueda],
+  );
 
   const listados = useMemo(() => {
-    const filtrados = busquedaNormalizada
-      ? aliados.filter((p) =>
-          [p.nombre, p.descripcion, p.categoria_nombre]
-            .filter(Boolean)
-            .some((campo) => campo!.toLocaleLowerCase('es').includes(busquedaNormalizada)),
-        )
-      : aliados;
-
     const conDistancia = filtrados.map((p) => ({
       portafolio: p,
       distancia: ubicacion ? distanciaMetros(ubicacion, [p.latitud, p.longitud]) : null,
@@ -107,7 +108,7 @@ export function VitrinaAliados({
 
     if (!ubicacion) return conDistancia;
     return conDistancia.sort((a, b) => (a.distancia ?? 0) - (b.distancia ?? 0));
-  }, [aliados, ubicacion, busquedaNormalizada]);
+  }, [filtrados, ubicacion]);
 
   const portafoliosFiltrados = useMemo(() => listados.map((l) => l.portafolio), [listados]);
 
@@ -144,7 +145,7 @@ export function VitrinaAliados({
             Dónde están
           </h2>
           <span className="font-sans text-xs text-tinta/60">
-            {busquedaNormalizada
+            {busqueda.trim()
               ? `${listados.length} de ${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'}`
               : `${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'} en el mapa`}
           </span>
@@ -233,7 +234,7 @@ export function VitrinaAliados({
 
         <div className="mt-5">{filtro}</div>
 
-        {busquedaNormalizada && listados.length === 0 && (
+        {busqueda.trim() && listados.length === 0 && (
           <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-tinta/60">
             Nada coincide con «{busqueda.trim()}».{' '}
             <button
@@ -244,6 +245,12 @@ export function VitrinaAliados({
               Borrar la búsqueda
             </button>
             .
+          </p>
+        )}
+
+        {parcial && listados.length > 0 && (
+          <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-sm text-tinta/65">
+            Ningún negocio tiene todo lo que escribiste. Estos se parecen.
           </p>
         )}
 

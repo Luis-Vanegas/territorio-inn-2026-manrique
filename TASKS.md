@@ -196,6 +196,21 @@ tiene once archivos y le asigné seis. Faltaban tres `Volvé a entrar.` en
 
 ## 🔵 Para Claude Code (arquitectura, lógica compleja, decisiones)
 
+### Buscador de negocios en la portada — 2026-09-29
+
+- [x] `lib/busqueda.ts`: buscador por puntaje sin ML (nombre > categoría >
+      productos > descripción/barrio), sin tildes, singular = plural, por
+      prefijo, sinónimos del barrio a mitad de peso, y resultados parciales
+      cuando nadie tiene todas las palabras. Verificador:
+      `scripts/verificar-busqueda.mjs` (en `npm run verificar`).
+- [x] Buscador en el Hero (`BuscadorInicio` + `BuscadorNegocios`) con
+      resultados al instante y "También te puede interesar" por categoría.
+      Enter va a `/aliados?q=` (form nativo, anda sin JS).
+- [x] `/aliados` lee `?q=` y usa la misma función.
+- [ ] Idea: registrar las búsquedas SIN resultado (solo el texto, sin IP)
+      para ampliar `SINONIMOS` con lo que la gente escribe de verdad. Ojo Ley
+      1581: alguien puede escribir un nombre propio; decidir purga antes.
+
 ### Asesor con forma de chat — 2026-09-29
 
 - [x] `components/Asesor.tsx` pasa de formulario a conversación (burbujas,

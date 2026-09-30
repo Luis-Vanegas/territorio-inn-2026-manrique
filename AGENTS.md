@@ -122,6 +122,11 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Server Action que escriba en portafolios, categorías o campos personalizados
   DEBE llamar `invalidarVitrina()`; si no, lo público queda viejo hasta 10
   minutos. Lo que vuelve de la caché es JSON: nada de columnas `Date` ahí.
+- **Búsqueda de negocios**: una sola función, `buscarNegocios` de
+  `lib/busqueda.ts` (puntaje por campo + sinónimos del barrio, en el cliente),
+  la usan el buscador de la portada y la vitrina de `/aliados`. No escribir
+  otro filtro de texto por componente. Los sinónimos se amplían en `SINONIMOS`
+  y se prueban con `scripts/verificar-busqueda.mjs`.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo
