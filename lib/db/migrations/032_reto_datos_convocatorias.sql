@@ -16,7 +16,8 @@
 --     nombre de un negocio o una búsqueda: es dato de la persona).
 --  4. convocatorias: oferta institucional que detecta el vigía. Todo entra
 --     `pendiente`; un moderador decide, y solo las `aprobada` se muestran.
---  5. Rate limit: `datos` como origen nuevo de intentos_registro (GET /api/datos).
+--  5. Rate limit: `datos` (GET /api/datos) e `ingesta` (secretos fallidos del vigía)
+--     como orígenes nuevos de intentos_registro.
 --  6. IP: sin columnas nuevas. El hash ya existe (aliados_consentimiento.ip_hash,
 --     011) y `ip_registro` se anula a los 30 días desde el cron (rateLimit.ts,
 --     purgarIpsViejas): no hace falta tocar el esquema.
@@ -84,7 +85,7 @@ create table convocatorias (
 
 create index idx_convocatorias_estado on convocatorias (estado, fecha_cierre);
 
--- ── 5 · Rate limit de /api/datos ────────────────────────────
+-- ── 5 · Rate limit de /api/datos y /api/ingesta ─────────────
 
 -- Mismo patrón que la 017, 026 y 030: se recrea el CHECK con el valor nuevo.
 alter table intentos_registro
@@ -92,4 +93,4 @@ alter table intentos_registro
 
 alter table intentos_registro
   add constraint intentos_registro_origen_check
-  check (origen in ('registro', 'login', 'estado', 'agente', 'geocodificar', 'datos'));
+  check (origen in ('registro', 'login', 'estado', 'agente', 'geocodificar', 'datos', 'ingesta'));

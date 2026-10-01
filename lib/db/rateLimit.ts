@@ -15,7 +15,14 @@ import { sql } from './neon';
  * límite es holgado y el mensaje dice cuánto falta en vez de solo negar.
  */
 
-export type OrigenIntento = 'registro' | 'login' | 'estado' | 'agente' | 'geocodificar' | 'datos';
+export type OrigenIntento =
+  | 'registro'
+  | 'login'
+  | 'estado'
+  | 'agente'
+  | 'geocodificar'
+  | 'datos'
+  | 'ingesta';
 
 /**
  * Cupos por origen. Son distintos a propósito:
@@ -43,6 +50,9 @@ export type OrigenIntento = 'registro' | 'login' | 'estado' | 'agente' | 'geocod
  * - `datos`: `GET /api/datos` (datos abiertos). Cupo propio para que leer no gaste
  *   el de `registro`; holgado porque la respuesta sale de una caché de 1 h y a la
  *   base solo llegan los pedidos que la caché no resuelve.
+ * - `ingesta`: secretos EQUIVOCADOS contra `/api/ingesta/convocatorias` (solo los
+ *   fallidos gastan cupo, como `login`). Frena el barrido de secretos sin afectar
+ *   al vigía legítimo, que manda un pedido por día.
  */
 const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> = {
   registro: { maximo: 3, ventanaMinutos: 10 },
@@ -51,6 +61,7 @@ const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> =
   agente: { maximo: 10, ventanaMinutos: 5 },
   geocodificar: { maximo: 8, ventanaMinutos: 5 },
   datos: { maximo: 30, ventanaMinutos: 10 },
+  ingesta: { maximo: 8, ventanaMinutos: 15 },
 };
 
 export type ResultadoLimite =
@@ -127,7 +138,7 @@ export const DIAS_IP_EN_CLARO = 30;
  * en portafolios y peticiones. La IP sirve para frenar abuso, y el abuso se ve en
  * días, no en meses; guardarla para siempre era más de lo que la finalidad pide
  * (Ley 1581, principio de necesidad). Se anula y no se borra la fila: el negocio
- * y el mensaje siguen. Lo que queda para auditoría es `ip_hash` (migración 032).
+ * y el mensaje siguen. Para auditoría queda `aliados_consentimiento.ip_hash` (migración 011); la 032 no agrega columnas de hash.
  * Se llama desde el cron diario (`/api/cron/purgar`).
  */
 export async function purgarIpsViejas(): Promise<number> {

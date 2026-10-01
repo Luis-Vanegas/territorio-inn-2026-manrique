@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { secretoValido } from '@/lib/auth/secreto';
 import { ingestarConvocatorias, marcarVencidas } from '@/lib/db/convocatorias.repo';
+import { ipDesdeHeaders, registrarIntento, verificarLimite } from '@/lib/db/rateLimit';
 import { ingestaConvocatoriasSchema } from '@/lib/validation/convocatoria.schema';
 
 /**
@@ -29,9 +30,28 @@ export async function POST(request: Request) {
     return new NextResponse(null, { status: 503 });
   }
 
+  // Un secreto equivocado gasta cupo (origen 'ingesta'): sin esto, el endpoint
+  // sería un blanco para probar secretos sin límite. El acierto no gasta nada.
+  const ip = ipDesdeHeaders(request.headers);
+  const limite = await verificarLimite(ip, 'ingesta');
+  if (!limite.permitido) {
+    return new NextResponse(null, {
+      status: 429,
+      headers: { 'Retry-After': String(limite.minutosRestantes * 60) },
+    });
+  }
+
   if (!secretoValido(request.headers.get('authorization'), `Bearer ${secreto}`)) {
+    await registrarIntento(ip, 'ingesta').catch((e) =>
+      console.error('[ingesta/convocatorias] no se pudo anotar el intento', e instanceof Error ? e.message : e),
+    );
     return new NextResponse(null, { status: 401 });
   }
+
+  // Content-Length primero: no se lee un cuerpo enorme solo para descartarlo.
+  // (Sin la cabecera —chunked— vale el chequeo de abajo, tras leer.)
+  const declarado = Number(request.headers.get('content-length'));
+  if (Number.isFinite(declarado) && declarado > MAX_BYTES) return new NextResponse(null, { status: 413 });
 
   const cuerpo = await request.text();
   if (cuerpo.length > MAX_BYTES) return new NextResponse(null, { status: 413 });

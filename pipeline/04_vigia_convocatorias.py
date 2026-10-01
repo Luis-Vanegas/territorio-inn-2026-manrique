@@ -126,6 +126,14 @@ def revisar_fuente(fuente: dict) -> list[dict]:
     return salida
 
 
+class _SinRedirecciones(urllib.request.HTTPRedirectHandler):
+    """No seguir redirecciones al enviar: urllib reenvía el header Authorization
+    a donde apunte el 3xx, y el secreto no debe viajar a otro host."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise urllib.error.HTTPError(req.full_url, code, f"redirección a {newurl} no permitida", headers, fp)
+
+
 def enviar(url_api: str, secreto: str, fuente: str, items: list[dict]) -> dict:
     cuerpo = json.dumps({"fuente": fuente, "items": items}, ensure_ascii=False).encode("utf-8")
     req = urllib.request.Request(
@@ -138,7 +146,7 @@ def enviar(url_api: str, secreto: str, fuente: str, items: list[dict]) -> dict:
             "User-Agent": USER_AGENT,
         },
     )
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+    with urllib.request.build_opener(_SinRedirecciones).open(req, timeout=TIMEOUT) as r:
         return json.loads(r.read().decode("utf-8"))
 
 
@@ -151,6 +159,10 @@ def main() -> int:
     secreto = os.environ.get("INGESTA_SECRETO", "")
     if not args.seco and not (url_api and secreto):
         print("Faltan INGESTA_URL e INGESTA_SECRETO (o usa --seco).", file=sys.stderr)
+        return 1
+    if not args.seco and not url_api.startswith("https://"):
+        # El Bearer viaja en claro por http: se rechaza antes de mandarlo.
+        print("INGESTA_URL debe empezar con https://", file=sys.stderr)
         return 1
 
     fuentes = json.loads(FUENTES.read_text(encoding="utf-8"))["fuentes"]

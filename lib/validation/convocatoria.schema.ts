@@ -23,6 +23,13 @@ export const convocatoriaEntradaSchema = z.object({
   fecha_cierre: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato AAAA-MM-DD')
+    // Una fecha con forma válida pero imposible (2026-13-45) llegaría a Postgres
+    // y tiraría un 500: el viaje de ida y vuelta por Date la descarta antes.
+    .refine((f) => {
+      const d = new Date(`${f}T00:00:00Z`);
+      // `toISOString` tira RangeError con una fecha inválida: se mira antes.
+      return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === f;
+    }, 'Fecha inexistente')
     .nullish(),
   // Ids de categorías a las que aplica; vacío = a todos los negocios.
   aplica_a: z.array(texto(1, 60)).max(20).default([]),
