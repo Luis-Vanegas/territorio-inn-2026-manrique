@@ -72,7 +72,7 @@ export function BuscadorNegocios({
               key={s}
               type="button"
               onClick={() => setConsulta(s)}
-              className="min-h-[36px] border border-tinta/15 px-3 text-tinta/75 transition-colors hover:border-azul hover:text-azul-texto"
+              className="min-h-[44px] border border-tinta/15 px-4 text-tinta/75 transition-colors hover:border-azul hover:text-azul-texto"
             >
               {s}
             </button>
