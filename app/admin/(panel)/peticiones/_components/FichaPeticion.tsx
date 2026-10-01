@@ -58,7 +58,7 @@ export function FichaPeticion({ peticion }: { peticion: Peticion }) {
           <dt className="w-20 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
             Recibido
           </dt>
-          <dd className="font-sans text-sm text-tinta/75">
+          <dd className="font-cifra text-sm text-tinta/75">
             {/* timeZone fijo: mismo motivo que FichaModeracion.tsx — sin esto,
                 servidor y navegador arman textos distintos y React tira un
                 error de hidratación (#418) al notar que no coinciden. */}

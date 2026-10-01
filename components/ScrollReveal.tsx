@@ -22,6 +22,9 @@ export function ScrollReveal({ children, delay = 0, className }: ScrollRevealPro
   return (
     <motion.div
       ref={ref}
+      // Marca para el CSS de respaldo (styles/globals.css): sin JS el estado
+      // oculto no puede quedarse en el HTML del servidor.
+      data-reveal
       className={className}
       initial={prefiereMenosMovimiento ? false : { opacity: 0, y: 16 }}
       animate={prefiereMenosMovimiento || enVista ? { opacity: 1, y: 0 } : {}}

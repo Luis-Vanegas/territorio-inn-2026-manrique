@@ -13,13 +13,27 @@
 // lo ejecuta al parsear) y en el cliente text/plain, así React no encuentra un
 // script ejecutable al hidratar y no lanza "Encountered a script tag".
 // suppressHydrationWarning cubre esa diferencia a propósito.
+//
+// El mismo script pone la clase `js` en <html>: es lo que permite que el estado
+// «oculto» de ScrollReveal exista solo cuando hay JavaScript (ver el bloque
+// `[data-reveal]` de styles/globals.css y DESIGN.md › Movimiento). Sin JS, o con
+// JS que no llega a hidratar, el contenido se ve. `js-listo` lo pone el efecto
+// de abajo al hidratar: mientras no esté, el CSS revela todo a los 4 s.
 // Patrón de node_modules/next/dist/docs/01-app/02-guides/preventing-flash-before-hydration.md
 
 'use client';
 
-const CODIGO = `(function(){try{var t=localStorage.getItem('tema');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();`;
+import { useEffect } from 'react';
+
+// La clase `js` va primero y fuera del try: localStorage puede lanzar (modo
+// privado, cookies bloqueadas) y no debe llevarse la clase por delante.
+const CODIGO = `(function(){document.documentElement.classList.add('js');try{var t=localStorage.getItem('tema');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){}})();`;
 
 export function TemaInicial() {
+  useEffect(() => {
+    document.documentElement.classList.add('js-listo');
+  }, []);
+
   return (
     <script
       type={typeof window === 'undefined' ? 'text/javascript' : 'text/plain'}

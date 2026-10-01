@@ -190,7 +190,7 @@ function ListaClientes({
               {c.proximo_contacto && (
                 <p className={`mt-1 font-sans text-sm ${atrasado ? 'text-azul-texto' : 'text-tinta/65'}`}>
                   {atrasado ? 'Tocaba escribirle el ' : c.proximo_contacto === hoy ? 'Escríbele hoy · ' : 'Escribirle el '}
-                  {c.proximo_contacto === hoy ? '' : fechaLegible(c.proximo_contacto)}
+                  {c.proximo_contacto === hoy ? '' : <span className="font-cifra">{fechaLegible(c.proximo_contacto)}</span>}
                 </p>
               )}
               {c.nota && <p className="mt-3 whitespace-pre-line font-sans text-sm leading-relaxed text-tinta/75">{c.nota}</p>}

@@ -27,7 +27,7 @@ function Metrica({
 }) {
   return (
     <div className="border-t border-tinta/12 pt-4">
-      <p className="font-sans text-3xl text-tinta">{valor}</p>
+      <p className="font-cifra text-3xl text-tinta">{valor}</p>
       <p className="mt-1 font-sans text-xs uppercase tracking-wider text-tinta/65">
         {etiqueta}
       </p>
@@ -58,7 +58,7 @@ function Barras({
         <li key={f.etiqueta}>
           <div className="flex items-baseline justify-between gap-4">
             <span className="font-sans text-sm text-tinta/75">{f.etiqueta}</span>
-            <span className="font-sans text-xs text-tinta/65">
+            <span className="font-cifra text-xs text-tinta/65">
               {f.valor}
               {f.secundario !== undefined && f.secundario !== f.valor && (
                 <span className="text-tinta/60">
@@ -132,7 +132,7 @@ function SerieDiaria({
         ))}
       </div>
 
-      <div className="mt-2 flex justify-between font-sans text-xs text-tinta/60">
+      <div className="mt-2 flex justify-between font-cifra text-xs text-tinta/60">
         <span>{filas[0]?.dia.slice(5)}</span>
         <span>{hayDatos ? `máx ${max}/día` : `sin ${unidad} aún`}</span>
         <span>{filas[filas.length - 1]?.dia.slice(5)}</span>
