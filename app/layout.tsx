@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces } from "next/font/google";
+import { DM_Mono, DM_Sans, Fraunces } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { IndicadorEntorno } from "@/components/IndicadorEntorno";
@@ -29,12 +29,24 @@ const fraunces = Fraunces({
 // Y reemplaza también a Geist, que funcionaba pero es una grotesca neutra de
 // origen técnico. DM Sans es geométrica y redonda: es lo más parecido a la sans
 // que el equipo ya usa en las láminas que los vecinos recibieron por WhatsApp.
-// Dos familias en vez de tres, y una menos para descargar.
+// (Después se sumó DM Mono, acotada a cifras: ver más abajo.)
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-dm-sans",
   // Solo los pesos que se usan: 400 cuerpo, 500 etiquetas y controles.
   weight: ["400", "500"],
+});
+
+// DM Mono: tercera familia, con rol cerrado — SOLO cifras, fuentes y fechas
+// (DESIGN.md › Tipografía). Decisión de Luis, 1-oct-2026, por la asesoría
+// (manual.html). Nunca en menú, botones, etiquetas, formularios ni cuerpo: la
+// razón de haber sacado JetBrains Mono era la mono en todo el cromo.
+// Solo 400 y 500, subset latin: es lo mínimo que se descarga.
+const dmMono = DM_Mono({
+  subsets: ["latin"],
+  variable: "--font-dm-mono",
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 const DESCRIPCION =
@@ -81,7 +93,7 @@ export default function RootLayout({
     // <body> y todo el árbol de adentro se siguen verificando igual.
     <html
       lang="es"
-      className={`${fraunces.variable} ${dmSans.variable}`}
+      className={`${fraunces.variable} ${dmSans.variable} ${dmMono.variable}`}
       // El scroll suave lo define styles/globals.css. Declararlo acá también es
       // lo que pide Next 16 para no aplicarlo en los cambios de ruta: sin esto,
       // navegar entre páginas anima el salto al tope y se ve como un tirón.

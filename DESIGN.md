@@ -20,14 +20,18 @@ elegante que se vea.
 
 ## Tipografía
 
-Dos familias. No tres.
+Tres familias, cada una con un rol cerrado. Una cuarta no entra.
 
 | Rol | Familia | Por qué |
 |---|---|---|
 | Títulos | **Fraunces** (serif) | Las láminas titulan en serif de alto contraste y caja normal («Menos cosas = mejor foto.»). Fraunces es la equivalente libre y ya estaba en el proyecto. |
+| Cifras, fuentes y fechas | **DM Mono** (`font-cifra`) | Rol cerrado, ver «DM Mono: rol cerrado» abajo. |
 | Todo lo demás | **DM Sans** | Cuerpo, botones, etiquetas, menú y formularios. Geométrica, redonda, de buena altura de x: es lo más cercano a la sans amigable de las láminas. |
 
 ### Por qué se sacó JetBrains Mono
+
+(La razón fue la monoespaciada en **todo el cromo**, no en las cifras. Por eso
+DM Mono entra después, acotada a las cifras: ver «DM Mono: rol cerrado».)
 
 Era la familia **más usada del sitio**: 316 clases `font-mono` contra 171 de
 `font-sans` y 72 de `font-display`. Estaba en el menú, en los botones, en las
@@ -40,9 +44,9 @@ se lee más lento y comunica «panel técnico» justo donde hacía falta comunic
 «esto es para vos, es fácil». Las láminas de marca no la usan en ningún lado.
 
 Si algún día hay que mostrar algo que de verdad pide alineación monoespaciada
-—una clave, un identificador, una columna de números que tiene que cuadrar—, va
-en un `<code>` y lo resuelve la fuente del sistema, o se agrega `tabular-nums`
-sobre DM Sans.
+que no es una cifra, una fuente ni una fecha —una clave, un identificador—, va
+en un `<code>` y lo resuelve la fuente del sistema. Las cifras tienen su propia
+familia: DM Mono.
 
 ### Parámetros
 
@@ -210,28 +214,30 @@ El motivo es el dato; nada decorativo que no salga de uno.
   por qué (protege a los vecinos; ver `docs/seguridad.md`).
 - El número de aliados sale de `/api/datos`, no se escribe a mano.
 
-### Tipografía de cifras, fuentes y fechas
+### DM Mono: rol cerrado
 
-> **DECISIÓN PENDIENTE** (la toma el equipo, no el diseño). No se agrega ninguna
-> fuente ni se aplica ninguna opción en componentes hasta que se decida.
+**Decisión tomada**: Luis, 1-oct-2026, siguiendo a la asesoría (`manual.html`:
+«DM Sans para todo el texto · DM Mono para cifras, fuentes y fechas» y «toda cifra
+lleva su fuente y su fecha en DM Mono debajo»). Se eligió la opción de usar DM Mono
+**en todo el sitio**, no solo en el Firmamento, y se descartó DM Sans con
+`tabular-nums`. Esto enmienda «Dos familias. No tres.» (ver «Tipografía»).
 
-El prototipo `Firmamento-Data.html` usa **DM Mono** para cifras, fuentes y fechas.
-Choca con «Dos familias. No tres.» y con la decisión de sacar la monoespaciada.
-Dos opciones:
+Va en DM Mono (`font-cifra`, cargada en `app/layout.tsx`, pesos 400 y 500):
 
-- **Opción A, DM Sans con `tabular-nums`** (la que recomienda el plan). Cumple
-  «dos familias» sin excepción: ninguna descarga nueva y ninguna regla que
-  enmendar. Las cifras alinean en columnas gracias a `tabular-nums`. Cuesta
-  perder el aire «instrumento» del prototipo y que dígitos y letras tengan el
-  mismo trazo.
-- **Opción B, DM Mono solo en Firmamento**, como excepción escrita aquí. Conserva
-  el aspecto del prototipo y distingue cifras y fuentes del resto del texto. Cuesta
-  una tercera familia (peso extra de descarga en datos móviles, que es nuestro
-  público), contradice el argumento de «no es un panel técnico» justo en la
-  superficie con más datos, y abre la puerta a que la excepción se extienda.
+- **Cifras**: un dato numérico que se presenta como dato (indicadores, métricas,
+  conteos de un panel, valores de una gráfica).
+- **Fuentes**: la línea de fuente o crédito de un dato («Fuente: ...», «conteo
+  anónimo, últimos 30 días»).
+- **Fechas** y horas.
 
-Hasta decidir, el Firmamento se diseña pensando en la opción A (es la que no
-exige tocar `app/layout.tsx`).
+**No** va en DM Mono, aunque tenga números: el menú, los botones, las etiquetas, los
+formularios, el cuerpo de texto, las mayúsculas de sección («MINI GUÍA»), los títulos
+y los números que son parte de una frase («3 trámites», «Paso 2 de 5»). Si dudas, es
+DM Sans.
+
+Costo: una familia más que descargar con datos móviles. Se mitiga con solo dos pesos y
+el subconjunto latino, `display: swap` (el texto se ve de inmediato con la fuente de
+respaldo) y porque DM Mono solo se pinta en las pocas piezas de datos.
 
 ### Categorías
 

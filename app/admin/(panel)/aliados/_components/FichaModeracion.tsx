@@ -98,14 +98,14 @@ function formatFechaCo(iso: string): string {
 }
 
 /** Solo los campos con valor: una lista con cinco "—" no informa nada. */
-function Dato({ etiqueta, valor }: { etiqueta: string; valor: string | null }) {
+function Dato({ etiqueta, valor, cifra = false }: { etiqueta: string; valor: string | null; cifra?: boolean }) {
   if (!valor) return null;
   return (
     <div className="flex gap-3">
       <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
         {etiqueta}
       </dt>
-      <dd className="font-sans text-sm text-tinta/75">{valor}</dd>
+      <dd className={`${cifra ? 'font-cifra' : 'font-sans'} text-sm text-tinta/75`}>{valor}</dd>
     </div>
   );
 }
@@ -154,7 +154,7 @@ export function FichaModeracion({
           {portafolio.moderado_por && portafolio.moderado_en && (
             <p className="mt-1 font-sans text-xs text-tinta/60">
               {ETIQUETA_ESTADO[portafolio.estado]} por {portafolio.moderado_por} ·{' '}
-              {formatFechaCo(portafolio.moderado_en)}
+              <span className="font-cifra">{formatFechaCo(portafolio.moderado_en)}</span>
             </p>
           )}
 
@@ -200,7 +200,7 @@ export function FichaModeracion({
                   : null
               }
             />
-            <Dato etiqueta="Recibido" valor={formatFechaCo(portafolio.creado_en)} />
+            <Dato etiqueta="Recibido" valor={formatFechaCo(portafolio.creado_en)} cifra />
             {camposExtra.map((c) => (
               <Dato key={c.etiqueta} etiqueta={c.etiqueta} valor={c.valor} />
             ))}

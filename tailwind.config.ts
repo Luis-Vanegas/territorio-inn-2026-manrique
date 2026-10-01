@@ -52,6 +52,8 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-fraunces)", "serif"],
         sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        // Cifras, fuentes (créditos de un dato) y fechas, y nada más. Ver DESIGN.md.
+        cifra: ["var(--font-dm-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
         // `mono` queda apuntando a la del sistema, sin descargar ninguna: no se
         // usa en el cromo (ver DESIGN.md), pero un <code> o una columna de
         // números que tenga que cuadrar todavía tiene a dónde ir.
