@@ -30,9 +30,12 @@ no puede leerse con sus propios datos y las decisiones de inversión se toman co
 
 ## b. Descripción del reto
 
-**Detalles y ubicación.** En 2019 la Comuna 3 – Manrique tenía 162.374 habitantes en 5,10 km². Su
-desempleo fue de 13,16 %, frente a 12,2 % en Medellín, y su índice de calidad de vida fue de 37,88,
-frente a 49,00 en la ciudad (Alcaldía de Medellín, Departamento Administrativo de Planeación [DAP], 2021).
+**Detalles y ubicación.** En 2019 la Comuna 3 – Manrique tenía 162.374 habitantes en 5,10 km² y 15
+barrios oficiales. Su desempleo fue de 13,16 %, frente a 12,2 % en Medellín, y su índice de calidad
+de vida fue de 37,88, frente a 49,00 en la ciudad; el 53,68 % de sus hogares tiene jefatura femenina
+(Alcaldía de Medellín, Departamento Administrativo de Planeación [DAP], 2021; Alcaldía de Medellín,
+2000). En 2025 había 2.626 empresas registradas en Manrique, 97,8 % microempresas, y el comercio es
+el sector más grande (1.091) (Cámara de Comercio de Medellín para Antioquia, 2025).
 
 **Causas.** En las 24 ciudades que mide el DANE, solo el 13,0 % de los micronegocios tiene registro
 en Cámara de Comercio y el 31,6 % tiene RUT, aunque el 75,8 % usa internet (DANE, 2026). Son cifras
@@ -54,14 +57,29 @@ pocos registros propios:
 
 - **Sugeridor de categoría:** a partir del nombre de un negocio sugiere su categoría (TF-IDF de
   caracteres y regresión logística, Pedregosa et al., 2011). Corre en el navegador, sin costo. Si
-  la confianza es baja, pregunta en lugar de sugerir. Resultado: [PENDIENTE: métrica de datos-ml].
+  la confianza es baja, pregunta en lugar de sugerir. Entrenado con 4.446 comercios del Valle de
+  Aburrá y probado con nombres que no vio, obtuvo un F1 macro de 0,535 (líneas base: 0,044 y 0,088);
+  sugiere una sola categoría en el 76 % de los casos, acierta el 73,8 % de ellas y la correcta está
+  entre las tres primeras en el 89,1 %. Sus etiquetas vienen de OpenStreetMap sin revisión manual y
+  aún no se ha validado con registros propios.
 - **Constelaciones comerciales:** agrupa los comercios por cercanía con HDBSCAN (Campello et al.,
-  2013) y deja como «sueltos» los que no pertenecen a ningún nodo. Se presenta como resultado
-  exploratorio, que se valida en campo. Resultado: [PENDIENTE: métrica de datos-ml].
+  2013) y deja como «sueltos» los que no pertenecen a ningún nodo. Sobre los 192 comercios mapeados
+  de la comuna salen 12 constelaciones, con 122 comercios agrupados y 70 sueltos. Se usó la selección
+  `leaf` porque con la opción por defecto una sola constelación agrupaba 168 de los 192 y no servía
+  para leer núcleos a escala de cuadra. Es un resultado exploratorio, que se valida en campo.
 
-El mapa abierto muestra [PENDIENTE: métrica de datos-ml] establecimientos dentro de la comuna;
-Constelaciones tiene [PENDIENTE: cifra de aliados aprobados al día de la entrega]. Esa diferencia
-es la línea base del trabajo y no una medida de cobertura (OpenStreetMap contributors, 2026).
+**Tres miradas del mismo territorio.**
+
+| Mirada | Cifra | Fuente |
+|---|---|---|
+| Empresas registradas | 2.626 | Cámara de Comercio, 2025 |
+| Comercios mapeados en OpenStreetMap | 192 | OpenStreetMap, snapshot de mayo de 2026 |
+| Aliados en la red | [PENDIENTE: cifra del día de la entrega] | Constelaciones |
+
+Las tres cifras no son comparables como porcentaje: el registro mercantil cuenta empresas por su
+dirección y el mapa abierto cuenta locales mapeados por voluntarios. Tampoco se estima aquí cuántos
+negocios son informales, pues el 13,0 % del DANE es de 24 ciudades. La brecha entre las tres es la
+línea base del trabajo y no una medida de cobertura (OpenStreetMap contributors, 2026).
 
 ## c. Solución propuesta e implementación
 
@@ -94,7 +112,8 @@ plataforma hace visible el tejido productivo, pero **no garantiza por sí sola e
 **Riesgos y mitigación.** OpenStreetMap ve más lo formal y lo que está sobre vías principales; por
 eso el censo de campo se concentra en los barrios con menos puntos y la cobertura se mide contra lo
 observado en campo, no contra la Cámara de Comercio. El clasificador puede equivocarse con
-nombres propios: por debajo del umbral de confianza pregunta, y la persona y el moderador deciden.
+nombres propios, y en categorías con pocos ejemplos (por ejemplo, barbería, con 10): por debajo del
+umbral de confianza pregunta, y la persona y el moderador deciden.
 Los proveedores de lenguaje del asesor reciben la ficha del negocio: se nombrarán en la política de datos.
 
 ## d. Valor estimado de la implementación
@@ -118,7 +137,12 @@ Alcaldía de Medellín, Departamento Administrativo de Planeación. (2021). *Com
 Ficha de caracterización*.
 https://www.medellin.gov.co/irj/go/km/docs/pccdesign/medellin/Temas/PlaneacionMunicipal/Publicaciones/Shared%20Content/Documentos/2021/Comuna%203%20Manrique-Ficha%20Informativa.pdf
 
+Alcaldía de Medellín. (2000). *Decreto 346 de 2000* [COMPLETAR: título completo y URL].
+
 Alcaldía de Medellín. (s. f.). *Plan de Desarrollo Local Comuna 3 – Manrique* [COMPLETAR: año y URL].
+
+Cámara de Comercio de Medellín para Antioquia. (2025). *Estructura empresarial 2025* [Base del
+Registro Mercantil]. [COMPLETAR: URL].
 
 Campello, R. J. G. B., Moulavi, D., & Sander, J. (2013). Density-based clustering based on
 hierarchical density estimates. En *Advances in knowledge discovery and data mining* (pp. 160–172).
@@ -131,8 +155,8 @@ http://www.secretariasenado.gov.co/senado/basedoc/ley_1581_2012.html
 Departamento Administrativo Nacional de Estadística. (2026). *Encuesta de micronegocios (EMICRON)
 2025* [Boletín técnico, 30 de julio]. [COMPLETAR: URL del boletín].
 
-OpenStreetMap contributors. (2026). *OpenStreetMap*. Recuperado el 1 de octubre de 2026 de
-https://www.openstreetmap.org/copyright
+OpenStreetMap contributors. (2026). *OpenStreetMap* [Licencia ODbL 1.0; snapshot del 6 de mayo de
+2026, obtenido el 1 de octubre de 2026]. https://www.openstreetmap.org/copyright
 
 Pacheco Duarte, J. F., Galindo Gómez, S. F., & Rodríguez Pupo, S. (2022). *Ruta de innovación
 social: Paso a paso para desarrollar innovaciones sociales* (Documento técnico 02). UNIMINUTO.
