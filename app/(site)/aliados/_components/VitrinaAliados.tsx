@@ -211,21 +211,24 @@ export function VitrinaAliados({
           )}
         </div>
 
-        <div className="mt-4 h-[460px] w-full overflow-hidden border border-tinta/12 sm:h-[600px] lg:h-[680px]">
+        <div className="mt-4">
           <MapaAliados
             portafolios={portafoliosFiltrados}
             alSeleccionar={alSeleccionar}
             ubicacionUsuario={ubicacion}
             seleccionado={seleccionado}
+            variante="vitrina"
+            conFiltro
+            hrefLista="#listado"
           />
         </div>
 
         <p className="mt-3 font-sans text-xs text-tinta/60">
-          Toca un punto azul para ver el negocio en la lista.
+          Toca un marcador para ver el negocio en la lista.
         </p>
       </section>
 
-      <section className="mt-20" aria-label="Listado de negocios aliados">
+      <section id="listado" className="mt-20 scroll-mt-24" aria-label="Listado de negocios aliados">
         <div className="flex flex-wrap items-baseline justify-between gap-4">
           <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/65">
             {ubicacion ? 'Quiénes son — de lo más cerca a lo más lejos' : 'Quiénes son'}

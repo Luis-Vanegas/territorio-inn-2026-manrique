@@ -140,8 +140,8 @@ una frase de texto corrido quedan exentos.
 ## Firmamento
 
 Propuesta aprobada en `docs/plan-diseno-2026-10.md` §2 y §8; esta sección es la
-fuente de verdad de la identidad nocturna. **Todavía no hay componentes**: solo
-los tokens en `tailwind.config.ts`.
+fuente de verdad de la identidad nocturna. Componentes hechos: el mapa (ver
+«Mapa»); el resto sigue en tokens de `tailwind.config.ts`.
 
 ### Metáfora
 
@@ -261,6 +261,25 @@ los colores de los grupos; visión normal: mínimo 29,0): la pareja más cercana
 a 11,6 (Belleza y Oficios, protanopía), 13,1 (Salud y Otros, deuteranopía) y 18,3
 (Comida y Belleza, tritanopía). Son diferencias pequeñas: por eso la forma es
 obligatoria y cada marcador debe llevarla.
+
+### Mapa
+
+Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
+
+- **Encuadre**: abre ajustado al polígono de la comuna; el paneo se limita a su
+  margen (35 %) y fuera del polígono hay una máscara suave. Un aliado fuera del
+  margen sigue en la lista pero el mapa no lo muestra.
+- **Aliados**: marcador con la forma y el color de su grupo (tabla de arriba), de
+  26 px dentro de una caja táctil de 44. El mapeo categoría → grupo vive en un solo
+  lugar, `lib/categorias/grupos.ts`.
+- **Constelaciones** (interruptor con `aria-pressed`): halo punteado, líneas del
+  MST y estrellas de cuatro puntas en `noche-3`, pequeñas y sin interacción. Son
+  comercios de OpenStreetMap, **no aliados**: la leyenda lo dice y el texto habla
+  de «comercios mapeados en OpenStreetMap», nunca de «negocios que hay».
+- **Fuente**: bajo el mapa, en `font-cifra`: «© colaboradores de OpenStreetMap
+  (ODbL)», fecha del snapshot de OSM y fecha de la corrida. La misma atribución se
+  suma al control de Leaflet mientras la capa está prendida.
+- **Alternativa sin mapa**: enlace «Ver los aliados en lista» sobre el mapa.
 
 ## Idioma
 

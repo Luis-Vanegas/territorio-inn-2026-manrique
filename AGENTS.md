@@ -164,6 +164,11 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
   `where` del repo, no en políticas de fila.
+- **Grupos de categoría del mapa**: `lib/categorias/grupos.ts` es el único lugar
+  que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md).
+  Categoría nueva en la base = su id en ese archivo; si no, cae en «Otros». Las
+  constelaciones de OSM (`public/firmamento/constelaciones.json`) se piden por
+  `fetch` (`lib/geo/constelaciones.ts`), no se importan.
 - **Comentarios**: solo cuando explican el WHY (una decisión no obvia, un
   trade-off). Los shortcuts deliberados se marcan con `ponytail: <qué se
   omitió y cuándo ampliarlo>`. No comentar lo que el código ya dice solo.
