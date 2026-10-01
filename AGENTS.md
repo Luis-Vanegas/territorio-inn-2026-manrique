@@ -14,7 +14,9 @@ ambos agentes repliquen un patrón que ya no existe.
 ## Stack
 
 - Next.js 16 (App Router), React 18, TypeScript
-- Tailwind CSS
+- Tailwind CSS. Tipografía con rol cerrado (ver `DESIGN.md`): Fraunces títulos, DM Sans
+  todo lo demás, DM Mono (`font-cifra`) SOLO cifras, fuentes y fechas. Tokens de noche
+  (`noche`, `sodio`, `estrella`…) solo para Firmamento y la banda nocturna.
 - Zod para validación de datos
 - Neon (Postgres serverless) como base de datos
 - Vercel Blob para almacenamiento de archivos (fotos)
@@ -97,6 +99,9 @@ lib/
   blob/               integración con Vercel Blob
   agente/             asesor de formalización (prompt y llamada al modelo)
 scripts/             scripts de mantenimiento (migraciones, verificación, admin)
+pipeline/            Python reproducible (OSM, HDBSCAN, clasificador); su propio
+                     requirements.txt y venv. Escribe solo en public/firmamento/ y
+                     public/modelo_categoria.json. Ver pipeline/README.md
 data/                datasets fuente (DANE, cámara de comercio, etc.) — no tocar sin pedir
 ```
 
