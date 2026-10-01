@@ -9,10 +9,13 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       guardaba LF; los «222 modificados» del plan eran solo la copia de trabajo. Planes,
       subagentes y `pipeline/referencia/modelo_categoria.json` commiteados en la rama para
       que los worktrees los vean. `docs/.fuse_hidden*` es un residuo vacío: no se commitea.
-- [ ] Fase 1 · Datos y ML (`datos-ml`) — en curso.
-- [ ] Fase 4 · Documento y video (`documentador`) — en curso.
-- [ ] Fase 3, pasos 1–2 de diseño (`diseno-ui`: D1, D8, tokens de noche) — en curso.
-      Decisión abierta para Luis: DM Mono vs DM Sans `tabular-nums` en Firmamento.
+- [ ] Fase 1 · Datos y ML — hecha en `worktree-agent-a923aed9d6a0c4649`, falta QA y merge.
+      Corrida 1-oct: 192 comercios OSM en la comuna, 12 constelaciones (`leaf`), 70 sueltos,
+      F1 macro 0,535. Detalle en `pipeline/reporte_modelo.md`.
+- [ ] Fase 4 · Documento — borrador en `worktree-agent-a9e81739e146db829`, falta QA y merge.
+      Dudas para Luis en `docs/concurso/notas-internas.md`.
+- [ ] Fase 3, pasos 1–2 de diseño — hechos en `worktree-agent-a5f2a8da08a407979`; falta
+      probar D1 con el server y QA. Decisión abierta para Luis: DM Mono vs DM Sans `tabular-nums`.
 - [ ] Fase 2 · Integrador — espera las salidas de `datos-ml`.
 
 ## 🔎 Análisis de SonarCloud — 2026-08-31
