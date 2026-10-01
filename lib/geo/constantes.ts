@@ -43,7 +43,13 @@ export const POLIGONO_MANRIQUE = manrique;
  * formularios: dos copias de una lista se desincronizan en cuanto alguien
  * agrega un barrio en una sola.
  *
- * OJO — esta lista no está verificada contra una fuente oficial. El GeoJSON
+ * Corregida el 2026-10-01 (A1 del plan del reto): «Campo Valdés No. 1» es de la
+ * Comuna 4 (Aranjuez); el de la Comuna 3 es «Campo Valdés No. 2». Fuentes: el
+ * geocatálogo de Medellín, registro «Comuna 3-Barrio 0303-Campo Valdés N°2»
+ * (https://www.medellin.gov.co/giscatalogacion/srv/api/records/60a3bca3-fa00-4a7f-b66d-a21ff34aec9b)
+ * y el Decreto 346 de 2000; la Comuna 3 tiene 15 barrios, y esta lista tiene 15.
+ *
+ * OJO — el resto de la lista no se contrastó nombre por nombre. El GeoJSON
  * de lib/geo/manrique.json solo trae el polígono de la comuna, sin barrios,
  * así que no hay de dónde derivarla. Una vecina del territorio mencionó
  * "Manrique Jardín", que no está acá; el mapa del inicio listaba "San Pablo",
@@ -59,7 +65,7 @@ export const BARRIOS_COMUNA_3: string[] = [
   'La Salle',
   'Las Granjas',
   'Santa Inés',
-  'Campo Valdés No. 1',
+  'Campo Valdés No. 2',
   'San José de la Cima No. 1',
   'San José de la Cima No. 2',
   'La Cruz',
