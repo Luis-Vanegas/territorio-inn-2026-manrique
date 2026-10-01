@@ -63,8 +63,10 @@ marca, no descuido. No se extiende a la navegación ni a frases largas.
 
 ## Color
 
-Fondo hueso, tinta casi negra, y los acentos de la constelación: magenta, azul,
-amarillo. Los tokens viven en `tailwind.config.ts` y en `styles/globals.css`.
+Fondo hueso, tinta casi negra, y los acentos de la constelación: morado, azul,
+amarillo. (El acento se llamó «magenta» en este documento y «morado» en el
+código y en el manual de marca: el nombre del token es **`morado`**, en todos
+lados.) Los tokens viven en `tailwind.config.ts` y en `styles/globals.css`.
 
 - El color fuerte es de los **acentos y las fotos**, no del cromo.
 - Los estados semánticos (foco, error, éxito, destructivo) nunca se aplanan a
@@ -94,12 +96,165 @@ manda, y su elección se guarda. Se resuelve en un solo lugar:
 
 ## Movimiento
 
-`components/ScrollReveal.tsx` hace fade + slide al entrar en viewport, una sola
-vez, y respeta `prefers-reduced-motion` apareciendo directo.
+Todo movimiento va con `framer-motion` y respeta `prefers-reduced-motion`: quien
+lo pidió ve el contenido aparecer directo. Solo se animan `transform` y
+`opacity`; nada dura más de 900 ms.
 
-**Pendiente conocido**: el titular de la home arranca en `opacity: 0` y depende
-de JavaScript para verse. Si el JS falla o tarda, lo primero que ve un vecino es
-una pantalla vacía. Funciona hoy, pero vale evaluarlo.
+`components/ScrollReveal.tsx` hace fade + slide de 16 px al entrar en viewport,
+una sola vez.
+
+**Nada visible depende de JavaScript para dejar de estar en `opacity: 0`.** El
+revelado arranca oculto en el HTML del servidor, así que hay que garantizar que
+el contenido se vea si el JS no llega, tarda o falla. Son tres capas, y se
+resuelven en `components/TemaInicial.tsx` y `styles/globals.css`:
+
+1. Un script inline en `<head>` pone la clase `js` en `<html>` antes del primer
+   pintado. **Sin `js`, todo elemento `[data-reveal]` se ve** (opacidad 1, sin
+   desplazamiento).
+2. Con `js` pero sin la clase `js-listo` (la pone el efecto de `TemaInicial` al
+   hidratar) una animación CSS revela todo a los 4 s: cubre el bundle que no
+   llega o que lanza un error. Con JS sano `js-listo` aparece enseguida y el
+   revelado por scroll funciona como siempre.
+3. Con `prefers-reduced-motion`, `ScrollReveal` no arranca oculto.
+
+Quien agregue otro componente que arranque en `opacity: 0` debe marcarlo con
+`data-reveal` (o usar `ScrollReveal`). Los textos que solo aparecen con `:hover`
+(`opacity-0 group-hover:opacity-100`) no son revelado de carga, pero en celular
+no existe el hover: nunca guardes ahí información que el vecino necesite.
+
+Para el Firmamento (trazo de constelaciones con `pathLength`, parpadeo de
+estrellas, día→noche con `useScroll`) rigen las mismas reglas; el detalle está en
+`docs/plan-diseno-2026-10.md` §4.
+
+## Objetivos táctiles
+
+Todo control tocable mide **al menos 44 × 44 px** en móvil: botones, chips,
+enlaces sueltos (se ensancha el área con `min-h-[44px]` e `inline-flex
+items-center`, sin cambiar cómo se ve) y el zoom del mapa. Los enlaces dentro de
+una frase de texto corrido quedan exentos.
+
+## Firmamento
+
+Propuesta aprobada en `docs/plan-diseno-2026-10.md` §2 y §8; esta sección es la
+fuente de verdad de la identidad nocturna. **Todavía no hay componentes**: solo
+los tokens en `tailwind.config.ts`.
+
+### Metáfora
+
+*De día el barrio, de noche el firmamento.* El sitio de día (hueso, como hoy) es
+donde el vecino **hace** cosas: buscar, registrarse, aprender. El Firmamento es
+donde se **leen** los datos del territorio. Vive en la página `/firmamento` y en
+una banda nocturna de la portada. El sitio no abre en noche: el tema inicial sigue
+siendo claro (ver «Tema»); el Firmamento es una superficie propia, no el modo
+oscuro. Por eso sus colores no cambian con el selector de tema.
+
+### Color
+
+Hex fijos en `tailwind.config.ts`. Contrastes medidos con la fórmula WCAG
+(luminancia relativa), no estimados.
+
+| Token | Hex | Rol | sobre `noche` | sobre `noche-2` | sobre `noche-3` |
+|---|---|---|---|---|---|
+| `noche` | `#0B1026` | Fondo base | - | - | - |
+| `noche-2` | `#121A3A` | Tarjetas, paneles | - | - | - |
+| `noche-3` | `#1A2450` | Elevación, hover | - | - | - |
+| `noche-activa` | `#202C62` | Fila activa de tabla | - | - | - |
+| `estrella` | `#F3EFE4` | Texto principal | 16,37 | 14,80 | 12,94 |
+| `tenue` | `#B7BEDC` | Texto secundario | 10,22 | 9,24 | 8,08 |
+| `tenue-2` | `#8E97C2` | Texto de apoyo | 6,59 | 5,96 | 5,21 |
+| `sodio` | `#F4CC48` | Acento, cifras clave (mismo valor que `amarillo`) | 12,16 | 11,00 | 9,61 |
+| `ladrillo` | `#D9825B` | Acento cálido | 6,53 | 5,91 | 5,17 |
+| `noche-morado` | `#E07AD8` | El `morado` de marca, en tono de noche | 7,12 | 6,44 | 5,63 |
+| `noche-azul` | `#7FB0FF` | El `azul` de marca, en tono de noche | 8,56 | 7,74 | 6,77 |
+| `menta` | `#5EEAD4` | Acento de datos | 12,72 | 11,50 | 10,05 |
+| `trazo` | `#2C3A72` | Solo decorativo (rejillas, líneas tenues) | 1,75 | 1,58 | 1,38 |
+| `trazo-2` | `#6573B0` | Borde de chips, botones e inputs | 4,15 | 3,75 | 3,28 |
+
+Reglas:
+
+- **Texto**: todo lo que es texto pasa 4,5:1 sobre `noche`, `noche-2` y
+  `noche-3`. Sobre `noche-activa` pasan `estrella` (11,44), `tenue` (7,14) y
+  `sodio` (8,50); `ladrillo` da 4,56 y `tenue-2` 4,60, así que sirven pero sin
+  margen: no los uses ahí para texto pequeño.
+- **Bordes de controles**: WCAG 1.4.11 pide 3:1. El `trazo-2` del prototipo
+  (`#44528F`) daba 2,31:1 sobre `noche-2` y se subió a `#6573B0` (3,75:1). `trazo`
+  no sirve de borde de un control: es decoración.
+- **Fila activa**: el prototipo usaba `#23306A`, donde `tenue-2` daba 4,32 y
+  `ladrillo` 4,28. Se oscureció a `noche-activa` (`#202C62`).
+- **Nombres**: `noche-morado` y `noche-azul` llevan prefijo porque `morado` y
+  `azul` ya existen para el sitio de día. Ningún token de Firmamento pisa a uno
+  existente.
+- **Alphas en oscuro**: se miden aparte (ver «Color»); el mismo porcentaje rinde
+  distinto sobre `noche` que sobre hueso.
+
+### Motivos
+
+El motivo es el dato; nada decorativo que no salga de uno.
+
+- **Estrella de cuatro puntas** = un negocio. También acompaña a cada indicador.
+- **Líneas de constelación** = el árbol de expansión mínima (MST) **real** de cada
+  constelación que encontró el análisis (HDBSCAN). No se dibujan líneas a mano ni
+  inventadas.
+- **Letras griegas** (α, β, γ…) numeran las secciones de `/firmamento`, en
+  Fraunces itálica, color `sodio`.
+- **Horizonte** de ladera con luces de casa y la aguja de la iglesia, como
+  ilustración de cabecera.
+- Titular de `/firmamento`: Fraunces itálica 300 con una palabra en `sodio` y peso
+  600. El sitio de día conserva su titular actual.
+
+### Reglas de cifras
+
+- **Toda cifra visible lleva su fuente y su fecha debajo.** Sin excepción.
+- Ninguna pieza usa datos simulados.
+- Las celdas con menos de 5 casos se muestran como «<5», con una nota que explique
+  por qué (protege a los vecinos; ver `docs/seguridad.md`).
+- El número de aliados sale de `/api/datos`, no se escribe a mano.
+
+### Tipografía de cifras, fuentes y fechas
+
+> **DECISIÓN PENDIENTE** (la toma el equipo, no el diseño). No se agrega ninguna
+> fuente ni se aplica ninguna opción en componentes hasta que se decida.
+
+El prototipo `Firmamento-Data.html` usa **DM Mono** para cifras, fuentes y fechas.
+Choca con «Dos familias. No tres.» y con la decisión de sacar la monoespaciada.
+Dos opciones:
+
+- **Opción A, DM Sans con `tabular-nums`** (la que recomienda el plan). Cumple
+  «dos familias» sin excepción: ninguna descarga nueva y ninguna regla que
+  enmendar. Las cifras alinean en columnas gracias a `tabular-nums`. Cuesta
+  perder el aire «instrumento» del prototipo y que dígitos y letras tengan el
+  mismo trazo.
+- **Opción B, DM Mono solo en Firmamento**, como excepción escrita aquí. Conserva
+  el aspecto del prototipo y distingue cifras y fuentes del resto del texto. Cuesta
+  una tercera familia (peso extra de descarga en datos móviles, que es nuestro
+  público), contradice el argumento de «no es un panel técnico» justo en la
+  superficie con más datos, y abre la puerta a que la excepción se extienda.
+
+Hasta decidir, el Firmamento se diseña pensando en la opción A (es la que no
+exige tocar `app/layout.tsx`).
+
+### Categorías
+
+Los 15 colores de categoría del prototipo se confunden entre sí (amarillos,
+naranjas, azules). Se reducen a **6 grupos, cada uno con color y forma**; la
+categoría exacta va en el texto y en la ficha. **El color nunca es el único
+portador**: la forma es la identidad, el color la refuerza. Los colores solo
+identifican, nunca dicen bueno o malo.
+
+| Grupo | Color | Forma |
+|---|---|---|
+| Comida | `ladrillo` | Círculo |
+| Tienda | `sodio` | Cuadrado |
+| Belleza | `noche-morado` | Rombo |
+| Oficios y reparación | `noche-azul` | Triángulo |
+| Salud | `menta` | Cruz |
+| Otros | `tenue` | Anillo (círculo hueco) |
+
+Simulación de daltonismo (Machado 2009, severidad completa, distancia CIE76 entre
+los colores de los grupos; visión normal: mínimo 29,0): la pareja más cercana baja
+a 11,6 (Belleza y Oficios, protanopía), 13,1 (Salud y Otros, deuteranopía) y 18,3
+(Comida y Belleza, tritanopía). Son diferencias pequeñas: por eso la forma es
+obligatoria y cada marcador debe llevarla.
 
 ## Idioma
 
