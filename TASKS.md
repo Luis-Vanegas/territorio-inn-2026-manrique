@@ -1,5 +1,20 @@
 # Tareas del proyecto
 
+## 🏁 Reto #2 — alineación (entrega 11-oct-2026)
+
+Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/alineacion`.
+
+- [x] **Fase 0 · Higiene (1-oct).** `.gitattributes` (`* text=auto eol=lf`) en `main`
+      (`78aa3c4`). El `--renormalize` no cambió nada: con `core.autocrlf=true` el índice ya
+      guardaba LF; los «222 modificados» del plan eran solo la copia de trabajo. Planes,
+      subagentes y `pipeline/referencia/modelo_categoria.json` commiteados en la rama para
+      que los worktrees los vean. `docs/.fuse_hidden*` es un residuo vacío: no se commitea.
+- [ ] Fase 1 · Datos y ML (`datos-ml`) — en curso.
+- [ ] Fase 4 · Documento y video (`documentador`) — en curso.
+- [ ] Fase 3, pasos 1–2 de diseño (`diseno-ui`: D1, D8, tokens de noche) — en curso.
+      Decisión abierta para Luis: DM Mono vs DM Sans `tabular-nums` en Firmamento.
+- [ ] Fase 2 · Integrador — espera las salidas de `datos-ml`.
+
 ## 🔎 Análisis de SonarCloud — 2026-08-31
 
 Primer análisis sobre `main` (commit `d120aa7`). Marcó Security C (1 issue),
