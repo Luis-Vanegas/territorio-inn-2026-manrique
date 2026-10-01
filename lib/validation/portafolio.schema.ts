@@ -16,7 +16,10 @@ import { z } from 'zod';
 // 1377 de 2013, art. 26) — la base y el Blob viven fuera de Colombia.
 // v4: sección «Mis clientes» — el proyecto pasa a ser encargado de los datos
 // de los clientes que cada negocio anota (Ley 1581, arts. 3 y 18).
-export const VERSION_TERMINOS = '2026-09-v4';
+// v5: se nombran los proveedores de IA del asesor (Groq, Routeway, Google Gemini,
+// OpenRouter, NVIDIA NIM) y los datos que reciben; se declara que la IP se guarda
+// en claro 30 días; se anuncian los datos abiertos con la regla «<5».
+export const VERSION_TERMINOS = '2026-10-v5';
 
 export const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'] as const;
 export const TAMANO_MAX_FOTO = 5 * 1024 * 1024;
