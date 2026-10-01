@@ -3,8 +3,8 @@
  * Verifica la privacidad de `/api/datos` (regla k = 5, Ley 1581):
  *
  *  1. `suprimir`/`celda` de lib/privacidad/kAnonimato.ts: ninguna celda < 5 sale
- *     con número, y la supresión complementaria cubre el caso de una sola celda
- *     escondida (se deduciría restando del total).
+ *     con número, y en una partición la suma de las celdas escondidas es 0 celdas
+ *     o >= k (si no, restar los visibles del total da valores exactos).
  *  2. `hallarFugas` atrapa lo que debe (control positivo) y deja pasar una
  *     respuesta limpia — si el detector no detecta nada, no verifica nada.
  *  3. Estático sobre lib/db/datos.repo.ts: solo lee negocios aprobados, no
@@ -38,9 +38,12 @@ const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 const CASOS = [
   // [entrada, particion, esperado]
-  [f(0, 3, 7, 20), true, ['<5', '<5', 7, 20]], // ya hay 2 escondidas: nada más que hacer
+  [f(0, 3, 7, 20), true, ['<5', '<5', '<5', 20]], // ocultas suman 3 (< k): se oculta también el 7
   [f(2, 7, 9, 20), true, ['<5', '<5', 9, 20]], // una sola escondida: se esconde también la menor visible
   [f(2, 7, 9, 20), false, ['<5', 7, 9, 20]], // sin total publicado no hace falta
+  [f(0, 5), true, ['<5', '<5']], // 0 + 5: oculta + menor visible suma exactamente k
+  [f(0, 0, 5, 9), true, ['<5', '<5', '<5', 9]], // dos ceros ocultos suman 0: se deducirían exactos
+  [f(1, 1, 8, 9), true, ['<5', '<5', '<5', 9]], // 1 + 1 = 2 < k: se suma el 8
   [f(5, 5, 5), true, [5, 5, 5]], // exactamente k es visible
   [f(4, 4, 4), true, ['<5', '<5', '<5']],
   [f(3), true, ['<5']],
@@ -57,15 +60,32 @@ for (const [entrada, particion, esperado] of CASOS) {
   }
 }
 
-// Propiedad: en una partición, nunca queda UNA sola celda escondida (salvo que
-// sea la única fila). Se prueba con muchas combinaciones.
-for (let a = 0; a <= 8; a++) {
-  for (let b = 0; b <= 8; b++) {
-    for (let c = 0; c <= 8; c++) {
-      const salida = valores(suprimir(f(a, b, c, 30), { particion: true }));
-      const escondidas = salida.filter((v) => v === '<5').length;
-      if (escondidas === 1) falla(`una sola celda escondida con (${a},${b},${c},30): se deduce restando`);
-      if (salida.some((v) => typeof v === 'number' && v < K_MINIMO)) falla(`celda chica con número en (${a},${b},${c})`);
+// Propiedad real: en una partición con total publicado, restar los visibles del
+// total da la suma de las celdas escondidas. Esa suma debe ser 0 celdas o >= k.
+// Excepción necesaria: si TODA la dimensión está escondida y suma < k, el total de
+// negocios también sale «<5» (es esa misma suma), así que no hay con qué restar.
+function revisarParticion(entrada, etiqueta) {
+  const salida = suprimir(entrada, { particion: true });
+  let suma = 0;
+  let ocultas = 0;
+  salida.forEach((x, i) => {
+    if (typeof x.negocios === 'number' && x.negocios < K_MINIMO) falla(`${etiqueta}: celda chica con número`);
+    if (x.negocios === '<5') {
+      ocultas++;
+      suma += entrada[i].negocios;
+    } else if (x.negocios !== entrada[i].negocios) falla(`${etiqueta}: una celda visible cambió de valor`);
+  });
+  const todas = ocultas === salida.length;
+  if (ocultas > 0 && !todas && suma < K_MINIMO) {
+    falla(`${etiqueta}: las ocultas suman ${suma} (< ${K_MINIMO}) con celdas visibles: se deducen restando`);
+  }
+}
+const rango = [0, 1, 2, 3, 4, 5, 6, 8, 12];
+for (const a of rango) {
+  for (const b of rango) {
+    for (const c of rango) {
+      revisarParticion(f(a, b, c), `(${a},${b},${c})`);
+      for (const d of [0, 2, 5, 9, 30]) revisarParticion(f(a, b, c, d), `(${a},${b},${c},${d})`);
     }
   }
 }

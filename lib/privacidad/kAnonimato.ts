@@ -14,9 +14,17 @@
  *
  * Esconder solo las celdas chicas no alcanza cuando el total se publica: con
  * `total = 20` y celdas `8, 9, <5`, la celda escondida es 20 − 17 = 3, exacta.
- * Por eso, en una PARTICIÓN con total publicado (categorías, barrios), si queda
- * escondida exactamente una celda se esconde también la menor de las visibles:
- * quien reste ya solo obtiene la suma de dos celdas.
+ * Y con dos o más escondidas, `total − visibles` da la SUMA de las escondidas: si esa
+ * suma es 0 o 1, cada celda se deduce exacta. Por eso, en una PARTICIÓN con total
+ * publicado (categorías, barrios) se sigue escondiendo la menor de las visibles
+ * hasta que la suma de lo escondido sea >= k, o hasta que no quede ninguna
+ * visible (toda la dimensión sale «<5»; el total de negocios también sale «<5»
+ * porque es esa misma suma, así que no hay nada que restar).
+ *
+ * `por_formalidad` y `por_mayor_dolor` NO son particiones (no hay total publicado
+ * ni suman al total de negocios: hay quien no responde, y el dolor admite dos
+ * opciones), así que no llevan esta regla. Si `formalidad` se vuelve obligatoria
+ * en el formulario, pasarla con `particion: true`.
  *
  * Límite conocido y aceptado: comparar fotos tomadas en horas distintas puede
  * revelar que una celda subió en uno. La caché de 1 h y el volumen del barrio lo
@@ -34,7 +42,8 @@ export function celda(n: number): Celda {
 
 /**
  * Convierte `negocios` en `Celda`. `particion: true` cuando las filas son una
- * partición del total que también se publica (activa la supresión complementaria).
+ * partición del total que también se publica (activa la supresión complementaria:
+ * la suma de las celdas escondidas termina siendo >= k, o todas escondidas).
  * Conserva el orden de entrada.
  */
 export function suprimir<T extends { negocios: number }>(
@@ -43,12 +52,17 @@ export function suprimir<T extends { negocios: number }>(
 ): (Omit<T, 'negocios'> & { negocios: Celda })[] {
   const ocultas = filas.map((f) => f.negocios < K_MINIMO);
 
-  if (particion && ocultas.filter(Boolean).length === 1) {
-    let menor = -1;
-    filas.forEach((f, i) => {
-      if (!ocultas[i] && (menor === -1 || f.negocios < (filas[menor]?.negocios ?? Infinity))) menor = i;
-    });
-    if (menor !== -1) ocultas[menor] = true;
+  if (particion) {
+    const sumaOcultas = () => filas.reduce((a, f, i) => a + (ocultas[i] ? f.negocios : 0), 0);
+    // Con 0 celdas escondidas no hay nada que deducir; con alguna, su suma debe ser >= k.
+    while (ocultas.some(Boolean) && sumaOcultas() < K_MINIMO) {
+      let menor = -1;
+      filas.forEach((f, i) => {
+        if (!ocultas[i] && (menor === -1 || f.negocios < (filas[menor]?.negocios ?? Infinity))) menor = i;
+      });
+      if (menor === -1) break; // no quedan visibles: toda la dimensión ya está escondida
+      ocultas[menor] = true;
+    }
   }
 
   return filas.map((f, i) => ({ ...f, negocios: ocultas[i] ? CELDA_PEQUENA : f.negocios }));
