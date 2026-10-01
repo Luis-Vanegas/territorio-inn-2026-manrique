@@ -98,7 +98,10 @@ export function MapaAliados({
         <button
           type="button"
           aria-pressed={activa}
-          onClick={() => setActiva((a) => !a)}
+          onClick={() => {
+            setActiva((a) => !a);
+            setFiltro(''); // apagada, un filtro «aplicado» que no aplica confunde al lector de pantalla
+          }}
           className={`inline-flex min-h-[44px] items-center gap-2 border px-4 font-sans text-sm transition-colors ${
             activa
               ? 'border-noche bg-noche text-estrella'
@@ -110,7 +113,7 @@ export function MapaAliados({
         </button>
 
         {conFiltro && datos && (
-          <label className="inline-flex items-center gap-2 font-sans text-sm text-tinta/80">
+          <label className="inline-flex max-w-full flex-wrap items-center gap-2 font-sans text-sm text-tinta/80">
             Ver una sola
             <select
               value={filtro}
@@ -118,7 +121,7 @@ export function MapaAliados({
                 setFiltro(e.target.value);
                 if (e.target.value) setActiva(true);
               }}
-              className="min-h-[44px] border border-tinta/40 bg-hueso px-3 font-sans text-sm text-tinta"
+              className="min-h-[44px] max-w-full border border-tinta/40 bg-hueso px-3 font-sans text-sm text-tinta"
             >
               <option value="">Todas ({datos.constelaciones.length})</option>
               {datos.constelaciones.map((c) => (

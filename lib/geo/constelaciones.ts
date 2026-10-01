@@ -61,6 +61,13 @@ export function cargarConstelaciones(): Promise<DatosConstelaciones> {
         if (!r.ok) throw new Error(`constelaciones: ${r.status}`);
         return r.json() as Promise<DatosConstelaciones>;
       })
+      .then((d) => {
+        // Un JSON válido con otra forma tumbaría el mapa de aliados en el render.
+        if (!Array.isArray(d?.constelaciones) || !Array.isArray(d?.puntos_sueltos)) {
+          throw new Error('constelaciones: forma inesperada');
+        }
+        return d;
+      })
       .catch((e) => {
         enCurso = null; // permite reintentar
         throw e;
