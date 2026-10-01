@@ -122,6 +122,7 @@ async function leerPublicas<T>(consulta: (columnas: string) => Promise<T>): Prom
     return await consulta(COLUMNAS_PUBLICAS);
   } catch (error) {
     if ((error as { code?: string }).code !== '42703') throw error;
+    console.error('[portafolios] falta la migración 032 (definiciones_campo.publico): campos personalizados ocultos');
     return consulta(COLUMNAS_PUBLICAS_SIN_032);
   }
 }
