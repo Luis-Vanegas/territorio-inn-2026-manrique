@@ -95,9 +95,14 @@ lib/
   db/                repositorios de acceso a datos (*.repo.ts), uno por tabla/dominio
   validation/        schemas de Zod (*.schema.ts)
   geo/                utilidades geoespaciales
-  auth/               sesiones: admin.ts (moderadores), usuario.ts (vecinos), google.ts (OAuth)
+  auth/               sesiones: admin.ts (moderadores), usuario.ts (vecinos), google.ts (OAuth);
+                      secreto.ts compara secretos compartidos de endpoints de máquina
   blob/               integración con Vercel Blob
   agente/             asesor de formalización (prompt y llamada al modelo)
+  ml/                 inferencia en el navegador (categoria.ts: sugeridor de categoría)
+  privacidad/         regla k = 5 (kAnonimato.ts), pura y sin server-only
+pipeline/            Python del reto (OSM, constelaciones, clasificador, vigía); salidas en public/
+.github/workflows/   vigía de convocatorias (único workflow; no hay CI de verificación)
 scripts/             scripts de mantenimiento (migraciones, verificación, admin)
 pipeline/            Python reproducible (OSM, HDBSCAN, clasificador); su propio
                      requirements.txt y venv. Escribe solo en public/firmamento/ y
@@ -127,6 +132,43 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Server Action que escriba en portafolios, categorías o campos personalizados
   DEBE llamar `invalidarVitrina()`; si no, lo público queda viejo hasta 10
   minutos. Lo que vuelve de la caché es JSON: nada de columnas `Date` ahí.
+- **Datos abiertos y regla k = 5** (`GET /api/datos`, `lib/db/datos.repo.ts`):
+  solo negocios `aprobado` y solo conteos. Toda celda pasa por
+  `lib/privacidad/kAnonimato.ts`: menos de 5 sale como `"<5"` (los ceros
+  también), y en las particiones con total publicado (categorías, barrios) si
+  queda escondida UNA sola celda se esconde también la menor visible, porque si
+  no se deduce restando del total. Cada dimensión lista TODAS sus opciones: que
+  una falte diría que vale cero. Nunca salen: nombres de negocios, contactos
+  (WhatsApp, teléfono, correo, redes), direcciones, coordenadas, fotos, tokens,
+  IP, `google_sub`, `campos_extra`, respuestas individuales de investigación
+  (solo conteos de las enumeraciones `formalidad` y `mayor_dolor`). Una
+  dimensión nueva = consulta nueva en el repo (sin columnas personales: el
+  verificador lee el archivo) + `suprimir()`. Caché de 1 h (`unstable_cache`
+  sin la etiqueta de la vitrina), CORS `*`, rate limit de `rateLimit.ts` con
+  origen propio `datos`. `scripts/verificar-datos-k.mjs` lo comprueba (y contra
+  un servidor vivo con `VERIFICAR_URL_DATOS=http://localhost:3000/api/datos`).
+- **Sugeridor de categoría** (`lib/ml/categoria.ts`): TF-IDF de n-gramas + regresión
+  logística exportados a `public/modelo_categoria.json` (los genera
+  `pipeline/03_clasificador.py`), inferencia en el NAVEGADOR: lo que la persona
+  escribe en el nombre no sale de su pantalla. Con confianza >= 0,45 sugiere una;
+  si no, las 3 mejores (`sugerirCategoria`). Replica a `pipeline/verificar_salidas.py`:
+  al reentrenar hay que regenerar los casos de `scripts/verificar-sugeridor.mjs`.
+  Si se guarda algo del sugeridor (`sugerencias_categoria`), es la categoría
+  inferida y si la aceptó, NUNCA el texto escrito. El archivo no lleva
+  `server-only` ni imports de valor, para que el verificador lo importe.
+- **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
+  la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
+  vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
+  componente: el dueño y el panel leen `COLUMNAS_PROPIAS` (todo).
+- **Endpoints de máquina** (`/api/cron/purgar`, `/api/ingesta/convocatorias`):
+  secreto en variable de entorno (`CRON_SECRET`, `INGESTA_SECRETO`), comparado con
+  `secretoValido` de `lib/auth/secreto.ts`; sin la variable fallan CERRADOS (503),
+  con el header mal responden 401. Lo que entra por ahí es texto de terceros:
+  Zod y siempre `pendiente` (el vigía de convocatorias no publica nada).
+- **IP**: `ip_registro` se guarda en claro 30 días (`DIAS_IP_EN_CLARO`) y el cron
+  diario la anula (`purgarIpsViejas`); para auditoría queda `ip_hash` en
+  `aliados_consentimiento`. La política de datos lo declara: si cambia el plazo,
+  cambia el texto y se sube `VERSION_TERMINOS`.
 - **Búsqueda de negocios**: una sola función, `buscarNegocios` de
   `lib/busqueda.ts` (puntaje por campo + sinónimos del barrio, en el cliente),
   la usan el buscador de la portada y la vitrina de `/aliados`. No escribir
@@ -179,7 +221,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca y entorno
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML) y datos abiertos (k = 5)
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)
