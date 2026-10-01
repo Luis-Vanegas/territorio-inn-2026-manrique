@@ -1,41 +1,55 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, Marker, Polygon, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
 
 import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, TESELAS, ZOOM } from '@/lib/geo/constantes';
 import type { Coordenada } from '@/lib/geo/constantes';
+import type { DatosConstelaciones } from '@/lib/geo/constelaciones';
+import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
 import { contar } from '@/lib/interacciones';
+import { CapaConstelaciones } from './mapa/CapaConstelaciones';
+import { svgForma } from './mapa/formas';
 
 /**
  * Mapa de la vitrina.
  *
  * Los marcadores son divIcon y no <Marker> por defecto por dos razones:
- * la estética (un punto azul, el color de acción del sistema, en vez del pin
- * azul de Leaflet) y porque los íconos default de Leaflet se rompen con
- * bundlers — resuelven sus PNG por ruta relativa y en Next terminan en 404.
+ * la estética (una forma y un color por grupo, en vez del pin azul de Leaflet)
+ * y porque los íconos default de Leaflet se rompen con bundlers — resuelven sus
+ * PNG por ruta relativa y en Next terminan en 404.
+ *
+ * Cada grupo de categoría tiene su forma además de su color (DESIGN.md ›
+ * Categorías): el color solo no basta con daltonismo. La caja del marcador mide
+ * 44 px (objetivo táctil) aunque la forma dibujada mida 26.
+ *
+ * ponytail: sin cluster de marcadores. Hoy son ~8 aliados. Pasada la centena
+ * (plan de diseño §3 › Mapa) hay que agrupar, p. ej. con leaflet.markercluster;
+ * es una dependencia nueva, se consulta antes de instalarla.
  */
 
-const iconoPunto = L.divIcon({
-  className: '', // Leaflet mete estilos propios si esto queda vacío por defecto
-  html: `<span class="marcador-portafolio"></span>`,
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-  popupAnchor: [0, -9],
-});
+const iconosGrupo = new Map<string, L.DivIcon>();
 
-const iconoPuntoActivo = L.divIcon({
-  className: '',
-  html: `<span class="marcador-portafolio marcador-activo"></span>`,
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-  popupAnchor: [0, -9],
-});
+function iconoGrupo(grupo: Grupo, activo: boolean) {
+  const clave = `${grupo.id}:${activo}`;
+  let icono = iconosGrupo.get(clave);
+  if (!icono) {
+    icono = L.divIcon({
+      className: '', // Leaflet mete estilos propios si esto queda vacío por defecto
+      html: `<span class="marcador-grupo${activo ? ' marcador-grupo--activo' : ''}">${svgForma(grupo, 26)}</span>`,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
+      popupAnchor: [0, -16],
+    });
+    iconosGrupo.set(clave, icono);
+  }
+  return icono;
+}
 
 const iconoUsuario = L.divIcon({
   className: '',
@@ -45,48 +59,71 @@ const iconoUsuario = L.divIcon({
   popupAnchor: [0, -11],
 });
 
+/** La comuna y su margen de paneo: se calculan una vez, el polígono no cambia. */
+const LIMITES_COMUNA = L.geoJSON(POLIGONO_MANRIQUE as unknown as GeoJsonObject).getBounds();
+const LIMITES_PANEO = LIMITES_COMUNA.pad(0.35);
+
+/** Contorno de la comuna como [lat, lng] (el GeoJSON guarda [lng, lat]): es el hueco de la máscara. */
+const CONTORNO_COMUNA: [number, number][] = (
+  POLIGONO_MANRIQUE.features[0]!.geometry as unknown as { coordinates: number[][][] }
+).coordinates[0]!.map((p) => [p[1] as number, p[0] as number]);
+
+/** Rectángulo grande con la comuna recortada: lo de afuera queda velado, suave. */
+const MASCARA: [number, number][][] = (() => {
+  const g = LIMITES_PANEO.pad(2);
+  return [
+    [
+      [g.getSouth(), g.getWest()],
+      [g.getSouth(), g.getEast()],
+      [g.getNorth(), g.getEast()],
+      [g.getNorth(), g.getWest()],
+    ],
+    CONTORNO_COMUNA,
+  ];
+})();
+
 type Props = {
   portafolios: Portafolio[];
   alSeleccionar?: (id: string) => void;
-  /** Posición del visitante, si dio permiso. Dibuja su punto y entra al encuadre. */
+  /** Posición del visitante, si dio permiso. Dibuja su punto, pero no mueve el encuadre. */
   ubicacionUsuario?: Coordenada | null;
   /** Id del negocio resaltado desde el listado: el mapa vuela hacia él. */
   seleccionado?: string | null;
+  /** Datos ya cargados: si es null la capa de constelaciones no se dibuja. */
+  constelaciones?: DatosConstelaciones | null;
+  /** Id de una constelación para verla sola y acercarse a ella; '' = todas. */
+  filtroConstelacion?: string;
 };
 
 /**
- * Encuadre automático.
+ * Encuadre en la comuna (D2 del plan de diseño).
  *
- * Desde la migración 006 un negocio puede estar en cualquier parte del mundo,
- * así que centrar fijo en Manrique con zoom 14 dejaba marcadores fuera de
- * pantalla sin ninguna señal de que existían. El encuadre se recalcula cuando
- * cambian los puntos (filtro por categoría) o aparece la ubicación del visitante.
+ * Antes el mapa se ajustaba a TODOS los puntos, y como un aliado puede estar en
+ * cualquier parte del mundo (migración 006) la vista terminaba sobre media
+ * Medellín con la comuna en un borde. Ahora se encuadra el polígono y el paneo
+ * queda acotado a su margen: el zoom mínimo es el que deja ver ese margen justo,
+ * así no se puede alejar hasta perder el territorio. Los aliados que caigan
+ * fuera siguen en la lista, solo que el mapa no los muestra.
+ *
+ * Con `foco` (una constelación elegida en el filtro) se acerca a ella; al
+ * quitarlo vuelve a la comuna.
  */
-function AjustarVista({
-  puntos,
-  ubicacionUsuario,
-}: {
-  puntos: Coordenada[];
-  ubicacionUsuario?: Coordenada | null;
-}) {
+function Encuadre({ foco }: { foco: L.LatLngBounds | null }) {
   const mapa = useMap();
 
-  // La clave serializa las coordenadas: el array se recrea en cada render del
-  // padre y un dep por referencia dispararía un fitBounds por render.
-  const clave = JSON.stringify([puntos, ubicacionUsuario]);
+  useEffect(() => {
+    const fijarMinimo = () =>
+      mapa.setMinZoom(Math.max(ZOOM.minimo, mapa.getBoundsZoom(LIMITES_PANEO)));
+    fijarMinimo();
+    mapa.on('resize', fijarMinimo);
+    return () => {
+      mapa.off('resize', fijarMinimo);
+    };
+  }, [mapa]);
 
   useEffect(() => {
-    const todos = ubicacionUsuario ? [...puntos, ubicacionUsuario] : puntos;
-    if (todos.length === 0) return;
-
-    mapa.fitBounds(L.latLngBounds(todos.map((p) => L.latLng(p[0], p[1]))), {
-      padding: [48, 48],
-      // Con un solo punto fitBounds se va al zoom máximo y se ve el techo de
-      // una casa sin contexto de barrio.
-      maxZoom: ZOOM.seleccion,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clave, mapa]);
+    mapa.fitBounds(foco ?? LIMITES_COMUNA, { padding: [16, 16], maxZoom: ZOOM.seleccion });
+  }, [mapa, foco]);
 
   return null;
 }
@@ -106,9 +143,13 @@ function IrASeleccionado({
     const p = portafolios.find((x) => x.id === seleccionado);
     if (!p) return;
 
-    mapa.flyTo([p.latitud, p.longitud], Math.max(mapa.getZoom(), ZOOM.seleccion), {
-      duration: 0.7,
-    });
+    const destino: L.LatLngExpression = [p.latitud, p.longitud];
+    const zoom = Math.max(mapa.getZoom(), ZOOM.seleccion);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      mapa.setView(destino, zoom, { animate: false });
+    } else {
+      mapa.flyTo(destino, zoom, { duration: 0.7 });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seleccionado, mapa]);
 
@@ -120,6 +161,8 @@ export default function MapaAliadosClient({
   alSeleccionar,
   ubicacionUsuario,
   seleccionado,
+  constelaciones,
+  filtroConstelacion = '',
 }: Props) {
   // El polígono no cambia nunca; sin memo, react-leaflet vuelve a montar la
   // capa GeoJSON en cada render y el mapa parpadea al filtrar por categoría.
@@ -128,9 +171,18 @@ export default function MapaAliadosClient({
     [],
   );
 
-  const puntos = useMemo<Coordenada[]>(
-    () => portafolios.map((p) => [p.latitud, p.longitud] as Coordenada),
-    [portafolios],
+  const foco = useMemo(() => {
+    const c = constelaciones?.constelaciones.find((x) => x.id === filtroConstelacion);
+    if (!c) return null;
+    return L.latLngBounds(c.estrellas.map((e) => L.latLng(e.lat, e.lon))).pad(0.5);
+  }, [constelaciones, filtroConstelacion]);
+
+  // Con "menos movimiento" se apagan también las animaciones de zoom y de
+  // desplazamiento de Leaflet (el CSS global solo alcanza a las de CSS). Este
+  // componente solo corre en el navegador (ssr:false), así que window existe.
+  const sinMovimiento = useMemo(
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    [],
   );
 
   return (
@@ -140,12 +192,26 @@ export default function MapaAliadosClient({
       minZoom={ZOOM.minimo}
       maxZoom={ZOOM.maximo}
       scrollWheelZoom={false} // si no, la rueda secuestra el scroll de la página
+      maxBounds={LIMITES_PANEO}
+      maxBoundsViscosity={0.9}
+      zoomAnimation={!sinMovimiento}
+      fadeAnimation={!sinMovimiento}
+      markerZoomAnimation={!sinMovimiento}
       className="h-full w-full"
     >
       <TileLayer
         url={TESELAS.url}
         attribution={TESELAS.atribucion}
         maxZoom={ZOOM.maximo}
+      />
+
+      {/* Máscara: color y opacidad salen de .mascara-fuera (CSS) para que sigan
+          al tema; un atributo SVG no puede leer variables CSS. */}
+      <Polygon
+        positions={MASCARA}
+        interactive={false}
+        className="mascara-fuera"
+        pathOptions={{ stroke: false }}
       />
 
       <GeoJSON
@@ -159,8 +225,12 @@ export default function MapaAliadosClient({
         }}
       />
 
-      <AjustarVista puntos={puntos} ubicacionUsuario={ubicacionUsuario} />
+      <Encuadre foco={foco} />
       <IrASeleccionado seleccionado={seleccionado} portafolios={portafolios} />
+
+      {constelaciones && (
+        <CapaConstelaciones datos={constelaciones} filtroId={filtroConstelacion} />
+      )}
 
       {ubicacionUsuario && (
         <Marker
@@ -179,48 +249,56 @@ export default function MapaAliadosClient({
         </Marker>
       )}
 
-      {portafolios.map((p) => (
-        <Marker
-          key={p.id}
-          position={[p.latitud, p.longitud]}
-          icon={p.id === seleccionado ? iconoPuntoActivo : iconoPunto}
-          title={p.nombre}
-          eventHandlers={
-            alSeleccionar ? { click: () => alSeleccionar(p.id) } : undefined
-          }
-        >
-          <Popup minWidth={200}>
-            <span className="block font-sans text-xs uppercase tracking-wide text-morado-texto">
-              {p.categoria_nombre}
-            </span>
-            <strong className="mt-1 block font-display text-base font-medium text-tinta">
-              {p.nombre}
-            </strong>
-
-            {/* La ubicación "canta" acá también: ícono + mono, no un dato
-                perdido entre el resto del popup. */}
-            <span className="mt-1.5 flex items-start gap-1 font-sans text-xs text-tinta/65">
-              <span aria-hidden="true">📍</span>
-              <span>
-                {p.direccion}
-                <span className="text-tinta/60"> · {p.barrio}</span>
+      {portafolios.map((p) => {
+        const grupo = grupoDeCategoria(p.categoria_id);
+        return (
+          <Marker
+            key={p.id}
+            position={[p.latitud, p.longitud]}
+            icon={iconoGrupo(grupo, p.id === seleccionado)}
+            title={`${p.nombre} · ${grupo.nombre}`}
+            eventHandlers={
+              alSeleccionar ? { click: () => alSeleccionar(p.id) } : undefined
+            }
+          >
+            <Popup minWidth={200}>
+              <span className="flex items-center gap-1.5 font-sans text-xs uppercase tracking-wide text-morado-texto">
+                <span
+                  aria-hidden="true"
+                  className="inline-flex"
+                  dangerouslySetInnerHTML={{ __html: svgForma(grupo, 16) }}
+                />
+                {p.categoria_nombre}
               </span>
-            </span>
+              <strong className="mt-1 block font-display text-base font-medium text-tinta">
+                {p.nombre}
+              </strong>
 
-            {p.whatsapp && (
-              <a
-                href={enlaceWhatsapp(p.whatsapp)}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => contar(p.id, 'contacto')}
-                className="mt-2 inline-block font-sans text-xs text-azul-texto underline decoration-azul/40 underline-offset-4 hover:text-tinta"
-              >
-                Escribir por WhatsApp →
-              </a>
-            )}
-          </Popup>
-        </Marker>
-      ))}
+              {/* La ubicación "canta" acá también: ícono + mono, no un dato
+                  perdido entre el resto del popup. */}
+              <span className="mt-1.5 flex items-start gap-1 font-sans text-xs text-tinta/65">
+                <span aria-hidden="true">📍</span>
+                <span>
+                  {p.direccion}
+                  <span className="text-tinta/60"> · {p.barrio}</span>
+                </span>
+              </span>
+
+              {p.whatsapp && (
+                <a
+                  href={enlaceWhatsapp(p.whatsapp)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => contar(p.id, 'contacto')}
+                  className="mt-2 inline-block font-sans text-xs text-azul-texto underline decoration-azul/40 underline-offset-4 hover:text-tinta"
+                >
+                  Escribir por WhatsApp →
+                </a>
+              )}
+            </Popup>
+          </Marker>
+        );
+      })}
     </MapContainer>
   );
 }

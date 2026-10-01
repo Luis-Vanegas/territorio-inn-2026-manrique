@@ -1,0 +1,80 @@
+/**
+ * Constelaciones de comercios de OpenStreetMap (`public/firmamento/constelaciones.json`,
+ * generado por `pipeline/02_constelaciones.py`). NO son aliados de la plataforma:
+ * son locales que alguien mapeó en OSM, agrupados por cercanía (HDBSCAN).
+ *
+ * El JSON no se importa: pesa ~34 KB y solo hace falta cuando el mapa pinta la
+ * capa, así que se pide por `fetch` y queda fuera del bundle.
+ */
+
+export type EstrellaOsm = {
+  osm: string;
+  nombre: string;
+  lat: number;
+  lon: number;
+  categoria: string | null;
+};
+
+export type Constelacion = {
+  id: string;
+  nombre: string;
+  tamano: number;
+  centroide: { lat: number; lon: number };
+  radio_m: number;
+  radio_p90_m: number;
+  categoria_dominante: string | null;
+  estrellas: EstrellaOsm[];
+  /** Árbol de expansión mínima: índices sobre `estrellas`. */
+  aristas: { de: number; a: number; metros: number }[];
+};
+
+export type DatosConstelaciones = {
+  fuente: string;
+  licencia: string;
+  fecha_corrida: string;
+  resumen: {
+    total_comercios: number;
+    constelaciones: number;
+    puntos_sueltos: number;
+  };
+  constelaciones: Constelacion[];
+  puntos_sueltos: EstrellaOsm[];
+};
+
+export const URL_CONSTELACIONES = '/firmamento/constelaciones.json';
+
+/**
+ * Fecha del snapshot de OSM que respondió Overpass (`osm_base_timestamp` de
+ * `pipeline/datos/osm_meta_2026-10-01.json`). El JSON público solo trae la fecha
+ * de la corrida, no la del snapshot: al repetir el pipeline hay que actualizar
+ * esta constante.
+ */
+export const SNAPSHOT_OSM = '2026-05-06';
+
+let enCurso: Promise<DatosConstelaciones> | null = null;
+
+/** Una sola descarga por visita: el interruptor puede prenderse y apagarse. */
+export function cargarConstelaciones(): Promise<DatosConstelaciones> {
+  if (!enCurso) {
+    enCurso = fetch(URL_CONSTELACIONES)
+      .then((r) => {
+        if (!r.ok) throw new Error(`constelaciones: ${r.status}`);
+        return r.json() as Promise<DatosConstelaciones>;
+      })
+      .catch((e) => {
+        enCurso = null; // permite reintentar
+        throw e;
+      });
+  }
+  return enCurso;
+}
+
+/** «6 de mayo de 2026». Las fechas del JSON vienen en UTC. */
+export function fechaLarga(iso: string): string {
+  return new Intl.DateTimeFormat('es-CO', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'America/Bogota',
+  }).format(new Date(iso.length === 10 ? `${iso}T12:00:00-05:00` : iso));
+}
