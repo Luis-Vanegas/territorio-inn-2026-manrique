@@ -256,6 +256,122 @@ html.js:not(.js-listo) [data-reveal] {
   }
 }
 
+/* ── Mapa: marcadores por grupo y capa de constelaciones ──────
+   La forma (SVG, components/mapa/formas.ts) es la identidad de cada grupo; el
+   color solo la refuerza. La caja mide 44 px por el objetivo táctil. */
+.marcador-grupo {
+  position: relative;
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.marcador-grupo svg {
+  transition: transform 120ms ease;
+}
+
+.leaflet-marker-icon:hover .marcador-grupo svg {
+  transform: scale(1.25);
+}
+
+/* El negocio tocado: crece y emite un anillo, sin cambiar de forma ni color. */
+.marcador-grupo--activo svg {
+  transform: scale(1.4);
+}
+
+.marcador-grupo--activo::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  border: 2px solid #0b1026;
+  animation: anillo-activo 1.6s ease-out infinite;
+}
+
+@keyframes anillo-activo {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Máscara fuera de la comuna: sigue al tema porque lee la variable. */
+.mascara-fuera {
+  fill: rgb(var(--hueso-rgb));
+  fill-opacity: 0.55;
+}
+
+/* Constelaciones de OpenStreetMap: noche-3 sobre teselas claras, tenues, para
+   que no se confundan con los aliados (formas grandes y de color). */
+.halo-constelacion {
+  fill: #1a2450;
+  fill-opacity: 0.07;
+  stroke: #1a2450;
+  stroke-opacity: 0.4;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.halo-constelacion--activa {
+  fill-opacity: 0.14;
+  stroke-opacity: 0.8;
+}
+
+.arista-constelacion {
+  stroke: #1a2450;
+  stroke-opacity: 0.7;
+  stroke-width: 1.25;
+  fill: none;
+}
+
+/* Trazo: la clase la pone CapaConstelaciones junto con pathLength=1, así que
+   sin JS o sin el atributo la línea queda sólida y visible. */
+.arista-trazo {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: trazar-arista 700ms ease-out both;
+}
+
+@keyframes trazar-arista {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.estrella-osm {
+  display: block;
+  animation: parpadeo-estrella 4s ease-in-out infinite alternate;
+}
+
+@keyframes parpadeo-estrella {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Con menos movimiento la regla global apaga las animaciones; el trazo
+   arranca oculto (offset 1), así que hay que dejarlo dibujado a mano. */
+@media (prefers-reduced-motion: reduce) {
+  .arista-trazo {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  .marcador-grupo--activo::after {
+    display: none;
+  }
+}
+
 /* Foco visible con teclado: los marcadores son interactivos y navegables. */
 .leaflet-marker-icon:focus-visible {
   outline: 2px solid rgb(var(--tinta-rgb));
