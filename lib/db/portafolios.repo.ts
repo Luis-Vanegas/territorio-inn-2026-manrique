@@ -61,7 +61,7 @@ export type PortafolioAdmin = Portafolio & {
  * en el driver de JS, y sin esto latitud/longitud llegan como "6.273126" y
  * Leaflet dibuja los marcadores en el Golfo de Guinea.
  */
-const COLUMNAS_PUBLICAS = `
+const COLUMNAS_COMUNES = `
   p.id,
   p.nombre,
   p.descripcion,
@@ -84,9 +84,47 @@ const COLUMNAS_PUBLICAS = `
   p.punto_referencia,
   p.horario,
   p.medios_pago,
-  p.verificado_en,
-  p.campos_extra
+  p.verificado_en
 `;
+
+/**
+ * A2: la vitrina publica un campo personalizado SOLO si el moderador lo marcó
+ * `publico` (migración 032, default false). El filtro va en la consulta y no en
+ * el componente: si fuera de presentación, el valor igual viajaría en el JSON
+ * de la página y bastaría abrir las herramientas del navegador para verlo.
+ *
+ * Solo para lecturas PÚBLICAS. El dueño (por token) y el panel de moderación
+ * leen `p.campos_extra` completo, porque necesitan ver y editar todo.
+ */
+const CAMPOS_EXTRA_PUBLICOS = `
+  coalesce((
+    select jsonb_object_agg(e.key, e.value)
+    from jsonb_each(p.campos_extra) as e
+    join definiciones_campo d on d.slug = e.key
+    where d.activo = true and d.publico = true
+  ), '{}'::jsonb) as campos_extra
+`;
+
+const COLUMNAS_PUBLICAS = `${COLUMNAS_COMUNES}, ${CAMPOS_EXTRA_PUBLICOS}`;
+const COLUMNAS_PROPIAS = `${COLUMNAS_COMUNES}, p.campos_extra`;
+
+/**
+ * ponytail: transición hasta que la migración 032 esté aplicada en TODAS las
+ * bases. Sin la columna `definiciones_campo.publico` (error 42703) la lectura
+ * pública cae a «ningún campo personalizado público»: falla CERRADO, que es la
+ * dirección segura, y la vitrina no se cae. Borrar este rodeo (y dejar solo
+ * COLUMNAS_PUBLICAS) cuando 032 esté en producción.
+ */
+const COLUMNAS_PUBLICAS_SIN_032 = `${COLUMNAS_COMUNES}, '{}'::jsonb as campos_extra`;
+
+async function leerPublicas<T>(consulta: (columnas: string) => Promise<T>): Promise<T> {
+  try {
+    return await consulta(COLUMNAS_PUBLICAS);
+  } catch (error) {
+    if ((error as { code?: string }).code !== '42703') throw error;
+    return consulta(COLUMNAS_PUBLICAS_SIN_032);
+  }
+}
 
 // ─── Lecturas públicas ───────────────────────────────────────
 
@@ -105,14 +143,16 @@ export const listarAprobados = cachearVitrina(
   async (categoriaId?: string): Promise<Portafolio[]> => {
     const filtro = categoriaId ?? null;
 
-    const rows = await sql`
-      select ${sql.unsafe(COLUMNAS_PUBLICAS)}
-      from portafolios p
-      join categorias c on c.id = p.categoria_id
-      where p.estado = 'aprobado'
-        and (${filtro}::text is null or p.categoria_id = ${filtro})
-      order by p.creado_en desc
-    `;
+    const rows = await leerPublicas(
+      (columnas) => sql`
+        select ${sql.unsafe(columnas)}
+        from portafolios p
+        join categorias c on c.id = p.categoria_id
+        where p.estado = 'aprobado'
+          and (${filtro}::text is null or p.categoria_id = ${filtro})
+        order by p.creado_en desc
+      `,
+    );
 
     return rows as Portafolio[];
   },
@@ -126,12 +166,14 @@ export async function obtenerAprobadoPorId(id: string): Promise<Portafolio | nul
     return null;
   }
 
-  const rows = await sql`
-    select ${sql.unsafe(COLUMNAS_PUBLICAS)}
-    from portafolios p
-    join categorias c on c.id = p.categoria_id
-    where p.estado = 'aprobado' and p.id = ${id}
-  `;
+  const rows = await leerPublicas(
+    (columnas) => sql`
+      select ${sql.unsafe(columnas)}
+      from portafolios p
+      join categorias c on c.id = p.categoria_id
+      where p.estado = 'aprobado' and p.id = ${id}
+    `,
+  );
 
   return (rows[0] as Portafolio) ?? null;
 }
@@ -321,7 +363,7 @@ export async function adjuntarMenu(
 
 export async function obtenerPorToken(token: string): Promise<PortafolioAdmin | null> {
   const rows = await sql`
-    select ${sql.unsafe(COLUMNAS_PUBLICAS)},
+    select ${sql.unsafe(COLUMNAS_PROPIAS)},
            p.estado, p.motivo_rechazo, p.moderado_por, p.moderado_en,
            p.foto_blob_pathname, p.menu_blob_pathname
     from portafolios p
@@ -460,7 +502,7 @@ export async function listarParaModerar(
   estado: EstadoPortafolio = 'pendiente',
 ): Promise<PortafolioAdmin[]> {
   const rows = await sql`
-    select ${sql.unsafe(COLUMNAS_PUBLICAS)},
+    select ${sql.unsafe(COLUMNAS_PROPIAS)},
            p.estado, p.motivo_rechazo, p.moderado_por, p.moderado_en,
            p.foto_blob_pathname, p.menu_blob_pathname
     from portafolios p
