@@ -1,0 +1,42 @@
+# Vigía de convocatorias: una vez al día revisa las páginas de
+# pipeline/fuentes_convocatorias.json y manda lo nuevo a /api/ingesta/convocatorias,
+# donde entra SIEMPRE como "pendiente" (lo decide moderación).
+#
+# Costo: el repo es público, y en repos públicos los runners estándar de GitHub
+# (ubuntu-latest) no se cobran. Fuente: docs.github.com › Billing › GitHub Actions
+# («GitHub Actions usage is free for self-hosted runners and for public
+# repositories that use standard GitHub-hosted runners»). Si el repo se vuelve
+# privado, esto deja de ser gratis: revisar antes.
+#
+# Dos cosas que conviene saber:
+#  - GitHub desactiva los workflows programados de un repo público tras 60 días
+#    sin actividad en el repo; se reactivan a mano desde la pestaña Actions.
+#  - Necesita dos secretos del repo (Settings › Secrets and variables › Actions):
+#    INGESTA_URL (https://<dominio>/api/ingesta/convocatorias) e INGESTA_SECRETO
+#    (el mismo valor que la variable INGESTA_SECRETO de Vercel). Sin el secreto en
+#    Vercel el endpoint responde 503: así se nota que falta.
+name: Vigía de convocatorias
+
+on:
+  schedule:
+    - cron: '0 11 * * *' # 06:00 en Bogotá
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vigia-convocatorias
+  cancel-in-progress: false
+
+jobs:
+  vigia:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Revisar fuentes y enviar
+        env:
+          INGESTA_URL: ${{ secrets.INGESTA_URL }}
+          INGESTA_SECRETO: ${{ secrets.INGESTA_SECRETO }}
+        run: python3 pipeline/04_vigia_convocatorias.py
