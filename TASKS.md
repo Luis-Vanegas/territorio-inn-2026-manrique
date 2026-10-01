@@ -16,7 +16,18 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       Dudas para Luis en `docs/concurso/notas-internas.md`.
 - [ ] Fase 3, pasos 1–2 de diseño — hechos en `worktree-agent-a5f2a8da08a407979`; falta
       probar D1 con el server y QA. Decisión abierta para Luis: DM Mono vs DM Sans `tabular-nums`.
-- [ ] Fase 2 · Integrador — espera las salidas de `datos-ml`.
+- [x] Fases 1, 3 (pasos 1–2) y 4 integradas en `reto/alineacion` tras QA (1-oct).
+      DM Mono quedó como tercera familia solo para cifras, fuentes y fechas (decisión de Luis).
+- [x] Diseño paso 3 · Mapa encuadrado + capa de constelaciones (`cdb8d9f`), verificado en
+      1280/375/320 px.
+- [ ] **3 aliados fuera del polígono** (Polarium Diseños, Viala medias, Delicias de Carlota):
+      coordenadas mal marcadas al registrar; corregir en la base. Los dos últimos no se ven en el mapa.
+- [ ] Constelación c09 con halo de ~486 m: decidir si se limita u omite.
+- [ ] `SNAPSHOT_OSM` está a mano en `lib/geo/constelaciones.ts`; que el pipeline escriba
+      `osm_base_timestamp` en el JSON público.
+- [ ] Documento: cifras nuevas con fuente (Cámara 2025: 2.626 empresas en Manrique; 15 barrios,
+      Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.
+- [ ] Fase 2 · Integrador — lista para lanzar (A1 confirmado por el geocatálogo).
 
 ## 🔎 Análisis de SonarCloud — 2026-08-31
 
