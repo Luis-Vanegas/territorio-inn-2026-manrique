@@ -8,7 +8,7 @@ Documento técnico completo. Versión de trabajo del 1 de octubre de 2026; entre
 
 > **Cómo leer las marcas de este documento**
 >
-> - `[PENDIENTE: métrica de datos-ml]` indica un valor que produce el pipeline de datos y aprendizaje automático y que aún no está calculado de forma reproducible. No se cita ninguna cifra de ese pipeline hasta que exista.
+> - Las cifras del pipeline de datos y aprendizaje automático salen de la corrida reproducible del 1 de octubre de 2026 (`pipeline/reporte_modelo.md` y `pipeline/README.md`). `[PENDIENTE: métrica de datos-ml]` indica ahora solo un valor que ese pipeline todavía no produce (por ejemplo, la medición contra registros propios o la revisión manual de etiquetas).
 > - `[PENDIENTE: ...]` con otra descripción indica un dato que depende de otra persona o de otro proceso.
 > - `[COMPLETAR]` indica un dato personal o administrativo que completan los integrantes.
 > - «En desarrollo» indica una pieza que se construye en octubre de 2026 y que **no** debe leerse como funcionando.
@@ -63,11 +63,12 @@ que dice «En desarrollo» se describe en el resto del documento como diseño, n
 | Guías de Marca y de Ventas para los aliados; «Mis clientes» (CRM mínimo con nombre, teléfono y nota) | Implementado en el repositorio | `AGENTS.md`; `lib/content.ts` |
 | Analítica agregada sin cookies: visitas por día y vistas y contactos por negocio y día; sin IP, sin recorridos | En producción | `docs/analitica.md` |
 | Validación geográfica del punto contra el polígono de la comuna | En producción | `docs/analitica.md`, «Seguridad del sitio» |
+| Pipeline de datos (OpenStreetMap, agrupamiento HDBSCAN, clasificador de categoría) | Ejecutado el 1 de octubre de 2026; salidas y métricas reproducibles. Su integración al sitio sigue en desarrollo | `pipeline/README.md`; `pipeline/reporte_modelo.md` |
 | Firmamento (tablero público), mapa estelar de constelaciones | **En desarrollo** | `docs/plan-reto-2026-10.md`, Fases 1 y 3 |
-| Sugeridor de categoría en el registro | **En desarrollo** | Fases 1 y 2 |
+| Sugeridor de categoría en el registro (el modelo existe y está evaluado; falta la pieza en el formulario) | **En desarrollo** | Fases 1 y 2; `pipeline/reporte_modelo.md` |
 | `/api/datos` (agregados con supresión de celdas pequeñas) | **En desarrollo** | Fase 2 |
 | Vigía de convocatorias, «Para ti», «Tu negocio en números» | **En desarrollo** | Fases 2 y 3 |
-| Barrio oficial calculado por punto en polígono (corrige además la lista de barrios) | **En desarrollo** | Fase 2, hallazgo A1 de la asesoría |
+| Barrio oficial calculado por punto en polígono (corrige además la lista de barrios: la comuna tiene 15 barrios oficiales y el sitio listaba «Campo Valdés No. 1», que es de la Comuna 4) | **En desarrollo** | Fase 2, hallazgo A1 de la asesoría; Anexo A |
 | Campos personalizados públicos solo si están marcados; hash y purga de la IP de registro | **En desarrollo** | Fase 2, hallazgo A2 |
 | Política de datos que nombra a los proveedores de IA y nueva versión de términos | **En desarrollo** | Fase 2, hallazgo A3 |
 
@@ -105,8 +106,8 @@ Reglas de diseño del producto de datos:
 
 | # | Componente del tablero | Capa | Indicador que muestra | Cómo se calcula | De dónde sale el dato | Actualización | Estado |
 |---|---|---|---|---|---|---|---|
-| 1 | Cielo de hoy | Territorio | Establecimientos comerciales visibles en el mapa abierto dentro del polígono oficial de la comuna | Conteo de elementos de OpenStreetMap con nombre y etiqueta comercial dentro de `lib/geo/manrique.json`, con duplicados y coordenadas fuera del polígono descartados | OpenStreetMap vía API Overpass (OpenStreetMap contributors, 2026). Valor: [PENDIENTE: métrica de datos-ml] | Semanal, por flujo automático; cada salida lleva fecha y fuente | En desarrollo |
-| 2 | Mapa estelar | Territorio | Constelaciones comerciales (nodos de comercio vecino) y locales sueltos | Agrupamiento por densidad (HDBSCAN) sobre coordenadas en metros; centroide, radio, mezcla de categorías y árbol de expansión mínima para dibujar. Resultado: [PENDIENTE: métrica de datos-ml] | Salida del paso 2 del pipeline (`constelaciones.json`) | Semanal | En desarrollo |
+| 1 | Cielo de hoy | Territorio | Comercios mapeados en OpenStreetMap con nombre dentro del polígono oficial de la comuna | Conteo de elementos de OpenStreetMap con nombre y etiqueta comercial dentro de `lib/geo/manrique.json`, con duplicados y coordenadas fuera del polígono descartados | OpenStreetMap vía API Overpass (OpenStreetMap contributors, 2026). Valor: **192 comercios mapeados** en la Comuna 3 (5.007 en el Valle de Aburrá), snapshot de OpenStreetMap del 6 de mayo de 2026 | Se propone semanal, por flujo automático; cada salida lleva fecha y fuente | En desarrollo (el dato de la corrida existe) |
+| 2 | Mapa estelar | Territorio | Constelaciones comerciales (nodos de comercio vecino) y locales sueltos | Agrupamiento por densidad (HDBSCAN) sobre coordenadas en metros; centroide, radio, mezcla de categorías y árbol de expansión mínima para dibujar. Resultado: 12 constelaciones, 122 comercios agrupados y 70 sueltos (ver 4.3) | Salida del paso 2 del pipeline (`constelaciones.json`) | Se propone semanal | En desarrollo (el dato de la corrida existe) |
 | 3 | Tabla de constelaciones | Territorio | Por constelación: número de locales, categorías presentes y barrio dominante | Resumen del paso anterior; al tocar una fila se enciende en el mapa | Mismo origen que el componente 2 | Semanal | En desarrollo |
 | 4 | Contexto del territorio | Territorio | Población, área, desempleo e índice de condiciones de vida de la comuna frente a la ciudad | Valores publicados, sin cálculo propio (Anexo A) | Alcaldía de Medellín, Departamento Administrativo de Planeación (2021) | Anual, cuando se publique una ficha nueva | En desarrollo (los datos son estáticos) |
 | 5 | Referencia nacional de micronegocios | Territorio | Proporción de micronegocios con RUT, con registro en Cámara de Comercio y que usan internet | Valores publicados para las 24 ciudades; se rotulan como referencia de ciudades, no de Manrique | DANE, EMICRON 2025 (2026) | Anual | En desarrollo |
@@ -121,13 +122,36 @@ Reglas de diseño del producto de datos:
 
 Hay al menos un componente de cada capa: territorio (1 a 5), red (6 a 8) y uso (9 a 12).
 
+### Tres miradas del mismo territorio
+
+El componente 6 parte de tres cifras que describen la Comuna 3 desde fuentes distintas. Se
+presentan juntas para que se vea la brecha, no para compararlas.
+
+| Mirada | Qué cuenta | Cifra | Fuente y fecha |
+|---|---|---|---|
+| Registro mercantil | Comerciantes matriculados o renovados en 2025 que la Cámara clasifica en la comuna Manrique | 2.626 empresas | Cámara de Comercio de Medellín para Antioquia (2025), Estructura Empresarial 2025, Tabla 16; consultada el 1 de octubre de 2026 |
+| Mapa abierto | Comercios con nombre mapeados por voluntarios en OpenStreetMap | 192 comercios | OpenStreetMap contributors (2026), snapshot del 6 de mayo de 2026 obtenido por un espejo de Overpass; corrida del 1 de octubre de 2026 |
+| Red | Aliados aprobados en Constelaciones | [PENDIENTE: cifra de aliados aprobados el día de la entrega, tomada de `/api/datos`] | Constelaciones, al día de la entrega |
+
+Cómo leer el cuadro:
+
+- **No son comparables como porcentaje.** El registro mercantil cuenta empresas inscritas en la
+  Cámara, de cualquier tamaño; OpenStreetMap cuenta locales mapeados por voluntarios
+  con nombre. Dividir una cifra entre otra no da cobertura de nada.
+- **No se extrapola informalidad.** La Encuesta de Micronegocios del DANE (13,0 % con registro en
+  Cámara de Comercio) es de 24 ciudades, no de Manrique, y no se aplica a la comuna para estimar
+  cuántos negocios informales hay.
+- **La brecha entre las tres cifras es la línea base** del trabajo, no una medida de éxito ni de
+  fracaso. Que el mapa abierto muestre mucho menos que el registro mercantil dice que el mapa
+  abierto es parcial; no dice cuántos negocios hay.
+
 ### Fuentes de datos para el pipeline en Python
 
 | Fuente | Qué aporta | Estado |
 |---|---|---|
-| OpenStreetMap por API Overpass (licencia ODbL) | Comercios con nombre del Valle de Aburrá (entrenamiento) y de la Comuna 3 (aplicación) | Script en desarrollo |
+| OpenStreetMap por API Overpass (licencia ODbL) | Comercios con nombre del Valle de Aburrá (5.007, para entrenamiento) y de la Comuna 3 (192, para aplicación) | Script ejecutado el 1 de octubre de 2026 (`pipeline/01_osm_overpass.py`). El servidor principal de Overpass respondió con error 504 y contestó un espejo cuyo snapshot de OpenStreetMap es del 6 de mayo de 2026; una descarga posterior puede dar otro número |
 | DANE, EMICRON 2025: boletines y anexos | Contexto de micronegocios en 24 ciudades | Disponible |
-| Estructura Empresarial 2025 de la Cámara de Comercio | Cifra de empresas registradas en Manrique. Valor: [PENDIENTE: cifra de empresas de Manrique, que el equipo ya procesa con `scripts/procesar-camara-comercio.py`] | Descargada; procesada por el equipo |
+| Estructura Empresarial 2025 de la Cámara de Comercio | Empresas registradas en Manrique (2.626), por tamaño y por sector | Leída del archivo original el 1 de octubre de 2026; ver Anexo A |
 | Exportación CSV del panel de moderación | Datos propios agregables de la red | En producción |
 | `/api/datos` | Agregados públicos con supresión | En desarrollo |
 
@@ -145,7 +169,11 @@ en cada archivo de salida).
   descripción, si existe).
 - **Datos de entrenamiento:** comercios con nombre del Valle de Aburrá en OpenStreetMap, sin
   duplicados, con la etiqueta de OpenStreetMap traducida a las categorías del sitio. Tamaño de
-  la muestra: [PENDIENTE: métrica de datos-ml].
+  la muestra: 5.007 comercios con nombre en el Valle de Aburrá, de los cuales 4.446 (3.763 nombres
+  distintos) tienen una categoría del sitio asignada y se usan; 561 se descartan por no tener
+  etiqueta traducible. La clase más grande es «comidas» (1.593) y la más pequeña «barbería» (10).
+  Fuente: OpenStreetMap (OpenStreetMap contributors, 2026), snapshot del 6 de mayo de 2026,
+  licencia ODbL.
 - **No se entrena con los registros propios de la red:** son pocos y el entrenamiento sería
   inestable. Los registros propios son donde se aplica el modelo; las correcciones de los
   moderadores se suman después a los datos de entrenamiento.
@@ -157,12 +185,35 @@ en cada archivo de salida).
 | Frecuencia ponderada de secuencias de 2 a 4 caracteres dentro de cada palabra (TF-IDF de n-gramas) | Variable derivada | Numérica dispersa | Calculada a partir de las anteriores | 1 |
 | Categoría del sitio | Salida (etiqueta) | Categórica, un grupo de categorías del sitio | En entrenamiento: etiqueta de OpenStreetMap traducida; en uso: elección final de la persona | 1 |
 | Probabilidad de la categoría | Salida | Numérica entre 0 y 1 | Calculada por el modelo | 1 |
-| Umbral de confianza | Parámetro de uso | Numérica | Diseño del producto: por debajo de 0,45 la interfaz pregunta y muestra las tres más probables. **[PENDIENTE: confirmar el umbral definitivo tras el reentrenamiento]** | 1 |
+| Umbral de confianza | Parámetro de uso | Numérica | Diseño del producto: por debajo de 0,45 la interfaz pregunta y muestra las tres más probables. Es el umbral con el que se midió la corrida del 1 de octubre. **[PENDIENTE: confirmar si se mantiene tras medir el uso real y las correcciones de los moderadores]** | 1 |
 
-- **Técnica:** TF-IDF de n-gramas de caracteres con bordes de palabra más regresión logística
-  (Pedregosa et al., 2011).
-- **Evaluación:** validación cruzada estratificada; se reporta F1 macro frente a una línea base de
-  clase mayoritaria, y la matriz de confusión. Resultado: [PENDIENTE: métrica de datos-ml].
+- **Técnica:** TF-IDF de n-gramas de caracteres de 2 a 4 con bordes de palabra (`char_wb`) más
+  regresión logística (Pedregosa et al., 2011). El parámetro de regularización (C = 10) se eligió por
+  validación cruzada de 4 pliegues, agrupada, solo sobre los datos de entrenamiento.
+- **Evaluación:** se reserva el 20 % de los comercios (890), estratificado por categoría y
+  **agrupado por nombre**: ningún nombre del conjunto de prueba aparece en el entrenamiento. Se
+  agrupa porque en OpenStreetMap abundan las cadenas con el mismo nombre, y un reparto al azar
+  inflaría el resultado. Se reporta F1 macro frente a dos líneas base y la matriz de confusión
+  (semilla fija 42; detalle en `pipeline/reporte_modelo.md`).
+
+| Modelo | F1 macro | Exactitud |
+|---|---|---|
+| TF-IDF `char_wb` 2-4 + regresión logística | **0,535** | 0,654 |
+| Línea base: siempre la clase mayoritaria | 0,044 | 0,358 |
+| Línea base: azar según las frecuencias de las clases | 0,088 | 0,202 |
+
+- **Lectura del resultado.** El modelo supera con holgura a las dos líneas base, pero un F1 macro
+  de 0,535 no es un modelo infalible: es un sugeridor que acierta bastante en algunas categorías y
+  poco en otras. Con el umbral de 0,45, el modelo sugiere **una sola categoría en el 76,0 %** de los
+  casos y acierta el 73,8 % de esas sugerencias; en el resto muestra tres opciones. La categoría
+  correcta está entre las **tres primeras en el 89,1 %** de los casos del conjunto de prueba.
+- **Prueba geográfica.** Entrenado sin ningún comercio de la Comuna 3 y probado en sus 161
+  comercios con categoría asignada, el F1 macro fue 0,670 (exactitud 0,714). Varias categorías
+  tienen entre 2 y 8 ejemplos en ese conjunto, por lo que se toma como orden de magnitud y no como
+  cifra fina.
+- **Comparación con un modelo externo.** El reporte también compara con un modelo de referencia,
+  pero esa comparación no se cita como un resultado propio: se desconoce con qué datos y mapeo se
+  entrenó, probablemente vio estos nombres al entrenarse y su código no es reproducible.
 - **Por qué esta técnica y no una red neuronal:** el nombre de un comercio es un texto de dos o
   tres palabras y los ejemplos etiquetados son pocos miles. En ese tamaño una red neuronal no
   aporta una mejora que se pueda justificar, es más difícil de explicar a un jurado y a un
@@ -171,8 +222,20 @@ en cada archivo de salida).
   del vecino**, sin servidor de inferencia, sin API y sin costo.
 - **Uso previsto y límites:** sugiere; la persona y el moderador deciden. Puede equivocarse con
   nombres propios («Dulce Poema») y con categorías con pocos ejemplos, y aprendió de nombres de
-  comercios en los que pesan las cadenas y el centro de la ciudad. Los límites medidos por
-  categoría se publicarán en la ficha del modelo: [PENDIENTE: métrica de datos-ml].
+  comercios en los que pesan las cadenas y el centro de la ciudad. Límites medidos por
+  categoría en el conjunto de prueba (F1): mejor en salud y bienestar (0,828), comidas (0,763) y
+  mascotas (0,762); peor en ropa y calzado (0,277) y papelería (0,293); papelería tiene precisión de
+  0,184 porque el modelo confunde con ella muchas tiendas de víveres. «Barbería» tiene solo 10
+  ejemplos y su F1 no es fiable. El modelo no cubre ocho categorías del sitio (modistería,
+  reparación de electrodomésticos, transporte y domicilios, educación y cuidado infantil,
+  fotografía y eventos, lavandería, reciclaje y otros) porque no tienen etiqueta fiable en
+  OpenStreetMap.
+- **Limitaciones que siguen abiertas.** (1) Cobertura parcial de OpenStreetMap. (2) Las etiquetas
+  de entrenamiento son «débiles»: salen de las etiquetas de OpenStreetMap, sin revisión manual de
+  una muestra. [PENDIENTE: métrica de datos-ml, revisión manual de una muestra de etiquetas]
+  (3) El modelo no se ha validado contra los registros propios de la red: hay 7 u 8, insuficientes
+  para una métrica. [PENDIENTE: métrica de datos-ml, validación con registros propios cuando haya
+  suficientes]
 - **Reentrenamiento:** periódico (propuesta: cada trimestre o cada cien correcciones de moderador),
   sumando las correcciones propias a los datos de OpenStreetMap.
 
@@ -184,14 +247,24 @@ en cada archivo de salida).
 |---|---|---|---|---|
 | Latitud y longitud del establecimiento | Entrada | Numérica | OpenStreetMap (y, en el futuro, fichas aprobadas) | 2 |
 | Coordenadas proyectadas a un sistema métrico local | Variable derivada | Numérica, en metros | Conversión de las anteriores (proyección plana para Medellín) | 2 |
-| Tamaño mínimo del grupo | Hiperparámetro | Entero | Punto de partida del equipo: 6. Se somete a análisis de sensibilidad | 2 |
-| Muestras mínimas | Hiperparámetro | Entero | Punto de partida del equipo: 3. Se somete a análisis de sensibilidad | 2 |
+| Tamaño mínimo del grupo | Hiperparámetro | Entero | Valor usado: 6 (`min_cluster_size`). La sensibilidad a este valor queda en el JSON de salida | 2 |
+| Muestras mínimas | Hiperparámetro | Entero | Valor usado: 3 (`min_samples`) | 2 |
+| Método de selección de grupos | Hiperparámetro | Categórico | Valor usado: `leaf` (hojas del árbol); la alternativa por defecto es `eom`. Ver la explicación abajo | 2 |
 | Identificador de constelación (o «suelto») | Salida | Categórica | Calculada por el modelo | 2 |
 | Centroide, radio, mezcla de categorías y árbol de expansión mínima | Salida derivada | Numérica y geométrica | Calculadas a partir del grupo; el árbol define las líneas que se dibujan | 2 |
 
-- **Técnica:** HDBSCAN (Campello et al., 2013; McInnes et al., 2017), sobre coordenadas en metros.
-- **Resultado:** número de constelaciones y de locales sueltos: [PENDIENTE: métrica de datos-ml].
-  Se presenta como **resultado exploratorio** que se valida en campo durante el piloto.
+- **Técnica:** HDBSCAN (Campello et al., 2013; McInnes et al., 2017), sobre coordenadas en metros
+  (proyección UTM zona 18N), con `min_cluster_size` = 6, `min_samples` = 3 y selección `leaf`.
+- **Resultado:** sobre los 192 comercios mapeados de la Comuna 3 salen **12 constelaciones, con 122
+  comercios agrupados y 70 sueltos** (OpenStreetMap contributors, 2026; corrida del 1 de octubre de
+  2026). Se presenta como **resultado exploratorio** que se valida en campo durante el piloto.
+- **Por qué `leaf` y no el valor por defecto (`eom`).** Se probaron los dos métodos y la
+  comparación está en el JSON de salida (`sensibilidad_min_cluster_size`). Con `eom`, el método por
+  defecto, salen 3 constelaciones y una sola agrupa 168 de los 192 comercios, con unos 730 metros de
+  radio: sirve para decir que la comuna es densa, pero no para leer núcleos a escala de cuadra, que
+  es lo que orienta el trabajo de campo. Con `leaf` se obtienen grupos más pequeños y legibles. Es
+  una decisión de diseño aceptada por el equipo, no un resultado «más correcto» en sentido
+  estadístico: otro criterio daría otra partición.
 - **Por qué esta técnica y no K-Means:** K-Means obliga a fijar de antemano cuántos grupos hay y a
   asignar *todos* los puntos a algún grupo, lo que anula la idea de «local suelto». Además supone
   grupos de forma redonda y tamaño similar, y una calle comercial es alargada. HDBSCAN no
@@ -201,6 +274,11 @@ en cada archivo de salida).
   aprender; es un problema sin supervisión y con pocos cientos de puntos.
 - **Límites:** OpenStreetMap ve más lo formal y lo que está sobre vías principales, por lo que la
   agrupación subestima la ladera alta. Por eso el piloto incluye un censo de campo (sección 5).
+  Además, las constelaciones describen lo que está **mapeado**, no todo lo que existe: una zona sin
+  constelación puede ser una zona sin mapear. La etiqueta de categoría dominante de una
+  constelación puede ser débil (hay locales sin categoría asignada); debe leerse junto con la mezcla
+  de categorías. Una de las constelaciones (`c09`) tiene un radio de unos 620 metros: son 7 locales
+  dispersos, no un núcleo compacto.
 
 ### Variables de la red y del uso (no entran a un modelo; alimentan los agregados)
 
@@ -287,7 +365,7 @@ predicciones.
 | La visibilidad llega a quien tiene menos acceso | Proporción de aliados informales | [PENDIENTE: línea base de formalidad declarada] | Al menos 40 % de los aliados, **con definición de «informal» fijada en la fase 1** | Formalidad declarada, agregada con k = 5 |
 | Registros asistidos efectivos | Aliados con origen «asistido» y consentimiento verificable | [PENDIENTE] | [COMPLETAR: meta; se propone derivarla del 40 % de informales] | Origen de registro (componente 7) |
 | Información confiable | Fichas con categoría y barrio confirmados | [PENDIENTE: línea base tras calcular el barrio oficial] | 95 % de las fichas | Fichas con categoría y barrio oficial confirmados ÷ aprobadas |
-| El sugeridor ayuda y no estorba | Proporción de sugerencias aceptadas y corregidas por las personas | [PENDIENTE: métrica de datos-ml] | [COMPLETAR: meta, tras medir el uso inicial] | Registro de sugerencias y de la categoría final elegida |
+| El sugeridor ayuda y no estorba | Proporción de sugerencias aceptadas y corregidas por las personas | [PENDIENTE: métrica de datos-ml; no existe hasta que el sugeridor esté en el formulario y haya registros. Referencia de laboratorio, no de uso: el modelo acierta 73,8 % de las sugerencias únicas sobre datos de OpenStreetMap] | [COMPLETAR: meta, tras medir el uso inicial] | Registro de sugerencias y de la categoría final elegida |
 | La oferta de apoyo llega | Aliados conectados con al menos una convocatoria que les aplica | 0 al inicio del piloto (la función no existe) | 30 % de los aliados | Convocatorias aprobadas y vistas desde «Para ti» (componente 12) |
 | Diálogo con el territorio | Negocios entrevistados | 0 al inicio del piloto | 30 negocios | Registro del equipo |
 | Formación | Talleres realizados | 0 al inicio del piloto | 6 talleres | Registro del equipo |
@@ -315,9 +393,9 @@ ingreso.
 
 | Riesgo | A quién afecta | Mitigación |
 |---|---|---|
-| OpenStreetMap ve más lo formal y lo que está sobre vías principales. Proporción de locales de la comuna ubicados en la mitad norte del recuadro: [PENDIENTE: métrica de datos-ml] | Si el mapa abierto orienta dónde se trabaja, quedan por fuera los negocios en casa de la ladera alta | Censo de campo con registro asistido en los barrios con menos puntos; meta explícita de inclusión de informales (al menos 40 %) |
-| El clasificador aprendió de nombres de comercios, muchos de cadenas y del centro | Negocios con nombre propio o de categorías con pocos ejemplos | Umbral de confianza: por debajo, el sistema pregunta en lugar de sugerir; la persona y el moderador deciden; cada corrección reentrena con datos de Manrique |
-| El registro mercantil solo ve lo formal: en las 24 ciudades que mide el DANE, 13,0 % de los micronegocios tiene registro en Cámara de Comercio (DANE, 2026) | Medir la cobertura contra la Cámara invisibilizaría a la mayoría | La cobertura se mide contra lo observado en campo y en el mapa abierto, no contra la Cámara |
+| OpenStreetMap ve más lo formal y lo que está sobre vías principales; su cobertura es parcial (192 comercios mapeados frente a 2.626 empresas en el registro mercantil, dos cifras que no son comparables como porcentaje). Proporción de locales de la comuna ubicados en la mitad norte del recuadro: [PENDIENTE: métrica de datos-ml, el pipeline aún no la calcula] | Si el mapa abierto orienta dónde se trabaja, quedan por fuera los negocios en casa de la ladera alta | Censo de campo con registro asistido en los barrios con menos puntos; meta explícita de inclusión de informales (al menos 40 %) |
+| El clasificador aprendió de nombres de comercios del Valle de Aburrá, muchos de cadenas y del centro; sus etiquetas vienen de OpenStreetMap sin revisión manual y no se ha validado con registros propios | Negocios con nombre propio o de categorías con pocos ejemplos (por ejemplo, barbería, con 10) | Umbral de confianza: por debajo, el sistema pregunta en lugar de sugerir; la persona y el moderador deciden; cada corrección reentrena con datos de Manrique |
+| El registro mercantil solo ve lo formal: en las 24 ciudades que mide el DANE, 13,0 % de los micronegocios tiene registro en Cámara de Comercio (DANE, 2026). Esa cifra no es de Manrique y no se usa para estimar cuántos negocios informales hay en la comuna | Medir la cobertura contra la Cámara invisibilizaría a la mayoría | La cobertura se mide contra lo observado en campo y en el mapa abierto, no contra la Cámara; las 2.626 empresas registradas se muestran como una mirada más, no como el universo |
 | Los proveedores de lenguaje del asesor reciben la ficha del negocio | Titulares de datos, que no han sido informados de ese tratamiento (Ley 1581 de 2012) | Nombrar los proveedores en la política de datos y subir la versión de términos; no enviar respuestas de investigación a proveedores que entrenan con lo recibido. **En desarrollo** |
 | Con pocos negocios, los agregados permitirían reidentificar a alguien | Los negocios de celdas pequeñas | Supresión de celdas con menos de cinco negocios; los textos de búsqueda no se guardan |
 | La brecha entre aliados y establecimientos podría leerse como «fracaso» o como «cobertura» | Lectores del tablero (JAL, comunidad) | Se rotula como **línea base**; el tablero explica la diferencia entre universo observado y red |
@@ -392,10 +470,12 @@ siguiente es lo que se afirma y lo que se deja condicionado:
 
 Todas las cifras de este documento salen de esta tabla o están marcadas como pendientes. Las cifras
 fueron tomadas de la asesoría técnica del 1 de octubre de 2026, que las consultó en la fuente
-original ese día; se cita siempre la fuente original, no la asesoría. **[PENDIENTE: un integrante
-del equipo contrasta cada valor con el documento original antes de entregar; en esta redacción no se
-pudo abrir el PDF de la ficha del Departamento Administrativo de Planeación ni el boletín del DANE
-del 30 de julio de 2026.]**
+original ese día; se cita siempre la fuente original, no la asesoría. Las cifras de la Cámara de
+Comercio y de la ficha del Departamento Administrativo de Planeación marcadas con «leída del archivo
+original» fueron verificadas contra el documento el 1 de octubre de 2026. **[PENDIENTE: un integrante
+del equipo contrasta los demás valores (población, área, desempleo, índice de calidad de vida y
+cifras del DANE) con el documento original antes de entregar; en esta redacción no se pudo abrir el
+boletín del DANE del 30 de julio de 2026.]**
 
 | Dato | Valor | Fuente original | Fecha de consulta |
 |---|---|---|---|
@@ -406,17 +486,38 @@ del 30 de julio de 2026.]**
 | Micronegocios con RUT / con registro en Cámara de Comercio | 31,6 % / 13,0 % (24 ciudades) | DANE (2026), boletín del 30 de julio de 2026 | 1 de octubre de 2026 |
 | Micronegocios que usan internet | 75,8 % (24 ciudades) | DANE (2026) | 1 de octubre de 2026 |
 | Peso de Medellín A. M. entre los micronegocios de las 24 ciudades | 17,5 % | DANE (2026) | 1 de octubre de 2026 |
+| Hogares con jefatura femenina, Comuna 3 | 53,68 % (Encuesta de Calidad de Vida 2018; ficha de 2021) | Alcaldía de Medellín, Departamento Administrativo de Planeación (2021); leída del archivo original | 1 de octubre de 2026 |
+| Hurto a establecimientos comerciales, Comuna 3 frente a Medellín | 89 casos frente a 4.555 (año 2019, SIJIN/SIEDCO) | Alcaldía de Medellín, Departamento Administrativo de Planeación (2021); leída del archivo original | 1 de octubre de 2026 |
+| Empresas registradas en Manrique | 2.626 (comerciantes matriculados y renovados en 2025; Tabla 16) | Cámara de Comercio de Medellín para Antioquia (2025), Base del Registro Mercantil; leída del archivo original | 1 de octubre de 2026 |
+| Empresas de Manrique por tamaño según activos | 2.569 microempresas (97,8 %), 51 pequeñas, 4 medianas, 2 grandes (Tabla 14) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
+| Empresas de Manrique por sector (seis mayores) | Comercio 1.091; industria manufacturera 309; alojamiento y comida 288; construcción 216; otras actividades de servicios 149; actividades profesionales, científicas y técnicas 130 (Tabla 16) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
+| Barrios oficiales de la Comuna 3 | 15 | Alcaldía de Medellín (2000), Decreto 346 de 2000, y geocatálogo de la Alcaldía (s. f.) | 1 de octubre de 2026 |
+| Comercios con nombre mapeados en OpenStreetMap | 5.007 en el Valle de Aburrá; 192 en la Comuna 3 (snapshot del 6 de mayo de 2026, vía espejo de Overpass) | OpenStreetMap contributors (2026), licencia ODbL; `pipeline/README.md` | Corrida del 1 de octubre de 2026 |
 | Mandato local | Línea 4 Económica: «red estratégica con los pequeños comerciantes» (PDL Comuna 3, p. 114) | Alcaldía de Medellín (s. f.) | 1 de octubre de 2026 |
 
 Notas sobre las cifras:
+
+- **Barrios.** La ficha del Departamento Administrativo de Planeación lista por error «Campo Valdés
+  No. 1», que pertenece a la Comuna 4; el barrio oficial de la Comuna 3 es «Campo Valdés No. 2».
+- **Hurto.** La ficha usa «hurto a establecimientos comerciales» con datos de 2019. Se cita como
+  contexto de seguridad del comercio local, no como causa de la baja visibilidad.
+- **Jefatura femenina y registro mercantil.** Ni la jefatura femenina de los hogares ni las 2.626
+  empresas registradas dicen cuántos negocios informales hay: el registro mercantil solo ve lo que
+  está matriculado.
 
 - Las cifras del DANE son de **24 ciudades**, no de Manrique; en ningún lugar del documento se
   presentan como cifras de la comuna.
 - Las cifras de desempleo y de calidad de vida son de 2019. Aunque la ficha es de 2021, **no son datos
   actuales**.
-- Las cifras del pipeline de datos y aprendizaje automático (establecimientos visibles en el mapa
-  abierto, número de constelaciones, locales sueltos, tamaño de la muestra de entrenamiento y
-  puntaje F1) se agregarán cuando el pipeline las produzca: [PENDIENTE: métrica de datos-ml].
+- Las cifras del pipeline (comercios mapeados, constelaciones, locales sueltos, tamaño de la
+  muestra de entrenamiento y puntajes F1) son de la corrida del 1 de octubre de 2026 y se
+  reproducen con `pipeline/`. Dependen de un snapshot de OpenStreetMap del 6 de mayo de 2026
+  (el servidor principal de Overpass dio error 504 y se usó un espejo); una descarga posterior
+  puede dar números distintos. Se dicen siempre como «comercios mapeados en OpenStreetMap», nunca
+  como «negocios que hay».
+- Quedan marcados como pendientes los valores que el pipeline todavía no produce: proporción de
+  locales en la mitad norte del recuadro, revisión manual de etiquetas y validación con registros
+  propios.
 
 ## Referencias
 
@@ -424,11 +525,22 @@ Alcaldía de Medellín, Departamento Administrativo de Planeación. (2021). *Com
 Ficha de caracterización*.
 https://www.medellin.gov.co/irj/go/km/docs/pccdesign/medellin/Temas/PlaneacionMunicipal/Publicaciones/Shared%20Content/Documentos/2021/Comuna%203%20Manrique-Ficha%20Informativa.pdf
 
+Alcaldía de Medellín. (2000). *Decreto 346 de 2000* [COMPLETAR: título completo del decreto y URL
+del texto consultado].
+
+Alcaldía de Medellín. (s. f.). *Barrios y veredas* [Capa del geocatálogo de la Alcaldía de
+Medellín]. https://www.medellin.gov.co/giscatalogacion4/srv/api/records/61a04bc9-2991-4495-8491-7f18f40a2972
+[COMPLETAR: confirmar que este es el registro consultado el 1 de octubre de 2026].
+
 Alcaldía de Medellín. (s. f.). *Plan de Desarrollo Local Comuna 3 – Manrique* [COMPLETAR: año de
 publicación y URL del documento consultado].
 
 Alcaldía de Medellín, & Instituto Tecnológico Metropolitano. (2026). *Términos de referencia
 Territorio INN 2026* [COMPLETAR: título exacto y URL del documento].
+
+Cámara de Comercio de Medellín para Antioquia. (2025). *Estructura empresarial 2025* [Base del
+Registro Mercantil: comerciantes matriculados y renovados en 2025]. [COMPLETAR: año de publicación
+si difiere y URL del archivo consultado el 1 de octubre de 2026].
 
 Campello, R. J. G. B., Moulavi, D., & Sander, J. (2013). Density-based clustering based on
 hierarchical density estimates. En J. Pei, V. S. Tseng, L. Cao, H. Motoda, & G. Xu (Eds.),
@@ -450,7 +562,8 @@ McInnes, L., Healy, J., & Astels, S. (2017). hdbscan: Hierarchical density based
 *Journal of Open Source Software, 2*(11), 205. https://doi.org/10.21105/joss.00205
 
 OpenStreetMap contributors. (2026). *OpenStreetMap* [Base de datos geográfica abierta, licencia
-Open Database License]. Recuperado el 1 de octubre de 2026 de https://www.openstreetmap.org/copyright
+Open Database License 1.0; snapshot del 6 de mayo de 2026 obtenido el 1 de octubre de 2026 mediante
+un espejo de la API Overpass]. https://www.openstreetmap.org/copyright
 
 Pacheco Duarte, J. F., Galindo Gómez, S. F., & Rodríguez Pupo, S. (2022). *Ruta de innovación
 social: Paso a paso para desarrollar innovaciones sociales* (Documento técnico 02). Corporación
@@ -465,6 +578,5 @@ Learning Research, 12*, 2825–2830.
 Servicio Nacional de Aprendizaje. (2026). *[COMPLETAR: documento con los topes de honorarios 2026
 usados para el presupuesto]*. [COMPLETAR: URL y fecha de consulta].
 
-*(Referencias pendientes de la asesoría: GeoMedellín, capa de barrios; Cámara de Comercio de
-Medellín para Antioquia, Estructura Empresarial 2025. Se agregan en cuanto el equipo confirme el
-documento y la URL consultados.)*
+*(Referencia pendiente: GeoMedellín, capa de barrios usada para calcular el barrio por punto en
+polígono, si es distinta del registro del geocatálogo citado arriba.)*
