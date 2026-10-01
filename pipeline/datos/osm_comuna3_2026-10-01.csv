@@ -1,0 +1,193 @@
+osm_tipo,osm_id,nombre,lat,lon,shop,craft,amenity,healthcare,leisure,hairdresser,categoria
+node,1661579961,El Paisa,6.2645983,-75.5449284,supermarket,,,,,,tienda_viveres
+node,4742463327,Heladería tangomanos,6.2692613,-75.5546994,beverages,,,,,,tienda_viveres
+node,4794219623,MANDINGAS,6.2633761,-75.548741,,,fast_food,,,,comidas
+node,5249729664,Gimnasio CPS La cruz,6.2696453,-75.5365453,,,,,fitness_centre,,salud_bienestar
+node,5249805947,Papelería y Variedades el Templo,6.2695173,-75.5372373,stationery,,,,,,papeleria
+node,5249818267,Asadero de pollos La cruz,6.2701446,-75.5361914,,,cafe,,,,comidas
+node,5249826521,Venta de Combustible,6.271507,-75.5373555,gas,,,,,,
+node,5249839582,Punto de Salud,6.2702686,-75.5363906,,,pharmacy,pharmacy,,,salud_bienestar
+node,5249839647,Farmacia Central,6.2715977,-75.5376808,,,pharmacy,pharmacy,,,salud_bienestar
+node,5249851907,Doña Rosa,6.269694,-75.5384096,supermarket,,,,,,tienda_viveres
+node,5249851909,Inder,6.269504,-75.5384646,,,,,fitness_centre,,salud_bienestar
+node,5250437924,Tiendita,6.2699855,-75.5361711,supermarket,,,,,,tienda_viveres
+node,5426962062,El Danny,6.2647552,-75.5423448,gift,,,,,,papeleria
+node,5426975195,Drogueria Dallas,6.2668654,-75.5423047,,,hospital,hospital,,,salud_bienestar
+node,5426989208,Tienda Sin nombre,6.2668552,-75.5424108,supermarket,,,,,,tienda_viveres
+node,5426995337,Ferretería,6.2635105,-75.5430701,hardware,,,,,,construccion
+node,5426995338,Tienda azul,6.2634769,-75.5432026,supermarket,,,,,,tienda_viveres
+node,5426995340,El dany,6.2635243,-75.5429777,hairdresser,,,,,,belleza_peluqueria
+node,5426995341,Las escaleritas,6.2638137,-75.5432988,supermarket,,,,,,tienda_viveres
+node,5426995342,Ferretería,6.2640567,-75.5432755,hardware,,,,,,construccion
+node,5427000838,Legumbreria,6.2668696,-75.5425672,greengrocer,,,,,,tienda_viveres
+node,5427002545,Sin nombre,6.2669315,-75.5426898,supermarket,,,,,,tienda_viveres
+node,5427002790,Barberia,6.2668788,-75.5426017,hairdresser,,,,,,belleza_peluqueria
+node,5427008121,Panadería,6.2668886,-75.5427476,bakery,,,,,,panaderia
+node,5427008292,HELADERIA -FOTOCOPIADORA-INTERNET,6.2652176,-75.542244,,,ice_cream,,,,comidas
+node,5427014121,Tienda La Curvita,6.2658494,-75.5421613,convenience,,,,,,tienda_viveres
+node,5427015649,Helados Yanclao,6.2665083,-75.5424736,,,ice_cream,,,,comidas
+node,5427015713,El Tanque,6.263592,-75.5425739,butcher,,,,,,tienda_viveres
+node,5427015716,Sin Nombre,6.2634564,-75.542607,fabric,,,,,,
+node,5427015717,MODISTERIA,6.2633905,-75.542368,,dressmaker,,,,,
+node,5427016159,Foto Estudio,6.2665856,-75.5424589,,photographer,,,,,
+node,5427016321,Drogueria Uvapar,6.2633475,-75.5421933,chemist,,,,,,salud_bienestar
+node,5427016322,Mini Market la Uva,6.2632626,-75.5418578,supermarket,,,,,,tienda_viveres
+node,5427024329,Taller de motos,6.2669135,-75.5429485,car_repair,,,,,,mecanica_motos
+node,5427024331,Fruver Monterrey,6.2668864,-75.5430185,greengrocer,,,,,,tienda_viveres
+node,5427026695,Fotos montajes,6.2666881,-75.5430416,photo,photographic_laboratory,,,,,
+node,5427032278,Venta de Mekato,6.2666742,-75.5429675,convenience,,,,,,tienda_viveres
+node,5427042054,Billares Azules,6.2633283,-75.5420709,,brewery,,,,,
+node,5427063303,Supermercado max super,6.2645985,-75.5449319,supermarket,,,,,,tienda_viveres
+node,5427063304,El Paisa,6.2645948,-75.5449032,supermarket,,,,,,tienda_viveres
+node,5427063306,El BUEN SAZON,6.2640725,-75.5449642,,,fast_food,,,,comidas
+node,5427063307,Papeleleria y Tienda de Zapatos,6.2637564,-75.5449772,stationery,,,,,,papeleria
+node,5427063311,Miselanea,6.2645395,-75.5443975,stationery,,,,,,papeleria
+node,5429308656,carpinteria,6.2652207,-75.5440677,,carpenter,,,,,construccion
+node,5429322550,Papeleria y Variedades,6.2634254,-75.542592,stationery,,,,,,papeleria
+node,5429332234,Peluqueria,6.2625657,-75.5443415,hairdresser,,,,,,belleza_peluqueria
+node,5429334224,Peluqueria,6.2627153,-75.5442215,hairdresser,,,,,,belleza_peluqueria
+node,5429336648,Taller de motos,6.2619676,-75.5443293,car_repair,,,,,,mecanica_motos
+node,5429343383,Peluqueria,6.2622883,-75.5449105,hairdresser,,,,,,belleza_peluqueria
+node,5429346348,Comida rápida,6.2623884,-75.5449585,,,fast_food,,,,comidas
+node,5429346880,Veterinaria,6.2625637,-75.5448933,,,veterinary,,,,mascotas
+node,5429352131,Taller de motos,6.2618474,-75.5435736,car_repair,,,,,,mecanica_motos
+node,5429353013,Tienda Mariana,6.2622045,-75.5436002,greengrocer,,,,,,tienda_viveres
+node,5429354391,Tienda,6.2629578,-75.5442235,convenience,,,,,,tienda_viveres
+node,5429356666,Tienda Cerrajería,6.2629487,-75.5443413,,locksmith,,,,,
+node,5429356870,Minitienda,6.2652512,-75.5439649,convenience,,,,,,tienda_viveres
+node,5429363053,Tienda,6.2617507,-75.5438019,convenience,,,,,,tienda_viveres
+node,5429366437,Zapateria,6.2630118,-75.5435727,,shoemaker,,,,,ropa_calzado
+node,5429366438,Granero el Deportista,6.2632672,-75.5441369,supermarket,,,,,,tienda_viveres
+node,5429366964,Tienda El Parche,6.2618869,-75.5437279,convenience,,,,,,tienda_viveres
+node,5429376384,Licorera la 27,6.2622045,-75.5427968,alcohol,,,,,,tienda_viveres
+node,5429388839,TIenda,6.2622449,-75.5437975,convenience,,,,,,tienda_viveres
+node,5429391495,Tienda Los Rieles,6.2623853,-75.5439831,convenience,,,,,,tienda_viveres
+node,5443317616,The Barber Shop,6.2634686,-75.5417729,hairdresser,,,,,,belleza_peluqueria
+node,5443317617,Venta de Helados,6.2636509,-75.541736,,,ice_cream,,,,comidas
+node,5443317618,Reparación de Lavadoras y Neveras,6.2635723,-75.5417615,,electronics_repair,,,,,tecnologia_celulares
+node,5443320365,Don Tatto Swa,6.2638375,-75.5425208,tattoo,,,,,,
+node,5443320366,The Barber Shop,6.2639161,-75.542437,hairdresser,,,,,,belleza_peluqueria
+node,5443320367,Mirador de la UVA,6.2639144,-75.5421648,beverages,,,,,,tienda_viveres
+node,5443320368,Helados de la UVA,6.2639238,-75.5420944,,,ice_cream,,,,comidas
+node,5443320369,Los Monos,6.2639771,-75.5417605,supermarket,,,,,,tienda_viveres
+node,5443361606,tienda,6.2642081,-75.5415987,supermarket,,,,,,tienda_viveres
+node,5443361608,Sin Nombre,6.2645397,-75.5412648,bakery,,,,,,panaderia
+node,5443361609,Sin Nombre,6.2642703,-75.5424325,bakery,,,,,,panaderia
+node,5449502569,Variedades la 30,6.2654143,-75.5432044,stationery,,,,,,papeleria
+node,5449508837,Cafeteria,6.2656996,-75.5430489,,,cafe,,,,comidas
+node,5449508838,Ferreteria Jhon Vital,6.2658596,-75.5430489,hardware,,,,,,construccion
+node,5449508839,Granos Orientales,6.2659576,-75.5429745,convenience,,,,,,tienda_viveres
+node,5449526345,Frutas y verduras,6.2662596,-75.5444352,greengrocer,,,,,,tienda_viveres
+node,5449526346,Sandra Spa,6.2661743,-75.54377,beauty,,,,,,belleza_peluqueria
+node,5449531087,Variedades yusmi,6.2661876,-75.5438559,variety_store,,,,,,papeleria
+node,5449531088,Bellisima Spa,6.2662063,-75.5439471,beauty,,,,,,belleza_peluqueria
+node,5449531089,Comida rapida,6.2662116,-75.543998,,,fast_food,,,,comidas
+node,5449543442,carniceria,6.2654285,-75.5445736,butcher,,,,,,tienda_viveres
+node,5449543444,Tienda mascotas,6.2655824,-75.5444996,pet,,,,,,mascotas
+node,5460480333,mary,6.2634524,-75.543108,miscelanea,,,,,,
+node,5460480335,Pollos Harry,6.2634924,-75.5428747,convenience,,,,,,tienda_viveres
+node,5460480336,El descanso,6.2634844,-75.5427942,supermarket,,,,,,tienda_viveres
+node,5460480337,Los Rieles,6.263551,-75.5426574,supermarket,,,,,,tienda_viveres
+node,5460480338,Venta En Casa de Alchol Casero,6.2634817,-75.5435318,yes,,,,,,
+node,5460480340,Taller,6.2636177,-75.5438027,car_repair,,,,,,mecanica_motos
+node,5460480341,enny,6.263759,-75.5441836,hairdresser,,,,,,belleza_peluqueria
+node,5460480342,Topsport,6.2640283,-75.5441434,clothes,,,,,,ropa_calzado
+node,5460480343,LOS,6.2641803,-75.5441138,supermarket,,,,,,tienda_viveres
+node,5460480344,Mi Emociones,6.2643082,-75.5440978,gift,,,,,,papeleria
+node,5473346000,panaderia,6.2634663,-75.5433085,,,cafe,,,,comidas
+node,5489027817,Restaurante La Reina,6.2811162,-75.5457996,,,restaurant,,,,comidas
+node,5492213553,Droguería Parque Gaitan,6.264526,-75.5480888,,,pharmacy,,,,salud_bienestar
+node,5493973416,Metro Farma La 45,6.2687159,-75.5547152,,,pharmacy,,,,salud_bienestar
+node,5494073080,Droguería Hidalgo,6.2656245,-75.5464232,,,pharmacy,,,,salud_bienestar
+node,5494163812,Droguería Pentel,6.2636489,-75.5485703,,,pharmacy,,,,salud_bienestar
+node,5545663222,Carrniceria,6.2638893,-75.5437478,supermarket,,,,,,tienda_viveres
+node,5545670768,Mini Mercado,6.2638815,-75.5436438,supermarket,,,,,,tienda_viveres
+node,5545670769,Verduleria y fruteria,6.2639323,-75.5441255,greengrocer,,,,,,tienda_viveres
+node,5545675236,Tienda Maria Hoyos,6.264158,-75.5423415,,,pharmacy,pharmacy,,,salud_bienestar
+node,5545688654,vimar,6.2663191,-75.5445784,chemist,,,,,,salud_bienestar
+node,5545690235,El Paisa,6.2645682,-75.5449268,supermarket,,,,,,tienda_viveres
+node,5545699693,zapateria,6.2660951,-75.5448181,shoes,,,,,,ropa_calzado
+node,5545703908,Venta de Gas y Lavadero de Motos,6.2640391,-75.5424284,gas,,,,,,
+node,5545710794,Casa de Modisteria,6.2642546,-75.5419971,,dressmaker,,,,,
+node,5545711566,Granero,6.26511,-75.5430024,convenience,,,,,,tienda_viveres
+node,5545722572,Taller De Bicicletas,6.2657695,-75.5443447,bicycle,,,,,,
+node,5545722855,Centro de Salud Raizal,6.2666715,-75.5447521,,,hospital,hospital,,,salud_bienestar
+node,5545724565,Pasteleria,6.2649451,-75.5446835,pastry,,,,,,panaderia
+node,5545724568,El Palacio del Revolcon,6.2665566,-75.5444391,variety_store,,,,,,papeleria
+node,5545724569,banka,6.2647266,-75.5445956,locksmith,,,,,,
+node,5545724570,Casa de la Esquina,6.2645811,-75.5444688,convenience,,,,,,tienda_viveres
+node,5545740815,tienda,6.2641288,-75.5420599,chemist,,,,,,salud_bienestar
+node,5551751396,Revuelteria,6.2642778,-75.5432207,supermarket,,,,,,tienda_viveres
+node,5553413830,abarrotes,6.2651051,-75.542791,convenience,,,,,,tienda_viveres
+node,5553415201,tienda,6.2651168,-75.5431191,greengrocer,,,,,,tienda_viveres
+node,5553422596,Panadería,6.2640363,-75.5424292,tea,,,,,,
+node,5553442849,Arreglos y modisteria,6.2640334,-75.5424299,,dressmaker,,,,,
+node,5553446660,Supermercado,6.2644535,-75.5423297,supermarket,,,,,,tienda_viveres
+node,5553453466,Tienda,6.2648563,-75.5422438,convenience,,,,,,tienda_viveres
+node,5582745512,Buñuelos,6.2702108,-75.5362285,,,fast_food,,,,comidas
+node,5608266308,Papeleria,6.2651574,-75.5407368,stationery,,,,,,papeleria
+node,5608284436,Tienda,6.2650881,-75.540769,sweets,,,,,,
+node,5608306847,Verdolaga,6.2642852,-75.5407158,sweets,,,,,,
+node,5608306848,Tienda,6.2647569,-75.540824,supermarket,,,,,,tienda_viveres
+node,5608306849,La Divisa,6.2645514,-75.5408121,alcohol,,,,,,tienda_viveres
+node,5608338567,Tienda,6.2637154,-75.5406426,sweets,,,,,,
+node,5608338569,Venta de gas,6.2634015,-75.5406872,gas,,,,,,
+node,5621371114,TIENDA,6.263348,-75.5425655,articulos_de_la_canasta_familiar,,,,,,
+node,5621371115,TIENDA EL 22-20,6.2633026,-75.5425709,TIENDA,,,,,,
+node,5621371116,Taller de motos MRQ,6.2629842,-75.5432542,motorcycle,,,,,,mecanica_motos
+node,5621371117,CERRAJERIA,6.2628414,-75.5428981,locksmith,,,,,,
+node,5621371118,El Rincon de Ramón,6.2629819,-75.5433039,convenience,,,,,,tienda_viveres
+node,5621371120,Tienda,6.263384,-75.5433466,convenience,,,,,,tienda_viveres
+node,5621373321,Luzma Delicias,6.2632527,-75.5433405,,,restaurant,,,,comidas
+node,5621373322,CONFESIONES,6.2628546,-75.542999,,dressmaker,,,,,
+node,5621373323,Modisteria y Miscelanea,6.2634224,-75.5425579,,dressmaker,,,,,
+node,5622751692,El aviador,6.2651887,-75.5421443,hardware,,,,,,construccion
+node,5622805870,Legumbreria El Coste,6.2651638,-75.5419952,convenience,,,,,,tienda_viveres
+node,5622816516,La 71,6.2651659,-75.5420498,convenience,,,,,,tienda_viveres
+node,5622882590,Confecciones EXKAPE,6.2650832,-75.5415614,clothes,,,,,,ropa_calzado
+node,7313045833,Panaderia y reposteria La Terminal,6.2683741,-75.5448149,bakery,,,,,,panaderia
+node,7326823766,Fruteria,6.2681022,-75.5445855,greengrocer,,,,,,tienda_viveres
+node,7326823769,Vendedor ambulante,6.2681955,-75.5440249,,,fast_food,,,,comidas
+node,7326823771,Claro,6.2682182,-75.5439512,mobile_phone,,,,,,tecnologia_celulares
+node,7326823773,Tienda del barrio,6.2682235,-75.5439029,convenience,,,,,,tienda_viveres
+node,7326823774,Tienda del barrio,6.2682982,-75.5435113,convenience,,,,,,tienda_viveres
+node,7326880937,Mil cacharros,6.2675969,-75.5441658,department_store,,,,,,
+node,7326947126,Gana,6.2679436,-75.5444769,bookmaker,,,,,,
+node,7326964317,Venta de aguacate,6.2680156,-75.5445386,health_food,,,,,,
+node,7330357472,D1,6.2692883,-75.5442112,supermarket,,,,,,tienda_viveres
+node,7331865562,Droguería Rolam,6.2665136,-75.5444525,,,pharmacy,pharmacy,,,salud_bienestar
+node,7333623186,consumo de drogas. dsitribucion de droga? facror de Riesgo,6.2645343,-75.5441614,cannabis,,,,,,
+node,7333623208,Fonda El Relajo,6.2644198,-75.5432651,alcohol,,,,,,tienda_viveres
+node,7333623213,celulares,6.2649236,-75.5432282,computer,,,,,,tecnologia_celulares
+node,7333623214,panaderia y autoservicio la 30,6.2651062,-75.5432234,convenience,,,,,,tienda_viveres
+node,7334535967,barberia,6.2659551,-75.5444636,hairdresser,,,,,,belleza_peluqueria
+node,7334649077,Baratillo-Agache,6.2652731,-75.5432072,variety_store,,,,,,papeleria
+node,7334649078,Servicio Tecnico,6.2653086,-75.5432085,,electronics_repair,,,,,tecnologia_celulares
+node,7335340206,Quesudos,6.2670066,-75.5442692,,,fast_food,,,,comidas
+node,7335340215,Panaderia principal,6.2667613,-75.5444731,bakery,,,,,,panaderia
+node,7335340236,Hogar y Decoración Transmayo,6.2674831,-75.5444369,interior_decoration,,,,,,
+node,7335340238,BarberShop,6.2674818,-75.5443839,hairdresser,,,,,,belleza_peluqueria
+node,7335340239,Ferretería la,6.2674811,-75.5443437,hardware,,,,,,construccion
+node,7338808285,construcción,6.2694044,-75.544225,trade,,,,,,construccion
+node,7338808316,SPA,6.2697052,-75.5445962,chemist,,,,,,salud_bienestar
+node,7338810141,joyas,6.2691666,-75.5445959,jewelry,,,,,,ropa_calzado
+node,7339397137,Tuberia,6.2679652,-75.5432977,,plumber,,,,,construccion
+node,7352789410,Repuestos de Motos,6.2646579,-75.5445122,motorcycle_repair,,,,,,mecanica_motos
+node,7855091952,Centro de Salud San Blas,6.280886,-75.548404,,,clinic,clinic,,,salud_bienestar
+node,8383824417,Sucerquia,6.2707261,-75.5379772,convenience,,,,,,tienda_viveres
+node,9081190287,Tiendas D1,6.2734341,-75.5534125,supermarket,,,,,,tienda_viveres
+node,9081194857,Tiendas D1 Manrique,6.2672041,-75.5544885,supermarket,,,,,,tienda_viveres
+node,9344048618,Taller de motos Maikbike,6.2702238,-75.5534725,car_repair,,,,,,mecanica_motos
+node,9604469495,Licores La Esperanza,6.2679452,-75.5479965,alcohol,,,,,,tienda_viveres
+node,9604471204,Burgelandia Me Gusta,6.2642192,-75.5479639,,,fast_food,,,,comidas
+node,9604487254,La Central del Sabor,6.2682913,-75.5459379,,,fast_food,,,,comidas
+node,9604499632,Tienda La Curva,6.2697223,-75.5481445,supermarket,,,,,,tienda_viveres
+node,9604517344,Pollos Mario,6.263639,-75.5479592,,,restaurant,,,,comidas
+node,11120045398,Smart Fit,6.2672289,-75.5547964,,,,,fitness_centre,,salud_bienestar
+way,543112930,Metrosalud La Cruz,6.2699394,-75.5367617,,,hospital,hospital,,,salud_bienestar
+way,785235284,Tienda de Mekatos,6.2691821,-75.5449457,confectionery,,,,,,panaderia
+way,785235285,kasetas,6.2691706,-75.5447848,,,restaurant,,,,comidas
+way,786959588,Gimnasio al aire libre La Cruz,6.2694569,-75.5362757,,,,,fitness_centre,,salud_bienestar
+way,1094706074,Unidad Hospitalaria Manrique,6.2618375,-75.5531984,,,hospital,hospital,,,salud_bienestar
+way,1242090433,Panadería 24 hrs,6.2728228,-75.5487432,bakery,,,,,,panaderia
+way,1366082006,Doña Reina,6.2698426,-75.536531,garden_centre,,,,,,
