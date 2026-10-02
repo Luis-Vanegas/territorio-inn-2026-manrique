@@ -18,8 +18,12 @@ import { Seccion } from './Seccion';
  * segundo mapa.
  */
 
+// Referencia estable: un `[]` nuevo por render recalcularía los conteos del mapa.
+const SIN_ALIADOS: Portafolio[] = [];
+
 type Props = {
-  portafolios: Portafolio[];
+  /** Mínimo de comercios por constelación (del JSON de OSM, no escrito a mano). */
+  minCluster: number;
   filas: FilaConstelacion[];
   barras: BarraCategoria[];
   totalComercios: number;
@@ -28,7 +32,7 @@ type Props = {
 };
 
 export function MapaYTabla({
-  portafolios,
+  minCluster,
   filas,
   barras,
   totalComercios,
@@ -60,11 +64,11 @@ export function MapaYTabla({
         id="mapa"
         letra="β"
         titulo="Mapa estelar de la Comuna 3"
-        descripcion={`${totalComercios} comercios mapeados en OpenStreetMap dentro de la comuna. Las líneas unen a los de cada constelación; las formas grandes de color son los aliados de la red.`}
+        descripcion={`${totalComercios} comercios mapeados en OpenStreetMap dentro de la comuna. Las líneas unen a los de cada constelación; los aliados se ven en la sección Aliados.`}
       >
         <div ref={cajaMapa}>
           <MapaAliados
-            portafolios={portafolios}
+            portafolios={SIN_ALIADOS} // sin aliados individuales: aquí solo van agregados (k = 5)
             variante="vitrina"
             conFiltro
             noche
@@ -82,7 +86,7 @@ export function MapaYTabla({
                 nombre y su dirección.
               </li>
               <li>
-                Las estrellas unidas por líneas forman una constelación: un grupo de al menos 6
+                Las estrellas unidas por líneas forman una constelación: un grupo de al menos {minCluster}
                 comercios vecinos.
               </li>
               <li>
@@ -169,8 +173,7 @@ export function MapaYTabla({
                 return (
                   <tr
                     key={f.id}
-                    onClick={() => elegir(f.id)}
-                    className={`cursor-pointer border-t border-trazo transition-colors ${
+                    className={`border-t border-trazo transition-colors ${
                       activa ? 'bg-noche-activa' : 'hover:bg-noche-3'
                     }`}
                   >
@@ -178,6 +181,7 @@ export function MapaYTabla({
                       <button
                         type="button"
                         aria-pressed={activa}
+                        onClick={() => elegir(f.id)}
                         aria-label={`${activa ? 'Apagar' : 'Encender'} ${f.codigo} en el mapa`}
                         className={`inline-flex min-h-[44px] min-w-[52px] items-center justify-center border px-2 font-sans text-sm font-medium transition-colors ${
                           activa

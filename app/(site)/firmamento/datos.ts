@@ -13,14 +13,13 @@ import {
 } from '@/lib/geo/comerciosOsm';
 import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import { obtenerDatosAbiertos, type DatosAbiertos } from '@/lib/db/datos.repo';
-import { listarAprobados, type Portafolio } from '@/lib/db/portafolios.repo';
 
 /**
  * Todo lo que lee /firmamento, resuelto en el servidor y en un solo lugar.
  *
  * - OSM: `public/firmamento/constelaciones.json`, import estático (solo viaja
  *   en el bundle del servidor; el navegador lo pide por fetch para el mapa).
- * - Aliados: el repo de datos abiertos (`obtenerDatosAbiertos`, regla k = 5),
+ * - Aliados: SOLO el repo de datos abiertos (`obtenerDatosAbiertos`, regla k = 5),
  *   no un fetch a nuestra propia API. Si la base no responde, la página sigue y
  *   dice que no pudo consultarlo: no se inventa ni se deja en cero.
  * - Modelo: solo la ficha de métricas de `public/modelo_categoria.json`.
@@ -93,7 +92,7 @@ export type DatosFirmamento = {
   cielo: Cielo;
   /** Posición horizontal (0 a 1, oeste a este) de cada comercio, para el horizonte. */
   posicionesHorizonte: number[];
-  red: { datos: DatosAbiertos | null; portafolios: Portafolio[] };
+  red: { datos: DatosAbiertos | null };
   modelo: {
     entrenadoCon: number;
     fecha: string;
@@ -167,15 +166,11 @@ function proyectar(): Cielo {
 // ── Lectura ─────────────────────────────────────────────────────────────
 
 export async function leerFirmamento(): Promise<DatosFirmamento> {
-  const [abiertos, aprobados] = await Promise.allSettled([
-    obtenerDatosAbiertos(),
-    listarAprobados(),
-  ]);
+  // Solo agregados: /firmamento nunca recibe aliados individuales (nombre,
+  // dirección, coordenadas, contacto). Eso vive en /aliados.
+  const [abiertos] = await Promise.allSettled([obtenerDatosAbiertos()]);
   if (abiertos.status === 'rejected') {
     console.error('[firmamento] datos abiertos no disponibles', abiertos.reason);
-  }
-  if (aprobados.status === 'rejected') {
-    console.error('[firmamento] aliados no disponibles', aprobados.reason);
   }
 
   const comercios = aplanarComercios(osm);
@@ -225,7 +220,6 @@ export async function leerFirmamento(): Promise<DatosFirmamento> {
     posicionesHorizonte: lonsComercios.map((lon) => (lon - minLon) / rango),
     red: {
       datos: abiertos.status === 'fulfilled' ? abiertos.value : null,
-      portafolios: aprobados.status === 'fulfilled' ? aprobados.value : [],
     },
     modelo: {
       entrenadoCon: modelo.entrenado_con,

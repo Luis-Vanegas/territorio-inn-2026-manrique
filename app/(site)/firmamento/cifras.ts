@@ -24,14 +24,18 @@ export type CifraConFuente = {
 
 const DAP = 'Ficha DAP Comuna 3, Alcaldía de Medellín';
 const CAMARA = 'Cámara de Comercio de Medellín para Antioquia, Estructura Empresarial 2025';
-const EMICRON = 'DANE, Encuesta de Micronegocios (EMICRON) 2025';
+const EMICRON = 'DANE (2026), boletín EMICRON 2025, 30 de julio de 2026';
+// Las dos cifras de EMICRON se tomaron de la asesoría y falta contrastarlas con
+// el boletín original; la nota va visible en la tarjeta, no solo en el código.
+const NOTA_EMICRON =
+  'Promedio de 24 ciudades, no de Manrique. Cifra tomada de la asesoría, pendiente de contrastar con el boletín original.';
 
 export const CAMARA_EMPRESAS: CifraConFuente = {
   valor: '2.626',
   numero: 2626,
   decimales: 0,
   etiqueta: 'empresas con registro mercantil en Manrique',
-  fuente: `${CAMARA}, Tablas 14 y 16`,
+  fuente: `${CAMARA}, Tabla 16`,
   fecha: '2025',
 };
 
@@ -74,7 +78,7 @@ export const INFORMALIDAD: CifraConFuente[] = [
     etiqueta: 'de los micronegocios tiene RUT',
     fuente: EMICRON,
     fecha: '2025',
-    aclaracion: 'Promedio de 24 ciudades, no de Manrique.',
+    aclaracion: NOTA_EMICRON,
   },
   {
     valor: '13,0',
@@ -84,7 +88,7 @@ export const INFORMALIDAD: CifraConFuente[] = [
     etiqueta: 'de los micronegocios tiene registro en Cámara de Comercio',
     fuente: EMICRON,
     fecha: '2025',
-    aclaracion: 'Promedio de 24 ciudades, no de Manrique.',
+    aclaracion: NOTA_EMICRON,
   },
 ];
 
@@ -94,7 +98,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 2569,
     decimales: 0,
     etiqueta: 'son microempresas',
-    fuente: `${CAMARA}, Tablas 14 y 16`,
+    fuente: `${CAMARA}, Tabla 14`,
     fecha: '2025',
   },
   {
@@ -102,7 +106,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 1091,
     decimales: 0,
     etiqueta: 'empresas de comercio',
-    fuente: `${CAMARA}, Tablas 14 y 16`,
+    fuente: `${CAMARA}, Tabla 16`,
     fecha: '2025',
   },
   {
@@ -110,7 +114,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 309,
     decimales: 0,
     etiqueta: 'empresas de manufactura',
-    fuente: `${CAMARA}, Tablas 14 y 16`,
+    fuente: `${CAMARA}, Tabla 16`,
     fecha: '2025',
   },
   {
@@ -118,7 +122,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 288,
     decimales: 0,
     etiqueta: 'empresas de alojamiento y comida',
-    fuente: `${CAMARA}, Tablas 14 y 16`,
+    fuente: `${CAMARA}, Tabla 16`,
     fecha: '2025',
   },
 ];

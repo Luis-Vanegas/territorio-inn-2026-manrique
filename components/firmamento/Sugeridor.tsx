@@ -33,7 +33,7 @@ function Medidor({ valor, sinMovimiento }: { valor: number; sinMovimiento: boole
         style={{ scaleX: valor }}
         initial={sinMovimiento ? false : { scaleX: 0 }}
         animate={{ scaleX: valor }}
-        transition={{ duration: 0.3, ease: 'easeOut' }}
+        transition={sinMovimiento ? { duration: 0 } : { duration: 0.3, ease: 'easeOut' }}
       />
     </div>
   );

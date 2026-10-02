@@ -366,7 +366,9 @@ en la base, ninguna pieza simulada).
   leyenda, ficha de comercio) sale con la paleta nocturna sin duplicar clases; el
   foco pasa a `sodio` (12:1 sobre `noche`). `MapaAliados` recibe `noche` y no sigue
   el tema; `constelacionElegida` y `alElegirConstelacion` dejan que la tabla
-  controle el filtro del mapa. No hay un segundo mapa.
+  controle el filtro del mapa. No hay un segundo mapa. **El mapa de /firmamento no
+  lleva aliados individuales** (`portafolios` vacío): es un tablero de agregados
+  k ≥ 5; los aliados se ven en `/aliados`.
 - **Fraunces itálica** se carga solo en esta ruta (`layout.tsx` de la carpeta,
   variable `--font-fraunces-italica`, clase `.font-italica`): el layout raíz solo
   trae la Fraunces normal y sin ella el navegador inclinaría la letra a la fuerza.

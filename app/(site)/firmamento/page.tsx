@@ -9,6 +9,7 @@ import { MapaYTabla } from '@/components/firmamento/MapaYTabla';
 import { Seccion } from '@/components/firmamento/Seccion';
 import { Sugeridor } from '@/components/firmamento/Sugeridor';
 import { fechaLarga } from '@/lib/geo/constelaciones';
+import { formatearNumero } from '@/lib/formato';
 import { CELDA_PEQUENA } from '@/lib/privacidad/kAnonimato';
 import {
   CAMARA_EMPRESAS,
@@ -39,8 +40,7 @@ const INDICE: EntradaIndice[] = [
   { id: 'metodo', letra: 'η', nombre: 'Qué hay detrás' },
 ];
 
-const fmt = (n: number, decimales = 0) =>
-  n.toLocaleString('es-CO', { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
+const fmt = formatearNumero;
 
 function KpiDe({ c }: { c: CifraConFuente }) {
   return (
@@ -199,7 +199,7 @@ export default async function FirmamentoPage() {
 
       {/* β · Mapa estelar y γ · Constelaciones (comparten la constelación elegida) */}
       <MapaYTabla
-        portafolios={red.portafolios}
+        minCluster={osm.minCluster}
         filas={d.filas}
         barras={d.barras}
         totalComercios={osm.totalComercios}
@@ -245,7 +245,7 @@ export default async function FirmamentoPage() {
           </p>
         </ScrollReveal>
 
-        {categoriasRed.length > 0 && (
+        {datosRed && categoriasRed.length > 0 && (
           <ScrollReveal>
             <div className="mt-10">
               <h3 className="font-sans text-lg font-medium text-estrella">La red, por categoría</h3>
@@ -267,7 +267,7 @@ export default async function FirmamentoPage() {
                 restando del total.
               </p>
               <p className="mt-2 font-cifra text-xs leading-relaxed text-tenue">
-                Fuente: {fuenteRed} · consultado el {fechaLarga(datosRed!.generado_en)}
+                Fuente: {fuenteRed} · consultado el {fechaLarga(datosRed.generado_en)}
               </p>
             </div>
           </ScrollReveal>
