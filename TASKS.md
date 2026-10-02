@@ -30,9 +30,17 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       1-oct 21:50 UTC (solo aditiva, sin daño). La rama `dev` de Neon está archivada desde el
       8-sep: `.env.local` apunta solo a producción. Antes de la próxima migración, desarchivar
       o crear rama de prueba.
-- [ ] Registro: validar en el servidor que el punto caiga dentro de Manrique (hoy el schema
-      acepta cualquier punto del mundo, `portafolio.schema.ts:173`).
-- [ ] Mapa: rediseño de los puntos OSM con popup (espera la elección de Luis: A/B/C).
+- [x] Registro solo dentro de Manrique (`lib/geo/dentroDeManrique.ts`, tolerancia 40 m), con
+      aviso en vivo. Verificado en navegador.
+- [x] Comercios OSM: estrella tocable con ficha (nombre, categoría, dirección, horario y cocina
+      en español), sección «Otros comercios del barrio» en /aliados, buscador y cercanía.
+      Sin botones nuevos (decisión de Luis).
+- [ ] **Los 3 aliados fuera del polígono no se pueden editar sin mover su punto**: corregirlos
+      desde el panel o avisar a los dueños.
+- [ ] Teclado: ~205 paradas de Tab en el mapa (una por estrella). Salida hoy: «Ver los aliados
+      en lista». Mejorar sin control nuevo si se puede.
+- [ ] La «×» del popup de Leaflet dice «Close popup» en inglés (aria-label).
+- [ ] Prueba que ejercite el refine de Zod con un punto fuera (hoy solo se prueba la función).
 - [ ] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP.
 - [ ] Documento: cifras nuevas con fuente (Cámara 2025: 2.626 empresas en Manrique; 15 barrios,
       Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.

@@ -74,6 +74,9 @@ export function cargarConstelaciones(): Promise<DatosConstelaciones> {
 
 /** «6 de mayo de 2026». Las fechas del JSON vienen en UTC. */
 export function fechaLarga(iso: string): string {
+  // La fecha UTC del pipeline (04:40Z del 2-oct es noche del 1 en Bogotá): se
+  // muestra la del día UTC para que coincida con el README y el documento.
+  iso = iso.slice(0, 10);
   return new Intl.DateTimeFormat('es-CO', {
     day: 'numeric',
     month: 'long',

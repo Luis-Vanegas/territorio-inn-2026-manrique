@@ -19,6 +19,7 @@ import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
+import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
 import { ETIQUETA_FORMALIDAD } from '@/lib/formalizacion';
 
 // ─── opciones de los chips ───────────────────────────────────
@@ -239,7 +240,7 @@ export function FormularioRegistro({
     }
 
     setCoords({ lat: resultado.lat, lng: resultado.lng });
-    setUbicacionValida(true);
+    setUbicacionValida(dentroDeManrique(resultado.lat, resultado.lng));
     setMapKey((k) => k + 1);
   }, []);
 
