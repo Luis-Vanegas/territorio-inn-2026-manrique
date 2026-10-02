@@ -150,7 +150,7 @@ export function SiteHeader({
               monta uno nuevo, que arranca cerrado. Mismo motivo en MenuUsuario. */}
           <details key={pathname} className="group relative">
             <summary
-            className="flex h-11 w-11 cursor-pointer list-none items-center justify-center border border-tinta/15 text-tinta [&::-webkit-details-marker]:hidden"
+            className="flex h-11 w-11 cursor-pointer list-none items-center justify-center border border-tinta/55 text-tinta [&::-webkit-details-marker]:hidden"
             aria-label="Abrir menú"
           >
             <span className="font-sans text-base group-open:hidden">☰</span>

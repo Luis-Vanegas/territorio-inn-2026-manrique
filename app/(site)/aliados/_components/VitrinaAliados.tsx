@@ -14,6 +14,7 @@ import { buscarNegocios } from '@/lib/busqueda';
 import {
   aBuscable,
   aplanarComercios,
+  filtrarPorCategoria,
   esComercioOsm,
   type ComercioBuscable,
 } from '@/lib/geo/comerciosOsm';
@@ -114,9 +115,8 @@ export function VitrinaAliados({
   const { datos: datosOsm, estado: estadoOsm } = useConstelaciones();
   const comerciosOsm = useMemo(() => {
     if (!datosOsm) return [];
-    return aplanarComercios(datosOsm)
+    return aplanarComercios(filtrarPorCategoria(datosOsm, categoriaActiva))
       .map(aBuscable)
-      .filter((c) => !categoriaActiva || c.categoria_id === categoriaActiva)
       .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
   }, [datosOsm, categoriaActiva]);
 
@@ -209,7 +209,7 @@ export function VitrinaAliados({
               setVisibles(POR_TANDA);
             }}
             placeholder="Busca por nombre, rubro o qué necesitas…"
-            className="w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/35 focus:border-azul focus:outline-none focus:ring-0"
+            className="w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/65 focus:border-azul focus:outline-none focus:ring-0"
           />
         </label>
 
@@ -268,6 +268,7 @@ export function VitrinaAliados({
             seleccionado={seleccionado}
             variante="vitrina"
             conFiltro
+            categoria={categoriaActiva}
             hrefLista="#listado"
           />
         </div>

@@ -10,6 +10,8 @@
  * bajan a ΔE 11,6 en daltonismo, por eso cada grupo tiene su forma.
  */
 
+import { PALETA_NOCHE } from '../paleta';
+
 export type IdGrupo = 'comida' | 'tienda' | 'belleza' | 'oficios' | 'salud' | 'otros';
 
 export type Forma = 'circulo' | 'cuadrado' | 'rombo' | 'triangulo' | 'cruz' | 'anillo';
@@ -25,18 +27,18 @@ export type Grupo = {
 };
 
 export const GRUPOS: readonly Grupo[] = [
-  { id: 'comida', nombre: 'Comida', color: '#D9825B', forma: 'circulo', formaNombre: 'círculo' },
-  { id: 'tienda', nombre: 'Tienda', color: '#F4CC48', forma: 'cuadrado', formaNombre: 'cuadrado' },
-  { id: 'belleza', nombre: 'Belleza', color: '#E07AD8', forma: 'rombo', formaNombre: 'rombo' },
+  { id: 'comida', nombre: 'Comida', color: PALETA_NOCHE.ladrillo, forma: 'circulo', formaNombre: 'círculo' },
+  { id: 'tienda', nombre: 'Tienda', color: PALETA_NOCHE.sodio, forma: 'cuadrado', formaNombre: 'cuadrado' },
+  { id: 'belleza', nombre: 'Belleza', color: PALETA_NOCHE['noche-morado'], forma: 'rombo', formaNombre: 'rombo' },
   {
     id: 'oficios',
     nombre: 'Oficios y reparación',
-    color: '#7FB0FF',
+    color: PALETA_NOCHE['noche-azul'],
     forma: 'triangulo',
     formaNombre: 'triángulo',
   },
-  { id: 'salud', nombre: 'Salud', color: '#5EEAD4', forma: 'cruz', formaNombre: 'cruz' },
-  { id: 'otros', nombre: 'Otros', color: '#B7BEDC', forma: 'anillo', formaNombre: 'anillo' },
+  { id: 'salud', nombre: 'Salud', color: PALETA_NOCHE.menta, forma: 'cruz', formaNombre: 'cruz' },
+  { id: 'otros', nombre: 'Otros', color: PALETA_NOCHE.tenue, forma: 'anillo', formaNombre: 'anillo' },
 ] as const;
 
 const POR_ID = Object.fromEntries(GRUPOS.map((g) => [g.id, g])) as Record<IdGrupo, Grupo>;

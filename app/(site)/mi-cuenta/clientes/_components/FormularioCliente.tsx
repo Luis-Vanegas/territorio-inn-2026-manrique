@@ -11,8 +11,8 @@ import { ETAPAS, ETIQUETA_ETAPA, type EstadoCliente } from '@/lib/validation/cli
 const ESTADO_INICIAL: EstadoCliente = { estado: 'inicial' };
 
 const claseInput =
-  'w-full border border-tinta/20 bg-transparent px-3 py-2.5 font-sans text-base text-tinta ' +
-  'placeholder:text-tinta/35 focus:border-azul focus:outline-none aria-[invalid=true]:border-azul';
+  'w-full border border-tinta/55 bg-transparent px-3 py-2.5 font-sans text-base text-tinta ' +
+  'placeholder:text-tinta/65 focus:border-azul focus:outline-none aria-[invalid=true]:border-azul';
 
 function BotonGuardar({ nuevo }: { nuevo: boolean }) {
   const { pending } = useFormStatus();

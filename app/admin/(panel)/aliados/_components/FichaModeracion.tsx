@@ -273,7 +273,7 @@ export function FichaModeracion({
                 name="motivo_rechazo"
                 rows={3}
                 minLength={10}
-                className="mt-2 w-full border border-tinta/20 bg-transparent p-3 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
+                className="mt-2 w-full border border-tinta/55 bg-transparent p-3 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
               />
             </div>
           )}
@@ -292,7 +292,7 @@ export function FichaModeracion({
                   <button
                     type="button"
                     onClick={() => setMostrarRechazo(true)}
-                    className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className="border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
                   >
                     Rechazar…
                   </button>
@@ -303,7 +303,7 @@ export function FichaModeracion({
                   <button
                     type="button"
                     onClick={() => setMostrarRechazo(false)}
-                    className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className="border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
                   >
                     Cancelar
                   </button>
@@ -315,7 +315,7 @@ export function FichaModeracion({
                 <button
                   type="button"
                   onClick={() => setEditando((v) => !v)}
-                  className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                  className="border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
                 >
                   {editando ? 'Cerrar edición' : 'Editar ficha'}
                 </button>

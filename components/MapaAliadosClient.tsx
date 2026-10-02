@@ -15,6 +15,7 @@ import { enlaceWhatsapp } from '@/lib/contacto';
 import { contar } from '@/lib/interacciones';
 import { CapaConstelaciones } from './mapa/CapaConstelaciones';
 import { svgForma } from './mapa/formas';
+import { useTemaOscuro } from '@/lib/tema';
 
 /**
  * Mapa de la vitrina.
@@ -180,6 +181,7 @@ export default function MapaAliadosClient({
   // Con "menos movimiento" se apagan también las animaciones de zoom y de
   // desplazamiento de Leaflet (el CSS global solo alcanza a las de CSS). Este
   // componente solo corre en el navegador (ssr:false), así que window existe.
+  const oscuro = useTemaOscuro();
   const sinMovimiento = useMemo(
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
@@ -200,7 +202,7 @@ export default function MapaAliadosClient({
       className="h-full w-full"
     >
       <TileLayer
-        url={TESELAS.url}
+        url={oscuro ? TESELAS.oscuro : TESELAS.claro}
         attribution={TESELAS.atribucion}
         maxZoom={ZOOM.maximo}
       />
@@ -217,7 +219,8 @@ export default function MapaAliadosClient({
       <GeoJSON
         data={capaLimite}
         style={{
-          color: '#1a1a1a',
+          className: 'limite-comuna',
+          color: '#1a1a1a', // el CSS (.limite-comuna) lo cambia con el tema
           weight: 1.25,
           opacity: 0.55,
           fillColor: '#3c8af6',

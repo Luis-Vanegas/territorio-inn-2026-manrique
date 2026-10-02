@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import { PALETA_NOCHE } from "./lib/paleta";
 
 // hueso/tinta invierten de valor según el modo (ver styles/globals.css).
 // azul/morado/amarillo son la paleta de marca del equipo Constelaciones, cada
@@ -17,6 +18,10 @@ const config: Config = {
       xl: "1440px",
     },
     extend: {
+      // Tailwind solo genera alphas de la escala (5, 10, 15…): `border-tinta/12`
+      // y `bg-tinta/8` no existían y el borde caía en el gris por defecto
+      // (#E5E7EB), clarísimo sobre el hueso oscuro. Ver DESIGN.md › Color.
+      opacity: { 8: "0.08", 12: "0.12" },
       colors: {
         hueso: "rgb(var(--hueso-rgb) / <alpha-value>)",
         tinta: "rgb(var(--tinta-rgb) / <alpha-value>)",
@@ -30,24 +35,11 @@ const config: Config = {
         amarillo: "rgb(var(--amarillo-rgb) / <alpha-value>)",
 
         // Firmamento (DESIGN.md › Firmamento): la paleta de noche NO cambia con
-        // el tema claro/oscuro, por eso son hex fijos y no variables. Ningún
+        // el tema claro/oscuro, por eso son hex fijos y no variables (viven en lib/paleta.ts). Ningún
         // nombre pisa a los de arriba: el morado y el azul de noche son tonos
         // más claros del mismo acento y se llaman noche-morado / noche-azul.
         // Contrastes medidos (fórmula WCAG) en DESIGN.md.
-        noche: "#0B1026",
-        "noche-2": "#121A3A",
-        "noche-3": "#1A2450",
-        "noche-activa": "#202C62", // fila activa de las tablas; el #23306A del prototipo dejaba tenue-2 y ladrillo en 4,3:1
-        trazo: "#2C3A72", // solo decorativo: líneas, rejillas (1,6:1, no sirve de borde de control)
-        "trazo-2": "#6573B0", // bordes de chips, botones e inputs: 3,75:1 sobre noche-2
-        estrella: "#F3EFE4",
-        tenue: "#B7BEDC",
-        "tenue-2": "#8E97C2", // no usar sobre noche-activa (4,3:1)
-        sodio: "#F4CC48",
-        ladrillo: "#D9825B",
-        "noche-morado": "#E07AD8",
-        "noche-azul": "#7FB0FF",
-        menta: "#5EEAD4",
+        ...PALETA_NOCHE,
       },
       fontFamily: {
         display: ["var(--font-fraunces)", "serif"],

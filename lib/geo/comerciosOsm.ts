@@ -1,5 +1,10 @@
 import type { NegocioBuscable } from '../busqueda';
-import type { DatosConstelaciones, EstrellaOsm } from './constelaciones';
+import type {
+  Constelacion,
+  DatosConstelaciones,
+  EstrellaOsm,
+  MezclaCategoria,
+} from './constelaciones';
 
 /**
  * Comercios de OpenStreetMap vistos como lo que son: locales mapeados por
@@ -176,7 +181,7 @@ export function esComercioOsm(n: NegocioBuscable): n is ComercioBuscable {
 export function aBuscable(e: EstrellaOsm): ComercioBuscable {
   return {
     id: `osm:${e.osm}`,
-    nombre: e.nombre,
+    nombre: e.nombre ?? '',
     descripcion: e.detalle?.cocina ? cocinaLegible(e.detalle.cocina) : '',
     categoria_id: e.categoria ?? SIN_CATEGORIA,
     categoria_nombre: nombreCategoriaOsm(e.categoria),
@@ -187,4 +192,90 @@ export function aBuscable(e: EstrellaOsm): ComercioBuscable {
     origen: 'osm',
     comercio: e,
   };
+}
+
+// ── Constelaciones: filtro por categoría, etiqueta y mezcla ───────────
+
+function mezclaDe(estrellas: EstrellaOsm[]): MezclaCategoria[] {
+  const cuenta = new Map<string, number>();
+  for (const e of estrellas) {
+    const id = e.categoria ?? SIN_CATEGORIA;
+    cuenta.set(id, (cuenta.get(id) ?? 0) + 1);
+  }
+  return [...cuenta]
+    .map(([categoria, n]) => ({
+      categoria,
+      nombre: nombreCategoriaOsm(categoria),
+      n,
+      proporcion: Math.round((n / estrellas.length) * 1000) / 1000,
+    }))
+    .sort((a, b) => b.n - a.n);
+}
+
+/**
+ * Deja solo los comercios de una categoría (los mismos ids del filtro de la
+ * vitrina). Las aristas se reindexan y solo sobreviven las que unen dos
+ * estrellas que quedaron; el tamaño y la mezcla se recalculan. Una
+ * constelación sin comercios de esa categoría desaparece. Sin categoría
+ * devuelve `datos` tal cual.
+ */
+export function filtrarPorCategoria(
+  datos: DatosConstelaciones,
+  categoria?: string,
+): DatosConstelaciones {
+  if (!categoria) return datos;
+  const coincide = (e: EstrellaOsm) => (e.categoria ?? SIN_CATEGORIA) === categoria;
+  const constelaciones: Constelacion[] = [];
+  for (const c of datos.constelaciones) {
+    const nuevoIndice = new Map<number, number>();
+    const estrellas: EstrellaOsm[] = [];
+    c.estrellas.forEach((e, i) => {
+      if (!coincide(e)) return;
+      nuevoIndice.set(i, estrellas.length);
+      estrellas.push(e);
+    });
+    if (estrellas.length === 0) continue;
+    constelaciones.push({
+      ...c,
+      tamano: estrellas.length,
+      categoria_dominante: categoria,
+      mezcla_categorias: mezclaDe(estrellas),
+      estrellas,
+      aristas: c.aristas.flatMap((a) => {
+        const de = nuevoIndice.get(a.de);
+        const hasta = nuevoIndice.get(a.a);
+        return de === undefined || hasta === undefined ? [] : [{ ...a, de, a: hasta }];
+      }),
+    });
+  }
+  const puntos_sueltos = datos.puntos_sueltos.filter(coincide);
+  return {
+    ...datos,
+    constelaciones,
+    puntos_sueltos,
+    resumen: {
+      ...datos.resumen,
+      constelaciones: constelaciones.length,
+      puntos_sueltos: puntos_sueltos.length,
+      total_comercios:
+        constelaciones.reduce((t, c) => t + c.tamano, 0) + puntos_sueltos.length,
+    },
+  };
+}
+
+/** «C04 · Carrera 31 · Tienda y víveres — 13 comercios»; sin código o sin nombre usa lo que haya. */
+export function etiquetaConstelacion(c: Constelacion): string {
+  const nombre = [c.codigo, c.nombre].filter(Boolean).join(' · ') || c.id;
+  return `${nombre} — ${c.tamano} ${c.tamano === 1 ? 'comercio' : 'comercios'}`;
+}
+
+/** «Tienda y víveres 7 · Papelería 3 · Otros 3»: las 3 mayores y el resto junto en «Otros». */
+export function lineaMezcla(c: Constelacion): string {
+  const mezcla = c.mezcla_categorias?.length ? c.mezcla_categorias : mezclaDe(c.estrellas);
+  const orden = [...mezcla].sort((a, b) => b.n - a.n);
+  const primeras = orden.slice(0, 3);
+  const resto = orden.slice(3).reduce((t, m) => t + m.n, 0);
+  const partes = primeras.map((m) => `${m.nombre || nombreCategoriaOsm(m.categoria)} ${m.n}`);
+  if (resto > 0) partes.push(`Otros ${resto}`);
+  return partes.join(' · ');
 }

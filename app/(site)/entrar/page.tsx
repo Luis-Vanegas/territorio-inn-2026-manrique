@@ -75,7 +75,7 @@ export default async function EntrarPage({
           <>
             <a
               href="/api/auth/google/iniciar"
-              className="mt-8 flex min-h-[52px] w-full items-center justify-center gap-3 border border-tinta/25 px-6 font-sans text-sm text-tinta transition-colors hover:border-azul hover:text-azul-texto"
+              className="mt-8 flex min-h-[52px] w-full items-center justify-center gap-3 border border-tinta/55 px-6 font-sans text-sm text-tinta transition-colors hover:border-azul hover:text-azul-texto"
             >
               {/* aria-hidden: el texto del enlace ya dice qué hace; un lector de
                   pantalla no gana nada anunciando el logotipo. */}

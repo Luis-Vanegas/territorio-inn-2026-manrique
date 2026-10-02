@@ -78,6 +78,12 @@ lados.) Los tokens viven en `tailwind.config.ts` y en `styles/globals.css`.
 - Jerarquía con alpha sobre el lienzo (`text-tinta/70`, `border-tinta/12`), no
   con grises tintados sueltos. Ojo: los alphas de claro y de oscuro **no son
   los mismos** — el mismo porcentaje rinde más contraste sobre fondo oscuro.
+  Los alphas salen de la escala de Tailwind (5, 10, 15…) más `8` y `12`, que se
+  agregaron en `tailwind.config.ts`: sin ellos `border-tinta/12` no genera nada y
+  el borde cae en el gris por defecto (#E5E7EB), que en oscuro se ve como una raya
+  blanca.
+- Un aviso sobre `amarillo/15` lleva texto `tinta`, nunca `azul-texto`: el azul
+  da 3,6:1 sobre ese fondo en oscuro.
 
 ## Tema
 
@@ -86,6 +92,18 @@ está diseñada en claro y un vecino que entra por primera vez no debería ver l
 versión secundaria sin haberla pedido. Quien prende el oscuro con el selector
 manda, y su elección se guarda. Se resuelve en un solo lugar:
 `components/TemaInicial.tsx`.
+
+**Superficies de terceros** (Leaflet): siguen al tema porque leen `--hueso-rgb` y
+`--tinta-rgb`, no colores fijos. En oscuro, el popup, el botón de cerrar, el zoom
+y la atribución del mapa son hueso oscuro con texto `tinta` claro y links
+`azul-texto`; los marcadores y las teselas (gris claro de Esri) no cambian.
+`leaflet.css` se carga después de `globals.css` (viaja con el chunk del mapa), así
+que cada regla que lo pise cuelga de `.leaflet-container` o lleva `!important`:
+una regla de una sola clase perdía el empate y el popup salía blanco con texto
+claro. La estrella y el punto de OSM llevan trazo claro `estrella` (la estrella opaco,
+el punto a media opacidad, para que siga más tenue) y así se ven en la leyenda y
+sobre teselas oscuras; las formas de los grupos conservan su contorno `noche`
+(`#0B1026`) y se sostienen por el color de relleno.
 
 ## Estructura
 
@@ -277,6 +295,16 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   marcadores de aliados. Son comercios de OpenStreetMap, **no aliados**: la
   leyenda lo dice y el texto habla de «comercios mapeados en OpenStreetMap»,
   nunca de «negocios que hay».
+- **Filtros del mapa** (sin controles nuevos): el desplegable «Ver una sola» lista
+  cada constelación como «C04 · Carrera 31 · Tienda y víveres — 13 comercios»;
+  si el JSON no trae `codigo` o un nombre descriptivo se usa lo que haya
+  (`etiquetaConstelacion`). Al elegir una, bajo el mapa sale su mezcla en el estilo
+  de la línea de fuente («Tienda y víveres 7 · Papelería 3 · Otros 3», las tres
+  mayores y el resto junto). El filtro de categoría de `/aliados` (`?categoria=`)
+  también filtra las estrellas del mapa y la lista «Otros comercios» (mismos ids;
+  `filtrarPorCategoria`): una constelación sin comercios de esa categoría
+  desaparece y las líneas solo unen estrellas que quedan. La leyenda cuenta lo que
+  el mapa muestra por grupo («Comida (círculo) · 42»), aliados y estrellas.
 - **Estrella interactiva**: cada estrella y cada punto suelto se toca o se enfoca
   (Tab, Enter; Esc cierra) y abre un popup con lo que OSM trae: categoría, nombre,
   dirección, horario, cocina y web (solo las que existan; nada se rellena), la
@@ -298,6 +326,15 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
 - **Fuente**: bajo el mapa, en `font-cifra`: «© colaboradores de OpenStreetMap
   (ODbL)», fecha del snapshot de OSM y fecha de la corrida. La misma atribución se
   suma al control de Leaflet mientras la capa está prendida.
+- **En modo oscuro**: las teselas pasan a Esri `World_Dark_Gray_Base` (mismo
+  servicio y atribución; las dos URL viven en `TESELAS`, `lib/geo/constantes.ts`) y
+  cambian al vuelo con el selector de tema (`useTemaOscuro` de `lib/tema.ts`, un solo
+  MutationObserver sobre `data-theme`, con `prefers-color-scheme` si falta). El contorno de la comuna toma `tinta` (5,4:1 sobre la
+  tesela), halos y líneas de constelación pasan de `noche-3` a `noche-azul`
+  (4,3:1) y el anillo del marcador activo a `estrella`. Los marcadores de grupo
+  sacan 5,5:1 o más sobre la tesela oscura. Popups y ficha de «Otros comercios»
+  usan `hueso`/`tinta` del tema (ver «Tema»); la leyenda y la línea de fuente se
+  leen con `tinta/75` y `tinta/70`.
 - **Alternativa sin mapa**: enlace «Ver los aliados en lista» sobre el mapa.
 
 ## Idioma

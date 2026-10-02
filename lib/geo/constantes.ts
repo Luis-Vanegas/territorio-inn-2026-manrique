@@ -108,7 +108,11 @@ export const BARRIOS_COMUNA_3: string[] = [
  * día que este proveedor haga lo mismo que CARTO, se cambia en un solo lugar.
  */
 export const TESELAS = {
-  url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  claro:
+    'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  // Mismo servicio y misma atribución: el mapa sigue al tema (lib/tema.ts).
+  oscuro:
+    'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
   atribucion:
     'Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> y la comunidad GIS',
 } as const;
