@@ -21,6 +21,22 @@ export function aplanarComercios(datos: DatosConstelaciones): EstrellaOsm[] {
 }
 
 /**
+ * Los comercios que tienen nombre: los únicos que van a la lista «Otros
+ * comercios» y al buscador (uno sin nombre no aporta nada para buscar). El mapa
+ * sí dibuja a todos. Es el ÚNICO lugar donde vive esta condición.
+ */
+export function comerciosConNombre(comercios: EstrellaOsm[]): EstrellaOsm[] {
+  return comercios.filter((e) => Boolean(e.nombre?.trim()));
+}
+
+/** Título de la ficha y del marcador: el nombre, o «Comercio sin nombre · Tienda y víveres». */
+export function nombreVisible(e: EstrellaOsm): string {
+  const nombre = e.nombre?.trim();
+  if (nombre) return nombre;
+  return e.categoria ? `Comercio sin nombre · ${nombreCategoriaOsm(e.categoria)}` : 'Comercio sin nombre';
+}
+
+/**
  * Nombre legible de cada categoría del sitio (las mismas de `categorias` en la
  * base, migraciones 001, 012 y 015). Vive acá y no se consulta a la base: el
  * JSON de OSM es estático y el navegador no habla con Postgres.
@@ -181,7 +197,7 @@ export function esComercioOsm(n: NegocioBuscable): n is ComercioBuscable {
 export function aBuscable(e: EstrellaOsm): ComercioBuscable {
   return {
     id: `osm:${e.osm}`,
-    nombre: e.nombre ?? '',
+    nombre: e.nombre?.trim() ?? '',
     descripcion: e.detalle?.cocina ? cocinaLegible(e.detalle.cocina) : '',
     categoria_id: e.categoria ?? SIN_CATEGORIA,
     categoria_nombre: nombreCategoriaOsm(e.categoria),
@@ -249,6 +265,11 @@ export function filtrarPorCategoria(
     });
   }
   const puntos_sueltos = datos.puntos_sueltos.filter(coincide);
+  const agrupados = constelaciones.reduce((t, c) => t + c.tamano, 0);
+  const sinNombre =
+    constelaciones.reduce((t, c) => t + c.estrellas.length - comerciosConNombre(c.estrellas).length, 0) +
+    (puntos_sueltos.length - comerciosConNombre(puntos_sueltos).length);
+  const total = agrupados + puntos_sueltos.length;
   return {
     ...datos,
     constelaciones,
@@ -257,9 +278,55 @@ export function filtrarPorCategoria(
       ...datos.resumen,
       constelaciones: constelaciones.length,
       puntos_sueltos: puntos_sueltos.length,
-      total_comercios:
-        constelaciones.reduce((t, c) => t + c.tamano, 0) + puntos_sueltos.length,
+      total_comercios: total,
+      con_nombre: total - sinNombre,
+      sin_nombre: sinNombre,
+      agrupados,
+      sueltos: puntos_sueltos.length,
     },
+  };
+}
+
+/**
+ * Conteo por categoría de TODOS los comercios (con y sin nombre: el mapa los
+ * dibuja a todos). Sin categoría cuenta bajo `SIN_CATEGORIA`.
+ */
+export function contarPorCategoria(comercios: EstrellaOsm[]): Record<string, number> {
+  const cuenta: Record<string, number> = {};
+  for (const e of comercios) {
+    const id = e.categoria ?? SIN_CATEGORIA;
+    cuenta[id] = (cuenta[id] ?? 0) + 1;
+  }
+  return cuenta;
+}
+
+/**
+ * Las categorías que ofrece el filtro de la vitrina: las de aliados Y las que
+ * solo existen entre los comercios de OSM, con el conteo de los dos juntos.
+ * Las de la base conservan su orden; las que solo trae OSM van después, de más
+ * a menos comercios, y «Sin categoría» al final. Una con total 0 no se ofrece.
+ */
+export function unirCategorias<C extends { id: string; nombre: string }>(
+  categorias: C[],
+  conteosAliados: Record<string, number>,
+  conteosOsm: Record<string, number>,
+): { categorias: { id: string; nombre: string }[]; conteos: Record<string, number>; total: number } {
+  const conteos: Record<string, number> = { ...conteosAliados };
+  for (const [id, n] of Object.entries(conteosOsm)) conteos[id] = (conteos[id] ?? 0) + n;
+
+  const conocidas = new Set(categorias.map((c) => c.id));
+  const soloOsm = Object.keys(conteosOsm)
+    .filter((id) => !conocidas.has(id))
+    .sort((a, b) => {
+      if (a === SIN_CATEGORIA || b === SIN_CATEGORIA) return a === SIN_CATEGORIA ? 1 : -1;
+      return (conteos[b] ?? 0) - (conteos[a] ?? 0);
+    })
+    .map((id) => ({ id, nombre: nombreCategoriaOsm(id === SIN_CATEGORIA ? null : id) }));
+
+  return {
+    categorias: [...categorias, ...soloOsm].filter((c) => (conteos[c.id] ?? 0) > 0),
+    conteos,
+    total: Object.values(conteos).reduce((a, b) => a + b, 0),
   };
 }
 

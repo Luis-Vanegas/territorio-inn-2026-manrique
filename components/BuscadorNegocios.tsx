@@ -4,7 +4,13 @@ import { useId, useMemo, useState } from 'react';
 import Link from 'next/link';
 
 import { buscarNegocios, relacionados, type NegocioBuscable } from '@/lib/busqueda';
-import { aBuscable, aplanarComercios, esComercioOsm, horarioLegible } from '@/lib/geo/comerciosOsm';
+import {
+  aBuscable,
+  aplanarComercios,
+  comerciosConNombre,
+  esComercioOsm,
+  horarioLegible,
+} from '@/lib/geo/comerciosOsm';
 import { useConstelaciones } from './mapa/useConstelaciones';
 
 const MAXIMO_RESULTADOS = 5;
@@ -38,7 +44,7 @@ export function BuscadorNegocios({
 
   const { datos } = useConstelaciones(pidioOsm);
   const todos = useMemo<NegocioBuscable[]>(
-    () => (datos ? [...negocios, ...aplanarComercios(datos).map(aBuscable)] : negocios),
+    () => (datos ? [...negocios, ...comerciosConNombre(aplanarComercios(datos)).map(aBuscable)] : negocios),
     [negocios, datos],
   );
 

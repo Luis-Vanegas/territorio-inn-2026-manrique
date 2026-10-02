@@ -182,7 +182,10 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 - **Búsqueda de negocios**: una sola función, `buscarNegocios` de
   `lib/busqueda.ts` (puntaje por campo + sinónimos del barrio, en el cliente),
   la usan el buscador de la portada y la vitrina de `/aliados`. No escribir
-  otro filtro de texto por componente. Busca también por dirección (con
+  otro filtro de texto por componente. Los comercios de OSM sin nombre
+  (`nombre: null`) NO entran al buscador ni a «Otros comercios»: los saca
+  `comerciosConNombre` (`lib/geo/comerciosOsm.ts`), único lugar de esa condición;
+  el mapa sí los dibuja y su título de respaldo es `nombreVisible`. Busca también por dirección (con
   «cra», «cl», «kr»…) y atiende a los **comercios de OpenStreetMap**: se
   normalizan con `aBuscable` (`lib/geo/comerciosOsm.ts`, `origen: 'osm'`) y
   se mezclan en la misma lista; ante empate van primero los aliados. El JSON de
@@ -227,7 +230,10 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md).
   Categoría nueva en la base = su id en ese archivo; si no, cae en «Otros». Las
   constelaciones de OSM (`public/firmamento/constelaciones.json`) se piden por
-  `fetch` (`lib/geo/constelaciones.ts`), no se importan.
+  `fetch` (`lib/geo/constelaciones.ts`), no se importan en el cliente; solo
+  `app/(site)/aliados/page.tsx` lo importa, en el servidor, para los conteos del
+  filtro de categorías (`unirCategorias`: aliados + comercios de OSM, así se
+  puede filtrar por cualquier negocio del mapa aunque no tenga aliados).
 - **Comentarios**: solo cuando explican el WHY (una decisión no obvia, un
   trade-off). Los shortcuts deliberados se marcan con `ponytail: <qué se
   omitió y cuándo ampliarlo>`. No comentar lo que el código ya dice solo.

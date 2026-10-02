@@ -1,6 +1,9 @@
 """Paso 2 · Constelaciones: HDBSCAN sobre los comercios de la Comuna 3.
 
-Entrada: el CSV más reciente osm_comuna3_*.csv (paso 1).
+Entrada: el CSV más reciente osm_comuna3todos_*.csv (paso 1): TODOS los comercios
+de OSM dentro del polígono, con y sin nombre. Igual que la asesoría, un local sin
+nombre en OSM sigue siendo un comercio mapeado y cuenta para el territorio; en el
+JSON su `nombre` es null (no se inventa «Sin nombre», eso lo decide la app).
 Salida:  public/firmamento/constelaciones.json (lat/lon, listo para el mapa).
 
 Decisiones que conviene no olvidar:
@@ -10,11 +13,12 @@ Decisiones que conviene no olvidar:
   zona 18N (75°30'W está entre 78°W y 72°W).
 - min_cluster_size=6 y min_samples=3 vienen del plan del reto. Con 6 se exige
   que una "constelación" sea de verdad un grupo, no una pareja de vecinos.
-- cluster_selection_method="leaf" y no el "eom" por defecto: con los 192 locales
-  de OSM en Manrique, "eom" (mismos 6 y 3) fusiona 168 locales (88 %) en un solo
-  cúmulo de ~730 m de radio, que no dice nada del territorio; "leaf" devuelve
-  los grupos finos (decenas de metros) que sí se pueden dibujar como constelación.
-  La comparación queda en `sensibilidad` dentro del JSON.
+- cluster_selection_method="leaf" y no el "eom" por defecto: con todos los
+  comercios de OSM en Manrique, "eom" (mismos 6 y 3) fusiona la mayoría en un solo
+  cúmulo enorme, que no dice nada del territorio; "leaf" devuelve los grupos finos
+  (decenas de metros) que sí se pueden dibujar como constelación. Las cifras de la
+  comparación quedan en `sensibilidad_min_cluster_size` y `comparacion_eom_leaf`
+  dentro del JSON (no se copian acá para que no se desactualicen).
 - HDBSCAN no tiene azar propio en este modo, pero se fija la semilla igual por
   si cambia la implementación de sklearn.
 - El árbol de expansión mínima (MST) une cada estrella con su vecina más cercana
@@ -23,6 +27,7 @@ Decisiones que conviene no olvidar:
 from __future__ import annotations
 
 import json
+import re
 
 import numpy as np
 import pandas as pd
@@ -53,7 +58,8 @@ A_GRADOS = Transformer.from_crs(EPSG_METROS, "EPSG:4326", always_xy=True)
 
 def validar(df: pd.DataFrame) -> dict:
     """Validaciones de la rúbrica; aborta si algo está roto en vez de publicar basura."""
-    nulos = int(df[["nombre", "lat", "lon"]].isna().sum().sum())
+    # El nombre puede faltar a propósito (comercios sin nombre); lat/lon no.
+    nulos = int(df[["lat", "lon"]].isna().sum().sum())
     dup = int(df.duplicated(subset=["osm_tipo", "osm_id"]).sum())
     poligono = cargar_poligono()
     fuera = int((~contains_xy(poligono, df["lon"].to_numpy(), df["lat"].to_numpy())).sum())
@@ -100,10 +106,44 @@ def detalle(fila) -> dict:
     return {k: v for k, v in claves.items() if v}
 
 
+SIN_CATEGORIA = "Sin categoría"  # mismo rótulo que usa la app (nombreCategoriaOsm(null))
+SIN_CALLE = "Sin calle registrada"
+
+
+# En OSM `addr:street` a veces trae la placa pegada («Calle 71A #31-14») o basura
+# («Cr 23 cl 90A - 24  171»). Solo se conserva la vía con su número y letra.
+_VIA = re.compile(
+    r"^(Calle|Carrera|Avenida|Transversal|Diagonal|Circular)\s*(\d+)\s*([A-Za-z])?(?![A-Za-z])", re.I
+)
+
+
+def via(texto: str) -> str | None:
+    m = _VIA.match(texto.strip())
+    if not m:
+        return None  # sin patrón reconocible: mejor sin calle que una calle mal copiada
+    tipo, numero, letra = m.groups()
+    return f"{tipo.capitalize()} {numero}{letra.upper() if letra else ''}"
+
+
+def calle_mas_frecuente(sub: pd.DataFrame) -> str | None:
+    """Vía más repetida entre los comercios del grupo (solo `addr:street`, sin número).
+
+    Sale de lo que OSM trae, nunca se infiere de la posición: un nombre de calle
+    equivocado en el mapa sería peor que decir que no hay. Empate: orden alfabético,
+    para que la corrida sea reproducible.
+    """
+    calles = sub["addr_street"].map(via).dropna()
+    if calles.empty:
+        return None
+    conteo = calles.value_counts()
+    return sorted(conteo[conteo == conteo.max()].index)[0]
+
+
 def punto(fila) -> dict:
     return {
         "osm": f"{fila.osm_tipo[0]}{fila.osm_id}",
-        "nombre": fila.nombre,
+        # null, no "": un nombre vacío se confunde con texto; null obliga a quien consume a decidir.
+        "nombre": (fila.nombre.strip() or None) if isinstance(fila.nombre, str) else None,
         "lat": round(float(fila.lat), 6),
         "lon": round(float(fila.lon), 6),
         "categoria": fila.categoria or None,
@@ -113,14 +153,21 @@ def punto(fila) -> dict:
 
 def main() -> None:
     np.random.seed(SEMILLA)
-    entrada = ultimo_csv("osm_comuna3")
+    entrada = ultimo_csv("osm_comuna3todos")
     df = pd.read_csv(entrada, keep_default_na=False, dtype={"categoria": str}).reset_index(drop=True)
     df["categoria"] = df["categoria"].fillna("")
+    # Algunos mapeadores escribieron «Sin nombre» como si fuera el name. Es la
+    # ausencia de nombre, no un nombre: se trata como null para que el conteo
+    # con/sin nombre sea honesto y la app no muestre un falso nombre propio.
+    placeholder = df["nombre"].str.strip().str.match(r"(?i)^sin\s+nombre\.?$")
+    n_placeholder = int(placeholder.sum())
+    df.loc[placeholder, "nombre"] = ""
     validacion = validar(df)
+    validacion["nombres_placeholder_tratados_como_null"] = n_placeholder
 
     # La fecha del snapshot sale del meta que escribió el paso 1 junto al CSV,
     # no se escribe a mano: así la app siempre cita la base que de verdad usó.
-    meta = json.loads(entrada.with_name(entrada.name.replace("osm_comuna3_", "osm_meta_").replace(".csv", ".json")).read_text(encoding="utf-8"))
+    meta = json.loads(entrada.with_name(entrada.name.replace("osm_comuna3todos_", "osm_meta_comuna3todos_").replace(".csv", ".json")).read_text(encoding="utf-8"))
     osm_base = meta.get("timestamp_osm_base") or meta.get("osm_base_timestamp")
     if not osm_base:
         raise SystemExit("El meta del paso 1 no trae timestamp_osm_base")
@@ -147,15 +194,17 @@ def main() -> None:
 
         sub = df.iloc[idx]
         conteo = sub["categoria"].replace("", "sin_categoria").value_counts()
+        # Orden explícito (n desc, id asc): no depender del desempate interno de pandas.
         mezcla = [
             {
                 "categoria": c,
-                "nombre": CATEGORIAS.get(c, "Sin categoría mapeada"),
+                "nombre": CATEGORIAS.get(c, SIN_CATEGORIA),
                 "n": int(n),
                 "proporcion": round(float(n) / len(idx), 3),
             }
-            for c, n in conteo.items()
+            for c, n in sorted(conteo.items(), key=lambda t: (-t[1], t[0]))
         ]
+        calle = calle_mas_frecuente(sub)
         dominante = next((m for m in mezcla if m["categoria"] != "sin_categoria"), None)
 
         constelaciones.append(
@@ -167,6 +216,8 @@ def main() -> None:
                 "radio_p90_m": round(float(np.percentile(dist_centro, 90)), 1),
                 "longitud_mst_m": round(float(sum(a["metros"] for a in aristas)), 1),
                 "categoria_dominante": dominante["categoria"] if dominante else None,
+                "_calle": calle,
+                "_cat_nombre": dominante["nombre"] if dominante else SIN_CATEGORIA,
                 "mezcla_categorias": mezcla,
                 "estrellas": [punto(f) for f in sub.itertuples()],
                 "aristas": aristas,  # índices sobre `estrellas`
@@ -177,9 +228,13 @@ def main() -> None:
     constelaciones.sort(key=lambda c: (-c["tamano"], -c["centroide"]["lat"]))
     for i, c in enumerate(constelaciones, start=1):
         c["id"] = f"c{i:02d}"
-        c["nombre"] = f"Constelación {i}"
+        c["codigo"] = f"C{i:02d}"
+        c["nombre"] = f"{c['_calle'] or SIN_CALLE} · {c['_cat_nombre']}"
+    # Dos grupos en la misma calle y rubro pueden llamarse igual: los distingue `codigo`,
+    # que la interfaz siempre antepone («C05 · …»). Repetirlo en el nombre lo mostraba dos veces.
+    sin_calle = sum(1 for c in constelaciones if not c["_calle"])
     constelaciones = [
-        {k: c[k] for k in ("id", "nombre", *[k for k in c if k not in ("id", "nombre")])}
+        {k: c[k] for k in ("id", "codigo", "nombre", *[k for k in c if k not in ("id", "codigo", "nombre", "_calle", "_cat_nombre")])}
         for c in constelaciones
     ]
 
@@ -202,7 +257,27 @@ def main() -> None:
                 }
             )
 
+    # Comparación puntual con los parámetros del plan (6 y 3): es la justificación de usar leaf.
+    comparacion = {}
+    for metodo in ("leaf", "eom"):
+        e = etiquetas(xy, MIN_CLUSTER_SIZE, metodo)
+        ks = sorted(set(e) - {-1})
+        mayor = max(ks, key=lambda k: int((e == k).sum()), default=None)
+        if mayor is None:
+            comparacion[metodo] = {"constelaciones": 0}
+            continue
+        pts = xy[e == mayor]
+        radio = float(np.linalg.norm(pts - pts.mean(axis=0), axis=1).max())
+        comparacion[metodo] = {
+            "constelaciones": len(ks),
+            "puntos_sueltos": int((e == -1).sum()),
+            "cumulo_mayor": int(len(pts)),
+            "proporcion_en_cumulo_mayor": round(len(pts) / len(df), 3),
+            "radio_cumulo_mayor_m": round(radio, 1),
+        }
+
     n_en_cumulos = int((etq != -1).sum())
+    n_sin_nombre = int((df["nombre"].str.strip() == "").sum())
     salida = {
         "fuente": FUENTE,
         "licencia": "ODbL 1.0 — https://www.openstreetmap.org/copyright",
@@ -221,11 +296,17 @@ def main() -> None:
         "validaciones": validacion,
         "resumen": {
             "total_comercios": int(len(df)),
+            "con_nombre": int(len(df)) - n_sin_nombre,
+            "sin_nombre": n_sin_nombre,
             "constelaciones": len(constelaciones),
+            "constelaciones_sin_calle": sin_calle,
             "comercios_en_constelaciones": n_en_cumulos,
+            "agrupados": n_en_cumulos,  # mismo dato que la clave anterior, con el nombre que usa la asesoría
             "puntos_sueltos": len(sueltos),
+            "sueltos": len(sueltos),
             "proporcion_en_constelaciones": round(n_en_cumulos / len(df), 3),
         },
+        "comparacion_eom_leaf": comparacion,
         "sensibilidad_min_cluster_size": sensibilidad,
         "constelaciones": constelaciones,
         "puntos_sueltos": sueltos,
@@ -236,7 +317,8 @@ def main() -> None:
     destino.write_text(
         json.dumps(salida, ensure_ascii=False, separators=(",", ":")), encoding="utf-8"
     )
-    print(json.dumps({"resumen": salida["resumen"], "sensibilidad": sensibilidad},
+    print(json.dumps({"resumen": salida["resumen"], "comparacion_eom_leaf": comparacion,
+                      "sensibilidad": sensibilidad},
                      ensure_ascii=False, indent=2))
     print(f"{destino} ({destino.stat().st_size} bytes)")
 

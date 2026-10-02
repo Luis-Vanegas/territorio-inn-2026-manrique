@@ -27,6 +27,7 @@ export function OtrosComercios({
   osmBase,
   filtrado,
   cercania,
+  sinNombre = 0,
 }: {
   items: ComercioListado[];
   estado: EstadoCarga;
@@ -36,6 +37,8 @@ export function OtrosComercios({
   filtrado: boolean;
   /** La lista viene ordenada por cercanía y muestra la distancia. */
   cercania: boolean;
+  /** Comercios sin nombre en OSM: se ven en el mapa pero no en esta lista. */
+  sinNombre?: number;
 }) {
   const [visibles, setVisibles] = useState(POR_TANDA);
 
@@ -81,10 +84,18 @@ export function OtrosComercios({
         </p>
       )}
 
+      {estado === 'listo' && items.length === 0 && sinNombre > 0 && (
+        <p className="mt-3 font-sans text-xs text-tinta/70">
+          {sinNombre} {sinNombre === 1 ? 'comercio sin nombre aparece' : 'comercios sin nombre aparecen'} solo en el mapa.
+        </p>
+      )}
+
       {items.length > 0 && (
         <>
           <p aria-live="polite" className="mt-8 font-sans text-xs text-tinta/70">
-            {items.length} {items.length === 1 ? 'comercio' : 'comercios'}
+            {items.length} {items.length === 1 ? 'comercio' : 'comercios'} con nombre
+            {sinNombre > 0 &&
+              `; ${sinNombre} ${sinNombre === 1 ? 'más sin nombre aparece' : 'más sin nombre aparecen'} solo en el mapa`}
           </p>
           <ul className="mt-2">
             {items.slice(0, visibles).map((i) => (

@@ -80,11 +80,46 @@ def main() -> int:
         n = len(k["estrellas"])
         if k["tamano"] != n or n < c["metodo"]["min_cluster_size"]:
             errores.append(f"{k['id']}: tamaño incoherente")
+        if not k.get("codigo") or k["codigo"].lower() != k["id"]:
+            errores.append(f"{k['id']}: codigo ausente o no calza con el id")
+        if k["mezcla_categorias"] != sorted(k["mezcla_categorias"], key=lambda m: (-m["n"], m["categoria"])):
+            errores.append(f"{k['id']}: mezcla_categorias no está ordenada por conteo desc")
+        if sum(m["n"] for m in k["mezcla_categorias"]) != n or not all(m["nombre"] for m in k["mezcla_categorias"]):
+            errores.append(f"{k['id']}: mezcla_categorias sin nombre legible o no suma el tamaño")
         if len(k["aristas"]) != n - 1:  # un árbol de n nodos tiene n-1 aristas
             errores.append(f"{k['id']}: el MST no tiene n-1 aristas")
-    if c["resumen"]["total_comercios"] != len(todos):
+    r = c["resumen"]
+    if r["total_comercios"] != len(todos):
         errores.append("el resumen no suma los puntos")
+    # `nombre` puede ser null (comercio sin nombre en OSM) pero nunca "" ni un texto
+    # inventado tipo «Sin nombre»: así la app sabe que es ausencia, no un nombre.
+    for e in todos:
+        n = e.get("nombre", "")
+        if n is not None and (not isinstance(n, str) or not n.strip() or n.strip().lower().startswith("sin nombre")):
+            errores.append(f"{e['osm']}: nombre inválido {n!r} (debe ser texto real o null)")
+    sin_nombre = sum(1 for e in todos if e.get("nombre") is None)
+    if r["sin_nombre"] != sin_nombre or r["con_nombre"] != len(todos) - sin_nombre:
+        errores.append("con_nombre/sin_nombre del resumen no cuadran con los puntos")
+    if r["con_nombre"] + r["sin_nombre"] != r["total_comercios"]:
+        errores.append("con_nombre + sin_nombre != total_comercios")
+    en_cumulos = sum(len(k["estrellas"]) for k in c["constelaciones"])
+    if r["agrupados"] != en_cumulos or r["comercios_en_constelaciones"] != en_cumulos:
+        errores.append("agrupados no cuadra con las estrellas de las constelaciones")
+    if r["sueltos"] != len(c["puntos_sueltos"]) or r["puntos_sueltos"] != len(c["puntos_sueltos"]):
+        errores.append("sueltos no cuadra con puntos_sueltos")
+    if r["agrupados"] + r["sueltos"] != r["total_comercios"]:
+        errores.append("agrupados + sueltos != total_comercios")
+    if r["constelaciones"] != len(c["constelaciones"]):
+        errores.append("el resumen cuenta mal las constelaciones")
+    if not c.get("osm_base"):
+        errores.append("constelaciones sin osm_base")
+    if any("descripcion" in e.get("detalle", {}) for e in todos):
+        errores.append("detalle publica descripcion (privacidad)")
 
+    # El código identifica la constelación; el nombre descriptivo puede repetirse.
+    codigos = [k.get("codigo") for k in c["constelaciones"]]
+    if len(codigos) != len(set(codigos)):
+        errores.append("códigos de constelación repetidos")
     print(f"{len(todos)} puntos revisados, {len(c['constelaciones'])} constelaciones")
     for e in errores:
         print("ERROR:", e, file=sys.stderr)

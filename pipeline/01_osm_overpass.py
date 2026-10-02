@@ -1,9 +1,17 @@
-"""Paso 1 · Descarga de comercios con nombre desde OpenStreetMap (Overpass).
+"""Paso 1 · Descarga de comercios desde OpenStreetMap (Overpass).
 
 Salidas (en pipeline/datos/, con la fecha de la corrida en el nombre):
-  osm_valle_aburra_<fecha>.csv  todo el Valle de Aburrá (insumo del clasificador)
-  osm_comuna3_<fecha>.csv       solo lo que cae dentro de lib/geo/manrique.json
+  osm_valle_aburra_<fecha>.csv  todo el Valle de Aburrá, SOLO con nombre (insumo del clasificador)
+  osm_comuna3_<fecha>.csv       lo anterior que cae dentro de lib/geo/manrique.json
   osm_meta_<fecha>.json         trazabilidad y resultado de las validaciones
+  osm_comuna3todos_<fecha>.csv  Comuna 3 con y SIN nombre (insumo de las constelaciones)
+  osm_meta_comuna3todos_<fecha>.json  trazabilidad de esa segunda consulta
+
+Dos consultas con propósitos distintos. El clasificador aprende de nombres, así que
+el Valle sigue exigiendo `name`. Las constelaciones describen el comercio mapeado:
+igual que la asesoría, cuentan también los locales que en OSM no tienen nombre.
+`--solo-comuna3` salta la consulta del Valle: el conjunto de entrenamiento queda
+intacto (no se reescribe el CSV del Valle ni el de la comuna con nombre).
 Además de la categoría, cada fila guarda etiquetas de detalle (dirección,
 horario, cocina, descripción, web) y NUNCA contactos de personas.
 
@@ -63,6 +71,32 @@ area["boundary"="administrative"]["admin_level"="6"]["name"~"^({MUNICIPIOS})$"]-
 out center tags;
 """
 
+def bbox_comuna3() -> str:
+    """Caja del polígono en el orden de Overpass (sur,oeste,norte,este).
+
+    Se pide solo la caja, no un área administrativa: la Comuna 3 no es un
+    municipio y el recorte fino lo hace shapely contra manrique.json.
+    """
+    oeste, sur, este, norte = cargar_poligono().bounds
+    return f"{sur:.5f},{oeste:.5f},{norte:.5f},{este:.5f}"
+
+
+def consulta_comuna3() -> str:
+    # Mismas etiquetas que CONSULTA, sin exigir ["name"].
+    caja = bbox_comuna3()
+    return f"""
+[out:json][timeout:{TIMEOUT_CONSULTA_S}];
+(
+  nwr["shop"]({caja});
+  nwr["craft"]({caja});
+  nwr["amenity"~"^({AMENIDADES})$"]({caja});
+  nwr["healthcare"]({caja});
+  nwr["leisure"="fitness_centre"]({caja});
+);
+out center tags;
+"""
+
+
 CAMPOS_TAG = ["shop", "craft", "amenity", "healthcare", "leisure", "hairdresser"]
 
 # Etiquetas de detalle para mostrar al tocar una estrella. Lista cerrada A
@@ -86,14 +120,14 @@ def recortar(texto: str, maximo: int) -> str:
     return texto if len(texto) <= maximo else texto[: maximo - 1].rstrip() + "…"
 
 
-def descargar() -> tuple[dict, str]:
+def descargar(consulta: str = CONSULTA) -> tuple[dict, str]:
     ultimo_error = None
     for url in ENDPOINTS:
         try:
             print(f"Consultando {url} ...", flush=True)
             r = requests.post(
                 url,
-                data={"data": CONSULTA},
+                data={"data": consulta},
                 headers={"User-Agent": USER_AGENT},
                 timeout=TIMEOUT_HTTP_S,
             )
@@ -134,11 +168,7 @@ def a_dataframe(datos: dict) -> pd.DataFrame:
     return pd.DataFrame(filas)
 
 
-def main() -> None:
-    fecha = ahora_iso()
-    sello = fecha[:10]
-    DATOS.mkdir(parents=True, exist_ok=True)
-
+def descargar_valle(fecha: str, sello: str) -> None:
     bruto, servidor = descargar()
     df = a_dataframe(bruto)
     n_bruto = len(df)
@@ -206,6 +236,89 @@ def main() -> None:
     )
     print(json.dumps({k: v for k, v in meta.items() if k != "consulta_overpass"},
                      ensure_ascii=False, indent=2))
+
+
+
+
+def descargar_comuna3(fecha: str, sello: str) -> None:
+    """Todos los comercios de la caja de la comuna, con o sin nombre."""
+    consulta = consulta_comuna3()
+    bruto, servidor = descargar(consulta)
+    osm_base = bruto.get("osm3s", {}).get("timestamp_osm_base")
+    if not osm_base:
+        raise SystemExit("La respuesta de Overpass no trae osm3s.timestamp_osm_base")
+    df = a_dataframe(bruto)
+    n_bruto = len(df)
+
+    nulos_antes = {"lat": int(df["lat"].isna().sum()), "lon": int(df["lon"].isna().sum())}
+    df = df.dropna(subset=["lat", "lon"]).copy()
+    # Sin nombre se guarda como "" (no "Sin nombre"): la app decide cómo mostrarlo.
+    df["nombre"] = df["nombre"].fillna("").str.strip()
+
+    dup_id = int(df.duplicated(subset=["osm_tipo", "osm_id"]).sum())
+    df = df.drop_duplicates(subset=["osm_tipo", "osm_id"])
+
+    # Duplicado de hecho: igual criterio que el Valle (mismo nombre a ~1 m). Solo para los
+    # sin nombre se agrega la etiqueta OSM, porque dos locales sin nombre pegados
+    # pero de rubro distinto son dos comercios, no uno repetido.
+    clave = df.assign(
+        _n=df["nombre"].str.lower(),
+        _t=df[["shop", "craft", "amenity", "healthcare", "leisure"]]
+        .fillna("").agg("|".join, axis=1).where(df["nombre"] == "", ""),
+        _la=df["lat"].round(5),
+        _lo=df["lon"].round(5),
+    )
+    dup_geo = clave.duplicated(subset=["_n", "_t", "_la", "_lo"])
+    dup_geo_sin_nombre = int((dup_geo & (clave["nombre"] == "")).sum())
+    df = df.loc[~dup_geo].copy()
+
+    poligono = cargar_poligono()
+    dentro = contains_xy(poligono, df["lon"].to_numpy(), df["lat"].to_numpy())
+    en_caja_fuera = int((~dentro).sum())
+    comuna = df[dentro].sort_values(["osm_tipo", "osm_id"]).reset_index(drop=True)
+    fuera = int((~contains_xy(poligono, comuna["lon"].to_numpy(), comuna["lat"].to_numpy())).sum())
+    assert fuera == 0, "hay comercios de la comuna fuera del polígono"
+
+    comuna.to_csv(DATOS / f"osm_comuna3todos_{sello}.csv", index=False, encoding="utf-8")
+    sin_nombre = int((comuna["nombre"] == "").sum())
+    meta = {
+        "fuente": FUENTE,
+        "licencia": "ODbL 1.0 — https://www.openstreetmap.org/copyright",
+        "fecha_corrida": fecha,
+        "timestamp_osm_base": osm_base,
+        "osm_base_timestamp": osm_base,
+        "servidor": servidor,
+        "consulta_overpass": consulta.strip(),
+        "elementos_brutos": n_bruto,
+        "validaciones": {
+            "nulos_descartados": nulos_antes,
+            "duplicados_por_id_eliminados": dup_id,
+            "duplicados_por_nombre_categoria_y_posicion_eliminados": int(dup_geo.sum()),
+            "de_ellos_sin_nombre": dup_geo_sin_nombre,
+            "en_la_caja_pero_fuera_del_poligono": en_caja_fuera,
+            "comuna3_fuera_del_poligono": fuera,
+        },
+        "total_comuna3": int(len(comuna)),
+        "comuna3_con_nombre": int(len(comuna) - sin_nombre),
+        "comuna3_sin_nombre": sin_nombre,
+        "comuna3_con_categoria_mapeada": int((comuna["categoria"] != "").sum()),
+    }
+    (DATOS / f"osm_meta_comuna3todos_{sello}.json").write_text(
+        json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(json.dumps({k: v for k, v in meta.items() if k != "consulta_overpass"},
+                     ensure_ascii=False, indent=2))
+
+
+def main() -> None:
+    fecha = ahora_iso()
+    sello = fecha[:10]
+    DATOS.mkdir(parents=True, exist_ok=True)
+    if "--solo-comuna3" not in sys.argv:
+        descargar_valle(fecha, sello)
+        # Pausa entre consultas: Overpass reparte cupo por IP y la del Valle es pesada.
+        time.sleep(30)
+    descargar_comuna3(fecha, sello)
 
 
 if __name__ == "__main__":
