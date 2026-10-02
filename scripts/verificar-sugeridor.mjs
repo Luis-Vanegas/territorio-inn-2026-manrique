@@ -5,7 +5,7 @@
  * `public/modelo_categoria.json`.
  *
  * Los casos y sus probabilidades salen de correr la función de Python con el
- * modelo vigente (2026-10-01); no se calculan acá. Si se reentrena el modelo,
+ * modelo vigente (2026-10-02); no se calculan acá. Si se reentrena el modelo,
  * hay que volver a generarlos: este script falla a propósito, porque una
  * sugerencia que cambió sin que nadie lo mirara es justo lo que se quiere ver.
  *
@@ -22,21 +22,21 @@ const modelo = JSON.parse(readFileSync(join(RAIZ, 'public/modelo_categoria.json'
 
 // [nombre, clase esperada, probabilidad de Python]. Nombres inventados.
 const CASOS = [
-  ['Panadería La Espiga Dorada', 'panaderia', 0.825741],
-  ['Veterinaria Patitas Felices', 'mascotas', 0.998224],
-  ['Droguería San Rafael', 'salud_bienestar', 0.996884],
-  ['Repuestos y Motos El Tornillo', 'mecanica_motos', 0.811987],
-  ['Restaurante Sabor Paisa', 'comidas', 0.905959],
-  ['Peluquería Estilo', 'belleza_peluqueria', 0.973635],
-  ['Barbería El Corte', 'belleza_peluqueria', 0.524059],
-  ['Ferretería y construcción Don Pedro', 'construccion', 0.986126],
-  ['Papelería y Variedades Luna', 'papeleria', 0.997362],
-  ['Cacharrería Ñandú 24 horas', 'panaderia', 0.480905],
-  ['Tienda de Doña Marta', 'tienda_viveres', 0.949582],
-  ['Celulares & Accesorios JR', 'tecnologia_celulares', 0.976157],
-  ['Salón de belleza Rosa', 'belleza_peluqueria', 0.998582],
-  ['Misceláneo El Vecino', 'comidas', 0.540664],
-  ['y', 'belleza_peluqueria', 0.28471],
+  ['Panadería La Espiga Dorada', 'panaderia', 0.857897],
+  ['Veterinaria Patitas Felices', 'mascotas', 0.999729],
+  ['Droguería San Rafael', 'salud_bienestar', 0.999553],
+  ['Repuestos y Motos El Tornillo', 'mecanica_motos', 0.912855],
+  ['Restaurante Sabor Paisa', 'comidas', 0.898379],
+  ['Peluquería Estilo', 'belleza_peluqueria', 0.996561],
+  ['Barbería El Corte', 'barberia', 0.500637],
+  ['Ferretería y construcción Don Pedro', 'construccion', 0.994138],
+  ['Papelería y Variedades Luna', 'papeleria', 0.998797],
+  ['Cacharrería Ñandú 24 horas', 'panaderia', 0.829353],
+  ['Tienda de Doña Marta', 'tienda_viveres', 0.988023],
+  ['Celulares & Accesorios JR', 'tecnologia_celulares', 0.991436],
+  ['Salón de belleza Rosa', 'belleza_peluqueria', 0.999563],
+  ['Misceláneo El Vecino', 'comidas', 0.899511],
+  ['y', 'belleza_peluqueria', 0.324474],
 ];
 
 const TOLERANCIA = 1e-4;
