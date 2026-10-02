@@ -80,6 +80,8 @@ const CORRIENTES = new Set([
   // sustantivos y nombres propios
   'café', 'bebé', 'inglés', 'francés', 'interés', 'cortés', 'revés',
   'estrés', 'país', 'josé', 'valdés', 'inés', 'andrés', 'ay',
+  // «Valle de Aburrá»: nombre propio, no un verbo.
+  'aburrá',
   // pretéritos de primera persona: la persona habla de sí misma, no se le
   // está dando una orden. Ej. la opción «Aprendí trabajando».
   'aprendí', 'sentí', 'recibí', 'salí', 'viví', 'conseguí', 'perdí',
