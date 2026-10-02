@@ -48,10 +48,20 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       muestra mapa y comercios OSM en cualquier categoría (decisión de Luis: «mostrar todo»).
 - [ ] **Decisión pendiente de Luis:** HDBSCAN `eom` (18) vs `leaf` (20, vigente). Con 320
       comercios `eom` ya no colapsa; actualizar documento con la cifra elegida.
-- [ ] Documento del concurso: actualizar a 320/201/119 y 20 constelaciones.
-- [ ] Encabezado genera scroll horizontal a 320 px (`SiteHeader.tsx`).
-- [ ] Portada: buscador y mapa con el mismo «mostrar todo».
-- [ ] GeoJSON de barrios (lo pasa Luis) → `barrio_oficial` y nombres de constelación sin calle.
+- [x] Documento del concurso a 320/201/119 y 20 constelaciones (`b6be1b6`); el asesor tiene 11 pasos.
+- [x] Encabezado sin scroll a 320 px, menú Aprende ▾ + Firmamento, portada «mostrar todo»,
+      banda Firmamento sin visitas, footer en texto (`717984f`).
+- [x] /firmamento α–η sin aliados individuales (solo agregados k=5); sugeridor en el registro;
+      toggle «público» y moderación de convocatorias en el panel; Mi cuenta «Para ti» y
+      «Tu negocio en números»; «Otros negocios de tu constelación» (`717984f`).
+- [x] Refactor sin duplicados: lib/cifras.ts, estrella única, lib/formato.ts, imports `.ts`
+      compartidos con los verificadores (preview de Vercel READY) (`d5b098a`).
+- [x] Barrios oficiales (GeoJSON de Luis, 15 barrios, 99,9 % de cobertura): barrioDe,
+      constelaciones sin calle nombradas por barrio, barrio en la ficha OSM, aviso en el
+      registro (`2e04e9e`). **Falta confirmar la fuente del GeoJSON** (¿GeoMedellín?).
+- [ ] «Qué ofrecemos» en la portada (plan §3.4): no hecho, espera decisión de Luis.
+- [ ] Pruebas manuales en producción: registro con sugeridor, toggle público, aprobar una
+      convocatoria, Mi cuenta con negocio aprobado.
 - [ ] Prueba que ejercite el refine de Zod con un punto fuera (hoy solo se prueba la función).
 - [ ] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP.
 - [ ] Documento: cifras nuevas con fuente (Cámara 2025: 2.626 empresas en Manrique; 15 barrios,
@@ -218,6 +228,11 @@ Lo que NO se pudo probar:
       vitrina. **Es el último tramo del camino sin verificar.**
 
 ## 🟢 Para Antigravity (rápidas, mecánicas, acotadas)
+
+- [ ] **Aviso de barrio en la edición del negocio.** `FormularioEdicionPortafolio.tsx` tiene
+      el mismo selector de barrio que el registro y no avisa cuando el barrio elegido no
+      coincide con el punto. Copia el patrón de `FormularioRegistro.tsx` (busca `barrioDe` y
+      el `<div role="status">`): mismo texto, no bloquea el envío, no avisa con «Otro».
 
 ### Voseo en los mensajes de las server actions
 
