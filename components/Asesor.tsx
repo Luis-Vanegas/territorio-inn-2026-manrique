@@ -170,7 +170,7 @@ export function Asesor({
         className={
           enPanel
             ? 'flex min-h-0 flex-1 flex-col'
-            : 'mt-6 flex h-[34rem] max-h-[80dvh] max-w-2xl flex-col border border-tinta/15'
+            : 'mt-6 flex h-[34rem] max-h-[80dvh] max-w-2xl flex-col border border-tinta/55'
         }
       >
         <div ref={lista} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-5">
@@ -200,7 +200,7 @@ export function Asesor({
                       type="button"
                       onClick={() => preguntarSugerencia(sugerencia)}
                       disabled={pendiente}
-                      className="min-h-[44px] rounded-2xl border border-tinta/15 px-4 py-2 text-left font-sans text-sm text-tinta/75 transition-colors hover:border-azul hover:text-azul-texto disabled:opacity-50"
+                      className="min-h-[44px] rounded-2xl border border-tinta/55 px-4 py-2 text-left font-sans text-sm text-tinta/75 transition-colors hover:border-azul hover:text-azul-texto disabled:opacity-50"
                     >
                       {sugerencia}
                     </button>
@@ -243,7 +243,7 @@ export function Asesor({
                   if (!pendiente) formulario.current?.requestSubmit();
                 }
               }}
-              className="max-h-32 min-h-[44px] flex-1 resize-none rounded-2xl border border-tinta/20 bg-transparent px-4 py-2.5 font-sans text-base text-tinta [field-sizing:content] placeholder:text-tinta/40 focus:border-azul focus:outline-none"
+              className="max-h-32 min-h-[44px] flex-1 resize-none rounded-2xl border border-tinta/55 bg-transparent px-4 py-2.5 font-sans text-base text-tinta [field-sizing:content] placeholder:text-tinta/65 focus:border-azul focus:outline-none"
             />
             <button
               type="submit"

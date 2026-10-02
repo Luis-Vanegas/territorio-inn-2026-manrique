@@ -67,7 +67,7 @@ export function BuscadorNegocios({
             onFocus={() => setPidioOsm(true)}
             placeholder="Arepas, barbería, arreglo de celulares…"
             autoComplete="off"
-            className="min-h-[48px] min-w-0 flex-1 border border-tinta/25 bg-hueso px-4 font-sans text-base text-tinta placeholder:text-tinta/40 focus:border-azul focus:outline-none"
+            className="min-h-[48px] min-w-0 flex-1 border border-tinta/55 bg-hueso px-4 font-sans text-base text-tinta placeholder:text-tinta/65 focus:border-azul focus:outline-none"
           />
           <button
             type="submit"
@@ -89,7 +89,7 @@ export function BuscadorNegocios({
                 setPidioOsm(true);
                 setConsulta(s);
               }}
-              className="min-h-[44px] border border-tinta/15 px-4 text-tinta/75 transition-colors hover:border-azul hover:text-azul-texto"
+              className="min-h-[44px] border border-tinta/55 px-4 text-tinta/75 transition-colors hover:border-azul hover:text-azul-texto"
             >
               {s}
             </button>

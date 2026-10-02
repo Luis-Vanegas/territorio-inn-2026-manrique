@@ -55,7 +55,7 @@ const OPCIONES_FORMALIDAD_UI = Object.entries(ETIQUETA_FORMALIDAD).map(
 const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[440px] w-full items-center justify-center border border-tinta/15 bg-tinta/[0.02] sm:h-[580px]">
+    <div className="flex h-[440px] w-full items-center justify-center border border-tinta/55 bg-tinta/[0.02] sm:h-[580px]">
       <span className="font-sans text-xs text-tinta/60">cargando mapa…</span>
     </div>
   ),
@@ -124,8 +124,8 @@ function Seccion({
 
 
 const claseInput =
-  'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
+  'placeholder:text-tinta/65 focus:border-azul focus:outline-none focus:ring-0 ' +
   'aria-[invalid=true]:border-azul';
 
 function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }) {
@@ -381,7 +381,7 @@ export function FormularioRegistro({
               type="button"
               onClick={ubicarPorDireccion}
               disabled={geocodificando}
-              className="inline-flex min-h-11 items-center gap-2 border border-tinta/20 px-4 py-2.5 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 border border-tinta/55 px-4 py-2.5 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
             >
               <span aria-hidden="true">📍</span>
               {geocodificando ? 'Buscando esa dirección…' : 'Ubicar esta dirección en el mapa'}

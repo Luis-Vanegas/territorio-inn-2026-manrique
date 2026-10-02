@@ -100,7 +100,7 @@ export function MapaAliados({
                 setFiltro(e.target.value);
                 if (e.target.value) setActiva(true);
               }}
-              className="min-h-[44px] max-w-full border border-tinta/40 bg-hueso px-3 font-sans text-sm text-tinta"
+              className="min-h-[44px] max-w-full border border-tinta/55 bg-hueso px-3 font-sans text-sm text-tinta"
             >
               <option value="">Todas ({datos.constelaciones.length})</option>
               {datos.constelaciones.map((c) => (

@@ -90,8 +90,8 @@ function Seccion({
 }
 
 const claseInput =
-  'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
+  'placeholder:text-tinta/65 focus:border-azul focus:outline-none focus:ring-0 ' +
   'aria-[invalid=true]:border-azul';
 
 function BotonGuardar() {

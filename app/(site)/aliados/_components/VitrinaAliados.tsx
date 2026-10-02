@@ -209,7 +209,7 @@ export function VitrinaAliados({
               setVisibles(POR_TANDA);
             }}
             placeholder="Busca por nombre, rubro o qué necesitas…"
-            className="w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/35 focus:border-azul focus:outline-none focus:ring-0"
+            className="w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta placeholder:text-tinta/65 focus:border-azul focus:outline-none focus:ring-0"
           />
         </label>
 

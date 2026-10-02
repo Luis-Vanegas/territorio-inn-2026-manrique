@@ -30,7 +30,7 @@ function Contacto({ telefono, nombre }: { telefono: string; nombre: string }) {
       <button
         type="button"
         onClick={() => setVisible(true)}
-        className="min-h-11 border border-tinta/25 px-4 py-2 font-sans text-xs text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
+        className="min-h-11 border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
       >
         Mostrar teléfono
       </button>
@@ -117,7 +117,7 @@ export function VitrinaCandidatos({ candidatos }: { candidatos: Candidato[] }) {
         <select
           value={nivel}
           onChange={(e) => setNivel(e.target.value)}
-          className="w-fit border-0 border-b border-tinta/25 bg-transparent py-1.5 pr-6 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
+          className="w-fit border-0 border-b border-tinta/55 bg-transparent py-1.5 pr-6 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
         >
           <option value="">Todos</option>
           {OPCIONES_NIVEL_FORMACION.map((o) => (

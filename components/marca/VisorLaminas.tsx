@@ -41,7 +41,7 @@ const ESTILO_BOTON: Record<'boton' | 'enlace', string> = {
 };
 
 const ESTILO_ACCION =
-  'inline-flex min-h-[44px] items-center border border-tinta/40 px-4 font-sans text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-tinta/40 disabled:hover:text-tinta';
+  'inline-flex min-h-[44px] items-center border border-tinta/55 px-4 font-sans text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-tinta/40 disabled:hover:text-tinta';
 
 export function VisorLaminas({
   titulo,
@@ -94,7 +94,7 @@ export function VisorLaminas({
               <button
                 type="button"
                 onClick={() => abrirEn(i)}
-                className="group relative block aspect-[3/4] w-full overflow-hidden border border-tinta/15 bg-tinta/[0.04]"
+                className="group relative block aspect-[3/4] w-full overflow-hidden border border-tinta/55 bg-tinta/[0.04]"
               >
                 {/* object-contain: son infografías con texto, no fotos — object-cover
                     en un marco 3:4 fijo se come el texto de las láminas apaisadas
@@ -131,7 +131,7 @@ export function VisorLaminas({
           if (e.key === 'ArrowRight') ir(actual + 1);
           if (e.key === 'ArrowLeft') ir(actual - 1);
         }}
-        className="m-auto w-[min(96vw,64rem)] max-w-none border border-tinta/20 bg-hueso p-0 text-tinta backdrop:bg-tinta/75"
+        className="m-auto w-[min(96vw,64rem)] max-w-none border border-tinta/55 bg-hueso p-0 text-tinta backdrop:bg-tinta/75"
       >
         <div className="flex max-h-[94dvh] flex-col">
           <div className="flex items-center justify-between gap-4 border-b border-tinta/15 px-4 py-3 sm:px-6">
@@ -158,7 +158,7 @@ export function VisorLaminas({
                 width={lamina.ancho}
                 height={lamina.alto}
                 sizes="(min-width: 1024px) 960px, 96vw"
-                className={`mx-auto h-auto w-full border border-tinta/15 ${
+                className={`mx-auto h-auto w-full border border-tinta/55 ${
                   lamina.ancho > lamina.alto ? 'max-w-5xl' : 'max-w-3xl'
                 }`}
               />

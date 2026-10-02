@@ -68,7 +68,7 @@ export function SelectorTema() {
       onClick={() => fijarTema(oscuro ? 'light' : 'dark')}
       aria-pressed={oscuro}
       aria-label={oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-      className="grid h-11 w-11 shrink-0 place-items-center border border-tinta/15 text-tinta transition-colors hover:border-azul hover:text-azul-texto"
+      className="grid h-11 w-11 shrink-0 place-items-center border border-tinta/55 text-tinta transition-colors hover:border-azul hover:text-azul-texto"
     >
       {oscuro ? (
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">

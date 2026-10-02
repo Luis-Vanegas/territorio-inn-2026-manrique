@@ -41,7 +41,7 @@ const ETIQUETAS_NIVEL: Record<string, string> = {
 const NIVELES_CON_PROGRAMA = ['universitaria', 'tecnologica', 'tecnica', 'tecnico_sena'];
 
 const claseInput =
-  'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-sm text-tinta ' +
+  'w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-sm text-tinta ' +
   'focus:border-azul focus:outline-none focus:ring-0';
 
 function BotonModeracion({
@@ -273,7 +273,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoModeracion }
                 name="motivo_rechazo"
                 rows={2}
                 placeholder="Por qué se rechaza — la persona lo va a leer"
-                className="w-full max-w-xl border border-tinta/20 bg-transparent px-3 py-2 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
+                className="w-full max-w-xl border border-tinta/55 bg-transparent px-3 py-2 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
               />
             )}
 
@@ -284,7 +284,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoModeracion }
                   <button
                     type="button"
                     onClick={() => setRechazando(true)}
-                    className="min-h-11 border border-tinta/25 px-5 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className="min-h-11 border border-tinta/55 px-5 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
                   >
                     Rechazar
                   </button>
@@ -309,7 +309,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoModeracion }
                   <button
                     type="button"
                     onClick={() => setEditando(true)}
-                    className="min-h-11 border border-tinta/25 px-5 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className="min-h-11 border border-tinta/55 px-5 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
                   >
                     Editar
                   </button>

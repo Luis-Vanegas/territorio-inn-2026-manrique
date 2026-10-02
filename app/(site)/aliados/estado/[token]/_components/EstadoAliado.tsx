@@ -93,7 +93,7 @@ function GuardarEnlace({ nombre }: { nombre: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/20 px-4 py-2.5 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+      className="inline-flex min-h-11 items-center gap-2 self-start border border-tinta/55 px-4 py-2.5 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
     >
       <span aria-hidden="true">↗</span>
       Guardar este enlace por WhatsApp
