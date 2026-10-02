@@ -43,10 +43,14 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
 - [x] Modo noche (`cdec94d`): textos y popups legibles, teselas Esri oscuras que siguen al tema,
       bordes ≥ 3:1 y placeholders ≥ 4,5:1, filtro `?categoria=` también en el mapa y conteo en la
       leyenda. Una sola fuente de tema (`lib/tema.ts`) y de colores de noche (`lib/paleta.ts`).
-- [ ] Rama `feat/osm-sin-nombre` (worktree): 320 comercios (201 con nombre, 119 sin nombre),
-      nombres descriptivos de constelación. Espera decisión de Luis: `eom` (18) vs `leaf` (20).
-      Falta adaptar ficha/lista/buscador a `nombre: null`.
-- [ ] Decidir si /aliados muestra mapa y comercios OSM en categorías sin aliados.
+- [x] OSM completo (`356d025`): 320 comercios (201 con nombre, 119 sin nombre, como la
+      asesoría: 312 = 198 + 114), 20 constelaciones con código y nombre descriptivo. /aliados
+      muestra mapa y comercios OSM en cualquier categoría (decisión de Luis: «mostrar todo»).
+- [ ] **Decisión pendiente de Luis:** HDBSCAN `eom` (18) vs `leaf` (20, vigente). Con 320
+      comercios `eom` ya no colapsa; actualizar documento con la cifra elegida.
+- [ ] Documento del concurso: actualizar a 320/201/119 y 20 constelaciones.
+- [ ] Encabezado genera scroll horizontal a 320 px (`SiteHeader.tsx`).
+- [ ] Portada: buscador y mapa con el mismo «mostrar todo».
 - [ ] GeoJSON de barrios (lo pasa Luis) → `barrio_oficial` y nombres de constelación sin calle.
 - [ ] Prueba que ejercite el refine de Zod con un punto fuera (hoy solo se prueba la función).
 - [ ] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP.
