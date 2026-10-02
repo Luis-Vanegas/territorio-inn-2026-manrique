@@ -295,6 +295,16 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   marcadores de aliados. Son comercios de OpenStreetMap, **no aliados**: la
   leyenda lo dice y el texto habla de «comercios mapeados en OpenStreetMap»,
   nunca de «negocios que hay».
+- **Filtros del mapa** (sin controles nuevos): el desplegable «Ver una sola» lista
+  cada constelación como «C04 · Carrera 31 · Tienda y víveres — 13 comercios»;
+  si el JSON no trae `codigo` o un nombre descriptivo se usa lo que haya
+  (`etiquetaConstelacion`). Al elegir una, bajo el mapa sale su mezcla en el estilo
+  de la línea de fuente («Tienda y víveres 7 · Papelería 3 · Otros 3», las tres
+  mayores y el resto junto). El filtro de categoría de `/aliados` (`?categoria=`)
+  también filtra las estrellas del mapa y la lista «Otros comercios» (mismos ids;
+  `filtrarPorCategoria`): una constelación sin comercios de esa categoría
+  desaparece y las líneas solo unen estrellas que quedan. La leyenda cuenta lo que
+  el mapa muestra por grupo («Comida (círculo) · 42»), aliados y estrellas.
 - **Estrella interactiva**: cada estrella y cada punto suelto se toca o se enfoca
   (Tab, Enter; Esc cierra) y abre un popup con lo que OSM trae: categoría, nombre,
   dirección, horario, cocina y web (solo las que existan; nada se rellena), la

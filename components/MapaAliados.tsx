@@ -5,8 +5,9 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { Coordenada } from '@/lib/geo/constantes';
-import { GRUPOS } from '@/lib/categorias/grupos';
+import { GRUPOS, grupoDeCategoria, type IdGrupo } from '@/lib/categorias/grupos';
 import { fechaLarga } from '@/lib/geo/constelaciones';
+import { etiquetaConstelacion, filtrarPorCategoria, lineaMezcla } from '@/lib/geo/comerciosOsm';
 import { svgEstrella, svgForma } from './mapa/formas';
 import { useConstelaciones } from './mapa/useConstelaciones';
 
@@ -46,6 +47,7 @@ export function MapaAliados({
   seleccionado,
   variante = 'portada',
   conFiltro = false,
+  categoria,
   hrefLista = '/aliados#listado',
 }: {
   portafolios: Portafolio[];
@@ -55,13 +57,36 @@ export function MapaAliados({
   variante?: keyof typeof ALTURAS;
   /** Muestra el selector de constelación (solo en /aliados). */
   conFiltro?: boolean;
+  /** `?categoria=` de la vitrina: filtra también las estrellas de OpenStreetMap. */
+  categoria?: string;
   /** Dónde está la lista equivalente al mapa, para quien no puede usarlo. */
   hrefLista?: string;
 }) {
   const [activa, setActiva] = useState(true);
   const [filtro, setFiltro] = useState('');
   // El JSON (~43 KB) se pide aquí y no se importa: fuera del bundle inicial.
-  const { datos, estado } = useConstelaciones();
+  const { datos: datosCrudos, estado } = useConstelaciones();
+  const datos = useMemo(
+    () => (datosCrudos ? filtrarPorCategoria(datosCrudos, categoria) : null),
+    [datosCrudos, categoria],
+  );
+  // Con una categoría activa la constelación elegida puede haber desaparecido.
+  const elegida = datos?.constelaciones.find((c) => c.id === filtro) ?? null;
+  const filtroValido = elegida ? filtro : '';
+
+  // Conteo por grupo de lo que el mapa muestra ahora: aliados y, con la capa
+  // prendida, las estrellas de la constelación elegida (o todas).
+  const conteos = useMemo(() => {
+    const total: Record<IdGrupo, number> = { comida: 0, tienda: 0, belleza: 0, oficios: 0, salud: 0, otros: 0 };
+    for (const p of portafolios) total[grupoDeCategoria(p.categoria_id).id]++;
+    if (activa && datos) {
+      const estrellas = filtroValido
+        ? (elegida?.estrellas ?? [])
+        : [...datos.constelaciones.flatMap((c) => c.estrellas), ...datos.puntos_sueltos];
+      for (const e of estrellas) total[grupoDeCategoria(e.categoria).id]++;
+    }
+    return total;
+  }, [portafolios, activa, datos, filtroValido, elegida]);
 
   const fuente = useMemo(
     () =>
@@ -95,7 +120,7 @@ export function MapaAliados({
           <label className="inline-flex max-w-full flex-wrap items-center gap-2 font-sans text-sm text-tinta/80">
             Ver una sola
             <select
-              value={filtro}
+              value={filtroValido}
               onChange={(e) => {
                 setFiltro(e.target.value);
                 if (e.target.value) setActiva(true);
@@ -105,7 +130,7 @@ export function MapaAliados({
               <option value="">Todas ({datos.constelaciones.length})</option>
               {datos.constelaciones.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.nombre} · {c.tamano} comercios
+                  {etiquetaConstelacion(c)}
                 </option>
               ))}
             </select>
@@ -127,7 +152,7 @@ export function MapaAliados({
           ubicacionUsuario={ubicacionUsuario}
           seleccionado={seleccionado}
           constelaciones={activa ? datos : null}
-          filtroConstelacion={activa ? filtro : ''}
+          filtroConstelacion={activa ? filtroValido : ''}
         />
       </div>
 
@@ -145,7 +170,7 @@ export function MapaAliados({
               className="inline-flex"
               dangerouslySetInnerHTML={{ __html: svgForma(g, 16) }}
             />
-            {g.nombre} ({g.formaNombre})
+            {g.nombre} ({g.formaNombre}) · {conteos[g.id]}
           </li>
         ))}
         {activa && datos && (
@@ -159,6 +184,12 @@ export function MapaAliados({
           </li>
         )}
       </ul>
+
+      {activa && elegida && (
+        <p aria-live="polite" className="mt-2 font-cifra text-xs leading-relaxed text-tinta/70">
+          Qué hay aquí: {lineaMezcla(elegida)}
+        </p>
+      )}
 
       {activa && fuente && (
         <p className="mt-2 font-cifra text-xs leading-relaxed text-tinta/70">{fuente}</p>

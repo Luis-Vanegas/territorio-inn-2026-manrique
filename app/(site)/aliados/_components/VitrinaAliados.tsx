@@ -268,6 +268,7 @@ export function VitrinaAliados({
             seleccionado={seleccionado}
             variante="vitrina"
             conFiltro
+            categoria={categoriaActiva}
             hrefLista="#listado"
           />
         </div>
