@@ -23,8 +23,17 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
 - [ ] **3 aliados fuera del polígono** (Polarium Diseños, Viala medias, Delicias de Carlota):
       coordenadas mal marcadas al registrar; corregir en la base. Los dos últimos no se ven en el mapa.
 - [ ] Constelación c09 con halo de ~486 m: decidir si se limita u omite.
-- [ ] `SNAPSHOT_OSM` está a mano en `lib/geo/constelaciones.ts`; que el pipeline escriba
-      `osm_base_timestamp` en el JSON público.
+- [x] OSM refrescado al 2026-10-02 (205 comercios, 12 constelaciones, 125/80, F1 0,528) con
+      `detalle` (dirección, horario, cocina, web) y `osm_base` en el JSON. La descripción de OSM
+      NO se publica (identificaba personas).
+- [x] Fase 2 (integrador) mergeada. **Incidente:** la 032 quedó aplicada en PRODUCCIÓN el
+      1-oct 21:50 UTC (solo aditiva, sin daño). La rama `dev` de Neon está archivada desde el
+      8-sep: `.env.local` apunta solo a producción. Antes de la próxima migración, desarchivar
+      o crear rama de prueba.
+- [ ] Registro: validar en el servidor que el punto caiga dentro de Manrique (hoy el schema
+      acepta cualquier punto del mundo, `portafolio.schema.ts:173`).
+- [ ] Mapa: rediseño de los puntos OSM con popup (espera la elección de Luis: A/B/C).
+- [ ] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP.
 - [ ] Documento: cifras nuevas con fuente (Cámara 2025: 2.626 empresas en Manrique; 15 barrios,
       Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.
 - [ ] Fase 2 · Integrador — lista para lanzar (A1 confirmado por el geocatálogo).
