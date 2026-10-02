@@ -346,3 +346,88 @@ export function lineaMezcla(c: Constelacion): string {
   if (resto > 0) partes.push(`Otros ${resto}`);
   return partes.join(' · ');
 }
+
+// ── Ficha de un aliado: a qué constelación pertenece ──────────────────
+
+type Punto = { lat: number; lon: number };
+
+/**
+ * Metros entre dos puntos con la aproximación plana (equirectangular). A escala
+ * de barrio (cientos de metros) el error frente a Haversine es de centímetros, y
+ * se escribe acá en vez de importar `lib/geo/distancia.ts` por la misma razón de
+ * arriba: el verificador carga este archivo con `--experimental-strip-types`, que
+ * no resuelve imports de valor sin extensión.
+ */
+function metrosEntre(a: Punto, b: Punto): number {
+  const M_POR_GRADO = 111_320;
+  const dx = (b.lon - a.lon) * Math.cos(((a.lat + b.lat) / 2) * (Math.PI / 180)) * M_POR_GRADO;
+  const dy = (b.lat - a.lat) * M_POR_GRADO;
+  return Math.hypot(dx, dy);
+}
+
+/**
+ * La constelación de OSM a la que pertenece un punto (la ubicación de un aliado):
+ * la del centroide MÁS CERCANO, y solo si el punto cae dentro de su `radio_p90_m`
+ * (el radio que contiene al 90 % de sus comercios). Fuera de ese radio es `null`:
+ * un negocio aislado no pertenece a ninguna, y decir que sí sería inventar un
+ * vecindario. Se calcula al vuelo y no se guarda (la columna `portafolios.constelacion`
+ * de la 032 sigue sin escribirse): el JSON se regenera con el pipeline y un id
+ * guardado quedaría apuntando a una constelación que ya no existe.
+ */
+export function constelacionDe(punto: Punto, constelaciones: Constelacion[]): Constelacion | null {
+  let mejor: Constelacion | null = null;
+  let distanciaMejor = Infinity;
+  for (const c of constelaciones) {
+    const d = metrosEntre(punto, c.centroide);
+    if (d < distanciaMejor) {
+      mejor = c;
+      distanciaMejor = d;
+    }
+  }
+  return mejor && distanciaMejor <= mejor.radio_p90_m ? mejor : null;
+}
+
+export type ComercioVecino = { comercio: EstrellaOsm; metros: number };
+
+/** Un comercio de OSM a esta distancia o menos del aliado es, casi seguro, el propio aliado. */
+export const METROS_MISMO_NEGOCIO = 25;
+
+/**
+ * Minúsculas, sin tildes, espacios colapsados: la misma regla de `normalizar` de
+ * `lib/busqueda.ts`, que acá no se puede importar (ver `metrosEntre`).
+ */
+function claveNombre(texto: string): string {
+  return texto.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').split(/\s+/).filter(Boolean).join(' ');
+}
+
+/**
+ * «Otros negocios de tu constelación»: hasta `max` comercios CON NOMBRE de la
+ * constelación del punto, del más cercano al más lejano. `total` cuenta todos los
+ * que tienen nombre, para poder decir «y N más». `null` si el punto no cae en
+ * ninguna constelación (la ficha no muestra la sección).
+ *
+ * El propio aliado puede estar mapeado en OSM: se excluye todo comercio a
+ * `METROS_MISMO_NEGOCIO` m o menos del punto, o con el mismo nombre normalizado
+ * que `nombreAliado`. Si no, la ficha lo listaría como «no es aliado».
+ */
+export function vecinosDeConstelacion(
+  punto: Punto,
+  datos: Pick<DatosConstelaciones, 'constelaciones'>,
+  max = 5,
+  nombreAliado?: string,
+): { constelacion: Constelacion; comercios: ComercioVecino[]; total: number } | null {
+  const constelacion = constelacionDe(punto, datos.constelaciones);
+  if (!constelacion) return null;
+
+  const claveAliado = nombreAliado ? claveNombre(nombreAliado) : null;
+  const conNombre = comerciosConNombre(constelacion.estrellas)
+    .map((comercio) => ({ comercio, metros: metrosEntre(punto, { lat: comercio.lat, lon: comercio.lon }) }))
+    .filter(
+      (v) =>
+        v.metros > METROS_MISMO_NEGOCIO &&
+        (!claveAliado || claveNombre(v.comercio.nombre ?? '') !== claveAliado),
+    )
+    .sort((a, b) => a.metros - b.metros);
+
+  return { constelacion, comercios: conNombre.slice(0, max), total: conNombre.length };
+}

@@ -41,6 +41,12 @@ export const definicionCampoSchema = z
     { message: 'Las opciones solo aplican a campos de selección', path: ['opciones'] },
   );
 
+/** Interruptor de «público» de un campo: id de la fila y el valor nuevo. */
+export const cambioPublicoSchema = z.object({
+  id: z.uuid('Identificador inválido'),
+  publico: z.enum(['true', 'false']).transform((v) => v === 'true'),
+});
+
 export type DefinicionCampoInput = z.infer<typeof definicionCampoSchema>;
 
 /**

@@ -1,4 +1,4 @@
-import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
+import { listarTodosLosCampos, contarValoresPorCampo } from '@/lib/db/camposPersonalizados.repo';
 import { SeccionNuevoCampo } from './_components/SeccionNuevoCampo';
 import { FilaCampo } from './_components/FilaCampo';
 
@@ -6,7 +6,14 @@ import { FilaCampo } from './_components/FilaCampo';
 export const dynamic = 'force-dynamic';
 
 export default async function CamposPage() {
-  const campos = await listarTodosLosCampos();
+  const [campos, conValor] = await Promise.all([
+    listarTodosLosCampos(),
+    // Solo informa el aviso de «publicar»: si falla, la pantalla sigue (sin la cifra).
+    contarValoresPorCampo().catch((e) => {
+      console.error('[admin/campos] conteo de valores falló', e instanceof Error ? e.message : e);
+      return null;
+    }),
+  ]);
 
   return (
     <main className="margen-editorial py-16">
@@ -18,7 +25,9 @@ export default async function CamposPage() {
         Los campos que agregues acá aparecen en el formulario público de
         registro, después de los campos fijos (nombre, categoría, ubicación,
         contacto). Desactivar un campo lo saca del formulario sin borrar los
-        valores que ya cargó la gente.
+        valores que ya cargó la gente. Lo que la gente escribe en un campo solo
+        se ve en la vitrina si lo marcas como público; por defecto cada campo
+        nuevo es privado.
       </p>
 
       <div className="mt-8">
@@ -31,7 +40,7 @@ export default async function CamposPage() {
             Todavía no hay campos personalizados.
           </p>
         ) : (
-          campos.map((c) => <FilaCampo key={c.id} campo={c} />)
+          campos.map((c) => <FilaCampo key={c.id} campo={c} conValor={conValor ? (conValor[c.slug] ?? 0) : null} />)
         )}
       </section>
     </main>

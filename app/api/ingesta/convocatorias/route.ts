@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { secretoValido } from '@/lib/auth/secreto';
 import { ingestarConvocatorias, marcarVencidas } from '@/lib/db/convocatorias.repo';
 import { ipDesdeHeaders, registrarIntento, verificarLimite } from '@/lib/db/rateLimit';
+import { excedeLimite } from '@/lib/limiteMemoria';
 import { ingestaConvocatoriasSchema } from '@/lib/validation/convocatoria.schema';
 
 /**
@@ -33,7 +34,24 @@ export async function POST(request: Request) {
   // Un secreto equivocado gasta cupo (origen 'ingesta'): sin esto, el endpoint
   // sería un blanco para probar secretos sin límite. El acierto no gasta nada.
   const ip = ipDesdeHeaders(request.headers);
-  const limite = await verificarLimite(ip, 'ingesta');
+
+  // Sin IP, `verificarLimite` deja pasar (no hay a quién contarle el intento): quien
+  // quita los headers se saltaría el cupo. Todas las peticiones sin IP comparten un
+  // contador en memoria, mismo tope que el de base. El vigía legítimo (GitHub Actions)
+  // siempre trae IP, así que esto solo afecta a quien la esconde.
+  if (!ip && excedeLimite('ingesta:sin-ip', 8, 15 * 60_000)) {
+    return new NextResponse(null, { status: 429, headers: { 'Retry-After': String(15 * 60) } });
+  }
+
+  // Si la base del límite no responde, el endpoint falla CERRADO con 503 (no 500):
+  // es un fallo de infraestructura y el vigía reintenta mañana.
+  let limite: Awaited<ReturnType<typeof verificarLimite>>;
+  try {
+    limite = await verificarLimite(ip, 'ingesta');
+  } catch (e) {
+    console.error('[ingesta/convocatorias] verificarLimite falló', e instanceof Error ? e.message : e);
+    return new NextResponse(null, { status: 503 });
+  }
   if (!limite.permitido) {
     return new NextResponse(null, {
       status: 429,
@@ -71,8 +89,17 @@ export async function POST(request: Request) {
     );
   }
 
-  const { nuevas, repetidas } = await ingestarConvocatorias(parsed.data.fuente, parsed.data.items);
-  const vencidas = await marcarVencidas();
+  // Un fallo de la base es de infraestructura, no del vigía: 503 (reintenta mañana), no 500.
+  let nuevas: number;
+  let repetidas: number;
+  let vencidas: number;
+  try {
+    ({ nuevas, repetidas } = await ingestarConvocatorias(parsed.data.fuente, parsed.data.items));
+    vencidas = await marcarVencidas();
+  } catch (e) {
+    console.error('[ingesta/convocatorias] la base falló', e instanceof Error ? e.message : e);
+    return new NextResponse(null, { status: 503 });
+  }
 
   console.info(`[ingesta/convocatorias] ${parsed.data.fuente}: ${nuevas} nueva(s), ${repetidas} repetida(s), ${vencidas} vencida(s)`);
   return NextResponse.json({ nuevas, repetidas, vencidas });

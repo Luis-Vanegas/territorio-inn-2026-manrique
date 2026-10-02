@@ -17,6 +17,7 @@ import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Posicion } from './SelectorUbicacionClient';
 import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
+import { SugeridorCategoria } from './SugeridorCategoria';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
@@ -62,6 +63,10 @@ const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
 });
 
 const ESTADO_INICIAL: EstadoRegistro = { estado: 'inicial' };
+
+/** Lo que cada campo adicional hace con lo que escribas: se dice ANTES de llenarlo (Ley 1581). */
+const NOTA_PUBLICO = 'Este dato se muestra en la ficha pública de tu negocio.';
+const NOTA_PRIVADO = 'Este dato no se publica: solo lo ve el equipo.';
 
 // ─── piezas ──────────────────────────────────────────────────
 
@@ -194,6 +199,7 @@ export function FormularioRegistro({
   const [nombreFoto, setNombreFoto] = useState<string | null>(null);
   const [nombreMenu, setNombreMenu] = useState<string | null>(null);
 
+  const [nombre, setNombre] = useState('');
   const [categoriaId, setCategoriaId] = useState('');
   const [barrio, setBarrio] = useState('');
   const [barrioEsOtro, setBarrioEsOtro] = useState(false);
@@ -439,11 +445,21 @@ export function FormularioRegistro({
               required
               maxLength={80}
               placeholder="Panadería La Esperanza"
-              onChange={(e) => marcar('nombre', e.target.value.trim().length >= 2)}
+              onChange={(e) => {
+                setNombre(e.target.value);
+                marcar('nombre', e.target.value.trim().length >= 2);
+              }}
               className={claseInput}
             />
           )}
         </CampoFormulario>
+
+        <SugeridorCategoria
+          nombre={nombre}
+          categorias={categorias}
+          categoriaId={categoriaId}
+          alElegir={setCategoriaId}
+        />
 
         <CampoFormulario
           id="categoria_id"
@@ -737,6 +753,9 @@ export function FormularioRegistro({
                     {!c.requerido && (
                       <span className="ml-2 font-sans text-xs text-tinta/60">opcional</span>
                     )}
+                    <span className="mt-0.5 block font-sans text-xs text-tinta/65">
+                      {c.publico ? NOTA_PUBLICO : NOTA_PRIVADO}
+                    </span>
                   </span>
                 </label>
               );
@@ -746,7 +765,7 @@ export function FormularioRegistro({
               <CampoFormulario
                 id={nombre}
                 etiqueta={c.etiqueta}
-                ayuda={c.ayuda ?? undefined}
+                ayuda={[c.ayuda, c.publico ? NOTA_PUBLICO : NOTA_PRIVADO].filter(Boolean).join(' ')}
                 requerido={c.requerido}
                 errores={err(nombre)}
                 key={c.id}
