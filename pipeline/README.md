@@ -52,7 +52,7 @@ Las versiones exactas están en `requirements.txt`.
    defecto) 171 de 205 locales caen en un solo cúmulo, inservible para dibujar; la comparación
    completa está en `sensibilidad_min_cluster_size` del JSON. Calcula centroide, radio máximo y p90, mezcla de
    categorías y MST (scipy) por constelación. Cada estrella y punto suelto lleva `nombre`, `categoria` y
-   `detalle` (solo las claves presentes: `direccion`, `horario`, `cocina`, `descripcion`, `web`). El paso 1
+   `detalle` (solo las claves presentes: `direccion`, `horario`, `cocina`, `web`; la descripción de OSM queda solo en el CSV crudo, por privacidad). El paso 1
    conserva únicamente esas etiquetas de OSM: nunca `phone`, `contact:*` ni `email`.
 3. **`03_clasificador.py`** entrena con los comercios del Valle que tienen categoría mapeada y evalúa con
    holdout agrupado por nombre (ver el reporte para el porqué), línea base, holdout geográfico y comparación con

@@ -85,13 +85,16 @@ def _texto(fila, columna: str) -> str:
 
 
 def detalle(fila) -> dict:
-    """Solo las claves presentes: la app muestra lo que hay, sin rellenar vacíos."""
+    """Solo las claves presentes: la app muestra lo que hay, sin rellenar vacíos.
+
+    `description` NO se publica: es texto libre de encuestas de campo y a veces
+    habla de personas identificables (Ley 1581). Queda solo en el CSV crudo.
+    """
     calle, numero = _texto(fila, "addr_street"), _texto(fila, "addr_housenumber")
     claves = {
         "direccion": f"{calle} {numero}".strip() if calle else "",  # un número sin calle no ubica a nadie
         "horario": _texto(fila, "opening_hours"),
         "cocina": _texto(fila, "cuisine"),
-        "descripcion": _texto(fila, "description"),
         "web": _texto(fila, "website"),
     }
     return {k: v for k, v in claves.items() if v}
