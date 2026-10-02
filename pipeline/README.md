@@ -19,6 +19,7 @@ python -m venv pipeline/.venv
 pipeline/.venv/Scripts/python -m pip install -r pipeline/requirements.txt   # en Linux/macOS: pipeline/.venv/bin/python
 cd pipeline
 python 01_osm_overpass.py     # descarga de OSM -> pipeline/datos/*.csv  (necesita internet)
+python 01_osm_overpass.py --solo-comuna3   # solo la consulta de la comuna (con y sin nombre); no toca el Valle
 python 02_constelaciones.py   # -> public/firmamento/constelaciones.json
 python 03_clasificador.py     # -> public/modelo_categoria.json + reporte_modelo.md
 python verificar_salidas.py   # revisa los JSON públicos (sale con código != 0 si algo falla)
@@ -30,28 +31,55 @@ Las versiones exactas están en `requirements.txt`.
 
 ## Corrida de referencia
 
-- Fecha de la descarga: **2026-10-02** (los CSV llevan la fecha en el nombre; `osm_meta_*.json`
-  guarda la consulta, los conteos, el servidor y las validaciones). Las descargas anteriores
-  (`*_2026-10-01.*`) se conservan.
-- Overpass: respondió el servidor principal (`overpass-api.de`); su snapshot de OSM es del
-  **2026-10-02T04:40:06Z** (`timestamp_osm_base` en el meta y `osm_base` en `constelaciones.json`).
-  La corrida del 2026-10-01 había caído al espejo `overpass.kumi.systems` (snapshot 2026-05-06), por
-  eso el número de comercios subió: no es crecimiento del comercio, es una base más reciente.
-- Si Overpass da 504, espera unos minutos y reintenta: es un servicio público compartido y la
-  consulta (10 municipios) es grande. No la dispares en bucle.
+- Fecha de la descarga del Valle (entrenamiento): **2026-10-02**, snapshot de OSM **2026-10-02T04:40:06Z**
+  (`overpass-api.de`). Las descargas anteriores (`*_2026-10-01.*`) se conservan. La del 2026-10-01 había
+  caído al espejo `overpass.kumi.systems` (snapshot 2026-05-06): la diferencia entre ambas es una base más
+  reciente, no crecimiento del comercio.
+- Comuna 3 con y sin nombre (constelaciones): **2026-10-02**, snapshot **2026-10-02T17:01:31Z**
+  (`overpass-api.de`), archivos `osm_comuna3todos_2026-10-02.csv` y `osm_meta_comuna3todos_2026-10-02.json`.
+- Si Overpass da 504, espera unos minutos y reintenta: es un servicio público compartido. No la dispares en bucle.
+
+### Cuántos comercios hay: la misma cuenta que la asesoría
+
+Hay **320 establecimientos de OpenStreetMap dentro del polígono de Manrique, 201 con nombre y 119 sin
+nombre** (snapshot 2026-10-02T17:01:31Z). Se cuentan todos los elementos con etiqueta de comercio
+(`shop`, `craft`, `amenity` de la lista, `healthcare`, gimnasios) cuyo punto cae dentro de `lib/geo/manrique.json`,
+exigiendo o no `name`. «Sin nombre» incluye los 4 elementos cuyo `name` en OSM es literalmente «Sin nombre»
+(un marcador, no un nombre): en el JSON salen con `nombre: null`.
+
+| | Pipeline (2026-10-02 17:01Z) | Asesoría (snapshot propio) |
+|---|---|---|
+| Establecimientos en el polígono | 320 | 312 |
+| Con nombre | 201 | 198 |
+| Sin nombre | 119 | 114 |
+| Constelaciones | 20 | 15 |
+| Sueltos | 107 | 91 |
+
+Las cifras no son idénticas porque son **snapshots distintos de OSM** (el mapa cambia a diario) y, para
+constelaciones y sueltos, además HDBSCAN con parámetros que pueden diferir; no se pudo comprobar los de la
+asesoría. Por eso no se afirma que uno esté «bien» y el otro «mal»: miden el mismo territorio en fechas distintas.
+Antes de este cambio el pipeline solo contaba los locales con nombre (205 en el snapshot de la mañana: 12 constelaciones, 125 agrupados, 80 sueltos).
+Con el criterio de la asesoría son 320 y 20 constelaciones. El conjunto de entrenamiento del clasificador NO cambió.
 
 ## Qué hace cada paso
 
-1. **`01_osm_overpass.py`** descarga, en una sola consulta, los elementos con `name` y etiqueta de
+1. **`01_osm_overpass.py`** hace dos consultas. La del Valle exige `name` (el clasificador aprende de nombres;
+   su conjunto de entrenamiento no cambia). La de la Comuna 3 pide la caja del polígono SIN exigir `name`
+   y recorta con shapely: es la entrada de las constelaciones. Descarga los elementos con etiqueta de
    comercio (`shop`, `craft`, algunos `amenity`, `healthcare`, gimnasios) de los 10 municipios del Valle
    de Aburrá. Guarda el Valle completo (insumo del clasificador) y el recorte de la Comuna 3 (punto
    dentro de `lib/geo/manrique.json`). Asigna la categoría del sitio con el mapeo etiqueta OSM -> categoría de
    `comun.py`.
 2. **`02_constelaciones.py`** proyecta a metros (UTM 18N, EPSG:32618) y corre
-   `sklearn.cluster.HDBSCAN(min_cluster_size=6, min_samples=3)`. Selección `leaf`: con `eom` (el valor por
-   defecto) 171 de 205 locales caen en un solo cúmulo, inservible para dibujar; la comparación
-   completa está en `sensibilidad_min_cluster_size` del JSON. Calcula centroide, radio máximo y p90, mezcla de
-   categorías y MST (scipy) por constelación. Cada estrella y punto suelto lleva `nombre`, `categoria` y
+   `sklearn.cluster.HDBSCAN(min_cluster_size=6, min_samples=3)` sobre los 320 comercios (con y sin nombre).
+   Selección `leaf`. Ojo: con los 205 con nombre, `eom` metía 171 en un solo cúmulo (inservible); con los 320
+   ya no (`eom`: 18 constelaciones, mayor de 29, radio 111 m; `leaf`: 20, mayor de 19, radio 101 m). `leaf` se
+   mantiene por consistencia con la entrega anterior y porque da grupos más finos, pero el argumento
+   «`eom` colapsa» ya no se sostiene con estos datos; la comparación completa está en `comparacion_eom_leaf` y
+   `sensibilidad_min_cluster_size` del JSON. Cada constelación lleva `codigo` («C01»…) y un `nombre` legible:
+   «<vía más frecuente> · <categoría dominante>» (la vía sale de `addr:street` de OSM, solo «Calle/Carrera N»; si
+   ningún local la trae, «Sin calle registrada»; si dos nombres coinciden se agrega el código). 7 de 20 quedaron sin calle. Calcula centroide, radio máximo y p90, mezcla de
+   categorías y MST (scipy) por constelación. Cada estrella y punto suelto lleva `nombre` (null si OSM no lo tiene), `categoria` y
    `detalle` (solo las claves presentes: `direccion`, `horario`, `cocina`, `web`; la descripción de OSM queda solo en el CSV crudo, por privacidad). El paso 1
    conserva únicamente esas etiquetas de OSM: nunca `phone`, `contact:*` ni `email`.
 3. **`03_clasificador.py`** entrena con los comercios del Valle que tienen categoría mapeada y evalúa con
@@ -62,9 +90,10 @@ Las versiones exactas están en `requirements.txt`.
 
 | Validación | Dónde | Resultado de la corrida |
 |---|---|---|
-| Nulos en nombre/lat/lon | paso 1 | 0 descartados |
+| Nulos en lat/lon (el nombre puede faltar a propósito) | paso 1 | 0 descartados |
 | Duplicados por id OSM | pasos 1 y 2 | 0 |
-| Duplicados por nombre + posición (~1 m) | paso 1 | 3 eliminados |
+| Duplicados por nombre + posición (~1 m) | paso 1 | 3 eliminados en el Valle; 1 en la consulta de la comuna (ninguno sin nombre) |
+| `con_nombre + sin_nombre = total`, `agrupados + sueltos = total`, `nombre` null o texto real | `verificar_salidas.py` | ok |
 | Coordenadas fuera del polígono | pasos 1 y 2 | 0 (aborta si hay) |
 | Categorías desconocidas / nombres vacíos al entrenar | paso 3 | aborta si hay |
 | Trazabilidad (fuente, licencia, fecha) | `verificar_salidas.py` | presente en ambos JSON |
@@ -81,11 +110,13 @@ responsabilidad de la capa de UI.
 
 ## Límites que conviene decir en voz alta
 
-- OSM no es el censo de comercios: el recorte de la Comuna 3 trae **205** locales con nombre, una fracción
-  del comercio real. Las constelaciones describen lo que está **mapeado**, no todo lo que existe. Una zona
+- OSM no es el censo de comercios: el recorte de la Comuna 3 trae **320** establecimientos (201 con nombre,
+  119 sin), una fracción del comercio real. Las constelaciones describen lo que está **mapeado**, no todo lo que existe. Una zona
   sin constelación puede ser una zona sin mapear.
 - `categoria_dominante` puede ser débil (varios locales sin categoría mapeada); mira `mezcla_categorias`
   antes de nombrar una constelación por su categoría.
-- Hay constelaciones con radio grande (`c04`, ~657 m, 12 locales; `c12`, ~462 m, 6 locales): son locales dispersos, no un núcleo compacto. Mira `radio_p90_m`.
+- Hay constelaciones con radio grande (`c03`, ~306 m, 16 locales; `c18`, ~462 m, 6 locales): son locales dispersos, no un núcleo compacto. Mira `radio_p90_m`.
+- `detalle.direccion` copia `addr:street` + número tal como viene de OSM y a veces trae basura («Cr 23 cl 90A - 24  171»);
+  el nombre de la constelación sí la filtra, la ficha no.
 - El modelo cubre 12 de las categorías del sitio; las demás no tienen etiqueta OSM fiable.
 - Las etiquetas del clasificador salen de OSM, no de una revisión manual (muestra de control: pendiente).
