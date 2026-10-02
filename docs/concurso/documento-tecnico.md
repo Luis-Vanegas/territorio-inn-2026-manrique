@@ -109,8 +109,8 @@ Reglas de diseño del producto de datos:
 
 | # | Componente del tablero | Capa | Indicador que muestra | Cómo se calcula | De dónde sale el dato | Actualización | Estado |
 |---|---|---|---|---|---|---|---|
-| 1 | Cielo de hoy | Territorio | Comercios mapeados en OpenStreetMap con nombre dentro del polígono oficial de la comuna | Conteo de elementos de OpenStreetMap con nombre y etiqueta comercial dentro de `lib/geo/manrique.json`, con duplicados y coordenadas fuera del polígono descartados | OpenStreetMap vía API Overpass (OpenStreetMap contributors, 2026). Valor: **205 comercios mapeados** en la Comuna 3 (5.423 con nombre en el Valle de Aburrá), snapshot de OpenStreetMap del 2 de octubre de 2026 | Se propone semanal, por flujo automático; cada salida lleva fecha y fuente | En desarrollo (el dato de la corrida existe) |
-| 2 | Mapa estelar | Territorio | Constelaciones comerciales (nodos de comercio vecino) y locales sueltos | Agrupamiento por densidad (HDBSCAN) sobre coordenadas en metros; centroide, radio, mezcla de categorías y árbol de expansión mínima para dibujar. Resultado: 12 constelaciones, 125 comercios agrupados y 80 sueltos (ver 4.3) | Salida del paso 2 del pipeline (`constelaciones.json`) | Se propone semanal | En desarrollo (el dato de la corrida existe) |
+| 1 | Cielo de hoy | Territorio | Establecimientos mapeados en OpenStreetMap dentro del polígono oficial de la comuna, con y sin nombre | Conteo de elementos de OpenStreetMap con etiqueta comercial cuyo punto cae dentro de `lib/geo/manrique.json`, exigiendo o no `name`, con duplicados descartados (la misma metodología de conteo de la asesoría) | OpenStreetMap vía API Overpass (OpenStreetMap contributors, 2026). Valor: **320 establecimientos mapeados** en la Comuna 3, de ellos 201 con nombre y 119 sin nombre, snapshot de OpenStreetMap del 2 de octubre de 2026 (17:01 UTC). Los 119 «sin nombre» incluyen 4 cuyo `name` en OpenStreetMap es literalmente «Sin nombre» | Se propone semanal, por flujo automático; cada salida lleva fecha y fuente | En desarrollo (el dato de la corrida existe) |
+| 2 | Mapa estelar | Territorio | Constelaciones comerciales (nodos de comercio vecino) y locales sueltos | Agrupamiento por densidad (HDBSCAN) sobre coordenadas en metros; centroide, radio, mezcla de categorías y árbol de expansión mínima para dibujar. Resultado: 20 constelaciones, 213 establecimientos agrupados y 107 sueltos (ver 4.3). Cada constelación lleva un código (C01…) y un nombre descriptivo «vía · categoría dominante» | Salida del paso 2 del pipeline (`constelaciones.json`) | Se propone semanal | En desarrollo (el dato de la corrida existe) |
 | 3 | Tabla de constelaciones | Territorio | Por constelación: número de locales, categorías presentes y barrio dominante | Resumen del paso anterior; al tocar una fila se enciende en el mapa | Mismo origen que el componente 2 | Semanal | En desarrollo |
 | 4 | Contexto del territorio | Territorio | Población, área, desempleo e índice de condiciones de vida de la comuna frente a la ciudad | Valores publicados, sin cálculo propio (Anexo A) | Alcaldía de Medellín, Departamento Administrativo de Planeación (2021) | Anual, cuando se publique una ficha nueva | En desarrollo (los datos son estáticos) |
 | 5 | Referencia nacional de micronegocios | Territorio | Proporción de micronegocios con RUT, con registro en Cámara de Comercio y que usan internet | Valores publicados para las 24 ciudades; se rotulan como referencia de ciudades, no de Manrique | DANE, EMICRON 2025 (2026) | Anual | En desarrollo |
@@ -133,7 +133,7 @@ presentan juntas para que se vea la brecha, no para compararlas.
 | Mirada | Qué cuenta | Cifra | Fuente y fecha |
 |---|---|---|---|
 | Registro mercantil | Comerciantes matriculados o renovados en 2025 que la Cámara clasifica en la comuna Manrique | 2.626 empresas | Cámara de Comercio de Medellín para Antioquia (2025), Estructura Empresarial 2025, Tabla 16; consultada el 1 de octubre de 2026 |
-| Mapa abierto | Comercios con nombre mapeados por voluntarios en OpenStreetMap | 205 comercios | OpenStreetMap contributors (2026), snapshot del 2 de octubre de 2026 obtenido del servidor principal de Overpass; corrida del 2 de octubre de 2026 |
+| Mapa abierto | Establecimientos mapeados por voluntarios en OpenStreetMap dentro del polígono de la comuna (201 con nombre y 119 sin nombre) | 320 establecimientos | OpenStreetMap contributors (2026), snapshot del 2 de octubre de 2026 (17:01 UTC) obtenido del servidor principal de Overpass; corrida del 2 de octubre de 2026 |
 | Red | Aliados aprobados en Constelaciones | [PENDIENTE: cifra de aliados aprobados el día de la entrega, tomada de `/api/datos`] | Constelaciones, al día de la entrega |
 
 Cómo leer el cuadro:
@@ -152,7 +152,7 @@ Cómo leer el cuadro:
 
 | Fuente | Qué aporta | Estado |
 |---|---|---|
-| OpenStreetMap por API Overpass (licencia ODbL) | Comercios con nombre del Valle de Aburrá (5.423, de los cuales 4.790 tienen categoría asignada y sirven para entrenamiento) y de la Comuna 3 (205, para aplicación) | Script ejecutado el 2 de octubre de 2026 (`pipeline/01_osm_overpass.py`). Respondió el servidor principal de Overpass, con snapshot de OpenStreetMap del 2 de octubre de 2026 (04:40 UTC). La corrida del 1 de octubre había usado un espejo con snapshot del 6 de mayo de 2026; el aumento de 192 a 205 comercios se debe a la base más reciente, no a un crecimiento del comercio. Una descarga posterior puede dar otro número |
+| OpenStreetMap por API Overpass (licencia ODbL) | Dos consultas. (1) Comercios con nombre del Valle de Aburrá (5.423, de los cuales 4.790 tienen categoría asignada y sirven para entrenamiento; el clasificador aprende de nombres, por eso exige `name`). (2) Establecimientos de la Comuna 3 con y sin nombre (320: 201 con nombre y 119 sin nombre), que alimentan las constelaciones | Script ejecutado el 2 de octubre de 2026 (`pipeline/01_osm_overpass.py`) en el servidor principal de Overpass. Snapshot del Valle: 2 de octubre de 2026, 04:40 UTC. Snapshot de la Comuna 3: 2 de octubre de 2026, 17:01 UTC. Cifras de corridas anteriores, que no deben leerse como vigentes: 205 con nombre (snapshot de la mañana del 2 de octubre, antes de contar los locales sin nombre) y 192 (espejo con snapshot del 6 de mayo de 2026). Las diferencias son de la base de OpenStreetMap y del criterio de conteo, no de crecimiento del comercio. Una descarga posterior puede dar otro número |
 | DANE, EMICRON 2025: boletines y anexos | Contexto de micronegocios en 24 ciudades | Disponible |
 | Estructura Empresarial 2025 de la Cámara de Comercio | Empresas registradas en Manrique (2.626), por tamaño y por sector | Leída del archivo original el 1 de octubre de 2026; ver Anexo A |
 | Exportación CSV del panel de moderación | Datos propios agregables de la red | En producción |
@@ -256,22 +256,35 @@ en cada archivo de salida).
 | Coordenadas proyectadas a un sistema métrico local | Variable derivada | Numérica, en metros | Conversión de las anteriores (proyección plana para Medellín) | 2 |
 | Tamaño mínimo del grupo | Hiperparámetro | Entero | Valor usado: 6 (`min_cluster_size`). La sensibilidad a este valor queda en el JSON de salida | 2 |
 | Muestras mínimas | Hiperparámetro | Entero | Valor usado: 3 (`min_samples`) | 2 |
-| Método de selección de grupos | Hiperparámetro | Categórico | Valor usado: `leaf` (hojas del árbol); la alternativa por defecto es `eom`. Ver la explicación abajo | 2 |
+| Método de selección de grupos | Hiperparámetro | Categórico | Valor usado: `leaf` (hojas del árbol); la alternativa por defecto es `eom`. Ver la explicación abajo. **[PENDIENTE: decisión del equipo, eom o leaf]** | 2 |
 | Identificador de constelación (o «suelto») | Salida | Categórica | Calculada por el modelo | 2 |
 | Centroide, radio, mezcla de categorías y árbol de expansión mínima | Salida derivada | Numérica y geométrica | Calculadas a partir del grupo; el árbol define las líneas que se dibujan | 2 |
 
 - **Técnica:** HDBSCAN (Campello et al., 2013; McInnes et al., 2017), sobre coordenadas en metros
   (proyección UTM zona 18N), con `min_cluster_size` = 6, `min_samples` = 3 y selección `leaf`.
-- **Resultado:** sobre los 205 comercios mapeados de la Comuna 3 salen **12 constelaciones, con 125
-  comercios agrupados y 80 sueltos** (OpenStreetMap contributors, 2026; corrida del 2 de octubre de
-  2026, snapshot del mismo día). El número de comercios es mayor que en la corrida anterior (192)
-  porque la base de OpenStreetMap es más reciente, no porque el comercio haya crecido. Se presenta como **resultado exploratorio** que se valida en campo durante el piloto.
-- **Por qué `leaf` y no el valor por defecto (`eom`).** Se probaron los dos métodos y la
-  comparación está en el JSON de salida (`sensibilidad_min_cluster_size`). Con `eom`, el método por
-  defecto, 171 de los 205 comercios caen en un solo cúmulo: sirve para decir que la comuna es densa, pero no para leer núcleos a escala de cuadra, que
-  es lo que orienta el trabajo de campo. Con `leaf` se obtienen grupos más pequeños y legibles. Es
-  una decisión de diseño aceptada por el equipo, no un resultado «más correcto» en sentido
-  estadístico: otro criterio daría otra partición.
+- **Resultado:** sobre los 320 establecimientos mapeados de la Comuna 3 (201 con nombre y 119 sin
+  nombre) salen **20 constelaciones, con 213 establecimientos agrupados y 107 sueltos** (selección
+  `leaf`, `min_cluster_size` = 6, `min_samples` = 3; OpenStreetMap contributors, 2026; snapshot del 2
+  de octubre de 2026, 17:01 UTC). El mayor grupo tiene 19 locales y un radio de unos 101 metros. La
+  metodología de conteo es la de la asesoría, que contó 312 establecimientos (198 con nombre y 114
+  sin nombre) con otro snapshot, del 1 de octubre; la diferencia es de fecha de la base, no de
+  criterio. Cada constelación lleva un código (C01…) y un nombre descriptivo «vía más frecuente ·
+  categoría dominante» (la vía sale de `addr:street` de OpenStreetMap; 7 de las 20 no tienen calle
+  registrada). Se presenta como **resultado exploratorio** que se valida en campo durante el piloto.
+- **Corridas anteriores (no vigentes).** Con solo los 205 comercios con nombre de la mañana del 2 de
+  octubre, la misma configuración daba 12 constelaciones, 125 agrupados y 80 sueltos. Se conservan
+  como historia de la corrida, no como resultado.
+- **`leaf` o `eom`: qué se sabe y qué está pendiente.** Se probaron los dos métodos y la comparación
+  completa está en el JSON de salida (`comparacion_eom_leaf` y `sensibilidad_min_cluster_size`). Con
+  los 205 locales con nombre, `eom` (el método por defecto) colapsaba: 171 caían en un solo cúmulo,
+  que sirve para decir que la comuna es densa, pero no para leer núcleos a escala de cuadra. Esa fue
+  la razón por la que se eligió `leaf`. **Con los 320 establecimientos el colapso ya no ocurre:**
+  `eom` da 18 constelaciones, 88 sueltos y un cúmulo mayor de 29 locales (radio de unos 111 metros),
+  frente a las 20 constelaciones, 107 sueltos y cúmulo mayor de 19 de `leaf`. Por eso el argumento
+  «`eom` colapsa» ya no se sostiene con estos datos; hoy `leaf` se mantiene por consistencia con la
+  entrega anterior y porque da grupos algo más finos. Ninguna de las dos particiones es «más
+  correcta» en sentido estadístico: otro criterio daría otra partición. **[PENDIENTE: decisión del
+  equipo, eom o leaf]**
 - **Por qué esta técnica y no K-Means:** K-Means obliga a fijar de antemano cuántos grupos hay y a
   asignar *todos* los puntos a algún grupo, lo que anula la idea de «local suelto». Además supone
   grupos de forma redonda y tamaño similar, y una calle comercial es alargada. HDBSCAN no
@@ -284,8 +297,9 @@ en cada archivo de salida).
   Además, las constelaciones describen lo que está **mapeado**, no todo lo que existe: una zona sin
   constelación puede ser una zona sin mapear. La etiqueta de categoría dominante de una
   constelación puede ser débil (hay locales sin categoría asignada); debe leerse junto con la mezcla
-  de categorías. Una de las constelaciones (`c04`) tiene un radio de unos 657 metros: son 12 locales
-  dispersos, no un núcleo compacto (otra, `c12`, tiene unos 462 metros y 6 locales).
+  de categorías. Hay constelaciones con radio grande: `C03` (unos 306 metros, 16 locales) y `C18`
+  (unos 462 metros, 6 locales) son locales dispersos, no núcleos compactos; el JSON publica también
+  el radio del percentil 90.
 
 ### Variables de la red y del uso (no entran a un modelo; alimentan los agregados)
 
@@ -400,7 +414,7 @@ ingreso.
 
 | Riesgo | A quién afecta | Mitigación |
 |---|---|---|
-| OpenStreetMap ve más lo formal y lo que está sobre vías principales; su cobertura es parcial (205 comercios mapeados frente a 2.626 empresas en el registro mercantil, dos cifras que no son comparables como porcentaje). Proporción de locales de la comuna ubicados en la mitad norte del recuadro: [PENDIENTE: métrica de datos-ml, el pipeline aún no la calcula] | Si el mapa abierto orienta dónde se trabaja, quedan por fuera los negocios en casa de la ladera alta | Censo de campo con registro asistido en los barrios con menos puntos; meta explícita de inclusión de informales (al menos 40 %) |
+| OpenStreetMap ve más lo formal y lo que está sobre vías principales; su cobertura es parcial (320 establecimientos mapeados, 201 de ellos con nombre, frente a 2.626 empresas en el registro mercantil, dos cifras que no son comparables como porcentaje). Proporción de locales de la comuna ubicados en la mitad norte del recuadro: [PENDIENTE: métrica de datos-ml, el pipeline aún no la calcula] | Si el mapa abierto orienta dónde se trabaja, quedan por fuera los negocios en casa de la ladera alta | Censo de campo con registro asistido en los barrios con menos puntos; meta explícita de inclusión de informales (al menos 40 %) |
 | El clasificador aprendió de nombres de comercios del Valle de Aburrá, muchos de cadenas y del centro; sus etiquetas vienen de OpenStreetMap sin revisión manual y no se ha validado con registros propios | Negocios con nombre propio o de categorías con pocos ejemplos (por ejemplo, barbería, con 13). Además, a veces sugiere con confianza alta una categoría errónea (por ejemplo, «Misceláneo El Vecino» como «comidas», con 0,90) | Umbral de confianza: por debajo, el sistema pregunta en lugar de sugerir; el modelo solo sugiere, y la persona y el moderador deciden; cada corrección reentrena con datos de Manrique |
 | La descripción libre de OpenStreetMap puede contener datos que identifican a una persona | Titulares de los comercios mapeados | La descripción no se publica ni sale en las constelaciones; solo se muestran dirección, horario, tipo de cocina y web cuando OpenStreetMap los trae; el pipeline no conserva teléfonos, contactos ni correos |
 | El registro mercantil solo ve lo formal: en las 24 ciudades que mide el DANE, 13,0 % de los micronegocios tiene registro en Cámara de Comercio (DANE, 2026). Esa cifra no es de Manrique y no se usa para estimar cuántos negocios informales hay en la comuna | Medir la cobertura contra la Cámara invisibilizaría a la mayoría | La cobertura se mide contra lo observado en campo y en el mapa abierto, no contra la Cámara; las 2.626 empresas registradas se muestran como una mirada más, no como el universo |
@@ -500,7 +514,7 @@ boletín del DANE del 30 de julio de 2026.]**
 | Empresas de Manrique por tamaño según activos | 2.569 microempresas (97,8 %), 51 pequeñas, 4 medianas, 2 grandes (Tabla 14) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
 | Empresas de Manrique por sector (seis mayores) | Comercio 1.091; industria manufacturera 309; alojamiento y comida 288; construcción 216; otras actividades de servicios 149; actividades profesionales, científicas y técnicas 130 (Tabla 16) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
 | Barrios oficiales de la Comuna 3 | 15 | Alcaldía de Medellín (2000), Decreto 346 de 2000, y geocatálogo de la Alcaldía (s. f.) | 1 de octubre de 2026 |
-| Comercios con nombre mapeados en OpenStreetMap | 5.423 en el Valle de Aburrá; 205 en la Comuna 3 (snapshot del 2 de octubre de 2026, servidor principal de Overpass) | OpenStreetMap contributors (2026), licencia ODbL; `pipeline/README.md` y `pipeline/reporte_modelo.md` | Corrida del 2 de octubre de 2026 |
+| Establecimientos mapeados en OpenStreetMap | 5.423 comercios con nombre en el Valle de Aburrá (snapshot 04:40 UTC); 320 en la Comuna 3, 201 con nombre y 119 sin nombre (snapshot 17:01 UTC). Ambos del 2 de octubre de 2026, servidor principal de Overpass | OpenStreetMap contributors (2026), licencia ODbL; `pipeline/README.md` y `pipeline/reporte_modelo.md` | Corrida del 2 de octubre de 2026 |
 | Mandato local | Línea 4 Económica: «red estratégica con los pequeños comerciantes» (PDL Comuna 3, p. 114) | Alcaldía de Medellín (s. f.) | 1 de octubre de 2026 |
 
 Notas sobre las cifras:
@@ -517,13 +531,16 @@ Notas sobre las cifras:
   presentan como cifras de la comuna.
 - Las cifras de desempleo y de calidad de vida son de 2019. Aunque la ficha es de 2021, **no son datos
   actuales**.
-- Las cifras del pipeline (comercios mapeados, constelaciones, locales sueltos, tamaño de la
+- Las cifras del pipeline (establecimientos mapeados, constelaciones, locales sueltos, tamaño de la
   muestra de entrenamiento y puntajes F1) son de la corrida del 2 de octubre de 2026 y se
-  reproducen con `pipeline/`. Dependen de un snapshot de OpenStreetMap del 2 de octubre de 2026
-  (servidor principal de Overpass); una descarga posterior puede dar números distintos. La
-  corrida del 1 de octubre usó un espejo con snapshot del 6 de mayo de 2026: la diferencia entre
-  ambas (192 y 205 comercios) es de la base de datos, no del comercio. Se dicen siempre como «comercios mapeados en OpenStreetMap», nunca
-  como «negocios que hay».
+  reproducen con `pipeline/`. Dependen de snapshots de OpenStreetMap del 2 de octubre de 2026
+  (servidor principal de Overpass; 04:40 UTC para el Valle y 17:01 UTC para la Comuna 3); una
+  descarga posterior puede dar números distintos. La asesoría contó 312 establecimientos (198 con
+  nombre, 114 sin nombre) con un snapshot del 1 de octubre y la misma metodología: la diferencia
+  con los 320 es de la base de datos, no del comercio. Cifras de corridas anteriores que no deben
+  leerse como vigentes: 205 (solo con nombre, snapshot de la mañana), 192 (espejo con snapshot del 6
+  de mayo de 2026), 12 constelaciones, 125 agrupados y 80 sueltos. Se dicen siempre como
+  «establecimientos mapeados en OpenStreetMap», nunca como «negocios que hay».
 - Quedan marcados como pendientes los valores que el pipeline todavía no produce: proporción de
   locales en la mitad norte del recuadro, revisión manual de etiquetas y validación con registros
   propios.
@@ -571,7 +588,7 @@ McInnes, L., Healy, J., & Astels, S. (2017). hdbscan: Hierarchical density based
 *Journal of Open Source Software, 2*(11), 205. https://doi.org/10.21105/joss.00205
 
 OpenStreetMap contributors. (2026). *OpenStreetMap* [Base de datos geográfica abierta, licencia
-Open Database License 1.0; snapshot del 2 de octubre de 2026 (04:40 UTC) obtenido ese día del servidor principal de la API Overpass]. https://www.openstreetmap.org/copyright
+Open Database License 1.0; snapshots del 2 de octubre de 2026 (04:40 UTC para el Valle de Aburrá y 17:01 UTC para la Comuna 3) obtenidos ese día del servidor principal de la API Overpass]. https://www.openstreetmap.org/copyright
 
 Pacheco Duarte, J. F., Galindo Gómez, S. F., & Rodríguez Pupo, S. (2022). *Ruta de innovación
 social: Paso a paso para desarrollar innovaciones sociales* (Documento técnico 02). Corporación

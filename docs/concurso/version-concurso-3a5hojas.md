@@ -65,21 +65,24 @@ pocos registros propios:
   elige. Sus etiquetas vienen de OpenStreetMap sin revisión manual y aún no se ha validado con
   registros propios.
 - **Constelaciones comerciales:** agrupa los comercios por cercanía con HDBSCAN (Campello et al.,
-  2013) y deja como «sueltos» los que no pertenecen a ningún nodo. Sobre los 205 comercios mapeados
-  de la comuna salen 12 constelaciones, con 125 comercios agrupados y 80 sueltos. Se usó la selección
-  `leaf` porque con la opción por defecto un solo cúmulo agrupaba 171 de los 205 y no servía
-  para leer núcleos a escala de cuadra. Es un resultado exploratorio, que se valida en campo.
+  2013) y deja como «sueltos» los que no pertenecen a ningún nodo. Sobre los 320 establecimientos
+  mapeados de la comuna (201 con nombre y 119 sin nombre) salen 20 constelaciones, con 213
+  establecimientos agrupados y 107 sueltos; cada una lleva un código (C01…) y un nombre como
+  «Carrera 31 · Tienda y víveres». Se usó la selección `leaf`: con los 205 locales con nombre, la
+  opción por defecto (`eom`) metía 171 en un solo cúmulo. Con los 320 ya no colapsa (18
+  constelaciones, cúmulo mayor de 29 locales), por lo que la elección entre ambas sigue abierta
+  [PENDIENTE: decisión del equipo, eom o leaf]. Es un resultado exploratorio, que se valida en campo.
 
 **Tres miradas del mismo territorio.**
 
 | Mirada | Cifra | Fuente |
 |---|---|---|
 | Empresas registradas | 2.626 | Cámara de Comercio, 2025 |
-| Comercios mapeados en OpenStreetMap | 205 | OpenStreetMap, snapshot del 2 de octubre de 2026 |
+| Establecimientos mapeados en OpenStreetMap (201 con nombre, 119 sin nombre) | 320 | OpenStreetMap, snapshot del 2 de octubre de 2026 (17:01 UTC) |
 | Aliados en la red | [PENDIENTE: cifra del día de la entrega] | Constelaciones |
 
 Las tres cifras no son comparables como porcentaje: el registro mercantil cuenta empresas por su
-dirección y el mapa abierto cuenta locales mapeados por voluntarios. Tampoco se estima aquí cuántos
+dirección y el mapa abierto cuenta establecimientos mapeados por voluntarios. Tampoco se estima aquí cuántos
 negocios son informales, pues el 13,0 % del DANE es de 24 ciudades. La brecha entre las tres es la
 línea base del trabajo y no una medida de cobertura (OpenStreetMap contributors, 2026). La cifra de
 OpenStreetMap cambia con la fecha del snapshot, no con el crecimiento del comercio.
