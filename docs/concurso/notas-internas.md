@@ -1,6 +1,6 @@
 # Notas internas del equipo (no se entregan al concurso)
 
-Control de pendientes del documento. Se actualiza al resolver cada punto. Última actualización: 1 de octubre de 2026.
+Control de pendientes del documento. Se actualiza al resolver cada punto. Última actualización: 2 de octubre de 2026 (cifras del pipeline).
 
 ## Cifras excluidas a propósito
 
@@ -11,13 +11,16 @@ de microdatos sin ponderar; el dato oficial de uso de internet es 75,8 %).
 
 Cifras del pipeline de la asesoría que **no** se usan como hechos: 312 locales, 15 constelaciones,
 91 sueltos, F1 de 0,63 y 3.398 locales de entrenamiento. Las reemplaza la corrida reproducible del
-1 de octubre de 2026 (5.007 y 192 comercios; 12 constelaciones, 122 agrupados y 70 sueltos; F1
-macro 0,535). El F1 de la referencia no se cita como logro: ese modelo probablemente vio los nombres
+2 de octubre de 2026, con el servidor principal de Overpass (5.423 y 205 comercios; 12 constelaciones,
+125 agrupados y 80 sueltos; F1 macro 0,528). Valores de la corrida del 1 de octubre (espejo, snapshot
+del 6 de mayo de 2026), ya reemplazados y que no deben volver: 5.007, 192, 122 agrupados, 70 sueltos,
+4.446 de entrenamiento, F1 0,535, exactitud 0,654, holdout geográfico 0,670. El aumento de 192 a 205
+es de la base de OpenStreetMap, no del comercio. El F1 de la referencia no se cita como logro: ese modelo probablemente vio los nombres
 al entrenarse y su código no es reproducible.
 
 ## Resuelto
 
-- Métricas de `datos-ml` (corrida del 1 de octubre de 2026): comercios de OpenStreetMap, constelaciones, muestra de entrenamiento, F1 macro y líneas base, prueba geográfica, límites por categoría, umbral 0,45 medido. Detalle en `pipeline/reporte_modelo.md` y `pipeline/README.md`.
+- Métricas de `datos-ml` (corrida del 2 de octubre de 2026): comercios de OpenStreetMap, constelaciones, muestra de entrenamiento, F1 macro y líneas base, prueba geográfica, límites por categoría, umbral 0,45 medido. Detalle en `pipeline/reporte_modelo.md` y `pipeline/README.md`.
 - Cifra de empresas de Manrique de la Estructura Empresarial 2025: 2.626 (Tabla 16), por tamaño (Tabla 14) y por sector.
 - Número de barrios: 15 oficiales (Decreto 346 de 2000; geocatálogo). Error de «Campo Valdés No. 1» (Comuna 4) documentado en el Anexo A.
 - Ficha DAP contrastada para jefatura femenina (53,68 %) y hurto a establecimientos (89 frente a 4.555).
@@ -28,10 +31,12 @@ Siguen marcados como `[PENDIENTE: métrica de datos-ml]`.
 
 - Proporción de locales ubicados en la mitad norte del recuadro (riesgo de sesgo, 8.2): el pipeline no la calcula.
 - Revisión manual de una muestra de etiquetas de OpenStreetMap (las etiquetas son débiles).
-- Validación del sugeridor con registros propios (hoy hay 7 u 8, insuficientes).
+- Validación del sugeridor con registros propios (hoy hay 7, insuficientes).
+- Confirmar el caso «Misceláneo El Vecino» → comidas (0,90): lo aportó el equipo y no está en `pipeline/reporte_modelo.md`.
+- Con `eom` ya no se citan el número de constelaciones ni el radio del cúmulo grande (el README solo da 171 de 205).
 - Tasa de aceptación y corrección del sugeridor en uso real (indicador de la sección 7).
 - Decidir si el umbral 0,45 se mantiene tras medir el uso real.
-- Si se repite la descarga de Overpass, revisar que las cifras del documento sigan coincidiendo (el servidor principal dio 504 y se usó un espejo con snapshot del 6 de mayo de 2026).
+- Si se repite la descarga de Overpass, revisar que las cifras del documento sigan coincidiendo (la corrida vigente es la del 2 de octubre de 2026, servidor principal, snapshot 04:40 UTC; la del 1 de octubre usó un espejo con snapshot del 6 de mayo).
 
 ## Pendientes que dependen del equipo, de otra persona o de otro proceso
 

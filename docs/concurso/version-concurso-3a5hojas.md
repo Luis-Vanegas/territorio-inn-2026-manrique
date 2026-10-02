@@ -57,15 +57,17 @@ pocos registros propios:
 
 - **Sugeridor de categoría:** a partir del nombre de un negocio sugiere su categoría (TF-IDF de
   caracteres y regresión logística, Pedregosa et al., 2011). Corre en el navegador, sin costo. Si
-  la confianza es baja, pregunta en lugar de sugerir. Entrenado con 4.446 comercios del Valle de
-  Aburrá y probado con nombres que no vio, obtuvo un F1 macro de 0,535 (líneas base: 0,044 y 0,088);
-  sugiere una sola categoría en el 76 % de los casos, acierta el 73,8 % de ellas y la correcta está
-  entre las tres primeras en el 89,1 %. Sus etiquetas vienen de OpenStreetMap sin revisión manual y
-  aún no se ha validado con registros propios.
+  la confianza es baja, pregunta en lugar de sugerir. Entrenado con 4.790 comercios del Valle de
+  Aburrá y probado con nombres que no vio, obtuvo un F1 macro de 0,528 (líneas base: 0,044 y 0,074);
+  sugiere una sola categoría en el 84,6 % de los casos, acierta el 70,4 % de ellas y la correcta está
+  entre las tres primeras en el 89,6 %. Puede sugerir con confianza alta una categoría errónea
+  (por ejemplo, «Misceláneo El Vecino» como «comidas», con 0,90); por eso solo sugiere y la persona
+  elige. Sus etiquetas vienen de OpenStreetMap sin revisión manual y aún no se ha validado con
+  registros propios.
 - **Constelaciones comerciales:** agrupa los comercios por cercanía con HDBSCAN (Campello et al.,
-  2013) y deja como «sueltos» los que no pertenecen a ningún nodo. Sobre los 192 comercios mapeados
-  de la comuna salen 12 constelaciones, con 122 comercios agrupados y 70 sueltos. Se usó la selección
-  `leaf` porque con la opción por defecto una sola constelación agrupaba 168 de los 192 y no servía
+  2013) y deja como «sueltos» los que no pertenecen a ningún nodo. Sobre los 205 comercios mapeados
+  de la comuna salen 12 constelaciones, con 125 comercios agrupados y 80 sueltos. Se usó la selección
+  `leaf` porque con la opción por defecto un solo cúmulo agrupaba 171 de los 205 y no servía
   para leer núcleos a escala de cuadra. Es un resultado exploratorio, que se valida en campo.
 
 **Tres miradas del mismo territorio.**
@@ -73,13 +75,18 @@ pocos registros propios:
 | Mirada | Cifra | Fuente |
 |---|---|---|
 | Empresas registradas | 2.626 | Cámara de Comercio, 2025 |
-| Comercios mapeados en OpenStreetMap | 192 | OpenStreetMap, snapshot de mayo de 2026 |
+| Comercios mapeados en OpenStreetMap | 205 | OpenStreetMap, snapshot del 2 de octubre de 2026 |
 | Aliados en la red | [PENDIENTE: cifra del día de la entrega] | Constelaciones |
 
 Las tres cifras no son comparables como porcentaje: el registro mercantil cuenta empresas por su
 dirección y el mapa abierto cuenta locales mapeados por voluntarios. Tampoco se estima aquí cuántos
 negocios son informales, pues el 13,0 % del DANE es de 24 ciudades. La brecha entre las tres es la
-línea base del trabajo y no una medida de cobertura (OpenStreetMap contributors, 2026).
+línea base del trabajo y no una medida de cobertura (OpenStreetMap contributors, 2026). La cifra de
+OpenStreetMap cambia con la fecha del snapshot, no con el crecimiento del comercio.
+
+**Ética de datos.** La descripción libre de OpenStreetMap no se publica, porque puede identificar a
+personas; de cada comercio solo se muestran dirección, horario, tipo de cocina y web cuando
+OpenStreetMap los trae.
 
 ## c. Solución propuesta e implementación
 
@@ -112,7 +119,7 @@ plataforma hace visible el tejido productivo, pero **no garantiza por sí sola e
 **Riesgos y mitigación.** OpenStreetMap ve más lo formal y lo que está sobre vías principales; por
 eso el censo de campo se concentra en los barrios con menos puntos y la cobertura se mide contra lo
 observado en campo, no contra la Cámara de Comercio. El clasificador puede equivocarse con
-nombres propios, y en categorías con pocos ejemplos (por ejemplo, barbería, con 10): por debajo del
+nombres propios, y en categorías con pocos ejemplos (por ejemplo, barbería, con 13): por debajo del
 umbral de confianza pregunta, y la persona y el moderador deciden.
 Los proveedores de lenguaje del asesor reciben la ficha del negocio: se nombrarán en la política de datos.
 
@@ -155,8 +162,8 @@ http://www.secretariasenado.gov.co/senado/basedoc/ley_1581_2012.html
 Departamento Administrativo Nacional de Estadística. (2026). *Encuesta de micronegocios (EMICRON)
 2025* [Boletín técnico, 30 de julio]. [COMPLETAR: URL del boletín].
 
-OpenStreetMap contributors. (2026). *OpenStreetMap* [Licencia ODbL 1.0; snapshot del 6 de mayo de
-2026, obtenido el 1 de octubre de 2026]. https://www.openstreetmap.org/copyright
+OpenStreetMap contributors. (2026). *OpenStreetMap* [Licencia ODbL 1.0; snapshot del 2 de octubre de
+2026, obtenido ese día]. https://www.openstreetmap.org/copyright
 
 Pacheco Duarte, J. F., Galindo Gómez, S. F., & Rodríguez Pupo, S. (2022). *Ruta de innovación
 social: Paso a paso para desarrollar innovaciones sociales* (Documento técnico 02). UNIMINUTO.
