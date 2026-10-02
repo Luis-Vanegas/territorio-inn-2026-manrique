@@ -273,9 +273,28 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   26 px dentro de una caja táctil de 44. El mapeo categoría → grupo vive en un solo
   lugar, `lib/categorias/grupos.ts`.
 - **Constelaciones** (interruptor con `aria-pressed`): halo punteado, líneas del
-  MST y estrellas de cuatro puntas en `noche-3`, pequeñas y sin interacción. Son
-  comercios de OpenStreetMap, **no aliados**: la leyenda lo dice y el texto habla
-  de «comercios mapeados en OpenStreetMap», nunca de «negocios que hay».
+  MST y estrellas de cuatro puntas en `noche-3`, pequeñas, debajo de los
+  marcadores de aliados. Son comercios de OpenStreetMap, **no aliados**: la
+  leyenda lo dice y el texto habla de «comercios mapeados en OpenStreetMap»,
+  nunca de «negocios que hay».
+- **Estrella interactiva**: cada estrella y cada punto suelto se toca o se enfoca
+  (Tab, Enter; Esc cierra) y abre un popup con lo que OSM trae: categoría, nombre,
+  dirección, horario, cocina y web (solo las que existan; nada se rellena), la
+  distancia en `font-cifra` si la persona activó «Ver los que tengo cerca», y la
+  aclaración «Comercio mapeado en OpenStreetMap · no es aliado de Constelaciones».
+  Dibujada mide 11 px, pero su caja táctil es de 44. **El popup no lleva botones
+  ni enlaces**: la dirección es la forma de saber dónde queda. Horario y cocina
+  se traducen (`lib/geo/comerciosOsm.ts`): «Mo-Sa 08:00-18:00» se lee «Lunes a
+  sábado, 8:00 a. m. – 6:00 p. m.»; lo que no se puede interpretar se muestra tal
+  cual. OSM no trae fotos, así que la ficha usa la forma de su grupo en vez de foto.
+- **Otros comercios del barrio** (`/aliados`, bajo el listado de aliados): los
+  mismos comercios de OSM como lista de información, con la misma ficha, línea de
+  fuente en `font-cifra` («© colaboradores de OpenStreetMap (ODbL)», fecha del
+  snapshot) y el subtítulo que aclara que no son aliados. No tiene controles
+  propios: lo filtran el buscador y el filtro de categorías de la vitrina, y con la
+  ubicación activa va ordenada por cercanía. Se pinta por tandas de 12.
+- **Buscador**: los comercios de OSM aparecen en los resultados (portada y
+  `/aliados`) con la etiqueta «OpenStreetMap»; ante empate, primero los aliados.
 - **Fuente**: bajo el mapa, en `font-cifra`: «© colaboradores de OpenStreetMap
   (ODbL)», fecha del snapshot de OSM y fecha de la corrida. La misma atribución se
   suma al control de Leaflet mientras la capa está prendida.

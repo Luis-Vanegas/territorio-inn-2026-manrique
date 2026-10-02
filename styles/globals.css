@@ -345,6 +345,24 @@ html.js:not(.js-listo) [data-reveal] {
   }
 }
 
+/* Caja táctil de 44 px alrededor de la estrella de 11: es lo que se toca. */
+.caja-estrella {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.caja-estrella svg {
+  transition: transform 120ms ease;
+}
+
+.leaflet-marker-icon:hover .caja-estrella svg,
+.leaflet-marker-icon:focus-visible .caja-estrella svg {
+  transform: scale(1.6);
+}
+
 .estrella-osm {
   display: block;
   animation: parpadeo-estrella 4s ease-in-out infinite alternate;

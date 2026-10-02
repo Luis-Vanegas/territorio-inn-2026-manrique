@@ -126,6 +126,7 @@ export default async function AliadosPage({
               definicionesCampos={definicionesCampos}
               // Viene del buscador de la portada. Tope de largo: es texto de la URL.
               busquedaInicial={typeof q === 'string' ? q.slice(0, 100) : ''}
+              categoriaActiva={categoriaActiva}
               filtro={
                 <FiltroCategorias
                   categorias={categorias}

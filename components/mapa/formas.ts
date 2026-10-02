@@ -30,3 +30,8 @@ export function svgForma(grupo: Grupo, tamano: number): string {
 export function svgEstrella(tamano: number): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z" fill="#1A2450"/></svg>`;
 }
+
+/** Punto suelto de OSM: un comercio que no cayó en ninguna constelación. Más tenue que la estrella. */
+export function svgPunto(tamano: number): string {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="#1A2450" fill-opacity="0.5"/></svg>`;
+}

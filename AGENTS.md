@@ -172,7 +172,14 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 - **Búsqueda de negocios**: una sola función, `buscarNegocios` de
   `lib/busqueda.ts` (puntaje por campo + sinónimos del barrio, en el cliente),
   la usan el buscador de la portada y la vitrina de `/aliados`. No escribir
-  otro filtro de texto por componente. Los sinónimos se amplían en `SINONIMOS`
+  otro filtro de texto por componente. Busca también por dirección (con
+  «cra», «cl», «kr»…) y atiende a los **comercios de OpenStreetMap**: se
+  normalizan con `aBuscable` (`lib/geo/comerciosOsm.ts`, `origen: 'osm'`) y
+  se mezclan en la misma lista; ante empate van primero los aliados. El JSON de
+  constelaciones se pide por `fetch` (`useConstelaciones`) solo cuando hace
+  falta (el buscador de la portada, al enfocar la caja). Los textos de OSM
+  (horario, cocina, categoría) se traducen en ese mismo archivo: nunca se
+  muestran crudos. Los sinónimos se amplían en `SINONIMOS`
   y se prueban con `scripts/verificar-busqueda.mjs`.
 - **Módulos de guías** (Marca, Ventas y los que vengan para aliados): son
   datos, no componentes. Cada módulo es una `Coleccion` (`lib/marca.ts`) en su

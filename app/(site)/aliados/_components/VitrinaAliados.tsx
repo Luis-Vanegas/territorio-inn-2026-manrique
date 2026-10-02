@@ -4,13 +4,21 @@ import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 
 import { MapaAliados } from '@/components/MapaAliados';
+import { useConstelaciones } from '@/components/mapa/useConstelaciones';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Coordenada } from '@/lib/geo/constantes';
 import { distanciaMetros } from '@/lib/geo/distancia';
 import { contar } from '@/lib/interacciones';
 import { buscarNegocios } from '@/lib/busqueda';
+import {
+  aBuscable,
+  aplanarComercios,
+  esComercioOsm,
+  type ComercioBuscable,
+} from '@/lib/geo/comerciosOsm';
 import { TarjetaEmprendimiento } from './TarjetaEmprendimiento';
+import { OtrosComercios, type ComercioListado } from './OtrosComercios';
 
 /**
  * Mapa + listado con estado compartido.
@@ -46,11 +54,14 @@ export function VitrinaAliados({
   definicionesCampos,
   filtro,
   busquedaInicial = '',
+  categoriaActiva,
 }: {
   aliados: Portafolio[];
   definicionesCampos: DefinicionCampo[];
   filtro: ReactNode;
   busquedaInicial?: string;
+  /** `?categoria=` de la URL: filtra también los otros comercios (mismos ids). */
+  categoriaActiva?: string;
 }) {
   const [ubicacion, setUbicacion] = useState<Coordenada | null>(null);
   const [estadoGeo, setEstadoGeo] = useState<EstadoGeo>('inicial');
@@ -94,10 +105,28 @@ export function VitrinaAliados({
    *
    * Sin ubicación, el orden es el de relevancia de la búsqueda (lib/busqueda.ts,
    * el mismo algoritmo del buscador de la portada).
+   *
+   * Los comercios de OpenStreetMap entran a la MISMA búsqueda (una sola función)
+   * y después se separan: los aliados van en su listado y los de OSM en
+   * «Otros comercios del barrio». El filtro de categoría de la URL también
+   * les aplica; sin categoría solo aparecen cuando no hay filtro.
    */
-  const { resultados: filtrados, parcial } = useMemo(
-    () => buscarNegocios(aliados, busqueda),
-    [aliados, busqueda],
+  const { datos: datosOsm, estado: estadoOsm } = useConstelaciones();
+  const comerciosOsm = useMemo(() => {
+    if (!datosOsm) return [];
+    return aplanarComercios(datosOsm)
+      .map(aBuscable)
+      .filter((c) => !categoriaActiva || c.categoria_id === categoriaActiva)
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+  }, [datosOsm, categoriaActiva]);
+
+  const { resultados: encontrados, parcial } = useMemo(
+    () => buscarNegocios<Portafolio | ComercioBuscable>([...aliados, ...comerciosOsm], busqueda),
+    [aliados, comerciosOsm, busqueda],
+  );
+  const filtrados = useMemo(
+    () => encontrados.filter((n): n is Portafolio => !esComercioOsm(n)),
+    [encontrados],
   );
 
   const listados = useMemo(() => {
@@ -109,6 +138,15 @@ export function VitrinaAliados({
     if (!ubicacion) return conDistancia;
     return conDistancia.sort((a, b) => (a.distancia ?? 0) - (b.distancia ?? 0));
   }, [filtrados, ubicacion]);
+
+  const comerciosListados = useMemo(() => {
+    const items: ComercioListado[] = encontrados.filter(esComercioOsm).map((c) => ({
+      comercio: c.comercio,
+      distancia: ubicacion ? distanciaMetros(ubicacion, [c.comercio.lat, c.comercio.lon]) : null,
+    }));
+    if (!ubicacion) return items;
+    return items.sort((a, b) => (a.distancia ?? 0) - (b.distancia ?? 0));
+  }, [encontrados, ubicacion]);
 
   const portafoliosFiltrados = useMemo(() => listados.map((l) => l.portafolio), [listados]);
 
@@ -136,6 +174,16 @@ export function VitrinaAliados({
   const cercanos = ubicacion
     ? listados.filter((l) => (l.distancia ?? Infinity) < 1000).length
     : 0;
+  const cercanosOsm = ubicacion
+    ? comerciosListados.filter((c) => (c.distancia ?? Infinity) < 1000).length
+    : 0;
+  const textoCercanos = [
+    cercanos > 0 && `${cercanos} ${cercanos === 1 ? 'aliado' : 'aliados'}`,
+    cercanosOsm > 0 &&
+      `${cercanosOsm} ${cercanosOsm === 1 ? 'comercio' : 'comercios'} de OpenStreetMap`,
+  ]
+    .filter(Boolean)
+    .join(' y ');
 
   return (
     <>
@@ -189,9 +237,9 @@ export function VitrinaAliados({
 
           {estadoGeo === 'listo' && (
             <span className="font-sans text-xs text-tinta/65">
-              {cercanos > 0
-                ? `${cercanos} ${cercanos === 1 ? 'negocio' : 'negocios'} a menos de 1 km · lista ordenada por cercanía`
-                : 'Ninguno a menos de 1 km — la lista igual va del más cercano al más lejano'}
+              {textoCercanos
+                ? `${textoCercanos} a menos de 1 km · las listas van del más cercano al más lejano`
+                : 'Ninguno a menos de 1 km — las listas igual van del más cercano al más lejano'}
             </span>
           )}
 
@@ -205,8 +253,9 @@ export function VitrinaAliados({
           )}
 
           {estadoGeo === 'inicial' && (
-            <span className="font-sans text-xs text-tinta/60">
-              Tu ubicación se usa solo en tu navegador. No se envía ni se guarda.
+            <span className="max-w-xl font-sans text-xs leading-relaxed text-tinta/65">
+              Si lo presionas y das permiso a tu ubicación, te mostramos qué negocios tienes cerca y a qué
+              distancia. Tu ubicación se usa solo en tu navegador. No se envía ni se guarda.
             </span>
           )}
         </div>
@@ -224,7 +273,8 @@ export function VitrinaAliados({
         </div>
 
         <p className="mt-3 font-sans text-xs text-tinta/60">
-          Toca un marcador para ver el negocio en la lista.
+          Toca un marcador para ver el negocio en la lista. Toca una estrella para ver la información
+          de un comercio mapeado en OpenStreetMap.
         </p>
       </section>
 
@@ -239,7 +289,8 @@ export function VitrinaAliados({
 
         {busqueda.trim() && listados.length === 0 && (
           <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-tinta/60">
-            Nada coincide con «{busqueda.trim()}».{' '}
+            Ningún aliado coincide con «{busqueda.trim()}».
+            {comerciosListados.length > 0 && ' Más abajo hay otros comercios que sí.'}{' '}
             <button
               type="button"
               onClick={() => setBusqueda('')}
@@ -280,6 +331,15 @@ export function VitrinaAliados({
           </button>
         )}
       </section>
+
+      <OtrosComercios
+        key={`${categoriaActiva ?? ''}|${busqueda}`}
+        items={comerciosListados}
+        estado={estadoOsm}
+        osmBase={datosOsm?.osm_base}
+        filtrado={Boolean(busqueda.trim() || categoriaActiva)}
+        cercania={Boolean(ubicacion)}
+      />
     </>
   );
 }

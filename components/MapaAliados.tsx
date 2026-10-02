@@ -1,17 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { Coordenada } from '@/lib/geo/constantes';
 import { GRUPOS } from '@/lib/categorias/grupos';
-import {
-  cargarConstelaciones,
-  fechaLarga,
-  type DatosConstelaciones,
-} from '@/lib/geo/constelaciones';
+import { fechaLarga } from '@/lib/geo/constelaciones';
 import { svgEstrella, svgForma } from './mapa/formas';
+import { useConstelaciones } from './mapa/useConstelaciones';
 
 /**
  * Frontera de carga del mapa + controles que lo rodean.
@@ -42,8 +39,6 @@ const MapaClient = dynamic(() => import('./MapaAliadosClient'), {
   ),
 });
 
-type EstadoCarga = 'cargando' | 'listo' | 'error';
-
 export function MapaAliados({
   portafolios,
   alSeleccionar,
@@ -65,23 +60,8 @@ export function MapaAliados({
 }) {
   const [activa, setActiva] = useState(true);
   const [filtro, setFiltro] = useState('');
-  const [datos, setDatos] = useState<DatosConstelaciones | null>(null);
-  const [estado, setEstado] = useState<EstadoCarga>('cargando');
-
   // El JSON (~43 KB) se pide aquí y no se importa: fuera del bundle inicial.
-  useEffect(() => {
-    let vivo = true;
-    cargarConstelaciones()
-      .then((d) => {
-        if (!vivo) return;
-        setDatos(d);
-        setEstado('listo');
-      })
-      .catch(() => vivo && setEstado('error'));
-    return () => {
-      vivo = false;
-    };
-  }, []);
+  const { datos, estado } = useConstelaciones();
 
   const fuente = useMemo(
     () =>
@@ -175,7 +155,7 @@ export function MapaAliados({
               className="inline-flex"
               dangerouslySetInnerHTML={{ __html: svgEstrella(12) }}
             />
-            Estrella: comercio mapeado en OpenStreetMap, no es aliado
+            Estrella: comercio mapeado en OpenStreetMap, no es aliado. Tócala para ver su nombre y dirección
           </li>
         )}
       </ul>

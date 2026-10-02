@@ -14,7 +14,10 @@ import type { Portafolio } from '@/lib/db/portafolios.repo';
  *   3. Cada palabra suma según DÓNDE aparece (PESOS): en el nombre vale más
  *      que en la descripción. Por prefijo: "arep" ya encuentra "arepas".
  *   4. Sinónimos del barrio (SINONIMOS) cuentan a mitad de peso.
- *   5. Primero exige TODAS las palabras. Si nadie las tiene, devuelve los que
+ *   5. Busca también en la dirección («calle 71A», «cra 30») y en los comercios
+ *      de OpenStreetMap (`origen: 'osm'`, ver lib/geo/comerciosOsm.ts): una sola
+ *      función para los dos. Ante empate, los aliados van primero.
+ *   6. Primero exige TODAS las palabras. Si nadie las tiene, devuelve los que
  *      tienen alguna y lo marca como `parcial`: nunca pantalla vacía si hay
  *      algo parecido.
  *
@@ -27,9 +30,13 @@ import type { Portafolio } from '@/lib/db/portafolios.repo';
 export type NegocioBuscable = Pick<
   Portafolio,
   'id' | 'nombre' | 'descripcion' | 'categoria_id' | 'categoria_nombre' | 'categoria_otra' | 'barrio' | 'productos'
->;
+> & {
+  direccion?: string | null;
+  /** Ausente = aliado. `'osm'` = comercio mapeado en OpenStreetMap, no es aliado. */
+  origen?: 'aliado' | 'osm';
+};
 
-const PESOS = { nombre: 10, categoria: 6, productos: 5, descripcion: 3, barrio: 3 } as const;
+const PESOS = { nombre: 10, categoria: 6, productos: 5, descripcion: 3, barrio: 3, direccion: 4 } as const;
 type Campo = keyof typeof PESOS;
 
 /** Un sinónimo pesa la mitad: la palabra exacta que escribió la persona manda. */
@@ -67,6 +74,12 @@ const SINONIMOS: string[][] = [
   ['educacion', 'clase', 'tarea', 'guarderia', 'nino', 'curso', 'arte'],
   ['reciclaje', 'chatarreria', 'compraventa'],
   ['hogar', 'decoracion', 'mueble', 'cortina', 'colchon'],
+  // Cómo se escribe una dirección en el barrio.
+  ['calle', 'cl'],
+  ['carrera', 'cra', 'kr', 'cr'],
+  ['circular', 'cir'],
+  ['diagonal', 'dg', 'diag'],
+  ['transversal', 'tv', 'trans'],
 ];
 
 /** Minúsculas, sin tildes (la ñ pasa a n), y solo letras y números. */
@@ -116,10 +129,12 @@ type Indice = Record<Campo, string[]>;
 function indexar(n: NegocioBuscable): Indice {
   return {
     nombre: palabras(n.nombre),
-    categoria: palabras(`${n.categoria_nombre} ${n.categoria_otra ?? ''}`),
+    // «Sin categoría» (comercios de OSM) no es una palabra que alguien busque.
+    categoria: n.categoria_id === 'sin_categoria' ? [] : palabras(`${n.categoria_nombre} ${n.categoria_otra ?? ''}`),
     productos: palabras(n.productos.map((p) => p.nombre).join(' ')),
     descripcion: palabras(n.descripcion ?? ''),
     barrio: palabras(n.barrio ?? ''),
+    direccion: palabras(n.direccion ?? ''),
   };
 }
 
@@ -156,12 +171,14 @@ export function buscarNegocios<T extends NegocioBuscable>(negocios: T[], consult
     let total = porTermino.reduce((a, b) => a + b, 0);
     // Escribir el nombre (o su comienzo) es la señal más clara de a quién se busca.
     if (normalizar(negocio.nombre).startsWith(nombreConsulta)) total += PESOS.nombre;
-    return { negocio, orden, total, todos: porTermino.every((p) => p > 0) };
+    const osm = negocio.origen === 'osm' ? 1 : 0;
+    return { negocio, orden, total, osm, todos: porTermino.every((p) => p > 0) };
   });
 
-  // Empate: queda el orden que traía la lista (los más recientes primero).
+  // Empate: primero los aliados y, dentro de cada grupo, el orden que traía la
+  // lista (los más recientes primero).
   const ordenar = (lista: typeof puntuados) =>
-    lista.sort((a, b) => b.total - a.total || a.orden - b.orden).map((p) => p.negocio);
+    lista.sort((a, b) => b.total - a.total || a.osm - b.osm || a.orden - b.orden).map((p) => p.negocio);
 
   const completos = puntuados.filter((p) => p.todos);
   if (completos.length > 0) return { resultados: ordenar(completos), parcial: false };

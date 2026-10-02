@@ -1,18 +1,28 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import { Circle, CircleMarker, Marker, Polyline, useMap } from 'react-leaflet';
+import { memo, useEffect, useMemo } from 'react';
+import { Circle, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
-import type { Constelacion, DatosConstelaciones } from '@/lib/geo/constelaciones';
-import { svgEstrella } from './formas';
+import type { Coordenada } from '@/lib/geo/constantes';
+import type { Constelacion, DatosConstelaciones, EstrellaOsm } from '@/lib/geo/constelaciones';
+import { distanciaMetros } from '@/lib/geo/distancia';
+import { FichaComercioOsm } from './FichaComercioOsm';
+import { svgEstrella, svgPunto } from './formas';
 
 /**
  * Capa de constelaciones: halo + líneas del árbol de expansión mínima + estrellas.
  *
  * Son comercios de OpenStreetMap, no aliados. Por eso van en `noche-3` (azul
- * oscuro), pequeños y sin interacción: nada de esto es un botón, así que no
- * entra al orden de tabulación ni compite con los marcadores de aliados.
+ * oscuro) y pequeños, y se dibujan DEBAJO de los marcadores de aliados
+ * (`zIndexOffset` negativo). Cada estrella y cada punto suelto es un marcador
+ * tocable y enfocable: abre un popup con lo que OSM sabe del comercio
+ * (FichaComercioOsm). La estrella dibujada mide 11 px; la caja táctil, 44.
+ *
+ * Con ~200 comercios el rendimiento importa: los íconos se crean una vez, cada
+ * marcador es `memo` y el popup solo monta su contenido mientras está abierto
+ * (react-leaflet lo hace así), así que filtrar o mover el mapa no re-renderiza
+ * 200 fichas.
  *
  * El trazo de las líneas es CSS (`stroke-dashoffset`, ver `.arista-trazo` en
  * globals.css) y no framer-motion: el SVG de Leaflet lo crea Leaflet, no React,
@@ -23,19 +33,71 @@ import { svgEstrella } from './formas';
 const TEXTO_ATRIBUCION =
   '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL)';
 
-const COLOR = '#1A2450';
-
 /** Un icono por estrella: el desfase del parpadeo va en variables CSS. */
 function iconoEstrella(indice: number) {
   const duracion = 3 + (indice % 4); // 3–6 s
   const desfase = -((indice * 0.7) % duracion);
   return L.divIcon({
     className: '',
-    html: `<span class="estrella-osm" style="animation-duration:${duracion}s;animation-delay:${desfase.toFixed(2)}s">${svgEstrella(11)}</span>`,
-    iconSize: [11, 11],
-    iconAnchor: [5.5, 5.5],
+    html: `<span class="caja-estrella"><span class="estrella-osm" style="animation-duration:${duracion}s;animation-delay:${desfase.toFixed(2)}s">${svgEstrella(11)}</span></span>`,
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
+    popupAnchor: [0, -10],
   });
 }
+
+const ICONO_SUELTO = L.divIcon({
+  className: '',
+  html: `<span class="caja-estrella">${svgPunto(8)}</span>`,
+  iconSize: [44, 44],
+  iconAnchor: [22, 22],
+  popupAnchor: [0, -8],
+});
+
+// Un divIcon no es una imagen, así que el marcador no trae nombre accesible:
+// se le pone el del comercio. Y al cerrar el popup con Esc el foco caería a
+// <body>: se devuelve al marcador.
+const MANEJADORES: L.LeafletEventHandlerFnMap = {
+  add: (ev) => {
+    const marcador = ev.target as L.Marker;
+    marcador.getElement()?.setAttribute('aria-label', marcador.options.title ?? '');
+  },
+  popupclose: (ev) => {
+    const el = (ev.target as L.Marker).getElement();
+    if (el && (!document.activeElement || document.activeElement === document.body)) {
+      el.focus({ preventScroll: true });
+    }
+  },
+};
+
+function PopupComercio({ e, ubicacion }: { e: EstrellaOsm; ubicacion?: Coordenada | null }) {
+  const distancia = ubicacion ? distanciaMetros(ubicacion, [e.lat, e.lon]) : null;
+  return <FichaComercioOsm comercio={e} distancia={distancia} conAclaracion />;
+}
+
+const MarcadorComercio = memo(function MarcadorComercio({
+  e,
+  icono,
+  ubicacion,
+}: {
+  e: EstrellaOsm;
+  icono: L.DivIcon;
+  ubicacion?: Coordenada | null;
+}) {
+  return (
+    <Marker
+      position={[e.lat, e.lon]}
+      icon={icono}
+      title={e.nombre}
+      zIndexOffset={-10_000}
+      eventHandlers={MANEJADORES}
+    >
+      <Popup minWidth={220} maxWidth={280}>
+        <PopupComercio e={e} ubicacion={ubicacion} />
+      </Popup>
+    </Marker>
+  );
+});
 
 function Atribucion() {
   const mapa = useMap();
@@ -52,10 +114,12 @@ function Constelacion({
   c,
   orden,
   activa,
+  ubicacion,
 }: {
   c: Constelacion;
   orden: number;
   activa: boolean;
+  ubicacion?: Coordenada | null;
 }) {
   const lineas = useMemo(
     () =>
@@ -108,13 +172,7 @@ function Constelacion({
       {c.estrellas.map((e, i) => {
         const icono = iconos[i];
         return icono ? (
-          <Marker
-            key={e.osm}
-            position={[e.lat, e.lon]}
-            icon={icono}
-            interactive={false}
-            keyboard={false}
-          />
+          <MarcadorComercio key={e.osm} e={e} icono={icono} ubicacion={ubicacion} />
         ) : null;
       })}
     </>
@@ -124,10 +182,13 @@ function Constelacion({
 export function CapaConstelaciones({
   datos,
   filtroId,
+  ubicacion,
 }: {
   datos: DatosConstelaciones;
   /** Si viene, se dibuja solo esa constelación y no los puntos sueltos. */
   filtroId: string;
+  /** Posición del visitante: el popup dice a qué distancia queda cada comercio. */
+  ubicacion?: Coordenada | null;
 }) {
   const visibles = filtroId
     ? datos.constelaciones.filter((c) => c.id === filtroId)
@@ -138,17 +199,10 @@ export function CapaConstelaciones({
       <Atribucion />
       {!filtroId &&
         datos.puntos_sueltos.map((p) => (
-          <CircleMarker
-            key={p.osm}
-            center={[p.lat, p.lon]}
-            radius={2}
-            interactive={false}
-            className="suelto-osm"
-            pathOptions={{ stroke: false, fillColor: COLOR, fillOpacity: 0.35 }}
-          />
+          <MarcadorComercio key={p.osm} e={p} icono={ICONO_SUELTO} ubicacion={ubicacion} />
         ))}
       {visibles.map((c, i) => (
-        <Constelacion key={c.id} c={c} orden={i} activa={Boolean(filtroId)} />
+        <Constelacion key={c.id} c={c} orden={i} activa={Boolean(filtroId)} ubicacion={ubicacion} />
       ))}
     </>
   );

@@ -229,7 +229,11 @@ export default function MapaAliadosClient({
       <IrASeleccionado seleccionado={seleccionado} portafolios={portafolios} />
 
       {constelaciones && (
-        <CapaConstelaciones datos={constelaciones} filtroId={filtroConstelacion} />
+        <CapaConstelaciones
+          datos={constelaciones}
+          filtroId={filtroConstelacion}
+          ubicacion={ubicacionUsuario}
+        />
       )}
 
       {ubicacionUsuario && (
