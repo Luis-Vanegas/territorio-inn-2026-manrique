@@ -14,6 +14,8 @@ export type EstrellaOsm = {
   lat: number;
   lon: number;
   categoria: string | null;
+  /** Barrio oficial donde cae el punto (pipeline, polígonos de barrios-manrique.json); null en un hueco entre polígonos. */
+  barrio?: string | null;
   /** Solo las claves que OSM trae; nunca contactos ni descripción (privacidad). */
   detalle?: { direccion?: string; horario?: string; cocina?: string; web?: string };
 };

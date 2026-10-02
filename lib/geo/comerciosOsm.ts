@@ -202,7 +202,7 @@ export function aBuscable(e: EstrellaOsm): ComercioBuscable {
     categoria_id: e.categoria ?? SIN_CATEGORIA,
     categoria_nombre: nombreCategoriaOsm(e.categoria),
     categoria_otra: null,
-    barrio: '',
+    barrio: e.barrio ?? '',
     productos: [],
     direccion: e.detalle?.direccion ?? null,
     origen: 'osm',
