@@ -78,6 +78,28 @@ def etiquetas(
     ).fit_predict(xy)
 
 
+def _texto(fila, columna: str) -> str:
+    # keep_default_na=False deja "" donde OSM no trae la etiqueta.
+    v = getattr(fila, columna, "")
+    return v.strip() if isinstance(v, str) else ""
+
+
+def detalle(fila) -> dict:
+    """Solo las claves presentes: la app muestra lo que hay, sin rellenar vacíos.
+
+    `description` NO se publica: es texto libre de encuestas de campo y a veces
+    habla de personas identificables (Ley 1581). Queda solo en el CSV crudo.
+    """
+    calle, numero = _texto(fila, "addr_street"), _texto(fila, "addr_housenumber")
+    claves = {
+        "direccion": f"{calle} {numero}".strip() if calle else "",  # un número sin calle no ubica a nadie
+        "horario": _texto(fila, "opening_hours"),
+        "cocina": _texto(fila, "cuisine"),
+        "web": _texto(fila, "website"),
+    }
+    return {k: v for k, v in claves.items() if v}
+
+
 def punto(fila) -> dict:
     return {
         "osm": f"{fila.osm_tipo[0]}{fila.osm_id}",
@@ -85,6 +107,7 @@ def punto(fila) -> dict:
         "lat": round(float(fila.lat), 6),
         "lon": round(float(fila.lon), 6),
         "categoria": fila.categoria or None,
+        "detalle": detalle(fila),
     }
 
 
@@ -94,6 +117,13 @@ def main() -> None:
     df = pd.read_csv(entrada, keep_default_na=False, dtype={"categoria": str}).reset_index(drop=True)
     df["categoria"] = df["categoria"].fillna("")
     validacion = validar(df)
+
+    # La fecha del snapshot sale del meta que escribió el paso 1 junto al CSV,
+    # no se escribe a mano: así la app siempre cita la base que de verdad usó.
+    meta = json.loads(entrada.with_name(entrada.name.replace("osm_comuna3_", "osm_meta_").replace(".csv", ".json")).read_text(encoding="utf-8"))
+    osm_base = meta.get("timestamp_osm_base") or meta.get("osm_base_timestamp")
+    if not osm_base:
+        raise SystemExit("El meta del paso 1 no trae timestamp_osm_base")
 
     x, y = A_METROS.transform(df["lon"].to_numpy(), df["lat"].to_numpy())
     xy = np.column_stack([x, y])
@@ -178,6 +208,7 @@ def main() -> None:
         "licencia": "ODbL 1.0 — https://www.openstreetmap.org/copyright",
         "fecha_corrida": ahora_iso(),
         "datos_de_entrada": entrada.name,
+        "osm_base": osm_base,
         "metodo": {
             "algoritmo": "sklearn.cluster.HDBSCAN",
             "min_cluster_size": MIN_CLUSTER_SIZE,

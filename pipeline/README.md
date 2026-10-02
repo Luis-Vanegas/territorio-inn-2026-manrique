@@ -30,11 +30,13 @@ Las versiones exactas están en `requirements.txt`.
 
 ## Corrida de referencia
 
-- Fecha de la descarga: **2026-10-01** (los CSV llevan la fecha en el nombre; `osm_meta_*.json`
-  guarda la consulta, los conteos y las validaciones).
-- Overpass: el servidor principal (`overpass-api.de`) devolvió 504 a la consulta final y respondió el
-  espejo `overpass.kumi.systems`, cuyo snapshot de OSM es del **2026-05-06** (campo `osm_base_timestamp`).
-  Si se repite el paso 1 más adelante, el número de comercios puede cambiar.
+- Fecha de la descarga: **2026-10-02** (los CSV llevan la fecha en el nombre; `osm_meta_*.json`
+  guarda la consulta, los conteos, el servidor y las validaciones). Las descargas anteriores
+  (`*_2026-10-01.*`) se conservan.
+- Overpass: respondió el servidor principal (`overpass-api.de`); su snapshot de OSM es del
+  **2026-10-02T04:40:06Z** (`timestamp_osm_base` en el meta y `osm_base` en `constelaciones.json`).
+  La corrida del 2026-10-01 había caído al espejo `overpass.kumi.systems` (snapshot 2026-05-06), por
+  eso el número de comercios subió: no es crecimiento del comercio, es una base más reciente.
 - Si Overpass da 504, espera unos minutos y reintenta: es un servicio público compartido y la
   consulta (10 municipios) es grande. No la dispares en bucle.
 
@@ -47,9 +49,11 @@ Las versiones exactas están en `requirements.txt`.
    `comun.py`.
 2. **`02_constelaciones.py`** proyecta a metros (UTM 18N, EPSG:32618) y corre
    `sklearn.cluster.HDBSCAN(min_cluster_size=6, min_samples=3)`. Selección `leaf`: con `eom` (el valor por
-   defecto) 168 de 192 locales caen en un solo cúmulo de ~730 m, inservible para dibujar; la comparación
+   defecto) 171 de 205 locales caen en un solo cúmulo, inservible para dibujar; la comparación
    completa está en `sensibilidad_min_cluster_size` del JSON. Calcula centroide, radio máximo y p90, mezcla de
-   categorías y MST (scipy) por constelación.
+   categorías y MST (scipy) por constelación. Cada estrella y punto suelto lleva `nombre`, `categoria` y
+   `detalle` (solo las claves presentes: `direccion`, `horario`, `cocina`, `web`; la descripción de OSM queda solo en el CSV crudo, por privacidad). El paso 1
+   conserva únicamente esas etiquetas de OSM: nunca `phone`, `contact:*` ni `email`.
 3. **`03_clasificador.py`** entrena con los comercios del Valle que tienen categoría mapeada y evalúa con
    holdout agrupado por nombre (ver el reporte para el porqué), línea base, holdout geográfico y comparación con
    `referencia/`.
@@ -77,11 +81,11 @@ responsabilidad de la capa de UI.
 
 ## Límites que conviene decir en voz alta
 
-- OSM no es el censo de comercios: el recorte de la Comuna 3 trae **192** locales con nombre, una fracción
+- OSM no es el censo de comercios: el recorte de la Comuna 3 trae **205** locales con nombre, una fracción
   del comercio real. Las constelaciones describen lo que está **mapeado**, no todo lo que existe. Una zona
   sin constelación puede ser una zona sin mapear.
 - `categoria_dominante` puede ser débil (varios locales sin categoría mapeada); mira `mezcla_categorias`
   antes de nombrar una constelación por su categoría.
-- Hay una constelación (`c09`) con radio de ~620 m: son 7 locales dispersos, no un núcleo compacto.
+- Hay constelaciones con radio grande (`c04`, ~657 m, 12 locales; `c12`, ~462 m, 6 locales): son locales dispersos, no un núcleo compacto. Mira `radio_p90_m`.
 - El modelo cubre 12 de las categorías del sitio; las demás no tienen etiqueta OSM fiable.
 - Las etiquetas del clasificador salen de OSM, no de una revisión manual (muestra de control: pendiente).

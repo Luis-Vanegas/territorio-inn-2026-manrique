@@ -4,6 +4,8 @@ Salidas (en pipeline/datos/, con la fecha de la corrida en el nombre):
   osm_valle_aburra_<fecha>.csv  todo el Valle de Aburrá (insumo del clasificador)
   osm_comuna3_<fecha>.csv       solo lo que cae dentro de lib/geo/manrique.json
   osm_meta_<fecha>.json         trazabilidad y resultado de las validaciones
+Además de la categoría, cada fila guarda etiquetas de detalle (dirección,
+horario, cocina, descripción, web) y NUNCA contactos de personas.
 
 Una sola consulta grande, con timeout y User-Agent identificable: Overpass es un
 servicio público y gratuito, así que se le pide lo mínimo posible. Los datos son
@@ -63,8 +65,28 @@ out center tags;
 
 CAMPOS_TAG = ["shop", "craft", "amenity", "healthcare", "leisure", "hairdresser"]
 
+# Etiquetas de detalle para mostrar al tocar una estrella. Lista cerrada A
+# PROPÓSITO: no se conserva phone, contact:*, email ni nada de personas (regla
+# del proyecto: ningún contacto nuevo; Ley 1581). Si OSM trae más, se descarta.
+# columna del CSV -> etiqueta OSM
+CAMPOS_DETALLE = {
+    "addr_street": "addr:street",
+    "addr_housenumber": "addr:housenumber",
+    "opening_hours": "opening_hours",
+    "cuisine": "cuisine",
+    "description": "description",
+    "website": "website",
+}
+# Un párrafo largo no cabe en la ficha del mapa; se corta con elipsis.
+MAX_DESCRIPCION = 140
 
-def descargar() -> dict:
+
+def recortar(texto: str, maximo: int) -> str:
+    texto = " ".join(texto.split())
+    return texto if len(texto) <= maximo else texto[: maximo - 1].rstrip() + "…"
+
+
+def descargar() -> tuple[dict, str]:
     ultimo_error = None
     for url in ENDPOINTS:
         try:
@@ -76,7 +98,7 @@ def descargar() -> dict:
                 timeout=TIMEOUT_HTTP_S,
             )
             if r.status_code == 200:
-                return r.json()
+                return r.json(), url
             ultimo_error = f"{url}: HTTP {r.status_code} {r.text[:200]}"
         except requests.RequestException as e:
             ultimo_error = f"{url}: {e}"
@@ -101,6 +123,12 @@ def a_dataframe(datos: dict) -> pd.DataFrame:
         }
         for c in CAMPOS_TAG:
             fila[c] = tags.get(c)
+        for col, etiqueta in CAMPOS_DETALLE.items():
+            valor = tags.get(etiqueta)
+            if valor is not None and valor.strip():
+                fila[col] = recortar(valor, MAX_DESCRIPCION) if col == "description" else valor.strip()
+            else:
+                fila[col] = None
         fila["categoria"] = categoria_osm(fila)
         filas.append(fila)
     return pd.DataFrame(filas)
@@ -111,10 +139,12 @@ def main() -> None:
     sello = fecha[:10]
     DATOS.mkdir(parents=True, exist_ok=True)
 
-    bruto = descargar()
+    bruto, servidor = descargar()
     df = a_dataframe(bruto)
     n_bruto = len(df)
     osm_base = bruto.get("osm3s", {}).get("timestamp_osm_base")
+    if not osm_base:
+        raise SystemExit("La respuesta de Overpass no trae osm3s.timestamp_osm_base")
 
     # --- Validaciones -------------------------------------------------------
     nulos_antes = {
@@ -155,7 +185,9 @@ def main() -> None:
         "fuente": FUENTE,
         "licencia": "ODbL 1.0 — https://www.openstreetmap.org/copyright",
         "fecha_corrida": fecha,
-        "osm_base_timestamp": osm_base,
+        "timestamp_osm_base": osm_base,
+        "osm_base_timestamp": osm_base,  # nombre anterior, se deja para no romper lectores viejos
+        "servidor": servidor,
         "consulta_overpass": CONSULTA.strip(),
         "elementos_brutos": n_bruto,
         "validaciones": {

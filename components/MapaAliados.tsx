@@ -9,7 +9,6 @@ import { GRUPOS } from '@/lib/categorias/grupos';
 import {
   cargarConstelaciones,
   fechaLarga,
-  SNAPSHOT_OSM,
   type DatosConstelaciones,
 } from '@/lib/geo/constelaciones';
 import { svgEstrella, svgForma } from './mapa/formas';
@@ -69,7 +68,7 @@ export function MapaAliados({
   const [datos, setDatos] = useState<DatosConstelaciones | null>(null);
   const [estado, setEstado] = useState<EstadoCarga>('cargando');
 
-  // El JSON (~34 KB) se pide aquí y no se importa: fuera del bundle inicial.
+  // El JSON (~43 KB) se pide aquí y no se importa: fuera del bundle inicial.
   useEffect(() => {
     let vivo = true;
     cargarConstelaciones()
@@ -87,7 +86,7 @@ export function MapaAliados({
   const fuente = useMemo(
     () =>
       datos
-        ? `Comercios mapeados en OpenStreetMap, © colaboradores de OpenStreetMap (ODbL). Datos de OSM al ${fechaLarga(SNAPSHOT_OSM)}; agrupados el ${fechaLarga(datos.fecha_corrida)}.`
+        ? `Comercios mapeados en OpenStreetMap, © colaboradores de OpenStreetMap (ODbL). Datos de OSM al ${fechaLarga(datos.osm_base)}; agrupados el ${fechaLarga(datos.fecha_corrida)}.`
         : null,
     [datos],
   );

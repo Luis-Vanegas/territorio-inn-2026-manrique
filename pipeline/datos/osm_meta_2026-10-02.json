@@ -1,0 +1,24 @@
+{
+  "fuente": "OpenStreetMap contributors (ODbL 1.0), vía Overpass API",
+  "licencia": "ODbL 1.0 — https://www.openstreetmap.org/copyright",
+  "fecha_corrida": "2026-10-02T04:41:03Z",
+  "timestamp_osm_base": "2026-10-02T04:40:06Z",
+  "osm_base_timestamp": "2026-10-02T04:40:06Z",
+  "servidor": "https://overpass-api.de/api/interpreter",
+  "consulta_overpass": "[out:json][timeout:240];\narea[\"boundary\"=\"administrative\"][\"admin_level\"=\"6\"][\"name\"~\"^(Medellín|Bello|Itagüí|Envigado|Sabaneta|La Estrella|Caldas|Copacabana|Girardota|Barbosa)$\"]->.valle;\n(\n  nwr[\"name\"][\"shop\"](area.valle)(6.00,-75.75,6.55,-75.25);\n  nwr[\"name\"][\"craft\"](area.valle)(6.00,-75.75,6.55,-75.25);\n  nwr[\"name\"][\"amenity\"~\"^(restaurant|fast_food|cafe|food_court|ice_cream|pharmacy|clinic|doctors|dentist|hospital|veterinary|animal_boarding|car_repair|car_wash)$\"](area.valle)(6.00,-75.75,6.55,-75.25);\n  nwr[\"name\"][\"healthcare\"](area.valle)(6.00,-75.75,6.55,-75.25);\n  nwr[\"name\"][\"leisure\"=\"fitness_centre\"](area.valle)(6.00,-75.75,6.55,-75.25);\n);\nout center tags;",
+  "elementos_brutos": 5433,
+  "validaciones": {
+    "nulos_descartados": {
+      "nombre": 0,
+      "lat": 0,
+      "lon": 0
+    },
+    "duplicados_por_id_eliminados": 0,
+    "duplicados_por_nombre_y_posicion_eliminados": 10,
+    "comuna3_fuera_del_poligono": 0
+  },
+  "total_valle_aburra": 5423,
+  "total_comuna3": 205,
+  "comuna3_con_categoria_mapeada": 173,
+  "valle_con_categoria_mapeada": 4790
+}

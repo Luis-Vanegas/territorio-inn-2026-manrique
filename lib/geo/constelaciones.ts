@@ -3,7 +3,7 @@
  * generado por `pipeline/02_constelaciones.py`). NO son aliados de la plataforma:
  * son locales que alguien mapeó en OSM, agrupados por cercanía (HDBSCAN).
  *
- * El JSON no se importa: pesa ~34 KB y solo hace falta cuando el mapa pinta la
+ * El JSON no se importa: pesa ~43 KB y solo hace falta cuando el mapa pinta la
  * capa, así que se pide por `fetch` y queda fuera del bundle.
  */
 
@@ -13,6 +13,8 @@ export type EstrellaOsm = {
   lat: number;
   lon: number;
   categoria: string | null;
+  /** Solo las claves que OSM trae; nunca contactos ni descripción (privacidad). */
+  detalle?: { direccion?: string; horario?: string; cocina?: string; web?: string };
 };
 
 export type Constelacion = {
@@ -32,6 +34,8 @@ export type DatosConstelaciones = {
   fuente: string;
   licencia: string;
   fecha_corrida: string;
+  /** Fecha del snapshot de OSM que respondió Overpass (la escribe el pipeline). */
+  osm_base: string;
   resumen: {
     total_comercios: number;
     constelaciones: number;
@@ -42,14 +46,6 @@ export type DatosConstelaciones = {
 };
 
 export const URL_CONSTELACIONES = '/firmamento/constelaciones.json';
-
-/**
- * Fecha del snapshot de OSM que respondió Overpass (`osm_base_timestamp` de
- * `pipeline/datos/osm_meta_2026-10-01.json`). El JSON público solo trae la fecha
- * de la corrida, no la del snapshot: al repetir el pipeline hay que actualizar
- * esta constante.
- */
-export const SNAPSHOT_OSM = '2026-05-06';
 
 let enCurso: Promise<DatosConstelaciones> | null = null;
 
