@@ -40,6 +40,14 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
 - [ ] Teclado: ~205 paradas de Tab en el mapa (una por estrella). Salida hoy: «Ver los aliados
       en lista». Mejorar sin control nuevo si se puede.
 - [ ] La «×» del popup de Leaflet dice «Close popup» en inglés (aria-label).
+- [x] Modo noche (`cdec94d`): textos y popups legibles, teselas Esri oscuras que siguen al tema,
+      bordes ≥ 3:1 y placeholders ≥ 4,5:1, filtro `?categoria=` también en el mapa y conteo en la
+      leyenda. Una sola fuente de tema (`lib/tema.ts`) y de colores de noche (`lib/paleta.ts`).
+- [ ] Rama `feat/osm-sin-nombre` (worktree): 320 comercios (201 con nombre, 119 sin nombre),
+      nombres descriptivos de constelación. Espera decisión de Luis: `eom` (18) vs `leaf` (20).
+      Falta adaptar ficha/lista/buscador a `nombre: null`.
+- [ ] Decidir si /aliados muestra mapa y comercios OSM en categorías sin aliados.
+- [ ] GeoJSON de barrios (lo pasa Luis) → `barrio_oficial` y nombres de constelación sin calle.
 - [ ] Prueba que ejercite el refine de Zod con un punto fuera (hoy solo se prueba la función).
 - [ ] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP.
 - [ ] Documento: cifras nuevas con fuente (Cámara 2025: 2.626 empresas en Manrique; 15 barrios,
