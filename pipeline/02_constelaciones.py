@@ -230,11 +230,8 @@ def main() -> None:
         c["id"] = f"c{i:02d}"
         c["codigo"] = f"C{i:02d}"
         c["nombre"] = f"{c['_calle'] or SIN_CALLE} · {c['_cat_nombre']}"
-    # Dos grupos en la misma calle y rubro no pueden llamarse igual: se desempata con el código.
-    repetidos = {n for n in (c["nombre"] for c in constelaciones) if sum(x["nombre"] == n for x in constelaciones) > 1}
-    for c in constelaciones:
-        if c["nombre"] in repetidos:
-            c["nombre"] += f" ({c['codigo']})"
+    # Dos grupos en la misma calle y rubro pueden llamarse igual: los distingue `codigo`,
+    # que la interfaz siempre antepone («C05 · …»). Repetirlo en el nombre lo mostraba dos veces.
     sin_calle = sum(1 for c in constelaciones if not c["_calle"])
     constelaciones = [
         {k: c[k] for k in ("id", "codigo", "nombre", *[k for k in c if k not in ("id", "codigo", "nombre", "_calle", "_cat_nombre")])}

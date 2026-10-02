@@ -116,9 +116,10 @@ def main() -> int:
     if any("descripcion" in e.get("detalle", {}) for e in todos):
         errores.append("detalle publica descripcion (privacidad)")
 
-    nombres = [k["nombre"] for k in c["constelaciones"]]
-    if len(nombres) != len(set(nombres)):
-        errores.append("nombres de constelación repetidos")
+    # El código identifica la constelación; el nombre descriptivo puede repetirse.
+    codigos = [k.get("codigo") for k in c["constelaciones"]]
+    if len(codigos) != len(set(codigos)):
+        errores.append("códigos de constelación repetidos")
     print(f"{len(todos)} puntos revisados, {len(c['constelaciones'])} constelaciones")
     for e in errores:
         print("ERROR:", e, file=sys.stderr)
