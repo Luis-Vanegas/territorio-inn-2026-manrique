@@ -328,8 +328,8 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   suma al control de Leaflet mientras la capa está prendida.
 - **En modo oscuro**: las teselas pasan a Esri `World_Dark_Gray_Base` (mismo
   servicio y atribución; las dos URL viven en `TESELAS`, `lib/geo/constantes.ts`) y
-  cambian al vuelo con el selector de tema (`useTemaOscuro`, un MutationObserver
-  sobre `data-theme`). El contorno de la comuna toma `tinta` (5,4:1 sobre la
+  cambian al vuelo con el selector de tema (`useTemaOscuro` de `lib/tema.ts`, un solo
+  MutationObserver sobre `data-theme`, con `prefers-color-scheme` si falta). El contorno de la comuna toma `tinta` (5,4:1 sobre la
   tesela), halos y líneas de constelación pasan de `noche-3` a `noche-azul`
   (4,3:1) y el anillo del marcador activo a `estrella`. Los marcadores de grupo
   sacan 5,5:1 o más sobre la tesela oscura. Popups y ficha de «Otros comercios»

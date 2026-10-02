@@ -15,7 +15,7 @@ import { enlaceWhatsapp } from '@/lib/contacto';
 import { contar } from '@/lib/interacciones';
 import { CapaConstelaciones } from './mapa/CapaConstelaciones';
 import { svgForma } from './mapa/formas';
-import { useTemaOscuro } from './mapa/useTemaOscuro';
+import { useTemaOscuro } from '@/lib/tema';
 
 /**
  * Mapa de la vitrina.

@@ -17,7 +17,7 @@ import 'leaflet/dist/leaflet.css';
 
 import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE,
   TESELAS, ZOOM } from '@/lib/geo/constantes';
-import { useTemaOscuro } from '@/components/mapa/useTemaOscuro';
+import { useTemaOscuro } from '@/lib/tema';
 import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
 import { MENSAJE_FUERA_DE_MANRIQUE } from '@/lib/validation/portafolio.schema';
 

@@ -9,7 +9,8 @@
 
 export type EstrellaOsm = {
   osm: string;
-  nombre: string;
+  /** OSM puede no traer nombre: la lista y el buscador todavía no lo contemplan (otra rama). */
+  nombre: string | null;
   lat: number;
   lon: number;
   categoria: string | null;
@@ -17,12 +18,12 @@ export type EstrellaOsm = {
   detalle?: { direccion?: string; horario?: string; cocina?: string; web?: string };
 };
 
-export type MezclaCategoria = { categoria: string; nombre: string; n: number; proporcion: number };
+export type MezclaCategoria = { categoria: string; nombre?: string | null; n: number; proporcion?: number };
 
 export type Constelacion = {
   id: string;
   /** Descriptivo («Carrera 31 · Tienda y víveres»); en JSON viejos, «Constelación 1». */
-  nombre: string;
+  nombre: string | null;
   /** «C04». Opcional: el pipeline todavía no lo escribe en todos los JSON. */
   codigo?: string;
   mezcla_categorias?: MezclaCategoria[];

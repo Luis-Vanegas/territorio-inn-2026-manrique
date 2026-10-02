@@ -7,7 +7,12 @@ import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { Coordenada } from '@/lib/geo/constantes';
 import { GRUPOS, grupoDeCategoria, type IdGrupo } from '@/lib/categorias/grupos';
 import { fechaLarga } from '@/lib/geo/constelaciones';
-import { etiquetaConstelacion, filtrarPorCategoria, lineaMezcla } from '@/lib/geo/comerciosOsm';
+import {
+  aplanarComercios,
+  etiquetaConstelacion,
+  filtrarPorCategoria,
+  lineaMezcla,
+} from '@/lib/geo/comerciosOsm';
 import { svgEstrella, svgForma } from './mapa/formas';
 import { useConstelaciones } from './mapa/useConstelaciones';
 
@@ -80,13 +85,11 @@ export function MapaAliados({
     const total: Record<IdGrupo, number> = { comida: 0, tienda: 0, belleza: 0, oficios: 0, salud: 0, otros: 0 };
     for (const p of portafolios) total[grupoDeCategoria(p.categoria_id).id]++;
     if (activa && datos) {
-      const estrellas = filtroValido
-        ? (elegida?.estrellas ?? [])
-        : [...datos.constelaciones.flatMap((c) => c.estrellas), ...datos.puntos_sueltos];
+      const estrellas = elegida ? elegida.estrellas : aplanarComercios(datos);
       for (const e of estrellas) total[grupoDeCategoria(e.categoria).id]++;
     }
     return total;
-  }, [portafolios, activa, datos, filtroValido, elegida]);
+  }, [portafolios, activa, datos, elegida]);
 
   const fuente = useMemo(
     () =>
@@ -184,6 +187,9 @@ export function MapaAliados({
           </li>
         )}
       </ul>
+      <p className="mt-1.5 font-sans text-xs text-tinta/70">
+        Cada número suma los aliados y los comercios de OpenStreetMap que se ven ahora en el mapa.
+      </p>
 
       {activa && elegida && (
         <p aria-live="polite" className="mt-2 font-cifra text-xs leading-relaxed text-tinta/70">

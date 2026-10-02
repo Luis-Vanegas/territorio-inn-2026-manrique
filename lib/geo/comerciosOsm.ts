@@ -181,7 +181,7 @@ export function esComercioOsm(n: NegocioBuscable): n is ComercioBuscable {
 export function aBuscable(e: EstrellaOsm): ComercioBuscable {
   return {
     id: `osm:${e.osm}`,
-    nombre: e.nombre,
+    nombre: e.nombre ?? '',
     descripcion: e.detalle?.cocina ? cocinaLegible(e.detalle.cocina) : '',
     categoria_id: e.categoria ?? SIN_CATEGORIA,
     categoria_nombre: nombreCategoriaOsm(e.categoria),
@@ -275,7 +275,7 @@ export function lineaMezcla(c: Constelacion): string {
   const orden = [...mezcla].sort((a, b) => b.n - a.n);
   const primeras = orden.slice(0, 3);
   const resto = orden.slice(3).reduce((t, m) => t + m.n, 0);
-  const partes = primeras.map((m) => `${m.nombre} ${m.n}`);
+  const partes = primeras.map((m) => `${m.nombre || nombreCategoriaOsm(m.categoria)} ${m.n}`);
   if (resto > 0) partes.push(`Otros ${resto}`);
   return partes.join(' · ');
 }

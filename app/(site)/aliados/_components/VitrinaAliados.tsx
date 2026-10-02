@@ -14,6 +14,7 @@ import { buscarNegocios } from '@/lib/busqueda';
 import {
   aBuscable,
   aplanarComercios,
+  filtrarPorCategoria,
   esComercioOsm,
   type ComercioBuscable,
 } from '@/lib/geo/comerciosOsm';
@@ -114,9 +115,8 @@ export function VitrinaAliados({
   const { datos: datosOsm, estado: estadoOsm } = useConstelaciones();
   const comerciosOsm = useMemo(() => {
     if (!datosOsm) return [];
-    return aplanarComercios(datosOsm)
+    return aplanarComercios(filtrarPorCategoria(datosOsm, categoriaActiva))
       .map(aBuscable)
-      .filter((c) => !categoriaActiva || c.categoria_id === categoriaActiva)
       .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
   }, [datosOsm, categoriaActiva]);
 

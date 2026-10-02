@@ -88,7 +88,7 @@ const MarcadorComercio = memo(function MarcadorComercio({
     <Marker
       position={[e.lat, e.lon]}
       icon={icono}
-      title={e.nombre}
+      title={e.nombre ?? undefined}
       zIndexOffset={-10_000}
       eventHandlers={MANEJADORES}
     >
