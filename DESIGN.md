@@ -353,6 +353,48 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   leen con `tinta/75` y `tinta/70`.
 - **Alternativa sin mapa**: enlace «Ver los aliados en lista» sobre el mapa.
 
+## Navegación
+
+Ítems del encabezado (`components/SiteHeader.tsx`): Inicio · Aliados · **Aprende ▾**
+(Formalización, Marca, Ventas) · Firmamento · Nosotros, más el botón «Registrarme».
+Empleo e Inventario predictivo se suman solo si su flag está prendido (antes de
+«Aprende»). «Escríbenos» sale del menú superior y queda en el pie (y al final del menú
+móvil, que tiene espacio); el buzón no se pierde.
+
+- **Aprende** es un botón con `aria-expanded` y `aria-controls`, no un enlace: abre un
+  panel con tres enlaces. Se cierra con `Esc` (devolviendo el foco al botón), con clic
+  afuera y al salir con Tab del panel. Abre con Enter/Espacio; no depende del hover.
+  En el menú ☰ del móvil es el mismo botón, pero el panel se despliega en línea.
+- Activo = peso, subrayado grueso y color (no solo color). «Aprende» está activo si
+  estás en cualquiera de sus tres rutas.
+- A 320 px el encabezado no desborda: el logo cede (la línea «COMUNA 3 · MANRIQUE» se
+  oculta bajo 360 px) y el panel del ☰ se ancla al encabezado con `max-width` del
+  viewport.
+
+## Portada
+
+Orden: Hero → banda Firmamento (noche) → Aliados con mapa → Qué ofrecemos → Galería.
+La banda es «El proyecto, en números»: las visitas se quitaron (las infla el propio
+equipo; siguen en el panel de administración). Muestra datos del **territorio**, cada
+uno con su fuente y su fecha en `font-cifra` debajo: comercios mapeados en OpenStreetMap
+y constelaciones (de `public/firmamento/constelaciones.json`, fecha de la base de OSM),
+aliados en la red (de la base de datos, fecha de hoy) y empresas registradas en Cámara
+de Comercio en Manrique (2.626; Cámara de Comercio de Medellín para Antioquia,
+Estructura Empresarial 2025). Cada cifra lleva la estrella de cuatro puntas. El
+mensaje es «La brecha es nuestra línea base» y el botón lleva a `/firmamento`. La
+transición día→noche es un degradado de borde (sin JS), no una animación.
+
+El mapa y el buscador de la portada se comportan como `/aliados`: aliados (todos, sin
+tope) y comercios de OSM, con los que no tienen nombre solo en el mapa; usan las mismas
+funciones de `lib/geo/comerciosOsm.ts` y `lib/busqueda.ts`.
+
+## Pie de página
+
+Sin logos en SVG con texto: si no hay logos oficiales con permiso de uso, las
+instituciones van como texto en DM Sans (Alcaldía de Medellín, Presupuesto
+Participativo Comuna 3, ITM). Nunca monoespaciada ni texto dibujado como imagen.
+Cuando lleguen los logos oficiales se reemplaza el texto por la imagen con su `alt`.
+
 ## Idioma
 
 Español colombiano, registro «tú». Nunca voseo en texto visible — lo verifica

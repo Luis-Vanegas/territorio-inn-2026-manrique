@@ -149,15 +149,15 @@ export const enfoque = {
   })) satisfies ModuloFuturo[],
 };
 
-export interface LogoInstitucional {
-  src: string;
-  alt: string;
-}
-
+// Instituciones del reto, en texto. Los «logos» anteriores eran SVG que
+// dibujaban el nombre con una fuente monoespaciada: no eran logos oficiales y
+// contradecían DESIGN.md. Cuando haya logos con permiso de uso, se cambia el
+// texto por la imagen (ver DESIGN.md › Pie de página).
 export const footer = {
   licencia: "MIT",
-  logos: [
-    { src: "/logos/alcaldia.svg", alt: "Alcaldía de Medellín" },
-    { src: "/logos/pp-comuna3.svg", alt: "Presupuesto Participativo Comuna 3" },
-  ] satisfies LogoInstitucional[],
+  instituciones: [
+    "Alcaldía de Medellín",
+    "Presupuesto Participativo Comuna 3",
+    "ITM",
+  ],
 };
