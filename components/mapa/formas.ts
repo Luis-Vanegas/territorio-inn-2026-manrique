@@ -33,5 +33,5 @@ export function svgEstrella(tamano: number): string {
 
 /** Punto suelto de OSM: un comercio que no cayó en ninguna constelación. Más tenue que la estrella. */
 export function svgPunto(tamano: number): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="#1A2450" fill-opacity="0.5" stroke="#F3EFE4" stroke-width="1.5"/></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="#1A2450" fill-opacity="0.5" stroke="#F3EFE4" stroke-opacity="0.5" stroke-width="1"/></svg>`;
 }

@@ -17,6 +17,7 @@ import 'leaflet/dist/leaflet.css';
 
 import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE,
   TESELAS, ZOOM } from '@/lib/geo/constantes';
+import { useTemaOscuro } from '@/components/mapa/useTemaOscuro';
 import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
 import { MENSAJE_FUERA_DE_MANRIQUE } from '@/lib/validation/portafolio.schema';
 
@@ -78,6 +79,7 @@ export default function SelectorUbicacionClient({
   valorInicial: Posicion | null;
   alCambiar: (p: Posicion | null, valida: boolean) => void;
 }) {
+  const oscuro = useTemaOscuro();
   const [posicion, setPosicion] = useState<Posicion | null>(valorInicial);
   const [geo, setGeo] = useState<EstadoGeo>({ fase: 'inactivo' });
   const mapaRef = useRef<LeafletMap | null>(null);
@@ -195,7 +197,7 @@ export default function SelectorUbicacionClient({
           <CapturarMapa alMontar={(m) => (mapaRef.current = m)} />
 
           <TileLayer
-            url={TESELAS.url}
+            url={oscuro ? TESELAS.oscuro : TESELAS.claro}
             attribution={TESELAS.atribucion}
             maxZoom={ZOOM.maximo}
           />
@@ -203,7 +205,8 @@ export default function SelectorUbicacionClient({
           <GeoJSON
             data={capaLimite}
             style={{
-              color: '#1a1a1a',
+              className: 'limite-comuna',
+              color: '#1a1a1a', // el CSS (.limite-comuna) lo cambia con el tema
               weight: 1.5,
               opacity: 0.6,
               fillColor: '#3c8af6',

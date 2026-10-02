@@ -59,6 +59,7 @@
    solo evita un parpadeo si por algún motivo no llegó a ejecutarse. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
     --hueso-rgb: 26 26 26;
     --tinta-rgb: 245 245 245;
     --morado-rgb: 198 77 190;
@@ -332,6 +333,37 @@ html.js:not(.js-listo) [data-reveal] {
   stroke-opacity: 0.7;
   stroke-width: 1.25;
   fill: none;
+}
+
+/* Contorno de la comuna: tinta del tema (oscuro sobre teselas claras, claro
+   sobre las oscuras). El CSS le gana al atributo stroke que pone Leaflet. */
+.limite-comuna {
+  stroke: rgb(var(--tinta-rgb));
+}
+
+/* Constelaciones sobre teselas oscuras: el noche-3 se perdía (1,2:1). Pasan a
+   noche-azul (#7FB0FF), la misma familia de color. */
+:root[data-theme='dark'] .halo-constelacion,
+:root[data-theme='dark'] .arista-constelacion {
+  fill: #7fb0ff;
+  stroke: #7fb0ff;
+}
+
+:root[data-theme='dark'] .halo-constelacion {
+  fill-opacity: 0.1;
+}
+
+:root[data-theme='dark'] .halo-constelacion--activa {
+  fill-opacity: 0.2;
+}
+
+:root[data-theme='dark'] .arista-constelacion {
+  fill: none;
+}
+
+/* Anillo del marcador activo: noche sobre teselas oscuras no se ve. */
+:root[data-theme='dark'] .marcador-grupo--activo::after {
+  border-color: #f3efe4;
 }
 
 /* Trazo: la clase la pone CapaConstelaciones junto con pathLength=1, así que
