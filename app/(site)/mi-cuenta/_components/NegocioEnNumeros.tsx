@@ -109,7 +109,7 @@ export function NegocioEnNumeros({ negocios }: { negocios: Datos[] }) {
 
       {negocios.length === 0 ? (
         <p className="mt-6 max-w-xl font-sans leading-relaxed text-tinta/70">
-          Aquí verás las cifras cuando tu negocio esté publicado.
+          Las cifras aparecen aquí cuando tu negocio esté publicado.
         </p>
       ) : (
         <div className="mt-6 grid gap-4 lg:grid-cols-2">

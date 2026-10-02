@@ -19,7 +19,7 @@ export function ParaTi({ convocatorias }: { convocatorias: ConvocatoriaParaTi[] 
 
       {convocatorias.length === 0 ? (
         <p className="mt-6 max-w-xl font-sans leading-relaxed text-tinta/70">
-          Por ahora no hay convocatorias abiertas para ti. Cuando aparezca una, la verás aquí.
+          Por ahora no hay convocatorias abiertas para ti. Cuando aparezca una, la mostramos aquí.
         </p>
       ) : (
         <ul className="mt-6 grid gap-4 sm:grid-cols-2">
