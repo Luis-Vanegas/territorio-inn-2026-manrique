@@ -3,8 +3,11 @@
 //
 // El desplegable móvil usa <details>/<summary>, un widget nativo del
 // navegador: foco de teclado, cierre con Escape y sin una sola línea de JS
-// para abrir/cerrar. Antes de escribir un useState + onClick, esto ya resuelve
-// el 100% del caso de uso.
+// para abrir/cerrar. Solo «Aprende» necesita estado (MenuAprende), y por eso
+// es un botón con aria-expanded.
+//
+// Ítems (DESIGN.md › Navegación): Inicio · Aliados · Aprende ▾ · Firmamento ·
+// Nosotros, y Empleo/Inventario solo con su flag prendido.
 //
 // Es 'use client' por una sola razón: usePathname, para marcar en qué página
 // está la persona. No hay forma de saber la ruta en un Server Component sin
@@ -27,19 +30,32 @@ import { salir } from "@/lib/actions/sesionUsuario";
 // Una sola lista de accesos privados, compartida con el menú de escritorio:
 // dos copias se desincronizan la primera vez que se agregue un módulo.
 import { MenuUsuario, ENLACES_PRIVADOS, ENLACE_MODERACION } from "@/components/MenuUsuario";
+import { MenuAprende } from "@/components/MenuAprende";
 import { SelectorTema } from "@/components/SelectorTema";
 
 // Se genera de la misma fuente que EnfoqueSection: una sola lista de módulos,
-// no dos que se puedan desincronizar cuando se agregue o quite uno.
-// El buzón se colgaba solo del footer, así que en la práctica no existía: nadie
-// baja hasta el pie de una página para buscar dónde escribir. Va último, después
-// de los módulos, porque es un canal de servicio y no una sección del proyecto.
-const ENLACES = [
-  { href: '/', etiqueta: 'Inicio' },
-  ...enfoque.modulos.map((m) => ({ href: `/${m.slug}`, etiqueta: m.nombre })),
-  // Reto y equipo salieron de la home: van como página aparte, antes del buzón.
-  { href: '/nosotros', etiqueta: 'Nosotros' },
-  { href: '/contacto', etiqueta: 'Escríbenos' },
+// no dos que se puedan desincronizar cuando se agregue o quite uno. Empleo e
+// Inventario existen en `enfoque.modulos` solo con su flag; se quedan entre
+// Aliados y Aprende.
+const SLUGS_APRENDE = ['formalizacion', 'marca', 'ventas'];
+
+const ENLACES_APRENDE = enfoque.modulos
+  .filter((m) => SLUGS_APRENDE.includes(m.slug))
+  .map((m) => ({ href: `/${m.slug}`, etiqueta: m.nombre }));
+
+const MODULOS_SUELTOS = enfoque.modulos
+  .filter((m) => !SLUGS_APRENDE.includes(m.slug) && m.slug !== 'aliados')
+  .map((m) => ({ href: `/${m.slug}`, etiqueta: m.nombre }));
+
+type Entrada = { tipo: 'enlace'; href: string; etiqueta: string } | { tipo: 'aprende' };
+
+const ENTRADAS: Entrada[] = [
+  { tipo: 'enlace', href: '/', etiqueta: 'Inicio' },
+  { tipo: 'enlace', href: '/aliados', etiqueta: 'Aliados' },
+  ...MODULOS_SUELTOS.map((e) => ({ tipo: 'enlace' as const, ...e })),
+  { tipo: 'aprende' },
+  { tipo: 'enlace', href: '/firmamento', etiqueta: 'Firmamento' },
+  { tipo: 'enlace', href: '/nosotros', etiqueta: 'Nosotros' },
 ];
 
 // Las subrutas cuentan como la sección: estando en /aliados/registro, el ítem
@@ -56,6 +72,14 @@ function esActivo(pathname: string, href: string) {
 // escucha el lector de pantalla.
 const BASE_ENLACE =
   "inline-flex min-h-[44px] items-center font-sans text-base uppercase tracking-wide transition-colors";
+
+// «Aprende» está activo si estás en cualquiera de sus tres rutas.
+const aprendeActivo = (pathname: string) => ENLACES_APRENDE.some((e) => esActivo(pathname, e.href));
+
+const CLASE_ACTIVO_ESCRITORIO = `${BASE_ENLACE} border-b-2 border-azul font-medium text-tinta`;
+const CLASE_INACTIVO_ESCRITORIO = `${BASE_ENLACE} border-b-2 border-transparent text-tinta/65 hover:text-morado-texto`;
+const CLASE_ACTIVO_MOVIL = `${BASE_ENLACE} border-l-4 border-azul bg-tinta/[0.04] px-3 font-medium text-tinta`;
+const CLASE_INACTIVO_MOVIL = `${BASE_ENLACE} border-l-4 border-transparent px-3 text-tinta/70 hover:bg-tinta/[0.03] hover:text-morado-texto`;
 
 /**
  * La sesión la resuelve el layout (Server Component) y baja como prop: este
@@ -78,21 +102,23 @@ export function SiteHeader({
     // transform-gpu le da capa propia: sin ella, Chromium a veces compone por
     // encima una foto que se está animando (zoom de la galería, ScrollReveal).
     <header className="sticky top-0 z-50 transform-gpu border-b border-tinta/10 bg-hueso">
-      <div className="margen-editorial flex h-16 items-center justify-between gap-4 sm:h-[4.5rem]">
-        <Link href="/" className="flex items-center gap-2.5">
+      <div className="margen-editorial flex h-16 items-center justify-between gap-2 sm:h-[4.5rem] sm:gap-4">
+        <Link href="/" className="flex min-h-[44px] min-w-0 items-center gap-2 sm:gap-2.5">
           <Image
             src="/logos/isotipo_app.png"
             alt=""
             width={32}
             height={32}
             priority
-            className="h-8 w-8 shrink-0"
+            // Bajo 360 px el logo cede el isotipo: con él, el texto no cabe junto a los dos botones.
+            className="hidden h-8 w-8 shrink-0 min-[360px]:block"
           />
-          <span className="flex flex-col leading-none">
-            <span className="font-display text-lg font-medium tracking-wide text-tinta">
+          <span className="flex min-w-0 flex-col leading-none">
+            <span className="font-display text-base font-medium tracking-normal text-tinta sm:text-lg sm:tracking-wide">
               CONSTELACIONES
             </span>
-            <span className="font-sans text-xs tracking-[0.15em] text-tinta/60">
+            {/* Bajo 360 px no hay lugar: el encabezado desbordaba a 320 (355 de scrollWidth). */}
+            <span className="hidden font-sans text-xs tracking-[0.15em] text-tinta/60 min-[360px]:block">
               COMUNA 3 · MANRIQUE
             </span>
           </span>
@@ -103,23 +129,25 @@ export function SiteHeader({
           aria-label="Navegación principal"
           className="hidden items-center gap-6 xl:flex"
         >
-          {ENLACES.map((e) => {
-            const activo = esActivo(pathname, e.href);
-            return (
+          {ENTRADAS.map((e) =>
+            e.tipo === 'aprende' ? (
+              <MenuAprende
+                key="aprende"
+                enlaces={ENLACES_APRENDE}
+                pathname={pathname}
+                claseBoton={aprendeActivo(pathname) ? CLASE_ACTIVO_ESCRITORIO : CLASE_INACTIVO_ESCRITORIO}
+              />
+            ) : (
               <Link
                 key={e.href}
                 href={e.href}
-                aria-current={activo ? 'page' : undefined}
-                className={
-                  activo
-                    ? `${BASE_ENLACE} border-b-2 border-azul font-medium text-tinta`
-                    : `${BASE_ENLACE} border-b-2 border-transparent text-tinta/65 hover:text-morado-texto`
-                }
+                aria-current={esActivo(pathname, e.href) ? 'page' : undefined}
+                className={esActivo(pathname, e.href) ? CLASE_ACTIVO_ESCRITORIO : CLASE_INACTIVO_ESCRITORIO}
               >
                 {e.etiqueta}
               </Link>
-            );
-          })}
+            ),
+          )}
         </nav>
 
         {/* Con sesión: identidad neutra con su propio menú. Sin sesión: la
@@ -148,7 +176,7 @@ export function SiteHeader({
               navegar, así que un <details> abierto seguía abierto encima de la
               página nueva después de tocar un link. Con la key, cada ruta
               monta uno nuevo, que arranca cerrado. Mismo motivo en MenuUsuario. */}
-          <details key={pathname} className="group relative">
+          <details key={pathname} className="group">
             <summary
             className="flex h-11 w-11 cursor-pointer list-none items-center justify-center border border-tinta/55 text-tinta [&::-webkit-details-marker]:hidden"
             aria-label="Abrir menú"
@@ -159,25 +187,37 @@ export function SiteHeader({
 
           <nav
             aria-label="Navegación principal"
-            className="absolute right-0 top-12 flex w-72 flex-col gap-1 border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
+            className="absolute right-[var(--margen-editorial)] top-full mt-1 flex max-h-[calc(100dvh-5.5rem)] w-[min(20rem,calc(100vw_-_2*var(--margen-editorial)))] flex-col gap-1 overflow-y-auto border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
           >
-            {ENLACES.map((e) => {
-              const activo = esActivo(pathname, e.href);
-              return (
+            {ENTRADAS.map((e) =>
+              e.tipo === 'aprende' ? (
+                <MenuAprende
+                  key="aprende"
+                  enlaces={ENLACES_APRENDE}
+                  pathname={pathname}
+                  enLinea
+                  claseBoton={`${aprendeActivo(pathname) ? CLASE_ACTIVO_MOVIL : CLASE_INACTIVO_MOVIL} cursor-pointer`}
+                />
+              ) : (
                 <Link
                   key={e.href}
                   href={e.href}
-                  aria-current={activo ? 'page' : undefined}
-                  className={
-                    activo
-                      ? `${BASE_ENLACE} border-l-4 border-azul bg-tinta/[0.04] px-3 font-medium text-tinta`
-                      : `${BASE_ENLACE} border-l-4 border-transparent px-3 text-tinta/70 hover:bg-tinta/[0.03] hover:text-morado-texto`
-                  }
+                  aria-current={esActivo(pathname, e.href) ? 'page' : undefined}
+                  className={esActivo(pathname, e.href) ? CLASE_ACTIVO_MOVIL : CLASE_INACTIVO_MOVIL}
                 >
                   {e.etiqueta}
                 </Link>
-              );
-            })}
+              ),
+            )}
+            {/* El buzón salió de la barra de escritorio (queda en el pie); acá
+                sobra espacio y nadie baja hasta el pie para buscar dónde escribir. */}
+            <Link
+              href="/contacto"
+              aria-current={esActivo(pathname, '/contacto') ? 'page' : undefined}
+              className={esActivo(pathname, '/contacto') ? CLASE_ACTIVO_MOVIL : CLASE_INACTIVO_MOVIL}
+            >
+              Escríbenos
+            </Link>
             {/* En móvil el desplegable ya está abierto, así que los accesos
                 privados van inline en vez de anidar un <details> dentro de
                 otro — dos menús encastrados son un laberinto con el pulgar. */}

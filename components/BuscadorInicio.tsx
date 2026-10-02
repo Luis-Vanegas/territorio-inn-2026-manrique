@@ -6,12 +6,14 @@ import { BuscadorNegocios } from './BuscadorNegocios';
  * Trae los negocios para el buscador de la portada. `listarAprobados` sale de
  * la caché de la vitrina, que la portada ya pide: no suma consultas a la base.
  *
+ * Sin aliados el buscador igual se muestra: los comercios de OpenStreetMap
+ * entran a la misma búsqueda, como en /aliados.
+ *
  * Al navegador baja solo lo que la búsqueda usa, no la ficha completa
  * (teléfonos, redes, campos extra): esos viajan recién en /aliados.
  */
 export async function BuscadorInicio() {
   const aprobados = await listarAprobados();
-  if (aprobados.length === 0) return null;
 
   const negocios: NegocioBuscable[] = aprobados.map((p) => ({
     id: p.id,

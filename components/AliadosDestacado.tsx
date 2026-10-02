@@ -14,8 +14,6 @@ import { enfoque } from "@/lib/content";
 import { MapaAliadosDestacado } from "./MapaAliadosDestacado";
 import { ScrollReveal } from "./ScrollReveal";
 
-const MAXIMO_EN_MAPA = 30;
-
 export async function AliadosDestacado() {
   const [aliados, conteos] = await Promise.all([
     listarAprobados(),
@@ -67,23 +65,23 @@ export async function AliadosDestacado() {
               Sumar mi negocio →
             </Link>
 
-            {total > 0 && (
-              <Link
-                href="/aliados"
-                className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
-              >
-                Ver el mapa completo
-              </Link>
-            )}
+            <Link
+              href="/aliados"
+              className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+            >
+              Ver el mapa completo
+            </Link>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.15} className="lg:col-span-7">
-          <MapaAliadosDestacado portafolios={aliados.slice(0, MAXIMO_EN_MAPA)} />
+          {/* Todos los aliados, sin tope: mismo criterio que /aliados («mostrar todo»).
+              El mapa suma solo los comercios de OpenStreetMap (con y sin nombre). */}
+          <MapaAliadosDestacado portafolios={aliados} />
 
           {total === 0 && (
             <p className="mt-3 font-sans text-xs text-tinta/60">
-              El mapa está vacío por ahora — sé el primer punto marcado.
+              Todavía no hay aliados registrados: las estrellas son comercios del barrio mapeados en OpenStreetMap. Sé el primer punto marcado.
             </p>
           )}
         </ScrollReveal>
