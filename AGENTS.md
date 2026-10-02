@@ -219,8 +219,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
   falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
   que alimenta «Mi cuenta»: categorías del vecino y «Tu negocio en números»;
-  una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro). Lo mínimo por Ley 1581: nombre,
-  teléfono y nota; nada de cédula, dirección ni correo. El contacto sale por
+  una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro).
+  Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
+  correo. El contacto sale por
   WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).

@@ -96,6 +96,22 @@ export async function editarCampo(id: string, datos: EdicionCampo): Promise<void
   `;
 }
 
+/**
+ * Cuántos negocios (no archivados) tienen un valor cargado en cada campo, por slug.
+ * Sirve para avisar al moderador, antes de publicar un campo, a cuánta gente se le
+ * van a hacer visibles datos que escribió cuando el campo era privado.
+ */
+export async function contarValoresPorCampo(): Promise<Record<string, number>> {
+  const rows = (await sql`
+    select k.slug, count(*)::int as total
+    from portafolios p
+    cross join lateral jsonb_object_keys(p.campos_extra) as k(slug)
+    where p.estado <> 'archivado'
+    group by k.slug
+  `) as { slug: string; total: number }[];
+  return Object.fromEntries(rows.map((r) => [r.slug, r.total]));
+}
+
 export async function cambiarActivo(id: string, activo: boolean): Promise<void> {
   await sql`update definiciones_campo set activo = ${activo} where id = ${id}`;
 }

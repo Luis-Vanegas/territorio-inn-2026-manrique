@@ -37,16 +37,42 @@ const ESTADO_INICIAL: EstadoCampo = { estado: 'inicial' };
  * Interruptor «se ve en la vitrina». Un campo nuevo nace cerrado: lo que la gente
  * escribe ahí no se publica hasta que un moderador lo decide a propósito.
  */
-function InterruptorPublico({ campo }: { campo: DefinicionCampo }) {
+function InterruptorPublico({
+  campo,
+  conValor,
+}: {
+  campo: DefinicionCampo;
+  /** Negocios con un valor ya cargado; null si no se pudo contar. */
+  conValor: number | null;
+}) {
   const [estado, accion, pendiente] = useActionState(cambiarPublicoCampoAction, ESTADO_INICIAL);
 
   return (
-    <form action={accion} className="flex flex-col items-end gap-1">
+    <form
+      action={accion}
+      className="flex flex-col items-end gap-1"
+      onSubmit={(e) => {
+        // Publicar expone lo que ya escribieron cuando el campo era privado: se
+        // confirma, con la cifra, antes de hacerlo (Ley 1581). Ocultar no pide nada.
+        if (campo.publico) return;
+        const cuantos =
+          conValor === null
+            ? 'Puede que algunos negocios ya tengan un valor cargado'
+            : conValor === 0
+              ? 'Ningún negocio tiene todavía un valor cargado'
+              : `${conValor} ${conValor === 1 ? 'negocio ya tiene' : 'negocios ya tienen'} un valor cargado`;
+        const ok = window.confirm(
+          `«${campo.etiqueta}» pasará a mostrarse en la vitrina pública.\n\n${cuantos} en este campo, que se guardó como privado. Al publicarlo, esos valores serán visibles para cualquiera.\n\n¿Publicar el campo?`,
+        );
+        if (!ok) e.preventDefault();
+      }}
+    >
       <input type="hidden" name="id" value={campo.id} />
       <input type="hidden" name="publico" value={String(!campo.publico)} />
       <button
         type="submit"
         role="switch"
+        aria-label={`Mostrar «${campo.etiqueta}» en la vitrina`}
         aria-checked={campo.publico}
         disabled={pendiente}
         className="inline-flex min-h-11 items-center gap-2 font-sans text-xs text-tinta/70 hover:text-azul-texto disabled:opacity-40"
@@ -68,7 +94,7 @@ function InterruptorPublico({ campo }: { campo: DefinicionCampo }) {
   );
 }
 
-export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
+export function FilaCampo({ campo, conValor }: { campo: DefinicionCampo; conValor: number | null }) {
   const [editando, setEditando] = useState(false);
 
   if (editando) {
@@ -119,7 +145,7 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <InterruptorPublico campo={campo} />
+        <InterruptorPublico campo={campo} conValor={conValor} />
 
         <button
           type="button"

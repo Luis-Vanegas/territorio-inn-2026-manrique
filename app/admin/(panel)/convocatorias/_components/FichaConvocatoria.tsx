@@ -107,7 +107,7 @@ export function FichaConvocatoria({
           <dd className="font-sans text-sm text-tinta/75">
             {c.aplica_a.length === 0
               ? 'Todos los negocios'
-              : c.aplica_a.map((id) => nombreCategoria[id] ?? id).join(' · ')}
+              : c.aplica_a.map((id) => nombreCategoria[id] ?? 'categoría retirada').join(' · ')}
           </dd>
         </div>
         <div className="flex gap-3">

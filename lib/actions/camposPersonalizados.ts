@@ -164,10 +164,12 @@ export async function cambiarPublicoCampoAction(
   });
   if (!parsed.success) return { estado: 'error', mensaje: 'No pudimos leer el cambio.' };
 
-  const campo = await obtenerCampo(parsed.data.id);
-  if (!campo) return { estado: 'error', mensaje: 'Ese campo ya no existe.' };
-
+  let etiqueta: string;
   try {
+    const campo = await obtenerCampo(parsed.data.id);
+    if (!campo) return { estado: 'error', mensaje: 'Ese campo ya no existe.' };
+    etiqueta = campo.etiqueta;
+
     await cambiarPublico(parsed.data.id, parsed.data.publico);
   } catch (error) {
     console.error('[cambiarPublicoCampoAction]', error);
@@ -179,7 +181,7 @@ export async function cambiarPublicoCampoAction(
   return {
     estado: 'ok',
     mensaje: parsed.data.publico
-      ? `«${campo.etiqueta}» ahora se ve en la vitrina.`
-      : `«${campo.etiqueta}» ya no se ve en la vitrina.`,
+      ? `«${etiqueta}» ahora se ve en la vitrina.`
+      : `«${etiqueta}» ya no se ve en la vitrina.`,
   };
 }
