@@ -3,6 +3,7 @@ import {
   cocinaLegible,
   horarioLegible,
   nombreCategoriaOsm,
+  nombreVisible,
   webLegible,
 } from '@/lib/geo/comerciosOsm';
 import { grupoDeCategoria } from '@/lib/categorias/grupos';
@@ -49,7 +50,7 @@ export function FichaComercioOsm({
       </span>
 
       <Titulo className="mt-1 block font-display text-base font-medium leading-snug text-tinta">
-        {comercio.nombre}
+        {nombreVisible(comercio)}
       </Titulo>
 
       {typeof distancia === 'number' && (

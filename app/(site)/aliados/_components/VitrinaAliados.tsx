@@ -14,6 +14,7 @@ import { buscarNegocios } from '@/lib/busqueda';
 import {
   aBuscable,
   aplanarComercios,
+  comerciosConNombre,
   filtrarPorCategoria,
   esComercioOsm,
   type ComercioBuscable,
@@ -56,6 +57,7 @@ export function VitrinaAliados({
   filtro,
   busquedaInicial = '',
   categoriaActiva,
+  nombreCategoria,
 }: {
   aliados: Portafolio[];
   definicionesCampos: DefinicionCampo[];
@@ -63,6 +65,8 @@ export function VitrinaAliados({
   busquedaInicial?: string;
   /** `?categoria=` de la URL: filtra también los otros comercios (mismos ids). */
   categoriaActiva?: string;
+  /** Nombre legible de `categoriaActiva` (aliados u OSM), para el aviso de «sin aliados». */
+  nombreCategoria?: string;
 }) {
   const [ubicacion, setUbicacion] = useState<Coordenada | null>(null);
   const [estadoGeo, setEstadoGeo] = useState<EstadoGeo>('inicial');
@@ -110,15 +114,21 @@ export function VitrinaAliados({
    * Los comercios de OpenStreetMap entran a la MISMA búsqueda (una sola función)
    * y después se separan: los aliados van en su listado y los de OSM en
    * «Otros comercios del barrio». El filtro de categoría de la URL también
-   * les aplica; sin categoría solo aparecen cuando no hay filtro.
+   * les aplica, y aplica aunque la categoría no tenga aliados. Los que OSM trae
+   * sin nombre se dibujan en el mapa pero no entran acá (`comerciosConNombre`).
    */
   const { datos: datosOsm, estado: estadoOsm } = useConstelaciones();
+  const datosOsmFiltrados = useMemo(
+    () => (datosOsm ? filtrarPorCategoria(datosOsm, categoriaActiva) : null),
+    [datosOsm, categoriaActiva],
+  );
   const comerciosOsm = useMemo(() => {
-    if (!datosOsm) return [];
-    return aplanarComercios(filtrarPorCategoria(datosOsm, categoriaActiva))
+    if (!datosOsmFiltrados) return [];
+    return comerciosConNombre(aplanarComercios(datosOsmFiltrados))
       .map(aBuscable)
       .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
-  }, [datosOsm, categoriaActiva]);
+  }, [datosOsmFiltrados]);
+  const resumenOsm = datosOsmFiltrados?.resumen;
 
   const { resultados: encontrados, parcial } = useMemo(
     () => buscarNegocios<Portafolio | ComercioBuscable>([...aliados, ...comerciosOsm], busqueda),
@@ -193,9 +203,16 @@ export function VitrinaAliados({
             Dónde están
           </h2>
           <span className="font-sans text-xs text-tinta/60">
-            {busqueda.trim()
-              ? `${listados.length} de ${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'}`
-              : `${aliados.length} ${aliados.length === 1 ? 'negocio' : 'negocios'} en el mapa`}
+            {[
+              busqueda.trim()
+                ? `${listados.length} de ${aliados.length} ${aliados.length === 1 ? 'aliado' : 'aliados'}`
+                : `${aliados.length} ${aliados.length === 1 ? 'aliado' : 'aliados'}`,
+              resumenOsm &&
+                `${resumenOsm.total_comercios} ${resumenOsm.total_comercios === 1 ? 'comercio' : 'comercios'} de OpenStreetMap`,
+            ]
+              .filter(Boolean)
+              .join(' y ')}{' '}
+            en el mapa
           </span>
         </div>
 
@@ -288,6 +305,14 @@ export function VitrinaAliados({
 
         <div className="mt-5">{filtro}</div>
 
+        {aliados.length === 0 && !busqueda.trim() && (
+          <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-tinta/70">
+            {categoriaActiva
+              ? `Todavía no hay aliados en ${nombreCategoria ?? 'esa categoría'}; abajo ves los comercios del barrio de esa categoría.`
+              : 'Todavía no hay aliados publicados; los registros pasan por revisión antes de aparecer. Abajo ves los comercios del barrio.'}
+          </p>
+        )}
+
         {busqueda.trim() && listados.length === 0 && (
           <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-tinta/60">
             Ningún aliado coincide con «{busqueda.trim()}».
@@ -339,6 +364,8 @@ export function VitrinaAliados({
         estado={estadoOsm}
         osmBase={datosOsm?.osm_base}
         filtrado={Boolean(busqueda.trim() || categoriaActiva)}
+        // Con búsqueda no se avisa: los sin nombre nunca coinciden, y el aviso confundiría.
+        sinNombre={busqueda.trim() ? 0 : (resumenOsm?.sin_nombre ?? 0)}
         cercania={Boolean(ubicacion)}
       />
     </>

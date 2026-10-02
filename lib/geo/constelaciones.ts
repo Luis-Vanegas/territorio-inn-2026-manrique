@@ -9,7 +9,7 @@
 
 export type EstrellaOsm = {
   osm: string;
-  /** OSM puede no traer nombre: la lista y el buscador todavía no lo contemplan (otra rama). */
+  /** OSM puede no traer nombre (119 de 320): el mapa los dibuja, la lista y el buscador no (`comerciosConNombre`). */
   nombre: string | null;
   lat: number;
   lon: number;
@@ -47,6 +47,10 @@ export type DatosConstelaciones = {
     total_comercios: number;
     constelaciones: number;
     puntos_sueltos: number;
+    con_nombre?: number;
+    sin_nombre?: number;
+    agrupados?: number;
+    sueltos?: number;
   };
   constelaciones: Constelacion[];
   puntos_sueltos: EstrellaOsm[];

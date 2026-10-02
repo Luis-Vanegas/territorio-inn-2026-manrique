@@ -6,6 +6,7 @@ import L from 'leaflet';
 
 import type { Coordenada } from '@/lib/geo/constantes';
 import type { Constelacion, DatosConstelaciones, EstrellaOsm } from '@/lib/geo/constelaciones';
+import { nombreVisible } from '@/lib/geo/comerciosOsm';
 import { distanciaMetros } from '@/lib/geo/distancia';
 import { FichaComercioOsm } from './FichaComercioOsm';
 import { svgEstrella, svgPunto } from './formas';
@@ -88,7 +89,7 @@ const MarcadorComercio = memo(function MarcadorComercio({
     <Marker
       position={[e.lat, e.lon]}
       icon={icono}
-      title={e.nombre ?? undefined}
+      title={nombreVisible(e)}
       zIndexOffset={-10_000}
       eventHandlers={MANEJADORES}
     >

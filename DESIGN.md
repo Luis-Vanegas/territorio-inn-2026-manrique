@@ -300,11 +300,26 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   si el JSON no trae `codigo` o un nombre descriptivo se usa lo que haya
   (`etiquetaConstelacion`). Al elegir una, bajo el mapa sale su mezcla en el estilo
   de la línea de fuente («Tienda y víveres 7 · Papelería 3 · Otros 3», las tres
-  mayores y el resto junto). El filtro de categoría de `/aliados` (`?categoria=`)
+  mayores y el resto junto; la línea empieza «Qué hay aquí, en C04 · Carrera 31 ·
+  Tienda y víveres:»). El filtro de categoría de `/aliados` (`?categoria=`)
   también filtra las estrellas del mapa y la lista «Otros comercios» (mismos ids;
   `filtrarPorCategoria`): una constelación sin comercios de esa categoría
   desaparece y las líneas solo unen estrellas que quedan. La leyenda cuenta lo que
-  el mapa muestra por grupo («Comida (círculo) · 42»), aliados y estrellas.
+  el mapa muestra por grupo («Comida (círculo) · 42»), aliados y estrellas, e
+  incluye los comercios sin nombre («incluidos 9 comercios sin nombre»).
+- **Mostrar todo, sea aliado o no**: el filtro de categoría de `/aliados` ofrece
+  las categorías de aliados Y las que solo trae OSM, con los dos conteos sumados
+  (`unirCategorias`; «Sin categoría» al final). Con cualquier `?categoria=` el mapa
+  y «Otros comercios» salen siempre; si esa categoría no tiene aliados, la parte de
+  aliados lo dice («Todavía no hay aliados en Salud y bienestar; abajo ves los
+  comercios del barrio de esa categoría.») en vez de esconder todo.
+- **Comercios sin nombre** (OSM no lo trae en ~1 de cada 3): se dibujan en el mapa
+  y cuentan en la leyenda y en los conteos del filtro, pero NO van a la lista
+  «Otros comercios» ni al buscador (no aportan nada para buscar; la condición vive
+  solo en `comerciosConNombre`). Su ficha y el `aria-label` del marcador usan el
+  título «Comercio sin nombre · Tienda y víveres» (`nombreVisible`), nunca un
+  encabezado vacío. La línea de la lista lo aclara: «21 comercios con nombre; 9 más
+  sin nombre aparecen solo en el mapa».
 - **Estrella interactiva**: cada estrella y cada punto suelto se toca o se enfoca
   (Tab, Enter; Esc cierra) y abre un popup con lo que OSM trae: categoría, nombre,
   dirección, horario, cocina y web (solo las que existan; nada se rellena), la
@@ -320,7 +335,8 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   fuente en `font-cifra` («© colaboradores de OpenStreetMap (ODbL)», fecha del
   snapshot) y el subtítulo que aclara que no son aliados. No tiene controles
   propios: lo filtran el buscador y el filtro de categorías de la vitrina, y con la
-  ubicación activa va ordenada por cercanía. Se pinta por tandas de 12.
+  ubicación activa va ordenada por cercanía. Solo lista comercios con nombre y se
+  ordena alfabéticamente. Se pinta por tandas de 12.
 - **Buscador**: los comercios de OSM aparecen en los resultados (portada y
   `/aliados`) con la etiqueta «OpenStreetMap»; ante empate, primero los aliados.
 - **Fuente**: bajo el mapa, en `font-cifra`: «© colaboradores de OpenStreetMap

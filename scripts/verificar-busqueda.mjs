@@ -14,9 +14,14 @@ import {
   aBuscable,
   aplanarComercios,
   cocinaLegible,
+  comerciosConNombre,
+  contarPorCategoria,
   esComercioOsm,
+  filtrarPorCategoria,
   horarioLegible,
   nombreCategoriaOsm,
+  nombreVisible,
+  unirCategorias,
   webLegible,
 } from '../lib/geo/comerciosOsm.ts';
 
@@ -66,8 +71,13 @@ assert.deepEqual(rel.map((x) => x.id), ['4'], 'recomienda de la misma categoría
 
 const datos = JSON.parse(readFileSync(new URL('../public/firmamento/constelaciones.json', import.meta.url), 'utf8'));
 const comercios = aplanarComercios(datos);
-const OSM = comercios.map(aBuscable);
-assert.equal(OSM.length, datos.resumen.total_comercios, 'aplana estrellas y puntos sueltos: ninguno se pierde');
+assert.equal(comercios.length, datos.resumen.total_comercios, 'aplana estrellas y puntos sueltos: ninguno se pierde');
+const sinNombre = comercios.filter((c) => !c.nombre);
+assert.equal(sinNombre.length, datos.resumen.sin_nombre, 'el resumen cuenta bien los comercios sin nombre');
+// Los sin nombre se dibujan en el mapa pero no entran a la lista ni al buscador.
+const OSM = comerciosConNombre(comercios).map(aBuscable);
+assert.equal(OSM.length, datos.resumen.con_nombre, 'solo los que tienen nombre se buscan');
+assert.ok(OSM.every((o) => o.nombre.trim() !== ''), 'ningún comercio buscable tiene el nombre vacío');
 assert.equal(new Set(OSM.map((o) => o.id)).size, OSM.length, 'ids únicos');
 assert.ok(OSM.every(esComercioOsm), 'todos quedan marcados como OSM');
 
@@ -92,6 +102,39 @@ assert.ok(
   ),
   '«Sin categoría» no es una palabra que se busque',
 );
+
+// Sin nombre: ni buscable ni con título vacío en la ficha.
+assert.ok(sinNombre.length > 0, 'el JSON trae comercios sin nombre (caso real)');
+assert.deepEqual(ids(buscarNegocios(TODOS, 'null')), [], 'la palabra «null» no encuentra nada');
+assert.ok(
+  !buscarNegocios(TODOS, 'comercio sin nombre').resultados.some((x) => esComercioOsm(x) && !x.comercio.nombre),
+  'un comercio sin nombre no sale en la búsqueda',
+);
+const titulo = nombreVisible(sinNombre.find((c) => c.categoria) ?? sinNombre[0]);
+assert.ok(/^Comercio sin nombre/.test(titulo) && !/null/i.test(titulo), `título de respaldo legible: «${titulo}»`);
+assert.equal(nombreVisible({ osm: 'n0', nombre: null, lat: 0, lon: 0, categoria: 'tienda_viveres' }), 'Comercio sin nombre · Tienda y víveres');
+assert.equal(nombreVisible({ osm: 'n0', nombre: '  ', lat: 0, lon: 0, categoria: null }), 'Comercio sin nombre');
+assert.equal(nombreVisible({ osm: 'n0', nombre: 'Tienda Luz', lat: 0, lon: 0, categoria: null }), 'Tienda Luz');
+
+// Una categoría SIN aliados igual devuelve comercios de OSM (y el filtro la ofrece).
+const conteosOsm = contarPorCategoria(comercios);
+assert.equal(Object.values(conteosOsm).reduce((a, b) => a + b, 0), datos.resumen.total_comercios, 'el conteo por categoría cuadra con el resumen');
+const oferta = unirCategorias(
+  [{ id: 'comidas', nombre: 'Comidas y almuerzos' }, { id: 'lavanderia', nombre: 'Lavandería' }],
+  { comidas: 2 },
+  conteosOsm,
+);
+assert.ok(!oferta.categorias.some((c) => c.id === 'lavanderia'), 'sin aliados ni comercios no se ofrece');
+assert.ok(oferta.categorias.some((c) => c.id === 'salud_bienestar'), 'una categoría que solo trae OSM se ofrece');
+assert.equal(oferta.categorias.at(-1).nombre, 'Sin categoría', '«Sin categoría» va al final');
+assert.equal(oferta.conteos.comidas, 2 + conteosOsm.comidas, 'aliados y OSM se suman');
+assert.equal(oferta.total, 2 + datos.resumen.total_comercios);
+const salud = filtrarPorCategoria(datos, 'salud_bienestar');
+assert.equal(salud.resumen.total_comercios, conteosOsm.salud_bienestar, 'filtrar deja los comercios de esa categoría');
+assert.equal(salud.resumen.con_nombre + salud.resumen.sin_nombre, salud.resumen.total_comercios, 'con y sin nombre cuadran al filtrar');
+const SALUD = comerciosConNombre(aplanarComercios(salud)).map(aBuscable);
+assert.ok(SALUD.length > 0, 'salud_bienestar (sin aliados) devuelve comercios de OSM');
+assert.ok(buscarNegocios([...NEGOCIOS, ...SALUD], '').resultados.some(esComercioOsm), 'y quedan en la lista aunque no haya aliados');
 
 const cocina = comercios.find((c) => c.detalle?.cocina === 'coffee_shop');
 assert.ok(cocina && hay(buscarNegocios(TODOS, 'café'), cocina.osm), 'por cocina: «café» encuentra la cocina coffee_shop');

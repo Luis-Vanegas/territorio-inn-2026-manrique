@@ -9,6 +9,7 @@ import { GRUPOS, grupoDeCategoria, type IdGrupo } from '@/lib/categorias/grupos'
 import { fechaLarga } from '@/lib/geo/constelaciones';
 import {
   aplanarComercios,
+  comerciosConNombre,
   etiquetaConstelacion,
   filtrarPorCategoria,
   lineaMezcla,
@@ -81,14 +82,16 @@ export function MapaAliados({
 
   // Conteo por grupo de lo que el mapa muestra ahora: aliados y, con la capa
   // prendida, las estrellas de la constelación elegida (o todas).
-  const conteos = useMemo(() => {
+  const { conteos, sinNombre } = useMemo(() => {
     const total: Record<IdGrupo, number> = { comida: 0, tienda: 0, belleza: 0, oficios: 0, salud: 0, otros: 0 };
     for (const p of portafolios) total[grupoDeCategoria(p.categoria_id).id]++;
+    let sinNombre = 0;
     if (activa && datos) {
       const estrellas = elegida ? elegida.estrellas : aplanarComercios(datos);
       for (const e of estrellas) total[grupoDeCategoria(e.categoria).id]++;
+      sinNombre = estrellas.length - comerciosConNombre(estrellas).length;
     }
-    return total;
+    return { conteos: total, sinNombre };
   }, [portafolios, activa, datos, elegida]);
 
   const fuente = useMemo(
@@ -128,7 +131,7 @@ export function MapaAliados({
                 setFiltro(e.target.value);
                 if (e.target.value) setActiva(true);
               }}
-              className="min-h-[44px] max-w-full border border-tinta/55 bg-hueso px-3 font-sans text-sm text-tinta"
+              className="min-h-[44px] w-full min-w-0 border border-tinta/55 bg-hueso px-3 font-sans text-sm text-tinta sm:w-auto sm:max-w-md"
             >
               <option value="">Todas ({datos.constelaciones.length})</option>
               {datos.constelaciones.map((c) => (
@@ -188,12 +191,16 @@ export function MapaAliados({
         )}
       </ul>
       <p className="mt-1.5 font-sans text-xs text-tinta/70">
-        Cada número suma los aliados y los comercios de OpenStreetMap que se ven ahora en el mapa.
+        Cada número suma los aliados y los comercios de OpenStreetMap que se ven ahora en el mapa
+        {sinNombre > 0 &&
+          `, incluidos ${sinNombre} ${sinNombre === 1 ? 'comercio sin nombre' : 'comercios sin nombre'}`}
+        .
       </p>
 
       {activa && elegida && (
-        <p aria-live="polite" className="mt-2 font-cifra text-xs leading-relaxed text-tinta/70">
-          Qué hay aquí: {lineaMezcla(elegida)}
+        <p aria-live="polite" className="mt-2 break-words font-sans text-xs leading-relaxed text-tinta/75">
+          Qué hay aquí, en {[elegida.codigo, elegida.nombre].filter(Boolean).join(' · ') || elegida.id}:{' '}
+          {lineaMezcla(elegida)}
         </p>
       )}
 
