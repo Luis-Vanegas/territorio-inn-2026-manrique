@@ -89,8 +89,17 @@ export async function POST(request: Request) {
     );
   }
 
-  const { nuevas, repetidas } = await ingestarConvocatorias(parsed.data.fuente, parsed.data.items);
-  const vencidas = await marcarVencidas();
+  // Un fallo de la base es de infraestructura, no del vigía: 503 (reintenta mañana), no 500.
+  let nuevas: number;
+  let repetidas: number;
+  let vencidas: number;
+  try {
+    ({ nuevas, repetidas } = await ingestarConvocatorias(parsed.data.fuente, parsed.data.items));
+    vencidas = await marcarVencidas();
+  } catch (e) {
+    console.error('[ingesta/convocatorias] la base falló', e instanceof Error ? e.message : e);
+    return new NextResponse(null, { status: 503 });
+  }
 
   console.info(`[ingesta/convocatorias] ${parsed.data.fuente}: ${nuevas} nueva(s), ${repetidas} repetida(s), ${vencidas} vencida(s)`);
   return NextResponse.json({ nuevas, repetidas, vencidas });
