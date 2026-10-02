@@ -17,6 +17,10 @@ const config: Config = {
       xl: "1440px",
     },
     extend: {
+      // Tailwind solo genera alphas de la escala (5, 10, 15…): `border-tinta/12`
+      // y `bg-tinta/8` no existían y el borde caía en el gris por defecto
+      // (#E5E7EB), clarísimo sobre el hueso oscuro. Ver DESIGN.md › Color.
+      opacity: { 8: "0.08", 12: "0.12" },
       colors: {
         hueso: "rgb(var(--hueso-rgb) / <alpha-value>)",
         tinta: "rgb(var(--tinta-rgb) / <alpha-value>)",

@@ -50,7 +50,7 @@ export function FormularioContacto() {
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-azul-texto"
+          className="border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-tinta"
         >
           {estado.mensaje}
         </p>

@@ -78,6 +78,12 @@ lados.) Los tokens viven en `tailwind.config.ts` y en `styles/globals.css`.
 - Jerarquía con alpha sobre el lienzo (`text-tinta/70`, `border-tinta/12`), no
   con grises tintados sueltos. Ojo: los alphas de claro y de oscuro **no son
   los mismos** — el mismo porcentaje rinde más contraste sobre fondo oscuro.
+  Los alphas salen de la escala de Tailwind (5, 10, 15…) más `8` y `12`, que se
+  agregaron en `tailwind.config.ts`: sin ellos `border-tinta/12` no genera nada y
+  el borde cae en el gris por defecto (#E5E7EB), que en oscuro se ve como una raya
+  blanca.
+- Un aviso sobre `amarillo/15` lleva texto `tinta`, nunca `azul-texto`: el azul
+  da 3,6:1 sobre ese fondo en oscuro.
 
 ## Tema
 
@@ -86,6 +92,17 @@ está diseñada en claro y un vecino que entra por primera vez no debería ver l
 versión secundaria sin haberla pedido. Quien prende el oscuro con el selector
 manda, y su elección se guarda. Se resuelve en un solo lugar:
 `components/TemaInicial.tsx`.
+
+**Superficies de terceros** (Leaflet): siguen al tema porque leen `--hueso-rgb` y
+`--tinta-rgb`, no colores fijos. En oscuro, el popup, el botón de cerrar, el zoom
+y la atribución del mapa son hueso oscuro con texto `tinta` claro y links
+`azul-texto`; los marcadores y las teselas (gris claro de Esri) no cambian.
+`leaflet.css` se carga después de `globals.css` (viaja con el chunk del mapa), así
+que cada regla que lo pise cuelga de `.leaflet-container` o lleva `!important`:
+una regla de una sola clase perdía el empate y el popup salía blanco con texto
+claro. Los íconos que se pintan sobre el fondo de la página (la leyenda) llevan
+contorno claro para no desaparecer en oscuro, como la estrella de OSM (relleno
+`noche-3`, trazo `estrella`).
 
 ## Estructura
 
@@ -298,6 +315,11 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
 - **Fuente**: bajo el mapa, en `font-cifra`: «© colaboradores de OpenStreetMap
   (ODbL)», fecha del snapshot de OSM y fecha de la corrida. La misma atribución se
   suma al control de Leaflet mientras la capa está prendida.
+- **En modo oscuro**: popups y ficha de «Otros comercios» usan `hueso`/`tinta` del
+  tema (ver «Tema»); la leyenda y la línea de fuente se leen sobre el hueso oscuro
+  con `tinta/75` y `tinta/70`. Las formas de los grupos conservan su contorno
+  `noche` y su relleno de noche: se ven sobre las teselas claras y, en la leyenda,
+  sobre el fondo oscuro por el color de relleno.
 - **Alternativa sin mapa**: enlace «Ver los aliados en lista» sobre el mapa.
 
 ## Idioma

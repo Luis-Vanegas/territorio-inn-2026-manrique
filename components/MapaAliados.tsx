@@ -83,7 +83,7 @@ export function MapaAliados({
           }}
           className={`inline-flex min-h-[44px] items-center gap-2 border px-4 font-sans text-sm transition-colors ${
             activa
-              ? 'border-noche bg-noche text-estrella'
+              ? 'border-noche bg-noche text-estrella dark:border-trazo-2'
               : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto'
           }`}
         >

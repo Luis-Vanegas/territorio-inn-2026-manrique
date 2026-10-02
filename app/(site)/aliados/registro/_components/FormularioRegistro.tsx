@@ -335,7 +335,7 @@ export function FormularioRegistro({
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="max-w-xl border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-azul-texto"
+          className="max-w-xl border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-tinta"
         >
           {estado.mensaje}
         </p>

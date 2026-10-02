@@ -15,6 +15,8 @@
      diseno-interfaz) contra el sitio real antes de darlos por definitivos. */
   --hueso-rgb: 255 255 255; /* blanco — pedido explícito por sobre el F7F5F0 anterior */
   --tinta-rgb: 26 26 26;
+  /* Controles nativos (lista del <select>, barras de desplazamiento) siguen al tema. */
+  color-scheme: light;
 
   /* Paleta de marca Constelaciones. Cada color tiene UNA función, no son
      intercambiables: azul = acción (links, botones, activo, foco, mapa),
@@ -40,6 +42,7 @@
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --hueso-rgb: 26 26 26;
   --tinta-rgb: 245 245 245; /* 15.97:1 entre sí, igual que hueso/tinta claro */
 
@@ -405,8 +408,14 @@ html.js:not(.js-listo) [data-reveal] {
   box-shadow: 0 0 0 4px rgb(var(--hueso-rgb));
 }
 
-.leaflet-container {
+/* Orden de carga: leaflet.css entra en el chunk del mapa (dinámico) y llega
+   DESPUÉS de este archivo. Una regla de una sola clase que pise a Leaflet
+   pierde el empate de especificidad: el popup quedaba blanco con texto de
+   `tinta` (claro en oscuro) encima. Por eso lo de abajo cuelga de
+   `.leaflet-container` (o lleva !important) y gana sin depender del orden. */
+div.leaflet-container {
   background-color: rgb(var(--hueso-rgb));
+  color: rgb(var(--tinta-rgb));
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   /* Leaflet apila sus capas hasta z-index 1000 (controles). Sin aislar el
      contenedor, esas capas compiten con el header sticky (z-50) y en algún
@@ -414,28 +423,32 @@ html.js:not(.js-listo) [data-reveal] {
   isolation: isolate;
 }
 
-.leaflet-popup-content-wrapper {
-  border-radius: 0; /* el sistema es editorial: esquinas rectas, sin cards */
+.leaflet-container .leaflet-popup-content-wrapper,
+.leaflet-container .leaflet-popup-tip {
   box-shadow: none;
   border: 1px solid rgb(var(--tinta-rgb) / 0.15);
   background-color: rgb(var(--hueso-rgb));
+  color: rgb(var(--tinta-rgb));
 }
 
-.leaflet-popup-content {
+.leaflet-container .leaflet-popup-content-wrapper {
+  border-radius: 0; /* el sistema es editorial: esquinas rectas, sin cards */
+}
+
+.leaflet-container .leaflet-popup-content {
   margin: 0.75rem 0.9rem;
 }
 
-.leaflet-popup-tip {
-  box-shadow: none;
-  border: 1px solid rgb(var(--tinta-rgb) / 0.15);
-  background-color: rgb(var(--hueso-rgb));
+/* Leaflet pinta los links del popup con #0078A8: sobre el hueso oscuro no llega a 4,5:1. */
+.leaflet-container .leaflet-popup-content a {
+  color: rgb(var(--azul-texto-rgb));
 }
 
-.leaflet-popup-close-button {
+.leaflet-container a.leaflet-popup-close-button {
   color: rgb(var(--tinta-rgb) / 0.65) !important;
 }
 
-.leaflet-control-attribution {
+.leaflet-container .leaflet-control-attribution {
   background-color: rgb(var(--hueso-rgb)) !important;
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   /* 12px y no los 10px que tenía: es la atribución que la licencia de
@@ -447,7 +460,7 @@ html.js:not(.js-listo) [data-reveal] {
   color: rgb(var(--tinta-rgb) / 0.75) !important;
 }
 
-.leaflet-control-attribution a {
+.leaflet-container .leaflet-control-attribution a {
   color: rgb(var(--azul-texto-rgb)) !important;
 }
 

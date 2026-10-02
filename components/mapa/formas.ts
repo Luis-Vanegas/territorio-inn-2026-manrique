@@ -28,10 +28,10 @@ export function svgForma(grupo: Grupo, tamano: number): string {
 
 /** Estrella de cuatro puntas: un comercio de OpenStreetMap (no es aliado). */
 export function svgEstrella(tamano: number): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z" fill="#1A2450"/></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="-1 -1 26 26" aria-hidden="true" focusable="false"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z" fill="#1A2450" stroke="#F3EFE4" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke"/></svg>`;
 }
 
 /** Punto suelto de OSM: un comercio que no cayó en ninguna constelación. Más tenue que la estrella. */
 export function svgPunto(tamano: number): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="#1A2450" fill-opacity="0.5"/></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.5" fill="#1A2450" fill-opacity="0.5" stroke="#F3EFE4" stroke-width="1.5"/></svg>`;
 }
