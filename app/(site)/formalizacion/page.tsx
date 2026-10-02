@@ -43,7 +43,7 @@ function VistaPrevia() {
             solo para registrados
           </span>
 
-          <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-6xl">
+          <h1 className="mt-4 font-display text-4xl font-medium leading-[0.95] text-tinta min-[400px]:text-5xl sm:text-6xl">
             Formalización
           </h1>
 
@@ -161,7 +161,7 @@ export default async function FormalizacionPage() {
             tu espacio · rutas y apoyos
           </span>
 
-          <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
+          <h1 className="mt-4 font-display text-4xl font-medium leading-[0.95] text-tinta min-[400px]:text-5xl sm:text-7xl">
             Formalización
           </h1>
 

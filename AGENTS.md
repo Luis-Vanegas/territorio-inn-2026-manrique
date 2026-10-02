@@ -14,7 +14,9 @@ ambos agentes repliquen un patrón que ya no existe.
 ## Stack
 
 - Next.js 16 (App Router), React 18, TypeScript
-- Tailwind CSS
+- Tailwind CSS. Tipografía con rol cerrado (ver `DESIGN.md`): Fraunces títulos, DM Sans
+  todo lo demás, DM Mono (`font-cifra`) SOLO cifras, fuentes y fechas. Tokens de noche
+  (`noche`, `sodio`, `estrella`…) solo para Firmamento y la banda nocturna.
 - Zod para validación de datos
 - Neon (Postgres serverless) como base de datos
 - Vercel Blob para almacenamiento de archivos (fotos)
@@ -92,11 +94,18 @@ lib/
   actions/          Server Actions ('use server'), un archivo por acción
   db/                repositorios de acceso a datos (*.repo.ts), uno por tabla/dominio
   validation/        schemas de Zod (*.schema.ts)
-  geo/                utilidades geoespaciales
-  auth/               sesiones: admin.ts (moderadores), usuario.ts (vecinos), google.ts (OAuth)
+  geo/                utilidades geoespaciales (comuna, barrios oficiales, punto en polígono)
+  auth/               sesiones: admin.ts (moderadores), usuario.ts (vecinos), google.ts (OAuth);
+                      secreto.ts compara secretos compartidos de endpoints de máquina
   blob/               integración con Vercel Blob
   agente/             asesor de formalización (prompt y llamada al modelo)
+  ml/                 inferencia en el navegador (categoria.ts: sugeridor de categoría)
+  privacidad/         regla k = 5 (kAnonimato.ts), pura y sin server-only
+.github/workflows/   vigía de convocatorias (único workflow; no hay CI de verificación)
 scripts/             scripts de mantenimiento (migraciones, verificación, admin)
+pipeline/            Python reproducible (OSM, HDBSCAN, clasificador, vigía); su propio
+                     requirements.txt y venv. Escribe solo en public/firmamento/ y
+                     public/modelo_categoria.json. Ver pipeline/README.md
 data/                datasets fuente (DANE, cámara de comercio, etc.) — no tocar sin pedir
 ```
 
@@ -122,10 +131,76 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Server Action que escriba en portafolios, categorías o campos personalizados
   DEBE llamar `invalidarVitrina()`; si no, lo público queda viejo hasta 10
   minutos. Lo que vuelve de la caché es JSON: nada de columnas `Date` ahí.
+- **Datos abiertos y regla k = 5** (`GET /api/datos`, `lib/db/datos.repo.ts`):
+  solo negocios `aprobado` y solo conteos. Toda celda pasa por
+  `lib/privacidad/kAnonimato.ts`: menos de 5 sale como `"<5"` (los ceros
+  también), y en las particiones con total publicado (categorías, barrios) si
+  queda escondida UNA sola celda se esconde también la menor visible, porque si
+  no se deduce restando del total. Cada dimensión lista TODAS sus opciones: que
+  una falte diría que vale cero. Nunca salen: nombres de negocios, contactos
+  (WhatsApp, teléfono, correo, redes), direcciones, coordenadas, fotos, tokens,
+  IP, `google_sub`, `campos_extra`, respuestas individuales de investigación
+  (solo conteos de las enumeraciones `formalidad` y `mayor_dolor`). Una
+  dimensión nueva = consulta nueva en el repo (sin columnas personales: el
+  verificador lee el archivo) + `suprimir()`. Caché de 1 h (`unstable_cache`
+  sin la etiqueta de la vitrina), CORS `*`, rate limit de `rateLimit.ts` con
+  origen propio `datos`. `scripts/verificar-datos-k.mjs` lo comprueba (y contra
+  un servidor vivo con `VERIFICAR_URL_DATOS=http://localhost:3000/api/datos`).
+- **Ubicación dentro de la Comuna 3** (`lib/geo/dentroDeManrique.ts`): función
+  pura (ray casting sobre `manrique.json`, sin `server-only`, con 40 m de
+  tolerancia al borde por el GPS y la simplificación del polígono). La exige el
+  schema de `portafolio.schema.ts` en registro (propio y asistido) y en las dos
+  ediciones (dueño por token y moderador) con `ubicacionEnManrique`, y la usa el
+  selector del registro para avisar en vivo sin bloquear el arrastre. Un
+  schema nuevo que reciba coordenadas de negocios debe pasar por ese refinamiento
+  (aplicarlo DESPUÉS de `.omit()`). Moderar (aprobar/rechazar) no valida el
+  punto; editar un negocio fuera del polígono obliga a corregirlo. Lo comprueba
+  `scripts/verificar-geo.mjs` (corre con `--experimental-strip-types`).
+- **Sugeridor de categoría** (`lib/ml/categoria.ts`): TF-IDF de n-gramas + regresión
+  logística exportados a `public/modelo_categoria.json` (los genera
+  `pipeline/03_clasificador.py`), inferencia en el NAVEGADOR: lo que la persona
+  escribe en el nombre no sale de su pantalla. Con confianza >= 0,45 sugiere una;
+  si no, las 3 mejores (`sugerirCategoria`). Replica a `pipeline/verificar_salidas.py`:
+  al reentrenar hay que regenerar los casos de `scripts/verificar-sugeridor.mjs`.
+  En el registro lo monta `SugeridorCategoria.tsx` bajo «Nombre del negocio»
+  (aria-live polite; ≥ 0,45 «Usar esta», si no las 3 mejores). Lo único que
+  viaja al enviar son dos campos ocultos (`sugerencia_categoria`,
+  `sugerencia_confianza`); `registrarPortafolio` los lee con
+  `sugerenciaDesdeFormData` y guarda en `sugerencias_categoria` la categoría
+  inferida, su confianza y si la aceptó (`aceptada` = la `categoria_id` enviada
+  coincide), NUNCA el texto escrito. Es telemetría: si falla no tumba el
+  registro. El archivo no lleva `server-only` ni imports de valor, para que el
+  verificador lo importe.
+- **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
+  la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
+  vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
+  componente: el dueño y el panel leen `COLUMNAS_PROPIAS` (todo). El
+  moderador lo prende en `/admin/campos` (interruptor por fila →
+  `cambiarPublicoCampoAction`, con Zod e `invalidarVitrina()`); `publico` es
+  una decisión de privacidad y por eso NO viaja en `editarCampo`.
+- **Endpoints de máquina** (`/api/cron/purgar`, `/api/ingesta/convocatorias`):
+  secreto en variable de entorno (`CRON_SECRET`, `INGESTA_SECRETO`), comparado con
+  `secretoValido` de `lib/auth/secreto.ts`; sin la variable fallan CERRADOS (503),
+  con el header mal responden 401. Lo que entra por ahí es texto de terceros:
+  Zod y siempre `pendiente` (el vigía de convocatorias no publica nada).
+- **IP**: `ip_registro` se guarda en claro 30 días (`DIAS_IP_EN_CLARO`) y el cron
+  diario la anula (`purgarIpsViejas`); para auditoría queda `ip_hash` en
+  `aliados_consentimiento`. La política de datos lo declara: si cambia el plazo,
+  cambia el texto y se sube `VERSION_TERMINOS`.
 - **Búsqueda de negocios**: una sola función, `buscarNegocios` de
   `lib/busqueda.ts` (puntaje por campo + sinónimos del barrio, en el cliente),
   la usan el buscador de la portada y la vitrina de `/aliados`. No escribir
-  otro filtro de texto por componente. Los sinónimos se amplían en `SINONIMOS`
+  otro filtro de texto por componente. Los comercios de OSM sin nombre
+  (`nombre: null`) NO entran al buscador ni a «Otros comercios»: los saca
+  `comerciosConNombre` (`lib/geo/comerciosOsm.ts`), único lugar de esa condición;
+  el mapa sí los dibuja y su título de respaldo es `nombreVisible`. Busca también por dirección (con
+  «cra», «cl», «kr»…) y atiende a los **comercios de OpenStreetMap**: se
+  normalizan con `aBuscable` (`lib/geo/comerciosOsm.ts`, `origen: 'osm'`) y
+  se mezclan en la misma lista; ante empate van primero los aliados. El JSON de
+  constelaciones se pide por `fetch` (`useConstelaciones`) solo cuando hace
+  falta (el buscador de la portada, al enfocar la caja). Los textos de OSM
+  (horario, cocina, categoría) se traducen en ese mismo archivo: nunca se
+  muestran crudos. Los sinónimos se amplían en `SINONIMOS`
   y se prueban con `scripts/verificar-busqueda.mjs`.
 - **Módulos de guías** (Marca, Ventas y los que vengan para aliados): son
   datos, no componentes. Cada módulo es una `Coleccion` (`lib/marca.ts`) en su
@@ -135,14 +210,16 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   y `app/admin/(panel)/<modulo>/` (copiar los de ventas) + entrada en
   `lib/content.ts`, `app/sitemap.ts`, el menú del panel y la lista de
   `scripts/verificar-marca.mjs`. Ojo: el archivo de datos importa de `./marca`
-  SOLO tipos (`import type`): el verificador corre con `--experimental-strip-types`,
-  que no resuelve imports de valor sin extensión.
+  SOLO tipos (`import type`); ver «Imports con extensión `.ts`» más abajo.
 - **Mis clientes (CRM de cada aliado)**: `lib/db/clientes.repo.ts` guarda datos
   de TERCEROS (los clientes del negocio, que no se registraron acá). Toda
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
-  falla si una consulta nueva lo olvida. Lo mínimo por Ley 1581: nombre,
-  teléfono y nota; nada de cédula, dirección ni correo. El contacto sale por
+  falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
+  que alimenta «Mi cuenta»: categorías del vecino y «Tu negocio en números»;
+  una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro).
+  Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
+  correo. El contacto sale por
   WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
@@ -159,6 +236,58 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
   `where` del repo, no en políticas de fila.
+- **Convocatorias** (`lib/db/convocatorias.repo.ts`, migración 032): el vigía las
+  ingesta `pendiente`; el moderador decide en `/admin/convocatorias`
+  (`moderarConvocatoria`: aprobar, descartar/retirar, marcar vencida, con quién y
+  cuándo). Las transiciones válidas viven en el `where` de `decidirConvocatoria`
+  (una descartada no se reabre; una ya cerrada no se aprueba), no en la
+  pantalla. Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» de
+  Mi cuenta (`convocatoriasParaTi`, filtra por `aplica_a` contra las categorías
+  del vecino). No van en la vitrina: no llaman `invalidarVitrina()`.
+- **Constelación de un aliado**: no se guarda (`portafolios.constelacion` sigue
+  sin escribirse), se calcula al vuelo con `constelacionDe` /
+  `vecinosDeConstelacion` (`lib/geo/comerciosOsm.ts`): centroide más cercano y
+  dentro de su `radio_p90_m`, si no `null` y la ficha no muestra la sección.
+  Los comercios que lista son de OSM, con la etiqueta «OpenStreetMap · no es
+  aliado». Un id guardado quedaría colgando al regenerar el JSON.
+- **Endpoints de máquina sin IP**: `verificarLimite` deja pasar cuando no hay IP,
+  así que quien quita los headers se saltaría el cupo. `/api/ingesta/convocatorias`
+  suma un contador en memoria compartido para esas peticiones
+  (`lib/limiteMemoria.ts`), y si `verificarLimite` falla responde 503, no 500.
+- **Barrios oficiales** (`lib/geo/barrios-manrique.json`, `lib/geo/barrioOficial.ts`):
+  los 15 polígonos de barrio de la Comuna 3, recortados por `scripts/extraer-barrios.mjs`
+  del GeoJSON de barrios de Medellín. Fuente: Alcaldía de Medellín (archivo entregado
+  al equipo); viaja en `metadata.fuente`. El nombre va en
+  la grafía de `BARRIOS_COMUNA_3` (una sola tabla de equivalencias, en el script).
+  `barrioDe(lat, lon)` es pura y devuelve el nombre o `null`; es una AYUDA (aviso del
+  registro, barrio de cada comercio OSM), no una regla de admisión: esa sigue siendo
+  `dentroDeManrique`. El ray casting vive UNA vez en `lib/geo/puntoEnPoligono.ts` y lo
+  usan los dos (y `scripts/extraer-barrios.mjs`); no lo copies. Se importa con
+  extensión: ver «Imports con extensión `.ts`». El pipeline (`02_constelaciones.py`) calcula
+  el mismo barrio con shapely y lo escribe en cada comercio de `constelaciones.json`;
+  `verificar-barrios.mjs` exige que coincida con `barrioDe`. Una constelación sin calle
+  se llama «Barrio <X> · <categoría>». Si cambia el dataset: re-correr el script, luego
+  `pipeline/02_constelaciones.py` y `verificar_salidas.py`.
+- **Grupos de categoría del mapa**: `lib/categorias/grupos.ts` es el único lugar
+  que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md).
+  Categoría nueva en la base = su id en ese archivo; si no, cae en «Otros». Las
+  constelaciones de OSM (`public/firmamento/constelaciones.json`) se piden por
+  `fetch` (`lib/geo/constelaciones.ts`), no se importan en el cliente. Solo se
+  importan en el servidor: `app/(site)/aliados/page.tsx` (conteos del filtro de
+  categorías con `unirCategorias`: aliados + comercios de OSM, así se puede filtrar
+  por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
+  (cifras de la banda de la portada) y `app/(site)/firmamento/datos.ts`.
+- **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
+- **Imports con extensión `.ts`**: los verificadores (`scripts/verificar-*.mjs`)
+  corren con `--experimental-strip-types`, que no resuelve imports sin extensión.
+  Para que compartan código con la app (y no copiarlo), un archivo que ellos
+  cargan puede importar VALORES con la extensión explícita (`import { x } from
+  ./distancia.ts`): `allowImportingTsExtensions` está activo en `tsconfig.json`
+  (vale por `noEmit`). Ejemplo: `lib/geo/comerciosOsm.ts`. Restricción: todo lo que
+  carga un verificador (`lib/busqueda.ts`, `lib/geo/distancia.ts`, `lib/marca.ts`,
+  `lib/geo/comerciosOsm.ts`, `lib/geo/puntoEnPoligono.ts`, `lib/geo/barrioOficial.ts`…) solo puede tener `import type` hacia el resto del
+  proyecto (los alias `@/` no los resuelve Node) y entre ellos usar `.ts`. Si
+  necesitas un valor de `@/…`, ese archivo no puede cargarlo un verificador.
 - **Comentarios**: solo cuando explican el WHY (una decisión no obvia, un
   trade-off). Los shortcuts deliberados se marcan con `ponytail: <qué se
   omitió y cuándo ampliarlo>`. No comentar lo que el código ya dice solo.
@@ -169,7 +298,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca y entorno
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales y datos abiertos (k = 5)
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)

@@ -15,6 +15,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { animate, useInView, useReducedMotion } from "framer-motion";
+import { formatearNumero as formatear } from "@/lib/formato";
 
 export function NumeroAnimado({
   numero,
@@ -48,11 +49,4 @@ export function NumeroAnimado({
       {sufijo}
     </span>
   );
-}
-
-function formatear(valor: number, decimales: number): string {
-  return valor.toLocaleString("es-CO", {
-    minimumFractionDigits: decimales,
-    maximumFractionDigits: decimales,
-  });
 }

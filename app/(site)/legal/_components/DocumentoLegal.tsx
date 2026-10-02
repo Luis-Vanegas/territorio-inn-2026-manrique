@@ -40,13 +40,13 @@ export function DocumentoLegal({
         </h1>
 
         {avisoBorrador && (
-          <p className="mt-6 border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-xs leading-relaxed text-azul-texto">
+          <p className="mt-6 border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-xs leading-relaxed text-tinta">
             Borrador técnico, redactado por el equipo del proyecto. Pendiente de
             revisión jurídica antes de su publicación definitiva.
           </p>
         )}
 
-        <div className="mt-10 flex flex-col gap-6 font-sans text-[15px] leading-relaxed text-tinta/75 [&_a]:underline [&_a]:decoration-azul [&_a]:underline-offset-4 [&_h2]:mt-6 [&_h2]:font-sans [&_h2]:text-xs [&_h2]:uppercase [&_h2]:tracking-wider [&_h2]:text-tinta/50 [&_li]:ml-5 [&_li]:list-disc [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2">
+        <div className="mt-10 flex flex-col gap-6 font-sans text-[15px] leading-relaxed text-tinta/75 [&_a]:underline [&_a]:decoration-azul [&_a]:underline-offset-4 [&_h2]:mt-6 [&_h2]:font-sans [&_h2]:text-xs [&_h2]:uppercase [&_h2]:tracking-wider [&_h2]:text-tinta/65 [&_li]:ml-5 [&_li]:list-disc [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2">
           {children}
         </div>
 

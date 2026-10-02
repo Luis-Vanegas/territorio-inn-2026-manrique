@@ -17,8 +17,11 @@ import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Posicion } from './SelectorUbicacionClient';
 import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
+import { SugeridorCategoria } from './SugeridorCategoria';
 import { CampoFormulario } from '@/components/CampoFormulario';
+import { barrioDe } from '@/lib/geo/barrioOficial';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
+import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
 import { ETIQUETA_FORMALIDAD } from '@/lib/formalizacion';
 
 // ─── opciones de los chips ───────────────────────────────────
@@ -54,13 +57,17 @@ const OPCIONES_FORMALIDAD_UI = Object.entries(ETIQUETA_FORMALIDAD).map(
 const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[440px] w-full items-center justify-center border border-tinta/15 bg-tinta/[0.02] sm:h-[580px]">
+    <div className="flex h-[440px] w-full items-center justify-center border border-tinta/55 bg-tinta/[0.02] sm:h-[580px]">
       <span className="font-sans text-xs text-tinta/60">cargando mapa…</span>
     </div>
   ),
 });
 
 const ESTADO_INICIAL: EstadoRegistro = { estado: 'inicial' };
+
+/** Lo que cada campo adicional hace con lo que escribas: se dice ANTES de llenarlo (Ley 1581). */
+const NOTA_PUBLICO = 'Este dato se muestra en la ficha pública de tu negocio.';
+const NOTA_PRIVADO = 'Este dato no se publica: solo lo ve el equipo.';
 
 // ─── piezas ──────────────────────────────────────────────────
 
@@ -123,8 +130,8 @@ function Seccion({
 
 
 const claseInput =
-  'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
+  'placeholder:text-tinta/65 focus:border-azul focus:outline-none focus:ring-0 ' +
   'aria-[invalid=true]:border-azul';
 
 function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }) {
@@ -193,6 +200,7 @@ export function FormularioRegistro({
   const [nombreFoto, setNombreFoto] = useState<string | null>(null);
   const [nombreMenu, setNombreMenu] = useState<string | null>(null);
 
+  const [nombre, setNombre] = useState('');
   const [categoriaId, setCategoriaId] = useState('');
   const [barrio, setBarrio] = useState('');
   const [barrioEsOtro, setBarrioEsOtro] = useState(false);
@@ -239,7 +247,7 @@ export function FormularioRegistro({
     }
 
     setCoords({ lat: resultado.lat, lng: resultado.lng });
-    setUbicacionValida(true);
+    setUbicacionValida(dentroDeManrique(resultado.lat, resultado.lng));
     setMapKey((k) => k + 1);
   }, []);
 
@@ -286,6 +294,13 @@ export function FormularioRegistro({
     },
     [marcar],
   );
+
+  // Aviso, no bloqueo: el vecino puede saber mejor que el polígono (un negocio
+  // en la frontera, un barrio que la gente nombra distinto). La validación dura
+  // sigue siendo dentroDeManrique. Con «Otro» no hay nombre oficial que comparar.
+  const barrioDelPunto = coords ? barrioDe(coords.lat, coords.lng) : null;
+  const avisoBarrio =
+    barrioDelPunto && barrio && !barrioEsOtro && barrio !== barrioDelPunto ? barrioDelPunto : null;
 
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
@@ -334,7 +349,7 @@ export function FormularioRegistro({
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="max-w-xl border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-azul-texto"
+          className="max-w-xl border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-tinta"
         >
           {estado.mensaje}
         </p>
@@ -380,7 +395,7 @@ export function FormularioRegistro({
               type="button"
               onClick={ubicarPorDireccion}
               disabled={geocodificando}
-              className="inline-flex min-h-11 items-center gap-2 border border-tinta/20 px-4 py-2.5 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 border border-tinta/55 px-4 py-2.5 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto disabled:cursor-wait disabled:opacity-60"
             >
               <span aria-hidden="true">📍</span>
               {geocodificando ? 'Buscando esa dirección…' : 'Ubicar esta dirección en el mapa'}
@@ -408,6 +423,14 @@ export function FormularioRegistro({
         </div>
 
         <SelectorUbicacion key={mapKey} valorInicial={coords} alCambiar={alCambiarUbicacion} />
+
+        <div role="status">
+          {avisoBarrio && (
+            <p className="max-w-xl border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-sans text-sm text-tinta">
+              El punto que marcaste queda en {avisoBarrio}; revisa el barrio o el punto.
+            </p>
+          )}
+        </div>
 
         <input type="hidden" name="latitud" value={coords?.lat ?? ''} />
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />
@@ -438,11 +461,21 @@ export function FormularioRegistro({
               required
               maxLength={80}
               placeholder="Panadería La Esperanza"
-              onChange={(e) => marcar('nombre', e.target.value.trim().length >= 2)}
+              onChange={(e) => {
+                setNombre(e.target.value);
+                marcar('nombre', e.target.value.trim().length >= 2);
+              }}
               className={claseInput}
             />
           )}
         </CampoFormulario>
+
+        <SugeridorCategoria
+          nombre={nombre}
+          categorias={categorias}
+          categoriaId={categoriaId}
+          alElegir={setCategoriaId}
+        />
 
         <CampoFormulario
           id="categoria_id"
@@ -736,6 +769,9 @@ export function FormularioRegistro({
                     {!c.requerido && (
                       <span className="ml-2 font-sans text-xs text-tinta/60">opcional</span>
                     )}
+                    <span className="mt-0.5 block font-sans text-xs text-tinta/65">
+                      {c.publico ? NOTA_PUBLICO : NOTA_PRIVADO}
+                    </span>
                   </span>
                 </label>
               );
@@ -745,7 +781,7 @@ export function FormularioRegistro({
               <CampoFormulario
                 id={nombre}
                 etiqueta={c.etiqueta}
-                ayuda={c.ayuda ?? undefined}
+                ayuda={[c.ayuda, c.publico ? NOTA_PUBLICO : NOTA_PRIVADO].filter(Boolean).join(' ')}
                 requerido={c.requerido}
                 errores={err(nombre)}
                 key={c.id}

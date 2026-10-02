@@ -4,9 +4,13 @@ import { redirect } from 'next/navigation';
 
 import { sesionActual } from '@/lib/auth/usuario';
 import { negociosDe } from '@/lib/db/usuarios.repo';
+import { categoriasDe, negociosEnNumeros } from '@/lib/db/cuenta.repo';
+import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { salir } from '@/lib/actions/sesionUsuario';
 import { PASOS, VIDEOS } from '@/lib/formalizacion';
 import { GUIAS } from '@/lib/marca';
+import { ParaTi } from './_components/ParaTi';
+import { NegocioEnNumeros } from './_components/NegocioEnNumeros';
 
 export const metadata: Metadata = {
   title: 'Mi cuenta · Constelaciones',
@@ -33,6 +37,19 @@ export default async function MiCuentaPage() {
   if (!sesion) redirect('/entrar');
 
   const negocios = await negociosDe(sesion.id);
+
+  // «Para ti» y «en números» son un extra: si su consulta falla, el resto de la
+  // página (los negocios y sus enlaces) tiene que seguir funcionando.
+  const [paraTi, enNumeros] = await Promise.all([
+    (negocios.length === 0 ? Promise.resolve([]) : categoriasDe(sesion.id).then(convocatoriasParaTi)).catch((e) => {
+      console.error('[mi-cuenta] «Para ti» falló', e instanceof Error ? e.message : e);
+      return [];
+    }),
+    negociosEnNumeros(sesion.id).catch((e) => {
+      console.error('[mi-cuenta] «en números» falló', e instanceof Error ? e.message : e);
+      return [];
+    }),
+  ]);
 
   return (
     <main className="seccion">
@@ -88,6 +105,10 @@ export default async function MiCuentaPage() {
           </ul>
         )}
       </section>
+
+      <NegocioEnNumeros negocios={enNumeros} />
+
+      <ParaTi convocatorias={paraTi} tieneNegocios={negocios.length > 0} />
 
       {/* Lo que la persona gana por estar registrada. Va después de sus
           negocios porque lo primero que quiere ver al entrar es si su ficha

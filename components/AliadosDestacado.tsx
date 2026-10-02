@@ -11,10 +11,9 @@
 import Link from "next/link";
 import { listarAprobados, contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
 import { enfoque } from "@/lib/content";
+import { fechaHoyBogota } from "@/lib/formato";
 import { MapaAliadosDestacado } from "./MapaAliadosDestacado";
 import { ScrollReveal } from "./ScrollReveal";
-
-const MAXIMO_EN_MAPA = 30;
 
 export async function AliadosDestacado() {
   const [aliados, conteos] = await Promise.all([
@@ -41,8 +40,14 @@ export async function AliadosDestacado() {
             </span>
 
             {total > 0 && (
-              <span className="font-sans text-xs text-tinta/60">
-                {total} {total === 1 ? "negocio" : "negocios"} ya en el mapa
+              <span className="flex flex-col">
+                <span className="font-sans text-xs text-tinta/60">
+                  {total} {total === 1 ? "negocio" : "negocios"} ya en el mapa
+                </span>
+                {/* Regla de cifras de DESIGN.md: toda cifra lleva fuente y fecha. */}
+                <span className="font-cifra text-xs text-tinta/70">
+                  Fuente: base de datos de Constelaciones · al {fechaHoyBogota()}
+                </span>
               </span>
             )}
           </div>
@@ -67,23 +72,23 @@ export async function AliadosDestacado() {
               Sumar mi negocio →
             </Link>
 
-            {total > 0 && (
-              <Link
-                href="/aliados"
-                className="font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
-              >
-                Ver el mapa completo
-              </Link>
-            )}
+            <Link
+              href="/aliados"
+              className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
+            >
+              Ver el mapa completo
+            </Link>
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={0.15} className="lg:col-span-7">
-          <MapaAliadosDestacado portafolios={aliados.slice(0, MAXIMO_EN_MAPA)} />
+          {/* Todos los aliados, sin tope: mismo criterio que /aliados («mostrar todo»).
+              El mapa suma solo los comercios de OpenStreetMap (con y sin nombre). */}
+          <MapaAliadosDestacado portafolios={aliados} />
 
           {total === 0 && (
             <p className="mt-3 font-sans text-xs text-tinta/60">
-              El mapa está vacío por ahora — sé el primer punto marcado.
+              Todavía no hay aliados registrados: las estrellas son comercios del barrio mapeados en OpenStreetMap. Sé el primer punto marcado.
             </p>
           )}
         </ScrollReveal>

@@ -27,7 +27,7 @@ function Metrica({
 }) {
   return (
     <div className="border-t border-tinta/12 pt-4">
-      <p className="font-sans text-3xl text-tinta">{valor}</p>
+      <p className="font-cifra text-3xl text-tinta">{valor}</p>
       <p className="mt-1 font-sans text-xs uppercase tracking-wider text-tinta/65">
         {etiqueta}
       </p>
@@ -58,7 +58,7 @@ function Barras({
         <li key={f.etiqueta}>
           <div className="flex items-baseline justify-between gap-4">
             <span className="font-sans text-sm text-tinta/75">{f.etiqueta}</span>
-            <span className="font-sans text-xs text-tinta/65">
+            <span className="font-cifra text-xs text-tinta/65">
               {f.valor}
               {f.secundario !== undefined && f.secundario !== f.valor && (
                 <span className="text-tinta/60">
@@ -132,7 +132,7 @@ function SerieDiaria({
         ))}
       </div>
 
-      <div className="mt-2 flex justify-between font-sans text-xs text-tinta/60">
+      <div className="mt-2 flex justify-between font-cifra text-xs text-tinta/60">
         <span>{filas[0]?.dia.slice(5)}</span>
         <span>{hayDatos ? `máx ${max}/día` : `sin ${unidad} aún`}</span>
         <span>{filas[filas.length - 1]?.dia.slice(5)}</span>
@@ -187,14 +187,14 @@ export default async function EstadisticasPage() {
         <a
           href="/api/admin/exportar?conjunto=aliados"
           download
-          className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+          className="border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
         >
           ↓ Aliados en CSV
         </a>
         <a
           href="/api/admin/exportar?conjunto=interacciones"
           download
-          className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+          className="border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
         >
           ↓ Interacciones por día en CSV
         </a>
@@ -405,14 +405,14 @@ export default async function EstadisticasPage() {
             href="https://vercel.com/dashboard"
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             Abrir Vercel Analytics ↗
           </a>
 
           <Link
             href="/admin/aliados"
-            className="border border-tinta/20 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="border border-tinta/55 px-4 py-2 font-sans text-xs text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             ← Volver a la cola
           </Link>

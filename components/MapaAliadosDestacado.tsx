@@ -56,19 +56,23 @@ export function MapaAliadosDestacado({ portafolios }: { portafolios: Portafolio[
 
   return (
     <div>
-      <div className="h-[380px] w-full overflow-hidden border border-tinta/12 sm:h-[460px] lg:h-[520px]">
-        <MapaAliados portafolios={portafolios} ubicacionUsuario={ubicacion} />
-      </div>
+      <MapaAliados portafolios={portafolios} ubicacionUsuario={ubicacion} variante="portada" />
 
       {estado === 'sin_permiso' && (
-        <button
-          type="button"
-          onClick={reintentar}
-          className="mt-3 inline-flex items-center gap-2 border border-tinta/20 px-3 py-1.5 font-sans text-xs text-tinta/60 transition-colors hover:border-azul-texto hover:text-azul-texto"
-        >
-          <span aria-hidden="true">◎</span>
-          Ver los que tengo cerca
-        </button>
+        <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <button
+            type="button"
+            onClick={reintentar}
+            className="inline-flex min-h-[44px] items-center gap-2 border border-tinta/55 px-3 py-1.5 font-sans text-xs text-tinta/60 transition-colors hover:border-azul-texto hover:text-azul-texto"
+          >
+            <span aria-hidden="true">◎</span>
+            Ver los que tengo cerca
+          </button>
+          <span className="max-w-md font-sans text-xs leading-relaxed text-tinta/65">
+            Si lo presionas y das permiso a tu ubicación, te mostramos qué negocios tienes cerca y a qué
+            distancia. Tu ubicación se usa solo en tu navegador. No se envía ni se guarda.
+          </span>
+        </div>
       )}
     </div>
   );

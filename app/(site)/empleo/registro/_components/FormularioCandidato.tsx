@@ -26,8 +26,8 @@ const ETIQUETAS_NIVEL: Record<(typeof OPCIONES_NIVEL_FORMACION)[number], string>
 const NIVELES_CON_PROGRAMA = ['universitaria', 'tecnologica', 'tecnica', 'tecnico_sena'];
 
 const claseInput =
-  'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
+  'placeholder:text-tinta/65 focus:border-azul focus:outline-none focus:ring-0 ' +
   'aria-[invalid=true]:border-azul';
 
 const claseEtiqueta = 'block font-sans text-xs uppercase tracking-wider text-tinta/65';

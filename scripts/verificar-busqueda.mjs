@@ -8,7 +8,22 @@
  */
 
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { buscarNegocios, relacionados, terminosDe } from '../lib/busqueda.ts';
+import {
+  aBuscable,
+  aplanarComercios,
+  cocinaLegible,
+  comerciosConNombre,
+  contarPorCategoria,
+  esComercioOsm,
+  filtrarPorCategoria,
+  horarioLegible,
+  nombreCategoriaOsm,
+  nombreVisible,
+  unirCategorias,
+  webLegible,
+} from '../lib/geo/comerciosOsm.ts';
 
 const n = (id, nombre, categoria_id, categoria_nombre, extra = {}) => ({
   id, nombre, categoria_id, categoria_nombre, categoria_otra: null,
@@ -52,4 +67,124 @@ assert.deepEqual(ids(buscarNegocios(NEGOCIOS, 'zzzz')), [], 'nada parecido, nada
 const rel = relacionados(NEGOCIOS, buscarNegocios(NEGOCIOS, 'Doña Rosa').resultados);
 assert.deepEqual(rel.map((x) => x.id), ['4'], 'recomienda de la misma categoría, sin repetir');
 
-console.log('✓ busqueda: 18 comprobaciones');
+// ── Comercios de OpenStreetMap: la misma función, con el JSON real ──────
+
+const datos = JSON.parse(readFileSync(new URL('../public/firmamento/constelaciones.json', import.meta.url), 'utf8'));
+const comercios = aplanarComercios(datos);
+assert.equal(comercios.length, datos.resumen.total_comercios, 'aplana estrellas y puntos sueltos: ninguno se pierde');
+const sinNombre = comercios.filter((c) => !c.nombre);
+assert.equal(sinNombre.length, datos.resumen.sin_nombre, 'el resumen cuenta bien los comercios sin nombre');
+// Los sin nombre se dibujan en el mapa pero no entran a la lista ni al buscador.
+const OSM = comerciosConNombre(comercios).map(aBuscable);
+assert.equal(OSM.length, datos.resumen.con_nombre, 'solo los que tienen nombre se buscan');
+assert.ok(OSM.every((o) => o.nombre.trim() !== ''), 'ningún comercio buscable tiene el nombre vacío');
+assert.equal(new Set(OSM.map((o) => o.id)).size, OSM.length, 'ids únicos');
+assert.ok(OSM.every(esComercioOsm), 'todos quedan marcados como OSM');
+
+const TODOS = [...NEGOCIOS, ...OSM];
+const hay = (r, osm) => r.resultados.some((x) => x.comercio?.osm === osm);
+
+const porCategoria = buscarNegocios(TODOS, 'peluquería');
+assert.ok(hay(porCategoria, 'n5449526346'), 'por categoría: «peluquería» encuentra un comercio de OSM de Belleza y peluquería');
+assert.equal(nombreCategoriaOsm('belleza_peluqueria'), 'Belleza y peluquería');
+assert.equal(nombreCategoriaOsm(null), 'Sin categoría');
+
+const porCalle = buscarNegocios(TODOS, 'calle 71A');
+assert.ok(hay(porCalle, 'n5449526346'), 'por dirección: «calle 71A» encuentra «Calle 71A #31-36»');
+const porCarrera = buscarNegocios(TODOS, 'cra 31A');
+assert.ok(
+  porCarrera.resultados.some((x) => x.comercio?.detalle?.direccion?.startsWith('Carrera 31A')),
+  '«cra» vale por «carrera» en una dirección',
+);
+assert.ok(
+  !buscarNegocios(TODOS, 'sin categoría').resultados.some(
+    (x) => esComercioOsm(x) && !x.comercio.categoria && !/\bsin\b/i.test(x.nombre),
+  ),
+  '«Sin categoría» no es una palabra que se busque',
+);
+
+// Sin nombre: ni buscable ni con título vacío en la ficha.
+assert.ok(sinNombre.length > 0, 'el JSON trae comercios sin nombre (caso real)');
+assert.deepEqual(ids(buscarNegocios(TODOS, 'null')), [], 'la palabra «null» no encuentra nada');
+assert.ok(
+  !buscarNegocios(TODOS, 'comercio sin nombre').resultados.some((x) => esComercioOsm(x) && !x.comercio.nombre),
+  'un comercio sin nombre no sale en la búsqueda',
+);
+const titulo = nombreVisible(sinNombre.find((c) => c.categoria) ?? sinNombre[0]);
+assert.ok(/^Comercio sin nombre/.test(titulo) && !/null/i.test(titulo), `título de respaldo legible: «${titulo}»`);
+assert.equal(nombreVisible({ osm: 'n0', nombre: null, lat: 0, lon: 0, categoria: 'tienda_viveres' }), 'Comercio sin nombre · Tienda y víveres');
+assert.equal(nombreVisible({ osm: 'n0', nombre: '  ', lat: 0, lon: 0, categoria: null }), 'Comercio sin nombre');
+assert.equal(nombreVisible({ osm: 'n0', nombre: 'Tienda Luz', lat: 0, lon: 0, categoria: null }), 'Tienda Luz');
+
+// Una categoría SIN aliados igual devuelve comercios de OSM (y el filtro la ofrece).
+const conteosOsm = contarPorCategoria(comercios);
+assert.equal(Object.values(conteosOsm).reduce((a, b) => a + b, 0), datos.resumen.total_comercios, 'el conteo por categoría cuadra con el resumen');
+const oferta = unirCategorias(
+  [{ id: 'comidas', nombre: 'Comidas y almuerzos' }, { id: 'lavanderia', nombre: 'Lavandería' }],
+  { comidas: 2 },
+  conteosOsm,
+);
+assert.ok(!oferta.categorias.some((c) => c.id === 'lavanderia'), 'sin aliados ni comercios no se ofrece');
+assert.ok(oferta.categorias.some((c) => c.id === 'salud_bienestar'), 'una categoría que solo trae OSM se ofrece');
+assert.equal(oferta.categorias.at(-1).nombre, 'Sin categoría', '«Sin categoría» va al final');
+assert.equal(oferta.conteos.comidas, 2 + conteosOsm.comidas, 'aliados y OSM se suman');
+assert.equal(oferta.total, 2 + datos.resumen.total_comercios);
+const salud = filtrarPorCategoria(datos, 'salud_bienestar');
+assert.equal(salud.resumen.total_comercios, conteosOsm.salud_bienestar, 'filtrar deja los comercios de esa categoría');
+assert.equal(salud.resumen.con_nombre + salud.resumen.sin_nombre, salud.resumen.total_comercios, 'con y sin nombre cuadran al filtrar');
+const SALUD = comerciosConNombre(aplanarComercios(salud)).map(aBuscable);
+assert.ok(SALUD.length > 0, 'salud_bienestar (sin aliados) devuelve comercios de OSM');
+assert.ok(buscarNegocios([...NEGOCIOS, ...SALUD], '').resultados.some(esComercioOsm), 'y quedan en la lista aunque no haya aliados');
+
+const cocina = comercios.find((c) => c.detalle?.cocina === 'coffee_shop');
+assert.ok(cocina && hay(buscarNegocios(TODOS, 'café'), cocina.osm), 'por cocina: «café» encuentra la cocina coffee_shop');
+
+const empate = buscarNegocios(
+  [
+    aBuscable({ osm: 'n1', nombre: 'Sandra Spa', lat: 0, lon: 0, categoria: 'belleza_peluqueria' }),
+    n('9', 'Sandra Spa', 'belleza_peluqueria', 'Belleza y peluquería'),
+  ],
+  'sandra spa',
+);
+assert.deepEqual(empate.resultados.map((x) => x.id), ['9', 'osm:n1'], 'ante empate, el aliado va primero aunque venga después');
+
+const rel2 = relacionados(NEGOCIOS, buscarNegocios(TODOS, 'peluquería').resultados);
+assert.ok(rel2.every((x) => !esComercioOsm(x)), 'las recomendaciones salen de los aliados');
+
+// ── Texto de OSM para vecinos ───────────────────────────────────────────
+
+assert.equal(horarioLegible('24/7'), 'Abierto las 24 horas');
+assert.equal(horarioLegible('Mo-Sa 08:00-18:00'), 'Lunes a sábado, 8:00 a. m. – 6:00 p. m.');
+assert.equal(horarioLegible('Mo-Su 09:00-21:00'), 'Todos los días, 9:00 a. m. – 9:00 p. m.');
+assert.equal(horarioLegible('08:00-19:00'), 'Todos los días, 8:00 a. m. – 7:00 p. m.');
+assert.equal(
+  horarioLegible('Mo-Fr 09:00-23:00; Sa-Su 13:00-02:00'),
+  'Lunes a viernes, 9:00 a. m. – 11:00 p. m.; Sábado a domingo, 1:00 p. m. – 2:00 a. m.',
+);
+assert.equal(
+  horarioLegible('Mo,We,Fr 08:00-12:00,14:00-18:00'),
+  'Lunes, miércoles y viernes, 8:00 a. m. – 12:00 p. m. y 2:00 p. m. – 6:00 p. m.',
+);
+assert.equal(horarioLegible('Mo-Sa 08:00-18:00; Su off'), 'Lunes a sábado, 8:00 a. m. – 6:00 p. m.; Domingo, cerrado');
+assert.equal(horarioLegible('Mo-Su 00:00-24:00'), 'Todos los días, las 24 horas');
+assert.equal(horarioLegible('7:00 am 8:00 pm'), '7:00 am 8:00 pm', 'lo que no se entiende se muestra tal cual');
+assert.equal(horarioLegible('Sa,Su'), 'Sa,Su', 'solo días, sin horas: tal cual');
+assert.equal(horarioLegible('Mo-Fr 08:00-17:00; PH off'), 'Mo-Fr 08:00-17:00; PH off', 'feriados (PH): tal cual, no a medias');
+for (const h of new Set(comercios.map((c) => c.detalle?.horario).filter(Boolean))) {
+  const texto = horarioLegible(h);
+  assert.ok(texto === h || !/\b(Mo|Tu|We|Th|Fr|Sa|Su)\b/.test(texto), `«${h}» no queda a medio traducir`);
+}
+
+assert.equal(cocinaLegible('burger'), 'Hamburguesas');
+assert.equal(cocinaLegible('coffee_shop'), 'Café');
+assert.equal(cocinaLegible('regional;burger'), 'Comida regional, hamburguesas');
+assert.equal(cocinaLegible('regional;algo_raro'), 'Comida regional', 'un valor que no está en el diccionario no se muestra');
+assert.equal(cocinaLegible('algo_raro'), '');
+for (const c of comercios.map((x) => x.detalle?.cocina).filter(Boolean)) {
+  for (const v of c.split(';')) {
+    assert.ok(cocinaLegible(v), `el diccionario de cocinas cubre «${v}» (el JSON lo trae)`);
+  }
+}
+assert.equal(webLegible('https://www.smartfit.com.co/ruta'), 'smartfit.com.co');
+
+console.log('✓ busqueda: aliados, comercios de OpenStreetMap y texto de OSM');

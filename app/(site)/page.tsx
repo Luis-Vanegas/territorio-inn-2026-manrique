@@ -21,13 +21,12 @@ export default function Home() {
         <ModalRegistroExitoso />
       </Suspense>
       <Hero />
-      {/* Va inmediatamente después del Hero, antes que las secciones
-          institucionales: es el punto de conversión del sitio, tiene que ser
-          lo primero que alguien ve al bajar. */}
-      <AliadosDestacado />
-      <GaleriaAliados />
+      {/* Orden del plan de diseño (§3): Hero → banda Firmamento (noche, con los
+          números del territorio) → mapa de Aliados → qué ofrecemos → galería. */}
       <MetricasSection />
+      <AliadosDestacado />
       <EnfoqueSection />
+      <GaleriaAliados />
       <Footer />
     </main>
   );

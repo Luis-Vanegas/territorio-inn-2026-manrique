@@ -12,7 +12,7 @@ export default function PoliticaDatosPage() {
     <DocumentoLegal
       titulo="Política de tratamiento de datos personales"
       version={VERSION_TERMINOS}
-      actualizado="septiembre de 2026"
+      actualizado="octubre de 2026"
     >
       <p>
         Esta política describe cómo se recolectan, usan y protegen los datos
@@ -58,7 +58,10 @@ export default function PoliticaDatosPage() {
         <li>Permitir que la ciudadanía contacte directamente al emprendedor.</li>
         <li>
           Producir estadísticas agregadas y anónimas sobre la actividad económica
-          del territorio.
+          del territorio y publicarlas como datos abiertos. Esas cifras son solo
+          conteos de negocios aprobados; cuando una categoría o un barrio tiene
+          menos de 5 negocios, se publica como «&lt;5» y no con el número. Nunca
+          incluyen nombres, contactos, direcciones ni respuestas individuales.
         </li>
         <li>
           Fines estudiantiles y académicos: este proyecto se presenta como
@@ -102,17 +105,52 @@ export default function PoliticaDatosPage() {
         de Colombia, conforme al artículo 26 del Decreto 1377 de 2013. Al
         aceptar esta política autorizas esa transferencia internacional, que se
         hace únicamente para operar el servicio — no se comparten los datos con
-        terceros distintos de estos proveedores de infraestructura.
+        terceros distintos de estos proveedores de infraestructura y, si usas el
+        asesor, de los proveedores de inteligencia artificial de la sección 08.
       </p>
 
-      <h2>08 · Conservación</h2>
+      <h2>08 · Asesor de formalización e inteligencia artificial</h2>
+      <p>
+        Si usas el asesor de formalización (el botón flotante que aparece al
+        entrar con tu cuenta), tu pregunta se envía a un modelo de lenguaje
+        operado por un tercero. El asesor prueba estos proveedores en orden y
+        responde el primero que contesta:
+      </p>
+      <ul>
+        <li>Groq</li>
+        <li>Routeway</li>
+        <li>Google Gemini</li>
+        <li>OpenRouter, que a su vez enruta a otros modelos</li>
+        <li>NVIDIA NIM</li>
+      </ul>
+      <p>
+        Con tu pregunta viajan los datos de tu ficha que el asesor necesita para
+        responder: el nombre del negocio, su actividad, el barrio, la situación
+        de formalidad que indicaste y lo que dijiste que más te cuesta. No se
+        envían tu WhatsApp, teléfono, correo, dirección, fotografía ni tu
+        dirección IP. Cuando pregunta un moderador no se envía ninguna ficha.
+      </p>
+      <p>
+        Estos proveedores están fuera de Colombia y se usan con sus planes
+        gratuitos. Cada uno aplica sus propias condiciones, y no podemos
+        garantizar que no conserven las consultas o las usen para mejorar sus
+        modelos. Por eso no escribas en el asesor datos que no quieras compartir
+        con ellos. Usar el asesor es opcional: todo lo demás del sitio funciona
+        sin él, y al usarlo autorizas esta transferencia internacional (artículo
+        26 del Decreto 1377 de 2013).
+      </p>
+
+      <h2>09 · Conservación</h2>
       <p>
         Los datos se conservan mientras el emprendimiento permanezca activo en la
         vitrina o hasta que se solicite su supresión. Al archivarse un registro,
-        la fotografía asociada se elimina del almacenamiento.
+        la fotografía asociada se elimina del almacenamiento. La dirección IP del
+        registro se guarda en claro solo 30 días, con fines de seguridad, y
+        después se elimina. El registro de tu consentimiento guarda solo un
+        código irreversible (hash) calculado a partir de ella, no la IP.
       </p>
 
-      <h2>09 · Mis clientes: datos de los clientes de cada negocio</h2>
+      <h2>10 · Mis clientes: datos de los clientes de cada negocio</h2>
       <p>
         Los negocios registrados pueden anotar a sus propios clientes en la
         herramienta «Mis clientes» para hacerles seguimiento. Sobre esos datos,
@@ -147,7 +185,7 @@ export default function PoliticaDatosPage() {
         </li>
       </ul>
 
-      <h2>10 · Cambios</h2>
+      <h2>11 · Cambios</h2>
       <p>
         Cada registro guarda la versión de la política vigente al momento de
         aceptarla. Si esta política cambia, los consentimientos previos quedan

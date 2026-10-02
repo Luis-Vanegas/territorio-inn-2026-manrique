@@ -7,6 +7,8 @@ import { formatearDistancia } from '@/lib/geo/distancia';
 import { contar } from '@/lib/interacciones';
 import { IconoContacto } from '@/components/iconos/IconoContacto';
 import { FotoAmpliable } from '@/components/FotoAmpliable';
+import type { DatosConstelaciones } from '@/lib/geo/constelaciones';
+import { OtrosDeTuConstelacion } from './OtrosDeTuConstelacion';
 
 /**
  * Ficha de un emprendimiento en el listado.
@@ -91,6 +93,7 @@ export function TarjetaEmprendimiento({
   definicionesCampos,
   distancia,
   activo,
+  datosOsm,
 }: {
   portafolio: Portafolio;
   indice: number;
@@ -99,6 +102,8 @@ export function TarjetaEmprendimiento({
   distancia?: number | null;
   /** Resaltado porque se tocó su punto en el mapa. */
   activo?: boolean;
+  /** Constelaciones de OSM, SIN filtrar por categoría; null mientras cargan. */
+  datosOsm?: Pick<DatosConstelaciones, 'constelaciones'> | null;
 }) {
   const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
 
@@ -193,6 +198,13 @@ export function TarjetaEmprendimiento({
               ))}
             </dl>
           )}
+
+          <OtrosDeTuConstelacion
+            latitud={portafolio.latitud}
+            longitud={portafolio.longitud}
+            nombre={portafolio.nombre}
+            datos={datosOsm ?? null}
+          />
         </div>
 
         {portafolio.foto_url && (

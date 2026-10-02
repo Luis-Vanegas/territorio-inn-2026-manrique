@@ -43,9 +43,16 @@ export const POLIGONO_MANRIQUE = manrique;
  * formularios: dos copias de una lista se desincronizan en cuanto alguien
  * agrega un barrio en una sola.
  *
- * OJO — esta lista no está verificada contra una fuente oficial. El GeoJSON
- * de lib/geo/manrique.json solo trae el polígono de la comuna, sin barrios,
- * así que no hay de dónde derivarla. Una vecina del territorio mencionó
+ * Corregida el 2026-10-01 (A1 del plan del reto): «Campo Valdés No. 1» es de la
+ * Comuna 4 (Aranjuez); el de la Comuna 3 es «Campo Valdés No. 2». Fuentes: el
+ * geocatálogo de Medellín, registro «Comuna 3-Barrio 0303-Campo Valdés N°2»
+ * (https://www.medellin.gov.co/giscatalogacion/srv/api/records/60a3bca3-fa00-4a7f-b66d-a21ff34aec9b)
+ * y el Decreto 346 de 2000; la Comuna 3 tiene 15 barrios, y esta lista tiene 15.
+ *
+ * OJO — el resto de la lista no se contrastó contra un listado de la Alcaldía.
+ * lib/geo/barrios-manrique.json (Alcaldía de Medellín) trae los mismos
+ * 15 nombres y `verificar-barrios.mjs` exige que coincidan: eso prueba que la
+ * lista y el dataset concuerdan, no que ninguno omita un barrio. Una vecina del territorio mencionó
  * "Manrique Jardín", que no está acá; el mapa del inicio listaba "San Pablo",
  * que tampoco. Antes de darla por buena hay que contrastarla con el listado
  * de la Alcaldía. Mientras tanto el selector ofrece "Otro" con campo libre,
@@ -59,7 +66,7 @@ export const BARRIOS_COMUNA_3: string[] = [
   'La Salle',
   'Las Granjas',
   'Santa Inés',
-  'Campo Valdés No. 1',
+  'Campo Valdés No. 2',
   'San José de la Cima No. 1',
   'San José de la Cima No. 2',
   'La Cruz',
@@ -102,7 +109,11 @@ export const BARRIOS_COMUNA_3: string[] = [
  * día que este proveedor haga lo mismo que CARTO, se cambia en un solo lugar.
  */
 export const TESELAS = {
-  url: 'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  claro:
+    'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+  // Mismo servicio y misma atribución: el mapa sigue al tema (lib/tema.ts).
+  oscuro:
+    'https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
   atribucion:
     'Esri, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> y la comunidad GIS',
 } as const;

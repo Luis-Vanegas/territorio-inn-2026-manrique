@@ -217,6 +217,18 @@ Ver `docs/analitica.md` para el detalle. En resumen:
 
 - Se guarda `ip_registro` en `portafolios` y `peticiones`. Es dato personal,
   está declarado en `/legal/politica-datos` y tiene consentimiento expreso.
+  **Solo 30 días**: el cron diario (`/api/cron/purgar` → `purgarIpsViejas`) la
+  anula pasado ese plazo; la fila queda, la IP no. Para auditoría de
+  consentimiento queda `aliados_consentimiento.ip_hash`.
+- **Datos abiertos (`GET /api/datos`)**: solo conteos de negocios aprobados, con
+  la regla k = 5 (celdas < 5 salen como `"<5"`, con supresión complementaria en
+  las particiones). Sin nombres, contactos, direcciones, coordenadas, tokens, IP
+  ni respuestas individuales. CORS abierto a propósito: por eso no puede devolver
+  nada que no se publicaría en la vitrina. Lo comprueba `verificar-datos-k.mjs`.
+- **Asesor de IA**: la política nombra a los proveedores (Groq, Routeway, Google
+  Gemini, OpenRouter, NVIDIA NIM) y qué datos de la ficha reciben. Si se agrega
+  un proveedor a `lib/agente/proveedores.ts`, se nombra en la política y se sube
+  `VERSION_TERMINOS`.
 - `aliados_consentimiento.ip_hash` se calcula con `sha256(ip + IP_HASH_PEPPER)`.
   **Si la variable falta, `hashIp()` devuelve `null` y no se guarda nada.** Antes
   tenía un `?? ''` que caía al SHA-256 pelado en silencio: el espacio de IPv4 son
@@ -250,6 +262,16 @@ de Neon, nunca contra producción.
 
 Si algún día se reactiva Actions, en repos públicos es gratis e ilimitado — lo
 único que hay que hacer es sacar el presupuesto de $0 que lo bloquea.
+
+**Excepción desde el reto de octubre de 2026:** hay UN workflow,
+`.github/workflows/vigia-convocatorias.yml` (vigía diario de convocatorias, que
+solo envía candidatas `pendiente` a moderación). No es CI de verificación, así
+que el párrafo de arriba sigue valiendo. El repo es público y la documentación de
+GitHub dice que los runners estándar no se cobran en repos públicos; si el
+presupuesto de $0 todavía bloqueara el producto, el síntoma es el de antes: el job
+no arranca. Los workflows programados se desactivan tras 60 días sin actividad.
+Variables nuevas: `INGESTA_SECRETO` (Vercel) y los secretos `INGESTA_URL` e
+`INGESTA_SECRETO` del repo.
 
 ## Lo que falta
 

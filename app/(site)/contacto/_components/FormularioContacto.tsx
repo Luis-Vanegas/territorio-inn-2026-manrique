@@ -7,8 +7,8 @@ import { registrarPeticion, type EstadoPeticion } from '@/lib/actions/registrarP
 const ESTADO_INICIAL: EstadoPeticion = { estado: 'inicial' };
 
 const claseInput =
-  'w-full border-0 border-b border-tinta/20 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
-  'placeholder:text-tinta/30 focus:border-azul focus:outline-none focus:ring-0 ' +
+  'w-full border-0 border-b border-tinta/55 bg-transparent px-0 py-2 font-sans text-[15px] text-tinta ' +
+  'placeholder:text-tinta/65 focus:border-azul focus:outline-none focus:ring-0 ' +
   'aria-[invalid=true]:border-azul';
 
 function BotonEnviar() {
@@ -50,7 +50,7 @@ export function FormularioContacto() {
       {estado.estado === 'error' && estado.mensaje && (
         <p
           role="alert"
-          className="border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-azul-texto"
+          className="border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm text-tinta"
         >
           {estado.mensaje}
         </p>

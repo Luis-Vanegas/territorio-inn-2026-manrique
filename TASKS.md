@@ -1,5 +1,73 @@
 # Tareas del proyecto
 
+## 🏁 Reto #2 — alineación (entrega 11-oct-2026)
+
+Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/alineacion`.
+
+- [x] **Fase 0 · Higiene (1-oct).** `.gitattributes` (`* text=auto eol=lf`) en `main`
+      (`78aa3c4`). El `--renormalize` no cambió nada: con `core.autocrlf=true` el índice ya
+      guardaba LF; los «222 modificados» del plan eran solo la copia de trabajo. Planes,
+      subagentes y `pipeline/referencia/modelo_categoria.json` commiteados en la rama para
+      que los worktrees los vean. `docs/.fuse_hidden*` es un residuo vacío: no se commitea.
+- [ ] Fase 1 · Datos y ML — hecha en `worktree-agent-a923aed9d6a0c4649`, falta QA y merge.
+      Corrida 1-oct: 192 comercios OSM en la comuna, 12 constelaciones (`leaf`), 70 sueltos,
+      F1 macro 0,535. Detalle en `pipeline/reporte_modelo.md`.
+- [ ] Fase 4 · Documento — borrador en `worktree-agent-a9e81739e146db829`, falta QA y merge.
+      Dudas para Luis en `docs/concurso/notas-internas.md`.
+- [ ] Fase 3, pasos 1–2 de diseño — hechos en `worktree-agent-a5f2a8da08a407979`; falta
+      probar D1 con el server y QA. Decisión abierta para Luis: DM Mono vs DM Sans `tabular-nums`.
+- [x] Fases 1, 3 (pasos 1–2) y 4 integradas en `reto/alineacion` tras QA (1-oct).
+      DM Mono quedó como tercera familia solo para cifras, fuentes y fechas (decisión de Luis).
+- [x] Diseño paso 3 · Mapa encuadrado + capa de constelaciones (`cdb8d9f`), verificado en
+      1280/375/320 px.
+- [ ] **3 aliados fuera del polígono** (Polarium Diseños, Viala medias, Delicias de Carlota):
+      coordenadas mal marcadas al registrar; corregir en la base. Los dos últimos no se ven en el mapa.
+- [ ] Constelación c09 con halo de ~486 m: decidir si se limita u omite.
+- [x] OSM refrescado al 2026-10-02 (205 comercios, 12 constelaciones, 125/80, F1 0,528) con
+      `detalle` (dirección, horario, cocina, web) y `osm_base` en el JSON. La descripción de OSM
+      NO se publica (identificaba personas).
+- [x] Fase 2 (integrador) mergeada. **Incidente:** la 032 quedó aplicada en PRODUCCIÓN el
+      1-oct 21:50 UTC (solo aditiva, sin daño). La rama `dev` de Neon está archivada desde el
+      8-sep: `.env.local` apunta solo a producción. Antes de la próxima migración, desarchivar
+      o crear rama de prueba.
+- [x] Registro solo dentro de Manrique (`lib/geo/dentroDeManrique.ts`, tolerancia 40 m), con
+      aviso en vivo. Verificado en navegador.
+- [x] Comercios OSM: estrella tocable con ficha (nombre, categoría, dirección, horario y cocina
+      en español), sección «Otros comercios del barrio» en /aliados, buscador y cercanía.
+      Sin botones nuevos (decisión de Luis).
+- [ ] **Los 3 aliados fuera del polígono no se pueden editar sin mover su punto**: corregirlos
+      desde el panel o avisar a los dueños.
+- [ ] Teclado: ~205 paradas de Tab en el mapa (una por estrella). Salida hoy: «Ver los aliados
+      en lista». Mejorar sin control nuevo si se puede.
+- [ ] La «×» del popup de Leaflet dice «Close popup» en inglés (aria-label).
+- [x] Modo noche (`cdec94d`): textos y popups legibles, teselas Esri oscuras que siguen al tema,
+      bordes ≥ 3:1 y placeholders ≥ 4,5:1, filtro `?categoria=` también en el mapa y conteo en la
+      leyenda. Una sola fuente de tema (`lib/tema.ts`) y de colores de noche (`lib/paleta.ts`).
+- [x] OSM completo (`356d025`): 320 comercios (201 con nombre, 119 sin nombre, como la
+      asesoría: 312 = 198 + 114), 20 constelaciones con código y nombre descriptivo. /aliados
+      muestra mapa y comercios OSM en cualquier categoría (decisión de Luis: «mostrar todo»).
+- [ ] **Decisión pendiente de Luis:** HDBSCAN `eom` (18) vs `leaf` (20, vigente). Con 320
+      comercios `eom` ya no colapsa; actualizar documento con la cifra elegida.
+- [x] Documento del concurso a 320/201/119 y 20 constelaciones (`b6be1b6`); el asesor tiene 11 pasos.
+- [x] Encabezado sin scroll a 320 px, menú Aprende ▾ + Firmamento, portada «mostrar todo»,
+      banda Firmamento sin visitas, footer en texto (`717984f`).
+- [x] /firmamento α–η sin aliados individuales (solo agregados k=5); sugeridor en el registro;
+      toggle «público» y moderación de convocatorias en el panel; Mi cuenta «Para ti» y
+      «Tu negocio en números»; «Otros negocios de tu constelación» (`717984f`).
+- [x] Refactor sin duplicados: lib/cifras.ts, estrella única, lib/formato.ts, imports `.ts`
+      compartidos con los verificadores (preview de Vercel READY) (`d5b098a`).
+- [x] Barrios oficiales (GeoJSON de Luis, 15 barrios, 99,9 % de cobertura): barrioDe,
+      constelaciones sin calle nombradas por barrio, barrio en la ficha OSM, aviso en el
+      registro (`2e04e9e`). Fuente: Alcaldía de Medellín (archivo entregado al equipo).
+- [ ] «Qué ofrecemos» en la portada (plan §3.4): no hecho, espera decisión de Luis.
+- [ ] Pruebas manuales en producción: registro con sugeridor, toggle público, aprobar una
+      convocatoria, Mi cuenta con negocio aprobado.
+- [ ] Prueba que ejercite el refine de Zod con un punto fuera (hoy solo se prueba la función).
+- [ ] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP.
+- [ ] Documento: cifras nuevas con fuente (Cámara 2025: 2.626 empresas en Manrique; 15 barrios,
+      Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.
+- [ ] Fase 2 · Integrador — lista para lanzar (A1 confirmado por el geocatálogo).
+
 ## 🔎 Análisis de SonarCloud — 2026-08-31
 
 Primer análisis sobre `main` (commit `d120aa7`). Marcó Security C (1 issue),
@@ -160,6 +228,11 @@ Lo que NO se pudo probar:
       vitrina. **Es el último tramo del camino sin verificar.**
 
 ## 🟢 Para Antigravity (rápidas, mecánicas, acotadas)
+
+- [ ] **Aviso de barrio en la edición del negocio.** `FormularioEdicionPortafolio.tsx` tiene
+      el mismo selector de barrio que el registro y no avisa cuando el barrio elegido no
+      coincide con el punto. Copia el patrón de `FormularioRegistro.tsx` (busca `barrioDe` y
+      el `<div role="status">`): mismo texto, no bloquea el envío, no avisa con «Otro».
 
 ### Voseo en los mensajes de las server actions
 
@@ -479,10 +552,9 @@ Pendiente de Neon, en orden:
 - [ ] **Falta Content-Security-Policy.** Omisión consciente y documentada en
       `next.config.mjs` y `docs/seguridad.md`. Es lo que queda por hacer en
       seguridad de cabeceras.
-- [ ] **`public/logos/itm.svg` no lo usa nadie.** La lista de logos
-      institucionales de `lib/content.ts` solo tiene alcaldía y presupuesto
-      participativo. O falta agregarlo, o sobra el archivo — es una decisión
-      de contenido, no técnica.
+- [x] ~~**`public/logos/itm.svg` no lo usa nadie.**~~ Resuelto: los logos
+      institucionales se borraron (D3, sin permiso de uso; el pie nombra a las
+      instituciones en texto) y `itm.svg` ya no existe.
 - [x] ~~**Confirmar el origen y la licencia de las dos fotos del carrusel.**~~
       Resuelto el 2026-08-31 sin necesidad de confirmar nada: las dos fotos se
       reemplazaron por otras **tomadas por Luis**, así que la licencia es

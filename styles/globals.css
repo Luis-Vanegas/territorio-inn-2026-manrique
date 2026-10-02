@@ -15,6 +15,8 @@
      diseno-interfaz) contra el sitio real antes de darlos por definitivos. */
   --hueso-rgb: 255 255 255; /* blanco — pedido explícito por sobre el F7F5F0 anterior */
   --tinta-rgb: 26 26 26;
+  /* Controles nativos (lista del <select>, barras de desplazamiento) siguen al tema. */
+  color-scheme: light;
 
   /* Paleta de marca Constelaciones. Cada color tiene UNA función, no son
      intercambiables: azul = acción (links, botones, activo, foco, mapa),
@@ -40,6 +42,7 @@
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --hueso-rgb: 26 26 26;
   --tinta-rgb: 245 245 245; /* 15.97:1 entre sí, igual que hueso/tinta claro */
 
@@ -56,6 +59,7 @@
    solo evita un parpadeo si por algún motivo no llegó a ejecutarse. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
     --hueso-rgb: 26 26 26;
     --tinta-rgb: 245 245 245;
     --morado-rgb: 198 77 190;
@@ -205,6 +209,32 @@ body {
   }
 }
 
+/* ── Revelado visible sin JavaScript (DESIGN.md › Movimiento) ──
+   ScrollReveal rinde `opacity: 0` inline en el HTML del servidor. Sin JS nunca
+   se quita, y el vecino ve una pantalla vacía bajo el encabezado.
+   1. Sin la clase `js` (la pone el script de components/TemaInicial.tsx) todo
+      se ve: !important porque le gana al style inline de framer-motion.
+   2. Con `js` pero sin `js-listo` (el bundle no llegó o no hidrató) una
+      animación CSS lo revela a los 4 s. Las animaciones le ganan al style
+      inline normal. Con JS sano `js-listo` aparece al hidratar y esta regla
+      deja de aplicar, así que el revelado por scroll sigue intacto.
+   Con prefers-reduced-motion ScrollReveal ya no arranca oculto. */
+html:not(.js) [data-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+html.js:not(.js-listo) [data-reveal] {
+  animation: revelar-respaldo 1ms linear 4s forwards;
+}
+
+@keyframes revelar-respaldo {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Respeta a quien pidió menos movimiento en el sistema operativo.
    Antes esto era una lista de las siete clases animadas, que había que
    recordar ampliar cada vez que se agregaba una animación — y nadie se
@@ -230,6 +260,177 @@ body {
   }
 }
 
+/* ── Mapa: marcadores por grupo y capa de constelaciones ──────
+   La forma (SVG, components/mapa/formas.ts) es la identidad de cada grupo; el
+   color solo la refuerza. La caja mide 44 px por el objetivo táctil. */
+.marcador-grupo {
+  position: relative;
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.marcador-grupo svg {
+  transition: transform 120ms ease;
+}
+
+.leaflet-marker-icon:hover .marcador-grupo svg {
+  transform: scale(1.25);
+}
+
+/* El negocio tocado: crece y emite un anillo, sin cambiar de forma ni color. */
+.marcador-grupo--activo svg {
+  transform: scale(1.4);
+}
+
+.marcador-grupo--activo::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  border: 2px solid theme('colors.noche');
+  animation: anillo-activo 1.6s ease-out infinite;
+}
+
+@keyframes anillo-activo {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Máscara fuera de la comuna: sigue al tema porque lee la variable. */
+.mascara-fuera {
+  fill: rgb(var(--hueso-rgb));
+  fill-opacity: 0.55;
+}
+
+/* Constelaciones de OpenStreetMap: noche-3 sobre teselas claras, tenues, para
+   que no se confundan con los aliados (formas grandes y de color). */
+.halo-constelacion {
+  fill: theme('colors.noche-3');
+  fill-opacity: 0.07;
+  stroke: theme('colors.noche-3');
+  stroke-opacity: 0.4;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.halo-constelacion--activa {
+  fill-opacity: 0.14;
+  stroke-opacity: 0.8;
+}
+
+.arista-constelacion {
+  stroke: theme('colors.noche-3');
+  stroke-opacity: 0.7;
+  stroke-width: 1.25;
+  fill: none;
+}
+
+/* Contorno de la comuna: tinta del tema (oscuro sobre teselas claras, claro
+   sobre las oscuras). El CSS le gana al atributo stroke que pone Leaflet. */
+.limite-comuna {
+  stroke: rgb(var(--tinta-rgb));
+}
+
+/* Constelaciones sobre teselas oscuras: el noche-3 se perdía (1,2:1). Pasan a
+   noche-azul (#7FB0FF), la misma familia de color. */
+:root[data-theme='dark'] .halo-constelacion,
+:root[data-theme='dark'] .arista-constelacion,
+.modo-noche .halo-constelacion,
+.modo-noche .arista-constelacion {
+  fill: theme('colors.noche-azul');
+  stroke: theme('colors.noche-azul');
+}
+
+:root[data-theme='dark'] .halo-constelacion,
+.modo-noche .halo-constelacion {
+  fill-opacity: 0.1;
+}
+
+:root[data-theme='dark'] .halo-constelacion--activa,
+.modo-noche .halo-constelacion--activa {
+  fill-opacity: 0.2;
+}
+
+:root[data-theme='dark'] .arista-constelacion,
+.modo-noche .arista-constelacion {
+  fill: none;
+}
+
+/* Anillo del marcador activo: noche sobre teselas oscuras no se ve. */
+:root[data-theme='dark'] .marcador-grupo--activo::after,
+.modo-noche .marcador-grupo--activo::after {
+  border-color: theme('colors.estrella');
+}
+
+/* Trazo: la clase la pone CapaConstelaciones junto con pathLength=1, así que
+   sin JS o sin el atributo la línea queda sólida y visible. */
+.arista-trazo {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: trazar-arista 700ms ease-out both;
+}
+
+@keyframes trazar-arista {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Caja táctil de 44 px alrededor de la estrella de 11: es lo que se toca. */
+.caja-estrella {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.caja-estrella svg {
+  transition: transform 120ms ease;
+}
+
+.leaflet-marker-icon:hover .caja-estrella svg,
+.leaflet-marker-icon:focus-visible .caja-estrella svg {
+  transform: scale(1.6);
+}
+
+.estrella-osm {
+  display: block;
+  animation: parpadeo-estrella 4s ease-in-out infinite alternate;
+}
+
+@keyframes parpadeo-estrella {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Con menos movimiento la regla global apaga las animaciones; el trazo
+   arranca oculto (offset 1), así que hay que dejarlo dibujado a mano. */
+@media (prefers-reduced-motion: reduce) {
+  .arista-trazo {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+
+  .marcador-grupo--activo::after {
+    display: none;
+  }
+}
+
 /* Foco visible con teclado: los marcadores son interactivos y navegables. */
 .leaflet-marker-icon:focus-visible {
   outline: 2px solid rgb(var(--tinta-rgb));
@@ -245,8 +446,14 @@ body {
   box-shadow: 0 0 0 4px rgb(var(--hueso-rgb));
 }
 
-.leaflet-container {
+/* Orden de carga: leaflet.css entra en el chunk del mapa (dinámico) y llega
+   DESPUÉS de este archivo. Una regla de una sola clase que pise a Leaflet
+   pierde el empate de especificidad: el popup quedaba blanco con texto de
+   `tinta` (claro en oscuro) encima. Por eso lo de abajo cuelga de
+   `.leaflet-container` (o lleva !important) y gana sin depender del orden. */
+div.leaflet-container {
   background-color: rgb(var(--hueso-rgb));
+  color: rgb(var(--tinta-rgb));
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   /* Leaflet apila sus capas hasta z-index 1000 (controles). Sin aislar el
      contenedor, esas capas compiten con el header sticky (z-50) y en algún
@@ -254,28 +461,32 @@ body {
   isolation: isolate;
 }
 
-.leaflet-popup-content-wrapper {
-  border-radius: 0; /* el sistema es editorial: esquinas rectas, sin cards */
+.leaflet-container .leaflet-popup-content-wrapper,
+.leaflet-container .leaflet-popup-tip {
   box-shadow: none;
   border: 1px solid rgb(var(--tinta-rgb) / 0.15);
   background-color: rgb(var(--hueso-rgb));
+  color: rgb(var(--tinta-rgb));
 }
 
-.leaflet-popup-content {
+.leaflet-container .leaflet-popup-content-wrapper {
+  border-radius: 0; /* el sistema es editorial: esquinas rectas, sin cards */
+}
+
+.leaflet-container .leaflet-popup-content {
   margin: 0.75rem 0.9rem;
 }
 
-.leaflet-popup-tip {
-  box-shadow: none;
-  border: 1px solid rgb(var(--tinta-rgb) / 0.15);
-  background-color: rgb(var(--hueso-rgb));
+/* Leaflet pinta los links del popup con #0078A8: sobre el hueso oscuro no llega a 4,5:1. */
+.leaflet-container .leaflet-popup-content a {
+  color: rgb(var(--azul-texto-rgb));
 }
 
-.leaflet-popup-close-button {
+.leaflet-container a.leaflet-popup-close-button {
   color: rgb(var(--tinta-rgb) / 0.65) !important;
 }
 
-.leaflet-control-attribution {
+.leaflet-container .leaflet-control-attribution {
   background-color: rgb(var(--hueso-rgb)) !important;
   font-family: var(--font-dm-sans), system-ui, sans-serif;
   /* 12px y no los 10px que tenía: es la atribución que la licencia de
@@ -287,7 +498,7 @@ body {
   color: rgb(var(--tinta-rgb) / 0.75) !important;
 }
 
-.leaflet-control-attribution a {
+.leaflet-container .leaflet-control-attribution a {
   color: rgb(var(--azul-texto-rgb)) !important;
 }
 
@@ -297,6 +508,17 @@ body {
   border-color: rgb(var(--tinta-rgb) / 0.15) !important;
   /* Leaflet fija fondo blanco: en oscuro el +/− claro quedaba sobre blanco. */
   background-color: rgb(var(--hueso-rgb)) !important;
+}
+
+/* Zoom del mapa: Leaflet lo deja en 30px. En pantallas táctiles o angostas
+   sube a 44px (WCAG 2.5.8 y DESIGN.md). !important por lo mismo que arriba:
+   `.leaflet-touch .leaflet-bar a` de Leaflet pesa más que este selector. */
+@media (pointer: coarse), (max-width: 640px) {
+  .leaflet-bar a {
+    width: 44px !important;
+    height: 44px !important;
+    line-height: 44px !important;
+  }
 }
 
 /* Leaflet pone #f4f4f4 en hover: se pisa con el fondo sólido + un tinte
@@ -311,4 +533,59 @@ body {
    página trabada. */
 body:has(dialog[open]) {
   overflow: hidden;
+}
+
+/* ── Firmamento: superficie nocturna fija (DESIGN.md › Firmamento) ──
+   `/firmamento` es siempre de noche, sin seguir el selector de tema. En vez de
+   duplicar cada clase, el contenedor `.modo-noche` redefine los mismos tokens
+   (hueso = superficie, tinta = texto, azul/morado de texto) con los valores de
+   noche: lo que ya escribe `text-tinta` o `bg-hueso` (popups, controles y
+   leyenda del mapa) sale con la paleta nocturna. Contrastes medidos en
+   DESIGN.md; el foco usa sodio, que sobre noche da 12:1. */
+.modo-noche {
+  color-scheme: dark;
+  --hueso-rgb: 11 16 38; /* noche #0B1026 */
+  --tinta-rgb: 243 239 228; /* estrella #F3EFE4 */
+  --morado-rgb: 224 122 216; /* noche-morado */
+  --morado-texto-rgb: 224 122 216;
+  --azul-rgb: 127 176 255; /* noche-azul */
+  --azul-texto-rgb: 127 176 255;
+  --amarillo-rgb: 244 204 72;
+  background-color: theme('colors.noche');
+  color: theme('colors.estrella');
+}
+
+.modo-noche :where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid theme('colors.sodio');
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px theme('colors.noche');
+}
+
+/* Fraunces itálica (la carga app/(site)/firmamento/layout.tsx): titular, letras
+   griegas e índice de /firmamento. Si la variable no está (otra ruta), cae a la
+   Fraunces normal inclinada y luego a Georgia. */
+.font-italica {
+  font-family: var(--font-fraunces-italica, var(--font-fraunces)), Georgia, serif;
+  font-style: italic;
+  font-variation-settings: "SOFT" 60;
+}
+
+/* Líneas del cielo de /firmamento (framer-motion `pathLength`). framer rinde el
+   trazo en 0 dentro del HTML del servidor: mismas tres capas que [data-reveal]
+   (DESIGN.md › Movimiento). Sin `js` se ven enteras; con `js` pero sin
+   `js-listo` se dibujan solas a los 4 s. */
+html:not(.js) .linea-cielo {
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+}
+
+html.js:not(.js-listo) .linea-cielo {
+  animation: revelar-linea 1ms linear 4s forwards;
+}
+
+@keyframes revelar-linea {
+  to {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
 }

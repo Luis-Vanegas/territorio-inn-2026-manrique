@@ -1,0 +1,12 @@
+{
+  "_nota": "Páginas que el vigía revisa cada día. Cada una es una página de LISTADO (no una portada) que ya se abrió y se comprobó a mano. 'incluir' y 'excluir' son expresiones regulares sin distinción de mayúsculas aplicadas al texto del enlace. Todo lo que salga entra 'pendiente' y lo decide una persona: estos filtros solo reducen el ruido. Para agregar una fuente: abre su listado, copia la URL, prueba con `python 04_vigia_convocatorias.py --seco`.",
+  "fuentes": [
+    {
+      "nombre": "Fondo Emprender (SENA) · convocatorias vigentes",
+      "entidad": "Fondo Emprender (SENA)",
+      "url": "https://www.fondoemprender.com/SitePages/FondoEmprenderConvocatoriasVigentes.aspx",
+      "incluir": ["^convocatoria .*\\d"],
+      "excluir": ["cerrada"]
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import type { Categoria } from '@/lib/db/portafolios.repo';
 
 /**
  * Filtro por categoría.
@@ -7,6 +6,10 @@ import type { Categoria } from '@/lib/db/portafolios.repo';
  * Son <Link> y no botones con estado de cliente: el filtro vive en la URL
  * (?categoria=moda), así se puede compartir, volver atrás con el navegador y
  * el server hace la consulta filtrada. Cero JavaScript de por medio.
+ *
+ * Ofrece las categorías de aliados Y de comercios de OpenStreetMap, con los
+ * conteos de los dos sumados (`unirCategorias`): se puede filtrar por cualquier
+ * negocio que esté en el mapa, sea aliado o no.
  */
 
 export function FiltroCategorias({
@@ -15,13 +18,13 @@ export function FiltroCategorias({
   activa,
   total,
 }: {
-  categorias: Categoria[];
+  categorias: { id: string; nombre: string }[];
   conteos: Record<string, number>;
   activa?: string;
   total: number;
 }) {
-  // Una categoría sin emprendimientos aprobados solo ofrece un callejón sin
-  // salida: se muestran únicamente las que tienen algo detrás.
+  // Una categoría sin nada detrás (ni aliados ni comercios) es un callejón sin
+  // salida: se muestran únicamente las que tienen algo.
   const conResultados = categorias.filter((c) => (conteos[c.id] ?? 0) > 0);
 
   if (conResultados.length === 0) return null;

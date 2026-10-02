@@ -53,7 +53,7 @@ export function FotoAmpliable({
             persona tiene que saber que la foto se puede tocar. */}
         <span
           aria-hidden="true"
-          className="absolute bottom-1.5 right-1.5 grid h-7 w-7 place-items-center border border-tinta/15 bg-hueso/90 text-tinta"
+          className="absolute bottom-1.5 right-1.5 grid h-7 w-7 place-items-center border border-tinta/55 bg-hueso/90 text-tinta"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="11" cy="11" r="7" />
@@ -67,7 +67,7 @@ export function FotoAmpliable({
         aria-labelledby={idTitulo}
         onClose={() => setAbierto(false)}
         onClick={(e) => e.target === dialogo.current && cerrar()}
-        className="m-auto w-[min(96vw,72rem)] max-w-none border border-tinta/20 bg-hueso p-0 text-tinta backdrop:bg-tinta/75"
+        className="m-auto w-[min(96vw,72rem)] max-w-none border border-tinta/55 bg-hueso p-0 text-tinta backdrop:bg-tinta/75"
       >
         <div className="flex items-center justify-between gap-4 border-b border-tinta/15 px-4 py-3">
           <h2 id={idTitulo} className="min-w-0 truncate font-sans text-sm text-tinta/70">
@@ -76,7 +76,7 @@ export function FotoAmpliable({
           <button
             type="button"
             onClick={cerrar}
-            className="inline-flex min-h-[44px] shrink-0 items-center border border-tinta/40 px-4 font-sans text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className="inline-flex min-h-[44px] shrink-0 items-center border border-tinta/55 px-4 font-sans text-sm text-tinta transition-colors hover:border-azul-texto hover:text-azul-texto"
           >
             Cerrar <span aria-hidden="true">&nbsp;✕</span>
           </button>

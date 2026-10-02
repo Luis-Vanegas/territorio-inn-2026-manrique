@@ -15,7 +15,14 @@ import { sql } from './neon';
  * límite es holgado y el mensaje dice cuánto falta en vez de solo negar.
  */
 
-export type OrigenIntento = 'registro' | 'login' | 'estado' | 'agente' | 'geocodificar';
+export type OrigenIntento =
+  | 'registro'
+  | 'login'
+  | 'estado'
+  | 'agente'
+  | 'geocodificar'
+  | 'datos'
+  | 'ingesta';
 
 /**
  * Cupos por origen. Son distintos a propósito:
@@ -40,6 +47,12 @@ export type OrigenIntento = 'registro' | 'login' | 'estado' | 'agente' | 'geocod
  *   y no el de `registro`: alguien afinando la dirección puede tocarlo
  *   varias veces antes de encontrar el texto que Nominatim reconoce, y no
  *   tiene que gastarse el cupo de envío del formulario por eso.
+ * - `datos`: `GET /api/datos` (datos abiertos). Cupo propio para que leer no gaste
+ *   el de `registro`; holgado porque la respuesta sale de una caché de 1 h y a la
+ *   base solo llegan los pedidos que la caché no resuelve.
+ * - `ingesta`: secretos EQUIVOCADOS contra `/api/ingesta/convocatorias` (solo los
+ *   fallidos gastan cupo, como `login`). Frena el barrido de secretos sin afectar
+ *   al vigía legítimo, que manda un pedido por día.
  */
 const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> = {
   registro: { maximo: 3, ventanaMinutos: 10 },
@@ -47,6 +60,8 @@ const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> =
   estado: { maximo: 6, ventanaMinutos: 10 },
   agente: { maximo: 10, ventanaMinutos: 5 },
   geocodificar: { maximo: 8, ventanaMinutos: 5 },
+  datos: { maximo: 30, ventanaMinutos: 10 },
+  ingesta: { maximo: 8, ventanaMinutos: 15 },
 };
 
 export type ResultadoLimite =
@@ -113,6 +128,33 @@ export async function purgarIntentos(): Promise<number> {
     returning 1
   `;
   return rows.length;
+}
+
+/** Días que se conserva `ip_registro` en claro. Lo declara la política de datos (§09). */
+export const DIAS_IP_EN_CLARO = 30;
+
+/**
+ * Anula `ip_registro` (dato personal en claro) pasados `DIAS_IP_EN_CLARO` días,
+ * en portafolios y peticiones. La IP sirve para frenar abuso, y el abuso se ve en
+ * días, no en meses; guardarla para siempre era más de lo que la finalidad pide
+ * (Ley 1581, principio de necesidad). Se anula y no se borra la fila: el negocio
+ * y el mensaje siguen. Para auditoría queda `aliados_consentimiento.ip_hash` (migración 011); la 032 no agrega columnas de hash.
+ * Se llama desde el cron diario (`/api/cron/purgar`).
+ */
+export async function purgarIpsViejas(): Promise<number> {
+  const portafolios = await sql`
+    update portafolios set ip_registro = null
+    where ip_registro is not null
+      and creado_en < now() - make_interval(days => ${DIAS_IP_EN_CLARO})
+    returning 1
+  `;
+  const peticiones = await sql`
+    update peticiones set ip_registro = null
+    where ip_registro is not null
+      and creado_en < now() - make_interval(days => ${DIAS_IP_EN_CLARO})
+    returning 1
+  `;
+  return portafolios.length + peticiones.length;
 }
 
 /**
