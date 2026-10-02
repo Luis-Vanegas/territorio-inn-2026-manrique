@@ -143,8 +143,8 @@ def cargar_poligono():
 def cargar_barrios() -> tuple[list[tuple[str, object]], dict]:
     """Los 15 barrios oficiales (nombre en la grafía de BARRIOS_COMUNA_3, polígono) y su metadata.
 
-    Los genera scripts/extraer-barrios.mjs; la fuente está pendiente de confirmar
-    por el equipo y viaja en la metadata para citarla tal cual.
+    Los genera scripts/extraer-barrios.mjs; la fuente (Alcaldía de Medellín) viaja
+    en la metadata para citarla tal cual.
     """
     gj = json.loads(BARRIOS.read_text(encoding="utf-8"))
     return [(f["properties"]["nombre"], shape(f["geometry"])) for f in gj["features"]], gj["metadata"]

@@ -103,8 +103,7 @@ Con el criterio de la asesoría son 320 y 20 constelaciones. El conjunto de entr
 
 `lib/geo/barrios-manrique.json` trae los 15 barrios de la Comuna 3 (códigos 301–315), recortados por
 `scripts/extraer-barrios.mjs` desde el GeoJSON de barrios de Medellín (329 polígonos) y con el nombre en la
-grafía de `BARRIOS_COMUNA_3`. **Fuente: pendiente de confirmar por el equipo** (probablemente GeoMedellín,
-«Barrio Vereda»); viaja así en `metadata.fuente` y en `barrios.fuente` de `constelaciones.json` hasta que se confirme.
+grafía de `BARRIOS_COMUNA_3`. **Fuente: Alcaldía de Medellín** (archivo entregado al equipo); viaja en `metadata.fuente` y en `barrios.fuente` de `constelaciones.json`.
 La unión de los 15 cubre el 99,9 % del polígono de la comuna (el 0,1 % restante son ~5000 m² de sliver en el borde).
 El paso 2 lo usa para el barrio de cada comercio y para nombrar las constelaciones sin calle; la app calcula lo
 mismo con `barrioDe` (`lib/geo/barrioOficial.ts`).

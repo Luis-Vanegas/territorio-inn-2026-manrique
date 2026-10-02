@@ -36,7 +36,7 @@ const oficiales = [...bloque[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
 assert.equal(oficiales.length, 15, 'BARRIOS_COMUNA_3 tiene 15 barrios');
 
 // ── 1. Metadata y nombres ──
-assert.ok(barrios.metadata?.fuente, 'metadata.fuente presente (aunque diga «pendiente de confirmar»)');
+assert.ok(barrios.metadata?.fuente, 'metadata.fuente presente');
 assert.equal(barrios.features.length, 15, '15 barrios');
 const nombres = barrios.features.map((f) => f.properties.nombre);
 assert.deepEqual([...nombres].sort(), [...oficiales].sort(), 'los 15 nombres son los de BARRIOS_COMUNA_3');

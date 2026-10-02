@@ -5,9 +5,8 @@
  *
  *   node --experimental-strip-types scripts/extraer-barrios.mjs [--input <ruta>]
  *
- * Fuente: pendiente de confirmar por el equipo (probablemente GeoMedellín,
- * «Barrio Vereda»). No se inventa acá: queda así en `metadata.fuente` hasta que
- * alguien la confirme; cuando se sepa, se cambia FUENTE y se re-corre.
+ * Fuente: Alcaldía de Medellín (el archivo se lo pasaron al equipo; no trae
+ * metadatos propios). Viaja en `metadata.fuente`: si cambia, se cambia FUENTE y se re-corre.
  *
  * Salida: lib/geo/barrios-manrique.json (.json y no .geojson, por lo mismo que
  * manrique.json: ver extraer-manrique.mjs).
@@ -33,7 +32,7 @@ const ENTRADA_DEFECTO = 'C:/Users/LENOVO/Downloads/barrios.geojson';
 const SALIDA = resolve(RAIZ, 'lib/geo/barrios-manrique.json');
 const POLIGONO_COMUNA = resolve(RAIZ, 'lib/geo/manrique.json');
 
-const FUENTE = 'fuente pendiente de confirmar por el equipo';
+const FUENTE = 'Alcaldía de Medellín, polígonos de barrios (archivo entregado al equipo, 2026)';
 const COMUNA_ID = 3;
 
 /**

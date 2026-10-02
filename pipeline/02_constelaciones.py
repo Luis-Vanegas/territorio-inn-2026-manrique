@@ -22,7 +22,7 @@ Decisiones que conviene no olvidar:
 - HDBSCAN no tiene azar propio en este modo, pero se fija la semilla igual por
   si cambia la implementación de sklearn.
 - El barrio sale del polígono oficial (lib/geo/barrios-manrique.json, que genera
-  scripts/extraer-barrios.mjs; fuente pendiente de confirmar por el equipo): cada
+  scripts/extraer-barrios.mjs; fuente: Alcaldía de Medellín): cada
   comercio lleva `barrio` (null si cae en un hueco entre polígonos, ~0,1 % de la comuna)
   y una constelación sin calle se nombra «Barrio <X> · <categoría>» con el barrio más
   frecuente entre sus comercios. Se calcula por posición, igual que la app (`barrioDe`).

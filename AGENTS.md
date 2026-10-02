@@ -256,8 +256,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   (`lib/limiteMemoria.ts`), y si `verificarLimite` falla responde 503, no 500.
 - **Barrios oficiales** (`lib/geo/barrios-manrique.json`, `lib/geo/barrioOficial.ts`):
   los 15 polígonos de barrio de la Comuna 3, recortados por `scripts/extraer-barrios.mjs`
-  del GeoJSON de barrios de Medellín. Fuente PENDIENTE de confirmar por el equipo: no
-  se cita una hasta que alguien la confirme; viaja en `metadata.fuente`. El nombre va en
+  del GeoJSON de barrios de Medellín. Fuente: Alcaldía de Medellín (archivo entregado
+  al equipo); viaja en `metadata.fuente`. El nombre va en
   la grafía de `BARRIOS_COMUNA_3` (una sola tabla de equivalencias, en el script).
   `barrioDe(lat, lon)` es pura y devuelve el nombre o `null`; es una AYUDA (aviso del
   registro, barrio de cada comercio OSM), no una regla de admisión: esa sigue siendo

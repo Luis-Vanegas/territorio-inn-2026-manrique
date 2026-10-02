@@ -58,7 +58,7 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       compartidos con los verificadores (preview de Vercel READY) (`d5b098a`).
 - [x] Barrios oficiales (GeoJSON de Luis, 15 barrios, 99,9 % de cobertura): barrioDe,
       constelaciones sin calle nombradas por barrio, barrio en la ficha OSM, aviso en el
-      registro (`2e04e9e`). **Falta confirmar la fuente del GeoJSON** (¿GeoMedellín?).
+      registro (`2e04e9e`). Fuente: Alcaldía de Medellín (archivo entregado al equipo).
 - [ ] «Qué ofrecemos» en la portada (plan §3.4): no hecho, espera decisión de Luis.
 - [ ] Pruebas manuales en producción: registro con sugeridor, toggle público, aprobar una
       convocatoria, Mi cuenta con negocio aprobado.

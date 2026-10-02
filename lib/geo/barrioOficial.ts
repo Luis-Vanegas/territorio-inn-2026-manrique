@@ -12,8 +12,8 @@ import { anillosDe, dentroDeAnillos, type Anillo } from './puntoEnPoligono.ts';
  * elegido, no una regla de admisión (esa sigue siendo `dentroDeManrique`). Un
  * punto sobre la frontera puede caer de cualquiera de los dos lados.
  *
- * Fuente de los polígonos: pendiente de confirmar por el equipo (ver
- * `metadata.fuente` en barrios-manrique.json).
+ * Fuente de los polígonos: Alcaldía de Medellín (ver `metadata.fuente` en
+ * barrios-manrique.json).
  */
 
 const BARRIOS: { nombre: string; anillos: Anillo[] }[] = barrios.features.map((f) => ({

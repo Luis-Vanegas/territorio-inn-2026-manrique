@@ -50,7 +50,7 @@ export const POLIGONO_MANRIQUE = manrique;
  * y el Decreto 346 de 2000; la Comuna 3 tiene 15 barrios, y esta lista tiene 15.
  *
  * OJO — el resto de la lista no se contrastó contra un listado de la Alcaldía.
- * lib/geo/barrios-manrique.json (fuente pendiente de confirmar) trae los mismos
+ * lib/geo/barrios-manrique.json (Alcaldía de Medellín) trae los mismos
  * 15 nombres y `verificar-barrios.mjs` exige que coincidan: eso prueba que la
  * lista y el dataset concuerdan, no que ninguno omita un barrio. Una vecina del territorio mencionó
  * "Manrique Jardín", que no está acá; el mapa del inicio listaba "San Pablo",
