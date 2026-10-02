@@ -89,7 +89,7 @@ El texto de la pregunta está en la sección 8.4 del documento técnico.
 
 ## Dudas abiertas para Luis
 
-- **Catálogo del asesor:** la asesoría dice 11 pasos y `docs/arquitectura-y-costos.md` dice «catálogo de 8 trámites y apoyos». El documento dice «catálogo cerrado» sin número. No se pudo confirmar contando `lib/formalizacion.ts` (aparecen 16 entradas con `id` o `slug`, que no distinguen trámites de pasos). Confirmar antes de agregar un número.
+- ~~**Catálogo del asesor**~~ **Resuelto (2-oct):** `PASOS` de `lib/formalizacion.ts` tiene 11 pasos (RUT, Cámara, beneficios de tarifa, CEDEZO, Banco Distrital, Fondo Emprender, Bancóldex, iNNpulsa, Presupuesto Participativo, formación para empresarios, cursos del SENA). El «8 trámites» de `docs/arquitectura-y-costos.md` estaba desactualizado y se corrigió.
 - **Cierre del video:** confirmar si hay votación pública antes de pedirla; el guion no la asume.
 - **Alojamiento:** Vercel Hobby no permite uso comercial; el documento lo declara como supuesto del presupuesto y como condición de sostenibilidad. Confirmar con el ITM o con el soporte del proveedor.
 - **Cifras de 2019:** desempleo, calidad de vida, jefatura femenina y hurto son de 2019 (ECV 2018 para jefatura). El documento lo advierte. Si existe un dato más reciente con fuente, reemplazar.
