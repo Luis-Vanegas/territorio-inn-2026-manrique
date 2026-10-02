@@ -1,4 +1,5 @@
-import type { NegocioBuscable } from '../busqueda';
+import { normalizar, type NegocioBuscable } from '../busqueda.ts';
+import { distanciaMetros } from './distancia.ts';
 import type {
   Constelacion,
   DatosConstelaciones,
@@ -12,8 +13,10 @@ import type {
  * categoría, horarios y cocinas en formato OSM, en inglés) a texto para
  * vecinos, y los adapta al buscador único (`lib/busqueda.ts`).
  *
- * Solo `import type`: `scripts/verificar-busqueda.mjs` lo carga con
- * `--experimental-strip-types`, que no resuelve imports de valor sin extensión.
+ * Los imports de valor llevan la extensión `.ts` (`allowImportingTsExtensions`):
+ * `scripts/verificar-busqueda.mjs` lo carga con `--experimental-strip-types`, que
+ * no resuelve imports sin extensión. Los archivos que importa solo tienen
+ * `import type` hacia el resto del proyecto.
  */
 
 export function aplanarComercios(datos: DatosConstelaciones): EstrellaOsm[] {
@@ -351,18 +354,9 @@ export function lineaMezcla(c: Constelacion): string {
 
 type Punto = { lat: number; lon: number };
 
-/**
- * Metros entre dos puntos con la aproximación plana (equirectangular). A escala
- * de barrio (cientos de metros) el error frente a Haversine es de centímetros, y
- * se escribe acá en vez de importar `lib/geo/distancia.ts` por la misma razón de
- * arriba: el verificador carga este archivo con `--experimental-strip-types`, que
- * no resuelve imports de valor sin extensión.
- */
+/** Metros entre dos puntos {lat, lon}: adapta el formato a `distanciaMetros` (Haversine, `[lat, lon]`). */
 function metrosEntre(a: Punto, b: Punto): number {
-  const M_POR_GRADO = 111_320;
-  const dx = (b.lon - a.lon) * Math.cos(((a.lat + b.lat) / 2) * (Math.PI / 180)) * M_POR_GRADO;
-  const dy = (b.lat - a.lat) * M_POR_GRADO;
-  return Math.hypot(dx, dy);
+  return distanciaMetros([a.lat, a.lon], [b.lat, b.lon]);
 }
 
 /**
@@ -393,14 +387,6 @@ export type ComercioVecino = { comercio: EstrellaOsm; metros: number };
 export const METROS_MISMO_NEGOCIO = 25;
 
 /**
- * Minúsculas, sin tildes, espacios colapsados: la misma regla de `normalizar` de
- * `lib/busqueda.ts`, que acá no se puede importar (ver `metrosEntre`).
- */
-function claveNombre(texto: string): string {
-  return texto.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').split(/\s+/).filter(Boolean).join(' ');
-}
-
-/**
  * «Otros negocios de tu constelación»: hasta `max` comercios CON NOMBRE de la
  * constelación del punto, del más cercano al más lejano. `total` cuenta todos los
  * que tienen nombre, para poder decir «y N más». `null` si el punto no cae en
@@ -419,13 +405,13 @@ export function vecinosDeConstelacion(
   const constelacion = constelacionDe(punto, datos.constelaciones);
   if (!constelacion) return null;
 
-  const claveAliado = nombreAliado ? claveNombre(nombreAliado) : null;
+  const claveAliado = nombreAliado ? normalizar(nombreAliado) : null;
   const conNombre = comerciosConNombre(constelacion.estrellas)
     .map((comercio) => ({ comercio, metros: metrosEntre(punto, { lat: comercio.lat, lon: comercio.lon }) }))
     .filter(
       (v) =>
         v.metros > METROS_MISMO_NEGOCIO &&
-        (!claveAliado || claveNombre(v.comercio.nombre ?? '') !== claveAliado),
+        (!claveAliado || normalizar(v.comercio.nombre ?? '') !== claveAliado),
     )
     .sort((a, b) => a.metros - b.metros);
 

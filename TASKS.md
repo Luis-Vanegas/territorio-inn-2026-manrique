@@ -537,10 +537,9 @@ Pendiente de Neon, en orden:
 - [ ] **Falta Content-Security-Policy.** Omisión consciente y documentada en
       `next.config.mjs` y `docs/seguridad.md`. Es lo que queda por hacer en
       seguridad de cabeceras.
-- [ ] **`public/logos/itm.svg` no lo usa nadie.** La lista de logos
-      institucionales de `lib/content.ts` solo tiene alcaldía y presupuesto
-      participativo. O falta agregarlo, o sobra el archivo — es una decisión
-      de contenido, no técnica.
+- [x] ~~**`public/logos/itm.svg` no lo usa nadie.**~~ Resuelto: los logos
+      institucionales se borraron (D3, sin permiso de uso; el pie nombra a las
+      instituciones en texto) y `itm.svg` ya no existe.
 - [x] ~~**Confirmar el origen y la licencia de las dos fotos del carrusel.**~~
       Resuelto el 2026-08-31 sin necesidad de confirmar nada: las dos fotos se
       reemplazaron por otras **tomadas por Luis**, así que la licencia es

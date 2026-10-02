@@ -17,7 +17,7 @@ import {
   TEJIDO_CAMARA,
   TERRITORIO,
   type CifraConFuente,
-} from './cifras';
+} from '@/lib/cifras';
 import { leerFirmamento } from './datos';
 
 export const metadata: Metadata = {

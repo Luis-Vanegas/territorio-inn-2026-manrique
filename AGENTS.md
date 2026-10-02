@@ -101,10 +101,9 @@ lib/
   agente/             asesor de formalización (prompt y llamada al modelo)
   ml/                 inferencia en el navegador (categoria.ts: sugeridor de categoría)
   privacidad/         regla k = 5 (kAnonimato.ts), pura y sin server-only
-pipeline/            Python del reto (OSM, constelaciones, clasificador, vigía); salidas en public/
 .github/workflows/   vigía de convocatorias (único workflow; no hay CI de verificación)
 scripts/             scripts de mantenimiento (migraciones, verificación, admin)
-pipeline/            Python reproducible (OSM, HDBSCAN, clasificador); su propio
+pipeline/            Python reproducible (OSM, HDBSCAN, clasificador, vigía); su propio
                      requirements.txt y venv. Escribe solo en public/firmamento/ y
                      public/modelo_categoria.json. Ver pipeline/README.md
 data/                datasets fuente (DANE, cámara de comercio, etc.) — no tocar sin pedir
@@ -211,8 +210,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   y `app/admin/(panel)/<modulo>/` (copiar los de ventas) + entrada en
   `lib/content.ts`, `app/sitemap.ts`, el menú del panel y la lista de
   `scripts/verificar-marca.mjs`. Ojo: el archivo de datos importa de `./marca`
-  SOLO tipos (`import type`): el verificador corre con `--experimental-strip-types`,
-  que no resuelve imports de valor sin extensión.
+  SOLO tipos (`import type`); ver «Imports con extensión `.ts`» más abajo.
 - **Mis clientes (CRM de cada aliado)**: `lib/db/clientes.repo.ts` guarda datos
   de TERCEROS (los clientes del negocio, que no se registraron acá). Toda
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
@@ -260,11 +258,22 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md).
   Categoría nueva en la base = su id en ese archivo; si no, cae en «Otros». Las
   constelaciones de OSM (`public/firmamento/constelaciones.json`) se piden por
-  `fetch` (`lib/geo/constelaciones.ts`), no se importan en el cliente; solo
-  `app/(site)/aliados/page.tsx` lo importa, en el servidor, para los conteos del
-  filtro de categorías (`unirCategorias`: aliados + comercios de OSM, así se
-  puede filtrar por cualquier negocio del mapa aunque no tenga aliados).
-- **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades viven en `cifras.ts` con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
+  `fetch` (`lib/geo/constelaciones.ts`), no se importan en el cliente. Solo se
+  importan en el servidor: `app/(site)/aliados/page.tsx` (conteos del filtro de
+  categorías con `unirCategorias`: aliados + comercios de OSM, así se puede filtrar
+  por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
+  (cifras de la banda de la portada) y `app/(site)/firmamento/datos.ts`.
+- **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
+- **Imports con extensión `.ts`**: los verificadores (`scripts/verificar-*.mjs`)
+  corren con `--experimental-strip-types`, que no resuelve imports sin extensión.
+  Para que compartan código con la app (y no copiarlo), un archivo que ellos
+  cargan puede importar VALORES con la extensión explícita (`import { x } from
+  ./distancia.ts`): `allowImportingTsExtensions` está activo en `tsconfig.json`
+  (vale por `noEmit`). Ejemplo: `lib/geo/comerciosOsm.ts`. Restricción: todo lo que
+  carga un verificador (`lib/busqueda.ts`, `lib/geo/distancia.ts`, `lib/marca.ts`,
+  `lib/geo/comerciosOsm.ts`…) solo puede tener `import type` hacia el resto del
+  proyecto (los alias `@/` no los resuelve Node) y entre ellos usar `.ts`. Si
+  necesitas un valor de `@/…`, ese archivo no puede cargarlo un verificador.
 - **Comentarios**: solo cuando explican el WHY (una decisión no obvia, un
   trade-off). Los shortcuts deliberados se marcan con `ponytail: <qué se
   omitió y cuándo ampliarlo>`. No comentar lo que el código ya dice solo.
