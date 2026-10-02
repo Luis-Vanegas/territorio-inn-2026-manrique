@@ -17,6 +17,7 @@ import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
 import type { Posicion } from './SelectorUbicacionClient';
 import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
+import { SugeridorCategoria } from './SugeridorCategoria';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
@@ -194,6 +195,7 @@ export function FormularioRegistro({
   const [nombreFoto, setNombreFoto] = useState<string | null>(null);
   const [nombreMenu, setNombreMenu] = useState<string | null>(null);
 
+  const [nombre, setNombre] = useState('');
   const [categoriaId, setCategoriaId] = useState('');
   const [barrio, setBarrio] = useState('');
   const [barrioEsOtro, setBarrioEsOtro] = useState(false);
@@ -439,11 +441,21 @@ export function FormularioRegistro({
               required
               maxLength={80}
               placeholder="Panadería La Esperanza"
-              onChange={(e) => marcar('nombre', e.target.value.trim().length >= 2)}
+              onChange={(e) => {
+                setNombre(e.target.value);
+                marcar('nombre', e.target.value.trim().length >= 2);
+              }}
               className={claseInput}
             />
           )}
         </CampoFormulario>
+
+        <SugeridorCategoria
+          nombre={nombre}
+          categorias={categorias}
+          categoriaId={categoriaId}
+          alElegir={setCategoriaId}
+        />
 
         <CampoFormulario
           id="categoria_id"

@@ -15,7 +15,13 @@ import {
   buscarPosibleDuplicado,
   registrarConsentimiento,
   guardarInvestigacion,
+  listarCategorias,
 } from '@/lib/db/portafolios.repo';
+import { guardarSugerenciaCategoria } from '@/lib/db/sugerencias.repo';
+import {
+  sugerenciaDesdeFormData,
+  respuestaASugerencia,
+} from '@/lib/validation/sugerenciaCategoria.schema';
 import { verificarLimite, registrarIntento, ipDesdeHeaders, hashIp } from '@/lib/db/rateLimit';
 import { subirFoto, subirMenu, blobConfigurado, extraerArchivoValidado } from '@/lib/blob/fotos';
 import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
@@ -183,6 +189,30 @@ export async function registrarPortafolio(
     });
   } catch (error) {
     console.error('[registrarPortafolio] guardado de investigación falló', error);
+  }
+
+  // Sugeridor de categoría: SOLO la categoría que infirió el modelo, con su
+  // confianza, y si la persona quedó con ella. Jamás el nombre que escribió (el
+  // formulario ni lo manda en estos campos). Sin FK al negocio: no se puede
+  // reunir con él. Es telemetría: si falla, el registro ya está guardado.
+  try {
+    const sugerencia = sugerenciaDesdeFormData(formData);
+    if (sugerencia) {
+      // El id sale del navegador: solo vale si es una categoría que existe hoy.
+      const vigentes = await listarCategorias();
+      if (vigentes.some((c) => c.id === sugerencia.categoria_inferida)) {
+        await guardarSugerenciaCategoria({
+          categoria_inferida: sugerencia.categoria_inferida,
+          confianza: sugerencia.confianza,
+          aceptada: respuestaASugerencia(
+            sugerencia.categoria_inferida,
+            formData.get('categoria_id'),
+          ),
+        });
+      }
+    }
+  } catch (error) {
+    console.error('[registrarPortafolio] guardado de la sugerencia falló', error);
   }
 
   // 5 · Foto y menú
