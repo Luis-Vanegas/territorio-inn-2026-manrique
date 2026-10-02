@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
 
 /**
  * Schema compartido entre el formulario (cliente) y la server action.
@@ -11,7 +12,8 @@ import { z } from 'zod';
 
 /** Se sube cuando cambie el texto legal. Queda grabado en cada registro. */
 // v2: se saca la mención al ITM como responsable del tratamiento y se abre
-// la ubicación a cualquier punto del mundo (antes limitada a Manrique).
+// la ubicación a cualquier punto del mundo (antes limitada a Manrique; desde
+// 2026-10 vuelve a exigirse la Comuna 3, ver `ubicacionEnManrique`).
 // v3: se agrega la cláusula de transferencia internacional de datos (Decreto
 // 1377 de 2013, art. 26) — la base y el Blob viven fuera de Colombia.
 // v4: sección «Mis clientes» — el proyecto pasa a ser encargado de los datos
@@ -170,8 +172,8 @@ const camposPortafolio = z
       .max(80, 'Máximo 80 caracteres'),
     punto_referencia: opcional(z.string().trim().max(120, 'Máximo 120 caracteres')),
 
-    // Rango real de coordenadas válidas, no acotado a Manrique: el registro
-    // acepta cualquier punto del mundo mientras se junta volumen de prueba.
+    // Rango real de coordenadas; que el punto caiga en la Comuna 3 se exige
+    // aparte (`ubicacionEnManrique`), porque necesita latitud y longitud juntas.
     latitud: z
       .number({ error: 'Marca la ubicación en el mapa' })
       .min(-90, 'Latitud inválida')
@@ -213,7 +215,28 @@ const camposPortafolio = z
     }),
   });
 
-export const portafolioSchema = camposPortafolio
+export const MENSAJE_FUERA_DE_MANRIQUE =
+  'El punto quedó fuera de la Comuna 3. Muévelo hasta tu negocio en Manrique.';
+
+/**
+ * El registro solo admite negocios de la Comuna 3 (polígono oficial, con la
+ * tolerancia de `dentroDeManrique`). Va como refinamiento del objeto y no por
+ * campo porque necesita latitud y longitud a la vez; y se aplica DESPUÉS de
+ * `.omit()` en la edición, porque Zod no deja omitir sobre un objeto refinado.
+ *
+ * La edición lo exige también: un negocio ya publicado fuera del polígono se
+ * guarda solo corrigiendo el punto (el mensaje dice qué hacer). Aprobar o
+ * rechazar NO pasa por este schema, así que la moderación nunca se bloquea.
+ */
+const ubicacionEnManrique = <T extends z.ZodType<{ latitud: number; longitud: number }>>(
+  schema: T,
+) =>
+  schema.refine((d) => dentroDeManrique(d.latitud, d.longitud), {
+    message: MENSAJE_FUERA_DE_MANRIQUE,
+    path: ['latitud'],
+  });
+
+export const portafolioSchema = ubicacionEnManrique(camposPortafolio)
   .refine((d) => d.mayor_dolor.length <= 2, {
     message: 'Elige como máximo 2',
     path: ['mayor_dolor'],
@@ -235,12 +258,14 @@ export type PortafolioInput = z.infer<typeof portafolioSchema>;
  * a pedirlo en cada corrección de una coma sería fricción sin sentido legal
  * — el consentimiento cubre el tratamiento de los datos, no cada valor puntual).
  */
-export const actualizarPortafolioSchema = camposPortafolio.omit({
-  formalidad: true,
-  mayor_dolor: true,
-  acepto_terminos: true,
-  acepto_habeas_data: true,
-});
+export const actualizarPortafolioSchema = ubicacionEnManrique(
+  camposPortafolio.omit({
+    formalidad: true,
+    mayor_dolor: true,
+    acepto_terminos: true,
+    acepto_habeas_data: true,
+  }),
+);
 
 export type ActualizarPortafolioInput = z.infer<typeof actualizarPortafolioSchema>;
 

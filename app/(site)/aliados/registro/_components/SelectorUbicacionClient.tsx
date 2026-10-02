@@ -17,6 +17,8 @@ import 'leaflet/dist/leaflet.css';
 
 import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE,
   TESELAS, ZOOM } from '@/lib/geo/constantes';
+import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
+import { MENSAJE_FUERA_DE_MANRIQUE } from '@/lib/validation/portafolio.schema';
 
 /**
  * Selector de ubicación: el corazón del registro.
@@ -26,10 +28,9 @@ import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE,
  *   2. tocar el mapa
  *   3. arrastrar el punto ya puesto para afinar
  *
- * Sin límite geográfico a propósito: mientras se junta volumen de datos de
- * prueba, cualquier punto del mundo es válido. El polígono de Manrique queda
- * como referencia visual — ya no bloquea el registro. La franja de Manrique
- * se centra por defecto porque sigue siendo el foco real del proyecto.
+ * El punto debe caer en la Comuna 3 (el servidor lo exige, `ubicacionEnManrique`).
+ * Acá solo se AVISA en vivo: no se bloquea el clic ni el arrastre, porque quien
+ * está mal ubicado necesita poder mover el marcador hasta el lugar correcto.
  */
 
 const iconoSeleccion = L.divIcon({
@@ -86,7 +87,7 @@ export default function SelectorUbicacionClient({
   const elegir = useCallback(
     (p: Posicion, centrar = false) => {
       setPosicion(p);
-      alCambiar(p, true);
+      alCambiar(p, dentroDeManrique(p.lat, p.lng));
 
       if (centrar && mapaRef.current) {
         mapaRef.current.flyTo([p.lat, p.lng], ZOOM.maximo - 1, { duration: 1 });
@@ -144,6 +145,7 @@ export default function SelectorUbicacionClient({
   }, [elegir]);
 
   const buscando = geo.fase === 'buscando';
+  const fuera = posicion !== null && !dentroDeManrique(posicion.lat, posicion.lng);
 
   return (
     <div>
@@ -172,6 +174,12 @@ export default function SelectorUbicacionClient({
       {geo.fase === 'imprecisa' && (
         <p role="status" className="mt-3 border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-sans text-xs leading-relaxed text-tinta">
           {geo.mensaje}
+        </p>
+      )}
+
+      {fuera && (
+        <p role="alert" className="mt-3 border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-sans text-xs leading-relaxed text-tinta">
+          {MENSAJE_FUERA_DE_MANRIQUE}
         </p>
       )}
 
