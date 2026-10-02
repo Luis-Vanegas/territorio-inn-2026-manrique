@@ -16,7 +16,9 @@ import unicodedata
 import numpy as np
 from shapely import contains_xy
 
-from comun import PUBLICO, cargar_poligono
+from shapely.geometry import Point
+
+from comun import PUBLICO, cargar_barrios, cargar_poligono
 
 CASOS = {  # nombres inventados a propósito: no salen de los datos de entrenamiento
     "Panadería La Espiga Dorada": "panaderia",
@@ -115,6 +117,31 @@ def main() -> int:
         errores.append("constelaciones sin osm_base")
     if any("descripcion" in e.get("detalle", {}) for e in todos):
         errores.append("detalle publica descripcion (privacidad)")
+
+    # Barrios: el campo existe en todos, calza con el polígono oficial y el nombre de
+    # una constelación sin calle sale del barrio, no del rótulo viejo.
+    barrios, _ = cargar_barrios()
+    poligonos = dict(barrios)
+    if not c.get("barrios", {}).get("fuente"):
+        errores.append("constelaciones sin barrios.fuente")
+    for e in todos:
+        if "barrio" not in e:
+            errores.append(f"{e['osm']}: sin campo barrio")
+            continue
+        b = e["barrio"]
+        if b is not None and (b not in poligonos or not poligonos[b].covers(Point(e["lon"], e["lat"]))):
+            errores.append(f"{e['osm']}: barrio {b!r} no contiene al punto")
+        if b is None and any(p.covers(Point(e["lon"], e["lat"])) for p in poligonos.values()):
+            errores.append(f"{e['osm']}: barrio null pero cae en un barrio")
+    con_barrio = sum(1 for e in todos if e.get("barrio"))
+    if r["comercios_con_barrio"] != con_barrio or r["comercios_sin_barrio"] != len(todos) - con_barrio:
+        errores.append("comercios_con_barrio/comercios_sin_barrio no cuadran con los puntos")
+    for k in c["constelaciones"]:
+        lugar = k["nombre"].split(" · ")[0]
+        if lugar == "Sin calle registrada" and any(e.get("barrio") for e in k["estrellas"]):
+            errores.append(f"{k['id']}: sin calle pero con barrio; debería llamarse «Barrio …»")
+        if lugar.startswith("Barrio ") and lugar[7:] not in poligonos:
+            errores.append(f"{k['id']}: barrio {lugar[7:]!r} del nombre no existe")
 
     # El código identifica la constelación; el nombre descriptivo puede repetirse.
     codigos = [k.get("codigo") for k in c["constelaciones"]]

@@ -21,6 +21,11 @@ Decisiones que conviene no olvidar:
   dentro del JSON (no se copian acá para que no se desactualicen).
 - HDBSCAN no tiene azar propio en este modo, pero se fija la semilla igual por
   si cambia la implementación de sklearn.
+- El barrio sale del polígono oficial (lib/geo/barrios-manrique.json, que genera
+  scripts/extraer-barrios.mjs; fuente pendiente de confirmar por el equipo): cada
+  comercio lleva `barrio` (null si cae en un hueco entre polígonos, ~0,1 % de la comuna)
+  y una constelación sin calle se nombra «Barrio <X> · <categoría>» con el barrio más
+  frecuente entre sus comercios. Se calcula por posición, igual que la app (`barrioDe`).
 - El árbol de expansión mínima (MST) une cada estrella con su vecina más cercana
   sin cerrar ciclos: es el dibujo "de constelación" de las líneas del mapa.
 """
@@ -43,6 +48,7 @@ from comun import (
     PUBLICO,
     SEMILLA,
     ahora_iso,
+    cargar_barrios,
     cargar_poligono,
     ultimo_csv,
 )
@@ -139,6 +145,26 @@ def calle_mas_frecuente(sub: pd.DataFrame) -> str | None:
     return sorted(conteo[conteo == conteo.max()].index)[0]
 
 
+def asignar_barrios(df: pd.DataFrame) -> pd.Series:
+    """Barrio oficial de cada comercio ("" si no cae en ninguno)."""
+    barrios, _ = cargar_barrios()
+    lon, lat = df["lon"].to_numpy(), df["lat"].to_numpy()
+    resultado = np.full(len(df), "", dtype=object)
+    for nombre, poligono in barrios:
+        # Un punto justo en la frontera puede caer en dos: gana el primero (orden por código).
+        resultado[(resultado == "") & contains_xy(poligono, lon, lat)] = nombre
+    return pd.Series(resultado, index=df.index)
+
+
+def barrio_mas_frecuente(sub: pd.DataFrame) -> str | None:
+    """Barrio más repetido entre los comercios del grupo; empate: orden alfabético (corrida reproducible)."""
+    barrios = sub["barrio"][sub["barrio"] != ""]
+    if barrios.empty:
+        return None
+    conteo = barrios.value_counts()
+    return sorted(conteo[conteo == conteo.max()].index)[0]
+
+
 def punto(fila) -> dict:
     return {
         "osm": f"{fila.osm_tipo[0]}{fila.osm_id}",
@@ -147,6 +173,7 @@ def punto(fila) -> dict:
         "lat": round(float(fila.lat), 6),
         "lon": round(float(fila.lon), 6),
         "categoria": fila.categoria or None,
+        "barrio": fila.barrio or None,
         "detalle": detalle(fila),
     }
 
@@ -163,6 +190,7 @@ def main() -> None:
     n_placeholder = int(placeholder.sum())
     df.loc[placeholder, "nombre"] = ""
     validacion = validar(df)
+    df["barrio"] = asignar_barrios(df)
     validacion["nombres_placeholder_tratados_como_null"] = n_placeholder
 
     # La fecha del snapshot sale del meta que escribió el paso 1 junto al CSV,
@@ -205,6 +233,7 @@ def main() -> None:
             for c, n in sorted(conteo.items(), key=lambda t: (-t[1], t[0]))
         ]
         calle = calle_mas_frecuente(sub)
+        barrio = barrio_mas_frecuente(sub)
         dominante = next((m for m in mezcla if m["categoria"] != "sin_categoria"), None)
 
         constelaciones.append(
@@ -217,6 +246,7 @@ def main() -> None:
                 "longitud_mst_m": round(float(sum(a["metros"] for a in aristas)), 1),
                 "categoria_dominante": dominante["categoria"] if dominante else None,
                 "_calle": calle,
+                "_barrio": barrio,
                 "_cat_nombre": dominante["nombre"] if dominante else SIN_CATEGORIA,
                 "mezcla_categorias": mezcla,
                 "estrellas": [punto(f) for f in sub.itertuples()],
@@ -229,12 +259,15 @@ def main() -> None:
     for i, c in enumerate(constelaciones, start=1):
         c["id"] = f"c{i:02d}"
         c["codigo"] = f"C{i:02d}"
-        c["nombre"] = f"{c['_calle'] or SIN_CALLE} · {c['_cat_nombre']}"
+        # Con calle, la calle; sin calle, el barrio; sin ninguno de los dos, el rótulo viejo.
+        lugar = c["_calle"] or (f"Barrio {c['_barrio']}" if c["_barrio"] else SIN_CALLE)
+        c["nombre"] = f"{lugar} · {c['_cat_nombre']}"
     # Dos grupos en la misma calle y rubro pueden llamarse igual: los distingue `codigo`,
     # que la interfaz siempre antepone («C05 · …»). Repetirlo en el nombre lo mostraba dos veces.
     sin_calle = sum(1 for c in constelaciones if not c["_calle"])
+    nombradas_por_barrio = sum(1 for c in constelaciones if not c["_calle"] and c["_barrio"])
     constelaciones = [
-        {k: c[k] for k in ("id", "codigo", "nombre", *[k for k in c if k not in ("id", "codigo", "nombre", "_calle", "_cat_nombre")])}
+        {k: c[k] for k in ("id", "codigo", "nombre", *[k for k in c if k not in ("id", "codigo", "nombre", "_calle", "_barrio", "_cat_nombre")])}
         for c in constelaciones
     ]
 
@@ -277,6 +310,7 @@ def main() -> None:
         }
 
     n_en_cumulos = int((etq != -1).sum())
+    _, meta_barrios = cargar_barrios()
     n_sin_nombre = int((df["nombre"].str.strip() == "").sum())
     salida = {
         "fuente": FUENTE,
@@ -293,6 +327,11 @@ def main() -> None:
             "semilla": SEMILLA,
             "mst": "scipy.sparse.csgraph.minimum_spanning_tree sobre distancias en metros",
         },
+        "barrios": {
+            "fuente": meta_barrios["fuente"],
+            "archivo": "lib/geo/barrios-manrique.json",
+            "generado_en": meta_barrios["generadoEn"],
+        },
         "validaciones": validacion,
         "resumen": {
             "total_comercios": int(len(df)),
@@ -300,6 +339,9 @@ def main() -> None:
             "sin_nombre": n_sin_nombre,
             "constelaciones": len(constelaciones),
             "constelaciones_sin_calle": sin_calle,
+            "constelaciones_nombradas_por_barrio": nombradas_por_barrio,
+            "comercios_con_barrio": int((df["barrio"] != "").sum()),
+            "comercios_sin_barrio": int((df["barrio"] == "").sum()),
             "comercios_en_constelaciones": n_en_cumulos,
             "agrupados": n_en_cumulos,  # mismo dato que la clave anterior, con el nombre que usa la asesoría
             "puntos_sueltos": len(sueltos),
