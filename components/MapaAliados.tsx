@@ -55,6 +55,9 @@ export function MapaAliados({
   conFiltro = false,
   categoria,
   hrefLista = '/aliados#listado',
+  noche = false,
+  constelacionElegida,
+  alElegirConstelacion,
 }: {
   portafolios: Portafolio[];
   alSeleccionar?: (id: string) => void;
@@ -67,9 +70,22 @@ export function MapaAliados({
   categoria?: string;
   /** Dónde está la lista equivalente al mapa, para quien no puede usarlo. */
   hrefLista?: string;
+  /** Modo noche fijo (teselas oscuras y controles de Firmamento), sin seguir el tema. */
+  noche?: boolean;
+  /** Constelación elegida desde afuera (la tabla de /firmamento); si se pasa, el mapa la obedece. */
+  constelacionElegida?: string;
+  /** Avisa cuando la persona elige otra con el selector del propio mapa. */
+  alElegirConstelacion?: (id: string) => void;
 }) {
-  const [activa, setActiva] = useState(true);
-  const [filtro, setFiltro] = useState('');
+  const [activaInterna, setActivaInterna] = useState(true);
+  const [filtroInterno, setFiltroInterno] = useState('');
+  const filtro = constelacionElegida ?? filtroInterno;
+  const setFiltro = (id: string) => {
+    setFiltroInterno(id);
+    alElegirConstelacion?.(id);
+  };
+  // Elegir una fila de la tabla de /firmamento enciende la capa aunque estuviera apagada.
+  const activa = activaInterna || Boolean(constelacionElegida);
   // El JSON (~43 KB) se pide aquí y no se importa: fuera del bundle inicial.
   const { datos: datosCrudos, estado } = useConstelaciones();
   const datos = useMemo(
@@ -109,13 +125,17 @@ export function MapaAliados({
           type="button"
           aria-pressed={activa}
           onClick={() => {
-            setActiva((a) => !a);
+            setActivaInterna(!activa);
             setFiltro(''); // apagada, un filtro «aplicado» que no aplica confunde al lector de pantalla
           }}
           className={`inline-flex min-h-[44px] items-center gap-2 border px-4 font-sans text-sm transition-colors ${
-            activa
-              ? 'border-noche bg-noche text-estrella dark:border-trazo-2'
-              : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto'
+            noche
+              ? activa
+                ? 'border-sodio bg-sodio text-noche'
+                : 'border-trazo-2 text-estrella hover:border-sodio hover:text-sodio'
+              : activa
+                ? 'border-noche bg-noche text-estrella dark:border-trazo-2'
+                : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto'
           }`}
         >
           <span aria-hidden="true">{activa ? '★' : '☆'}</span>
@@ -129,7 +149,7 @@ export function MapaAliados({
               value={filtroValido}
               onChange={(e) => {
                 setFiltro(e.target.value);
-                if (e.target.value) setActiva(true);
+                if (e.target.value) setActivaInterna(true);
               }}
               className="min-h-[44px] w-full min-w-0 border border-tinta/55 bg-hueso px-3 font-sans text-sm text-tinta sm:w-auto sm:max-w-md"
             >
@@ -159,6 +179,7 @@ export function MapaAliados({
           seleccionado={seleccionado}
           constelaciones={activa ? datos : null}
           filtroConstelacion={activa ? filtroValido : ''}
+          noche={noche}
         />
       </div>
 

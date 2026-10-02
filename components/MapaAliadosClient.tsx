@@ -94,6 +94,8 @@ type Props = {
   constelaciones?: DatosConstelaciones | null;
   /** Id de una constelación para verla sola y acercarse a ella; '' = todas. */
   filtroConstelacion?: string;
+  /** Siempre teselas oscuras, sin importar el tema (la página /firmamento es nocturna). */
+  noche?: boolean;
 };
 
 /**
@@ -164,6 +166,7 @@ export default function MapaAliadosClient({
   seleccionado,
   constelaciones,
   filtroConstelacion = '',
+  noche = false,
 }: Props) {
   // El polígono no cambia nunca; sin memo, react-leaflet vuelve a montar la
   // capa GeoJSON en cada render y el mapa parpadea al filtrar por categoría.
@@ -181,7 +184,7 @@ export default function MapaAliadosClient({
   // Con "menos movimiento" se apagan también las animaciones de zoom y de
   // desplazamiento de Leaflet (el CSS global solo alcanza a las de CSS). Este
   // componente solo corre en el navegador (ssr:false), así que window existe.
-  const oscuro = useTemaOscuro();
+  const oscuro = useTemaOscuro() || noche;
   const sinMovimiento = useMemo(
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
