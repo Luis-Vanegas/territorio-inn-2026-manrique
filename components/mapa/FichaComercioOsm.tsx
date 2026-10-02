@@ -58,8 +58,14 @@ export function FichaComercioOsm({
           <span className="font-cifra">{formatearDistancia(distancia)}</span> de donde estás
         </p>
       )}
-      {direccion && (
+      {comercio.barrio && (
         <p className="mt-1.5">
+          <span className="text-tinta/70">Barrio: </span>
+          {comercio.barrio}
+        </p>
+      )}
+      {direccion && (
+        <p className="mt-1">
           <span className="text-tinta/70">Dirección: </span>
           {direccion}
         </p>

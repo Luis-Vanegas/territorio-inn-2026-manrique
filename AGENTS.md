@@ -94,7 +94,7 @@ lib/
   actions/          Server Actions ('use server'), un archivo por acción
   db/                repositorios de acceso a datos (*.repo.ts), uno por tabla/dominio
   validation/        schemas de Zod (*.schema.ts)
-  geo/                utilidades geoespaciales
+  geo/                utilidades geoespaciales (comuna, barrios oficiales, punto en polígono)
   auth/               sesiones: admin.ts (moderadores), usuario.ts (vecinos), google.ts (OAuth);
                       secreto.ts compara secretos compartidos de endpoints de máquina
   blob/               integración con Vercel Blob
@@ -254,6 +254,22 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   así que quien quita los headers se saltaría el cupo. `/api/ingesta/convocatorias`
   suma un contador en memoria compartido para esas peticiones
   (`lib/limiteMemoria.ts`), y si `verificarLimite` falla responde 503, no 500.
+- **Barrios oficiales** (`lib/geo/barrios-manrique.json`, `lib/geo/barrioOficial.ts`):
+  los 15 polígonos de barrio de la Comuna 3, recortados por `scripts/extraer-barrios.mjs`
+  del GeoJSON de barrios de Medellín. Fuente PENDIENTE de confirmar por el equipo: no
+  se cita una hasta que alguien la confirme; viaja en `metadata.fuente`. El nombre va en
+  la grafía de `BARRIOS_COMUNA_3` (una sola tabla de equivalencias, en el script).
+  `barrioDe(lat, lon)` es pura y devuelve el nombre o `null`; es una AYUDA (aviso del
+  registro, barrio de cada comercio OSM), no una regla de admisión: esa sigue siendo
+  `dentroDeManrique`. El ray casting vive UNA vez en `lib/geo/puntoEnPoligono.ts` y lo
+  usan los dos; no lo copies. Ese módulo se importa con extensión
+  (`./puntoEnPoligono.ts`, permitido por `allowImportingTsExtensions` en tsconfig)
+  porque los verificadores cargan `lib/` con `--experimental-strip-types`, que no
+  resuelve imports de valor sin extensión. El pipeline (`02_constelaciones.py`) calcula
+  el mismo barrio con shapely y lo escribe en cada comercio de `constelaciones.json`;
+  `verificar-barrios.mjs` exige que coincida con `barrioDe`. Una constelación sin calle
+  se llama «Barrio <X> · <categoría>». Si cambia el dataset: re-correr el script, luego
+  `pipeline/02_constelaciones.py` y `verificar_salidas.py`.
 - **Grupos de categoría del mapa**: `lib/categorias/grupos.ts` es el único lugar
   que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md).
   Categoría nueva en la base = su id en ese archivo; si no, cae en «Otros». Las
@@ -284,7 +300,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto y datos abiertos (k = 5)
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales y datos abiertos (k = 5)
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)

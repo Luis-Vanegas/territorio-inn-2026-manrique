@@ -49,9 +49,10 @@ export const POLIGONO_MANRIQUE = manrique;
  * (https://www.medellin.gov.co/giscatalogacion/srv/api/records/60a3bca3-fa00-4a7f-b66d-a21ff34aec9b)
  * y el Decreto 346 de 2000; la Comuna 3 tiene 15 barrios, y esta lista tiene 15.
  *
- * OJO — el resto de la lista no se contrastó nombre por nombre. El GeoJSON
- * de lib/geo/manrique.json solo trae el polígono de la comuna, sin barrios,
- * así que no hay de dónde derivarla. Una vecina del territorio mencionó
+ * OJO — el resto de la lista no se contrastó contra un listado de la Alcaldía.
+ * lib/geo/barrios-manrique.json (fuente pendiente de confirmar) trae los mismos
+ * 15 nombres y `verificar-barrios.mjs` exige que coincidan: eso prueba que la
+ * lista y el dataset concuerdan, no que ninguno omita un barrio. Una vecina del territorio mencionó
  * "Manrique Jardín", que no está acá; el mapa del inicio listaba "San Pablo",
  * que tampoco. Antes de darla por buena hay que contrastarla con el listado
  * de la Alcaldía. Mientras tanto el selector ofrece "Otro" con campo libre,

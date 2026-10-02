@@ -78,7 +78,7 @@ Con el criterio de la asesoría son 320 y 20 constelaciones. El conjunto de entr
    «`eom` colapsa» ya no se sostiene con estos datos; la comparación completa está en `comparacion_eom_leaf` y
    `sensibilidad_min_cluster_size` del JSON. Cada constelación lleva `codigo` («C01»…) y un `nombre` legible:
    «<vía más frecuente> · <categoría dominante>» (la vía sale de `addr:street` de OSM, solo «Calle/Carrera N»; si
-   ningún local la trae, «Sin calle registrada»; si dos nombres coinciden se agrega el código). 7 de 20 quedaron sin calle. Calcula centroide, radio máximo y p90, mezcla de
+   ningún local la trae, el barrio: «Barrio <X> · <categoría>», con el barrio más frecuente entre sus comercios; solo si tampoco hay barrio queda «Sin calle registrada»; el nombre puede repetirse y el código las distingue). 7 de 20 no tenían calle y hoy se llaman por su barrio (las 7 caen enteras en un solo barrio). Cada comercio lleva `barrio` (los 320 caen en alguno de los 15 oficiales; null si cayera en un hueco entre polígonos). Calcula centroide, radio máximo y p90, mezcla de
    categorías y MST (scipy) por constelación. Cada estrella y punto suelto lleva `nombre` (null si OSM no lo tiene), `categoria` y
    `detalle` (solo las claves presentes: `direccion`, `horario`, `cocina`, `web`; la descripción de OSM queda solo en el CSV crudo, por privacidad). El paso 1
    conserva únicamente esas etiquetas de OSM: nunca `phone`, `contact:*` ni `email`.
@@ -98,6 +98,16 @@ Con el criterio de la asesoría son 320 y 20 constelaciones. El conjunto de entr
 | Categorías desconocidas / nombres vacíos al entrenar | paso 3 | aborta si hay |
 | Trazabilidad (fuente, licencia, fecha) | `verificar_salidas.py` | presente en ambos JSON |
 | El MST tiene n-1 aristas, ids sin repetir, inferencia reproducible desde el JSON | `verificar_salidas.py` | ok |
+
+## Barrios oficiales
+
+`lib/geo/barrios-manrique.json` trae los 15 barrios de la Comuna 3 (códigos 301–315), recortados por
+`scripts/extraer-barrios.mjs` desde el GeoJSON de barrios de Medellín (329 polígonos) y con el nombre en la
+grafía de `BARRIOS_COMUNA_3`. **Fuente: pendiente de confirmar por el equipo** (probablemente GeoMedellín,
+«Barrio Vereda»); viaja así en `metadata.fuente` y en `barrios.fuente` de `constelaciones.json` hasta que se confirme.
+La unión de los 15 cubre el 99,9 % del polígono de la comuna (el 0,1 % restante son ~5000 m² de sliver en el borde).
+El paso 2 lo usa para el barrio de cada comercio y para nombrar las constelaciones sin calle; la app calcula lo
+mismo con `barrioDe` (`lib/geo/barrioOficial.ts`).
 
 ## Licencia y atribución (ODbL)
 

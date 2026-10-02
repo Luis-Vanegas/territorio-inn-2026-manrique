@@ -19,6 +19,7 @@ import { ChipsUnica, ChipsMultiple } from './Chips';
 import { SelectConOtro } from './SelectConOtro';
 import { SugeridorCategoria } from './SugeridorCategoria';
 import { CampoFormulario } from '@/components/CampoFormulario';
+import { barrioDe } from '@/lib/geo/barrioOficial';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 import { dentroDeManrique } from '@/lib/geo/dentroDeManrique';
 import { ETIQUETA_FORMALIDAD } from '@/lib/formalizacion';
@@ -294,6 +295,13 @@ export function FormularioRegistro({
     [marcar],
   );
 
+  // Aviso, no bloqueo: el vecino puede saber mejor que el polígono (un negocio
+  // en la frontera, un barrio que la gente nombra distinto). La validación dura
+  // sigue siendo dentroDeManrique. Con «Otro» no hay nombre oficial que comparar.
+  const barrioDelPunto = coords ? barrioDe(coords.lat, coords.lng) : null;
+  const avisoBarrio =
+    barrioDelPunto && barrio && !barrioEsOtro && barrio !== barrioDelPunto ? barrioDelPunto : null;
+
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
 
@@ -415,6 +423,14 @@ export function FormularioRegistro({
         </div>
 
         <SelectorUbicacion key={mapKey} valorInicial={coords} alCambiar={alCambiarUbicacion} />
+
+        <div role="status">
+          {avisoBarrio && (
+            <p className="max-w-xl border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-sans text-sm text-tinta">
+              El punto que marcaste queda en {avisoBarrio}; revisa el barrio o el punto.
+            </p>
+          )}
+        </div>
 
         <input type="hidden" name="latitud" value={coords?.lat ?? ''} />
         <input type="hidden" name="longitud" value={coords?.lng ?? ''} />

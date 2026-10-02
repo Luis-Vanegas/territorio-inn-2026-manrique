@@ -1,4 +1,5 @@
 import manrique from './manrique.json' with { type: 'json' };
+import { anillosDe, dentroDeAnillos, type Anillo } from './puntoEnPoligono.ts';
 
 /**
  * ¿Cae este punto dentro de la Comuna 3? Pura, sin `server-only`: la usan el
@@ -19,33 +20,14 @@ import manrique from './manrique.json' with { type: 'json' };
  */
 export const TOLERANCIA_BORDE_M = 40;
 
-type Anillo = readonly (readonly number[])[]; // [lng, lat][]
-
 // Metros por grado en la latitud de Medellín; la aproximación plana sobra para
 // distancias de decenas de metros.
 const M_POR_GRADO_LAT = 111_320;
 const M_POR_GRADO_LNG = 111_320 * Math.cos((6.27 * Math.PI) / 180);
 
-const ANILLOS: Anillo[] = manrique.features.flatMap((f) => {
-  const g = f.geometry as { type: string; coordinates: unknown };
-  if (g.type === 'Polygon') return g.coordinates as Anillo[];
-  if (g.type === 'MultiPolygon') return (g.coordinates as Anillo[][]).flat();
-  return [];
-});
+const ANILLOS: Anillo[] = manrique.features.flatMap((f) => anillosDe(f.geometry));
 
-function dentroDeAnillos(lat: number, lng: number): boolean {
-  let dentro = false;
-  for (const anillo of ANILLOS) {
-    for (let i = 0, j = anillo.length - 1; i < anillo.length; j = i++) {
-      const [xi, yi] = anillo[i] as [number, number];
-      const [xj, yj] = anillo[j] as [number, number];
-      if (yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) {
-        dentro = !dentro;
-      }
-    }
-  }
-  return dentro;
-}
+const dentroDePoligono = (lat: number, lng: number) => dentroDeAnillos(ANILLOS, lat, lng);
 
 /** Distancia en metros del punto al segmento más cercano de cualquier anillo. */
 function distanciaAlBordeM(lat: number, lng: number): number {
@@ -68,10 +50,10 @@ function distanciaAlBordeM(lat: number, lng: number): number {
 
 export function dentroDeManrique(lat: number, lon: number): boolean {
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
-  return dentroDeAnillos(lat, lon) || distanciaAlBordeM(lat, lon) <= TOLERANCIA_BORDE_M;
+  return dentroDePoligono(lat, lon) || distanciaAlBordeM(lat, lon) <= TOLERANCIA_BORDE_M;
 }
 
 /** Para el verificador y para reportar cuánto falta: metros al borde (0 si está dentro del polígono). */
 export function metrosAlBorde(lat: number, lon: number): number {
-  return dentroDeAnillos(lat, lon) ? 0 : distanciaAlBordeM(lat, lon);
+  return dentroDePoligono(lat, lon) ? 0 : distanciaAlBordeM(lat, lon);
 }

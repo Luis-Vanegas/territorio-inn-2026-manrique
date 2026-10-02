@@ -15,6 +15,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 DATOS = RAIZ / "pipeline" / "datos"
 PUBLICO = RAIZ / "public"
 POLIGONO = RAIZ / "lib" / "geo" / "manrique.json"
+BARRIOS = RAIZ / "lib" / "geo" / "barrios-manrique.json"
 
 # Semilla única: el split y el entrenamiento deben dar lo mismo en cada corrida.
 SEMILLA = 42
@@ -137,6 +138,16 @@ def cargar_poligono():
     """Polígono de Manrique en lon/lat (EPSG:4326)."""
     gj = json.loads(POLIGONO.read_text(encoding="utf-8"))
     return shape(gj["features"][0]["geometry"])
+
+
+def cargar_barrios() -> tuple[list[tuple[str, object]], dict]:
+    """Los 15 barrios oficiales (nombre en la grafía de BARRIOS_COMUNA_3, polígono) y su metadata.
+
+    Los genera scripts/extraer-barrios.mjs; la fuente está pendiente de confirmar
+    por el equipo y viaja en la metadata para citarla tal cual.
+    """
+    gj = json.loads(BARRIOS.read_text(encoding="utf-8"))
+    return [(f["properties"]["nombre"], shape(f["geometry"])) for f in gj["features"]], gj["metadata"]
 
 
 def ultimo_csv(prefijo: str) -> Path:
