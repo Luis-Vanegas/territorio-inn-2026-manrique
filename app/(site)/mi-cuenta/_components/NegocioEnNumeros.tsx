@@ -15,15 +15,23 @@ function mesCorto(mes: string): string {
   return MESES[Number(mes.slice(5, 7)) - 1] ?? mes;
 }
 
-const ALTURA_PX = 112;
-
+/**
+ * Una barra HORIZONTAL con su cifra al lado. Horizontal a propósito: con seis
+ * meses y dos series, las barras verticales con la cifra encima se pisaban a
+ * 320 px. Aquí cada mes es una fila y la cifra tiene su propio espacio. Todo es
+ * `aria-hidden`: lo que lee un lector de pantalla es la tabla `sr-only` de abajo.
+ */
 function Barra({ valor, maximo, clase }: { valor: number; maximo: number; clase: string }) {
-  // Un valor mayor que 0 siempre se ve (mínimo 3 px): una barra invisible diría "cero".
-  const alto = valor === 0 ? 0 : Math.max(3, Math.round((valor / maximo) * ALTURA_PX));
+  // Un valor mayor que 0 siempre se ve (mínimo 2 %): una barra invisible diría "cero".
+  const ancho = valor === 0 ? 0 : Math.max(2, Math.round((valor / maximo) * 100));
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1">
-      <span className="font-cifra text-xs tabular-nums text-tinta/70">{valor}</span>
-      <div aria-hidden="true" className={clase} style={{ height: alto }} />
+    <div aria-hidden="true" className="flex items-center gap-2">
+      <div className="h-3 flex-1 bg-tinta/5">
+        <div className={`h-full ${clase}`} style={{ width: `${ancho}%` }} />
+      </div>
+      <span className="w-10 shrink-0 text-right font-cifra text-xs tabular-nums text-tinta/70">
+        {valor}
+      </span>
     </div>
   );
 }
@@ -34,7 +42,7 @@ function Grafico({ negocio }: { negocio: Datos }) {
   const totalContactos = negocio.meses.reduce((t, m) => t + m.contactos, 0);
 
   return (
-    <figure className="border border-tinta/12 p-6">
+    <figure className="border border-tinta/12 p-4 sm:p-6">
       <figcaption>
         <h3 className="font-display text-xl font-medium text-tinta">{negocio.nombre}</h3>
         <p className="mt-1 font-sans text-xs text-tinta/60">
@@ -44,23 +52,15 @@ function Grafico({ negocio }: { negocio: Datos }) {
         </p>
       </figcaption>
 
-      <div className="mt-6 flex items-end gap-2 sm:gap-4" style={{ height: ALTURA_PX + 24 }}>
+      <div aria-hidden="true" className="mt-6 flex flex-col gap-3">
         {negocio.meses.map((m) => (
-          <div key={m.mes} className="flex h-full min-w-0 flex-1 items-end gap-1">
-            <Barra valor={m.vistas} maximo={maximo} clase="w-full bg-tinta/30" />
-            <Barra valor={m.contactos} maximo={maximo} clase="w-full bg-azul-texto" />
+          <div key={m.mes} className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-2">
+            <span className="font-cifra text-xs uppercase text-tinta/60">{mesCorto(m.mes)}</span>
+            <div className="flex flex-col gap-1">
+              <Barra valor={m.vistas} maximo={maximo} clase="bg-tinta/30" />
+              <Barra valor={m.contactos} maximo={maximo} clase="bg-azul-texto" />
+            </div>
           </div>
-        ))}
-      </div>
-
-      <div aria-hidden="true" className="mt-2 flex gap-2 border-t border-tinta/20 pt-2 sm:gap-4">
-        {negocio.meses.map((m) => (
-          <span
-            key={m.mes}
-            className="min-w-0 flex-1 text-center font-cifra text-xs uppercase text-tinta/60"
-          >
-            {mesCorto(m.mes)}
-          </span>
         ))}
       </div>
 

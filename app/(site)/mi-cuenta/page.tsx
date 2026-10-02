@@ -41,7 +41,7 @@ export default async function MiCuentaPage() {
   // «Para ti» y «en números» son un extra: si su consulta falla, el resto de la
   // página (los negocios y sus enlaces) tiene que seguir funcionando.
   const [paraTi, enNumeros] = await Promise.all([
-    categoriasDe(sesion.id).then(convocatoriasParaTi).catch((e) => {
+    (negocios.length === 0 ? Promise.resolve([]) : categoriasDe(sesion.id).then(convocatoriasParaTi)).catch((e) => {
       console.error('[mi-cuenta] «Para ti» falló', e instanceof Error ? e.message : e);
       return [];
     }),
@@ -108,7 +108,7 @@ export default async function MiCuentaPage() {
 
       <NegocioEnNumeros negocios={enNumeros} />
 
-      <ParaTi convocatorias={paraTi} />
+      <ParaTi convocatorias={paraTi} tieneNegocios={negocios.length > 0} />
 
       {/* Lo que la persona gana por estar registrada. Va después de sus
           negocios porque lo primero que quiere ver al entrar es si su ficha
