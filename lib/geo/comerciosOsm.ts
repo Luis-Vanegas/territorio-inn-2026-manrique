@@ -389,22 +389,44 @@ export function constelacionDe(punto: Punto, constelaciones: Constelacion[]): Co
 
 export type ComercioVecino = { comercio: EstrellaOsm; metros: number };
 
+/** Un comercio de OSM a esta distancia o menos del aliado es, casi seguro, el propio aliado. */
+export const METROS_MISMO_NEGOCIO = 25;
+
+/**
+ * Minúsculas, sin tildes, espacios colapsados: la misma regla de `normalizar` de
+ * `lib/busqueda.ts`, que acá no se puede importar (ver `metrosEntre`).
+ */
+function claveNombre(texto: string): string {
+  return texto.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').split(/\s+/).filter(Boolean).join(' ');
+}
+
 /**
  * «Otros negocios de tu constelación»: hasta `max` comercios CON NOMBRE de la
  * constelación del punto, del más cercano al más lejano. `total` cuenta todos los
  * que tienen nombre, para poder decir «y N más». `null` si el punto no cae en
  * ninguna constelación (la ficha no muestra la sección).
+ *
+ * El propio aliado puede estar mapeado en OSM: se excluye todo comercio a
+ * `METROS_MISMO_NEGOCIO` m o menos del punto, o con el mismo nombre normalizado
+ * que `nombreAliado`. Si no, la ficha lo listaría como «no es aliado».
  */
 export function vecinosDeConstelacion(
   punto: Punto,
   datos: Pick<DatosConstelaciones, 'constelaciones'>,
   max = 5,
+  nombreAliado?: string,
 ): { constelacion: Constelacion; comercios: ComercioVecino[]; total: number } | null {
   const constelacion = constelacionDe(punto, datos.constelaciones);
   if (!constelacion) return null;
 
+  const claveAliado = nombreAliado ? claveNombre(nombreAliado) : null;
   const conNombre = comerciosConNombre(constelacion.estrellas)
     .map((comercio) => ({ comercio, metros: metrosEntre(punto, { lat: comercio.lat, lon: comercio.lon }) }))
+    .filter(
+      (v) =>
+        v.metros > METROS_MISMO_NEGOCIO &&
+        (!claveAliado || claveNombre(v.comercio.nombre ?? '') !== claveAliado),
+    )
     .sort((a, b) => a.metros - b.metros);
 
   return { constelacion, comercios: conNombre.slice(0, max), total: conNombre.length };

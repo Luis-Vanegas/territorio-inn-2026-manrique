@@ -202,6 +202,7 @@ export function TarjetaEmprendimiento({
           <OtrosDeTuConstelacion
             latitud={portafolio.latitud}
             longitud={portafolio.longitud}
+            nombre={portafolio.nombre}
             datos={datosOsm ?? null}
           />
         </div>

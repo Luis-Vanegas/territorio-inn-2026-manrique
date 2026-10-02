@@ -64,6 +64,10 @@ const SelectorUbicacion = dynamic(() => import('./SelectorUbicacionClient'), {
 
 const ESTADO_INICIAL: EstadoRegistro = { estado: 'inicial' };
 
+/** Lo que cada campo adicional hace con lo que escribas: se dice ANTES de llenarlo (Ley 1581). */
+const NOTA_PUBLICO = 'Este dato se muestra en la ficha pública de tu negocio.';
+const NOTA_PRIVADO = 'Este dato no se publica: solo lo ve el equipo.';
+
 // ─── piezas ──────────────────────────────────────────────────
 
 function Seccion({
@@ -749,6 +753,9 @@ export function FormularioRegistro({
                     {!c.requerido && (
                       <span className="ml-2 font-sans text-xs text-tinta/60">opcional</span>
                     )}
+                    <span className="mt-0.5 block font-sans text-xs text-tinta/65">
+                      {c.publico ? NOTA_PUBLICO : NOTA_PRIVADO}
+                    </span>
                   </span>
                 </label>
               );
@@ -758,7 +765,7 @@ export function FormularioRegistro({
               <CampoFormulario
                 id={nombre}
                 etiqueta={c.etiqueta}
-                ayuda={c.ayuda ?? undefined}
+                ayuda={[c.ayuda, c.publico ? NOTA_PUBLICO : NOTA_PRIVADO].filter(Boolean).join(' ')}
                 requerido={c.requerido}
                 errores={err(nombre)}
                 key={c.id}

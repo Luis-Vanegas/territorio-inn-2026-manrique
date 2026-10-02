@@ -46,7 +46,11 @@ for (const k of datos.constelaciones) {
   assert.equal(v.constelacion.id, k.id);
   assert.ok(v.comercios.length <= 5, `${k.id}: máximo 5`);
   assert.ok(v.total >= v.comercios.length, `${k.id}: total coherente`);
-  assert.equal(v.total, k.estrellas.filter((e) => e.nombre?.trim()).length, `${k.id}: total = comercios con nombre`);
+  // Sin el nombre del aliado: solo se descartan los que están a ≤ 25 m del punto.
+  const lejanos = k.estrellas.filter(
+    (e) => e.nombre?.trim() && Math.hypot((e.lat - k.centroide.lat) * 111_320, (e.lon - k.centroide.lon) * 111_320 * Math.cos((k.centroide.lat * Math.PI) / 180)) > 25,
+  );
+  assert.equal(v.total, lejanos.length, `${k.id}: total = comercios con nombre a más de 25 m`);
   for (const { comercio } of v.comercios) {
     assert.ok(comercio.nombre?.trim(), `${k.id}: un comercio sin nombre se coló`);
     assert.ok(k.estrellas.some((e) => e.osm === comercio.osm), `${k.id}: comercio de otra constelación`);
@@ -55,6 +59,27 @@ for (const k of datos.constelaciones) {
     assert.ok(v.comercios[i - 1].metros <= v.comercios[i].metros, `${k.id}: orden por cercanía`);
   }
   probadas++;
+}
+
+// ── El propio aliado no se lista como «otro» negocio ──
+{
+  const k = datos.constelaciones.find((x) => x.estrellas.filter((e) => e.nombre?.trim()).length >= 3);
+  const conNombre = k.estrellas.filter((e) => e.nombre?.trim());
+  const yo = conNombre[0];
+  const punto = { lat: yo.lat, lon: yo.lon };
+
+  // A ≤ 25 m (aquí, exactamente encima): fuera, aunque el nombre sea otro.
+  const porDistancia = vecinosDeConstelacion(punto, datos, 100, 'Un nombre que no existe');
+  assert.ok(porDistancia, 'el punto cae en su constelación');
+  assert.ok(!porDistancia.comercios.some((v) => v.comercio.osm === yo.osm), 'comercio a 0 m excluido');
+  assert.ok(porDistancia.comercios.every((v) => v.metros > 25), 'ninguno a ≤ 25 m');
+
+  // Mismo nombre normalizado (mayúsculas y tildes no cuentan), aunque esté lejos del punto.
+  const otro = conNombre.find((e) => e.osm !== yo.osm && Math.hypot(e.lat - yo.lat, e.lon - yo.lon) * 111_320 > 25);
+  const alterado = otro.nombre.toUpperCase().normalize('NFD').replace(/\p{M}/gu, '');
+  const porNombre = vecinosDeConstelacion(punto, datos, 100, `  ${alterado} `);
+  assert.ok(!porNombre.comercios.some((v) => v.comercio.osm === otro.osm), 'mismo nombre normalizado excluido');
+  assert.ok(porNombre.total < conNombre.length, 'total descuenta a los excluidos');
 }
 
 // Lejos de todas (centro de Medellín, a kilómetros de Manrique): no se muestra la sección.

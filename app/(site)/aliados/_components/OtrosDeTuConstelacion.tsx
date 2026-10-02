@@ -11,14 +11,17 @@ import { nombreCategoriaOsm, vecinosDeConstelacion } from '@/lib/geo/comerciosOs
 export function OtrosDeTuConstelacion({
   latitud,
   longitud,
+  nombre,
   datos,
 }: {
   latitud: number;
   longitud: number;
+  /** Nombre del aliado: si OSM lo tiene mapeado, no se lista como «otro» negocio. */
+  nombre: string;
   datos: Pick<DatosConstelaciones, 'constelaciones'> | null;
 }) {
   if (!datos) return null;
-  const vecinos = vecinosDeConstelacion({ lat: latitud, lon: longitud }, datos);
+  const vecinos = vecinosDeConstelacion({ lat: latitud, lon: longitud }, datos, 5, nombre);
   if (!vecinos || vecinos.comercios.length === 0) return null;
 
   const { constelacion, comercios, total } = vecinos;
@@ -39,7 +42,7 @@ export function OtrosDeTuConstelacion({
               {nombreCategoriaOsm(comercio.categoria)}
               {comercio.detalle?.direccion && <> · {comercio.detalle.direccion}</>}
             </p>
-            <p className="mt-0.5 inline-block border border-tinta/20 px-1.5 py-0.5 font-sans text-[11px] uppercase tracking-wide text-tinta/60">
+            <p className="mt-0.5 inline-block border border-tinta/20 px-1.5 py-0.5 font-sans text-xs uppercase tracking-wide text-tinta/60">
               OpenStreetMap · no es aliado
             </p>
           </li>
