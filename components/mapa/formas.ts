@@ -30,12 +30,20 @@ export function svgForma(grupo: Grupo, tamano: number): string {
 }
 
 /**
- * Estrella de cuatro puntas: el ÚNICO dibujo (DESIGN.md › Firmamento › Motivos).
- * Lo usan el marcador del mapa (`svgEstrella`) y el componente `Estrella`
- * (portada, /firmamento, leyendas). El viewBox deja 1 unidad de margen para que
- * el trazo no se corte en las puntas.
+ * Estrella de cuatro puntas: el ÚNICO trazo (DESIGN.md › Firmamento › Motivos),
+ * como subtrayecto de un `path` centrado en (cx, cy) y de radio r. Las puntas
+ * están a r del centro y el cuello a r * 2,6 / 12 en cada eje. Lo usan el marcador
+ * del mapa (`svgEstrella`), el componente `Estrella` (portada, /firmamento) y el
+ * cielo de /firmamento (muchas estrellas de distinto radio en un solo `path`).
  */
-export const ESTRELLA_PATH = 'M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z';
+export function pathEstrella(cx: number, cy: number, r: number): string {
+  const c = (r * 2.6) / 12;
+  const n = (v: number) => +v.toFixed(3);
+  return `M${n(cx)} ${n(cy - r)}L${n(cx + c)} ${n(cy - c)}L${n(cx + r)} ${n(cy)}L${n(cx + c)} ${n(cy + c)}L${n(cx)} ${n(cy + r)}L${n(cx - c)} ${n(cy + c)}L${n(cx - r)} ${n(cy)}L${n(cx - c)} ${n(cy - c)}Z`;
+}
+
+/** La estrella de 24 × 24 con 1 unidad de margen en el viewBox para que el trazo no se corte en las puntas. */
+export const ESTRELLA_PATH = pathEstrella(12, 12, 12);
 export const ESTRELLA_VIEWBOX = '-1 -1 26 26';
 
 /** Estrella de cuatro puntas: un comercio de OpenStreetMap (no es aliado). */

@@ -354,6 +354,7 @@ export function lineaMezcla(c: Constelacion): string {
 
 type Punto = { lat: number; lon: number };
 
+/** Metros entre dos puntos {lat, lon}: adapta el formato a `distanciaMetros` (Haversine, `[lat, lon]`). */
 function metrosEntre(a: Punto, b: Punto): number {
   return distanciaMetros([a.lat, a.lon], [b.lat, b.lon]);
 }

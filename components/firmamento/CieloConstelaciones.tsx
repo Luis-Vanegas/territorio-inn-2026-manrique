@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { PALETA_NOCHE } from '@/lib/paleta';
+import { pathEstrella } from '@/components/mapa/formas';
 import type { Cielo } from '@/app/(site)/firmamento/datos';
 
 /**
@@ -27,11 +28,7 @@ const R_CONSTELACION = 5;
 const R_SUELTA = 3;
 const GRUPOS_PARPADEO = 4;
 
-/** Estrella de cuatro puntas como subtrayecto de un `path`. */
-function estrella([x, y]: [number, number], r: number): string {
-  const c = r * 0.24;
-  return `M${x} ${y - r}L${x + c} ${y - c}L${x + r} ${y}L${x + c} ${y + c}L${x} ${y + r}L${x - c} ${y + c}L${x - r} ${y}L${x - c} ${y - c}Z`;
-}
+const estrella = ([x, y]: [number, number], r: number) => pathEstrella(x, y, r);
 
 export function CieloConstelaciones({ cielo, descripcion }: { cielo: Cielo; descripcion: string }) {
   const ref = useRef<SVGSVGElement>(null);

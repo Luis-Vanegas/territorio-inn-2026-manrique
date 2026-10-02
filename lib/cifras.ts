@@ -33,7 +33,8 @@ const EMICRON = 'DANE (2026), boletín EMICRON 2025, 30 de julio de 2026';
 const NOTA_EMICRON =
   'Promedio de 24 ciudades, no de Manrique. Cifra tomada de la asesoría, pendiente de contrastar con el boletín original.';
 
-export const CAMARA_EMPRESAS: CifraConFuente = {
+// `numero` obligatorio: la banda de la portada lo anima y no admite una cifra sin magnitud.
+export const CAMARA_EMPRESAS: CifraConFuente & { numero: number } = {
   valor: '2.626',
   numero: 2626,
   decimales: 0,

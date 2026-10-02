@@ -17,7 +17,7 @@
 import Link from "next/link";
 import { contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
 import { aplanarComercios } from "@/lib/geo/comerciosOsm";
-import { CAMARA_EMPRESAS, FUENTE_CAMARA } from "@/lib/cifras";
+import { CAMARA_EMPRESAS } from "@/lib/cifras";
 import { fechaHoyBogota, formatearNumero } from "@/lib/formato";
 import { fechaLarga, type DatosConstelaciones } from "@/lib/geo/constelaciones";
 import datosOsmJson from "@/public/firmamento/constelaciones.json";
@@ -65,10 +65,10 @@ export async function MetricasSection() {
       fuente: `Fuente: base de datos de Constelaciones · al ${hoy}`,
     },
     {
-      numero: CAMARA_EMPRESAS.numero ?? 0,
+      numero: CAMARA_EMPRESAS.numero,
       etiqueta: "Empresas registradas en Cámara de Comercio, en Manrique",
       contexto: "Lo que ve el registro mercantil: solo lo formal.",
-      fuente: `Fuente: ${FUENTE_CAMARA} · matriculadas o renovadas en ${CAMARA_EMPRESAS.fecha} · consultada el 1 de octubre de 2026`,
+      fuente: `Fuente: ${CAMARA_EMPRESAS.fuente} · matriculadas o renovadas en ${CAMARA_EMPRESAS.fecha} · consultada el 1 de octubre de 2026`,
     },
   ];
 
