@@ -1,0 +1,25 @@
+{
+  "fuente": "OpenStreetMap contributors (ODbL 1.0), vía Overpass API",
+  "licencia": "ODbL 1.0 — https://www.openstreetmap.org/copyright",
+  "fecha_corrida": "2026-10-02T17:02:59Z",
+  "timestamp_osm_base": "2026-10-02T17:01:31Z",
+  "osm_base_timestamp": "2026-10-02T17:01:31Z",
+  "servidor": "https://overpass-api.de/api/interpreter",
+  "consulta_overpass": "[out:json][timeout:240];\n(\n  nwr[\"shop\"](6.26065,-75.55628,6.28634,-75.53200);\n  nwr[\"craft\"](6.26065,-75.55628,6.28634,-75.53200);\n  nwr[\"amenity\"~\"^(restaurant|fast_food|cafe|food_court|ice_cream|pharmacy|clinic|doctors|dentist|hospital|veterinary|animal_boarding|car_repair|car_wash)$\"](6.26065,-75.55628,6.28634,-75.53200);\n  nwr[\"healthcare\"](6.26065,-75.55628,6.28634,-75.53200);\n  nwr[\"leisure\"=\"fitness_centre\"](6.26065,-75.55628,6.28634,-75.53200);\n);\nout center tags;",
+  "elementos_brutos": 339,
+  "validaciones": {
+    "nulos_descartados": {
+      "lat": 0,
+      "lon": 0
+    },
+    "duplicados_por_id_eliminados": 0,
+    "duplicados_por_nombre_categoria_y_posicion_eliminados": 1,
+    "de_ellos_sin_nombre": 0,
+    "en_la_caja_pero_fuera_del_poligono": 18,
+    "comuna3_fuera_del_poligono": 0
+  },
+  "total_comuna3": 320,
+  "comuna3_con_nombre": 205,
+  "comuna3_sin_nombre": 115,
+  "comuna3_con_categoria_mapeada": 267
+}
