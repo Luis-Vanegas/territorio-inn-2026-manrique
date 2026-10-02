@@ -11,6 +11,7 @@ const ENLACES = [
   { href: '/admin/empleo', etiqueta: 'Empleo' },
   { href: '/admin/estadisticas', etiqueta: 'Estadísticas' },
   { href: '/admin/campos', etiqueta: 'Campos' },
+  { href: '/admin/convocatorias', etiqueta: 'Convocatorias' },
   { href: '/admin/peticiones', etiqueta: 'Peticiones' },
   { href: '/admin/formalizacion', etiqueta: 'Formalización' },
   { href: '/admin/marca', etiqueta: 'Marca' },

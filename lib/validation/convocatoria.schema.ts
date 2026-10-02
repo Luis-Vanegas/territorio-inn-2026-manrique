@@ -41,3 +41,9 @@ export const ingestaConvocatoriasSchema = z.object({
 });
 
 export type ConvocatoriaEntrada = z.infer<typeof convocatoriaEntradaSchema>;
+
+/** Lo que manda el panel al moderar una convocatoria: a cuál y qué decide. */
+export const decisionConvocatoriaSchema = z.object({
+  id: z.uuid('Identificador inválido'),
+  decision: z.enum(['aprobar', 'descartar', 'vencida']),
+});
