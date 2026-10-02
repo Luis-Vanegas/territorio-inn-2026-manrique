@@ -11,6 +11,7 @@
 import Link from "next/link";
 import { listarAprobados, contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
 import { enfoque } from "@/lib/content";
+import { fechaHoyBogota } from "@/lib/formato";
 import { MapaAliadosDestacado } from "./MapaAliadosDestacado";
 import { ScrollReveal } from "./ScrollReveal";
 
@@ -39,8 +40,14 @@ export async function AliadosDestacado() {
             </span>
 
             {total > 0 && (
-              <span className="font-sans text-xs text-tinta/60">
-                {total} {total === 1 ? "negocio" : "negocios"} ya en el mapa
+              <span className="flex flex-col">
+                <span className="font-sans text-xs text-tinta/60">
+                  {total} {total === 1 ? "negocio" : "negocios"} ya en el mapa
+                </span>
+                {/* Regla de cifras de DESIGN.md: toda cifra lleva fuente y fecha. */}
+                <span className="font-cifra text-xs text-tinta/70">
+                  Fuente: base de datos de Constelaciones · al {fechaHoyBogota()}
+                </span>
               </span>
             )}
           </div>

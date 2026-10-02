@@ -17,16 +17,16 @@
 import Link from "next/link";
 import { contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
 import { aplanarComercios } from "@/lib/geo/comerciosOsm";
+import { CAMARA_EMPRESAS, FUENTE_CAMARA } from "@/lib/cifras";
+import { fechaHoyBogota, formatearNumero } from "@/lib/formato";
 import { fechaLarga, type DatosConstelaciones } from "@/lib/geo/constelaciones";
 import datosOsmJson from "@/public/firmamento/constelaciones.json";
+import { Estrella } from "./firmamento/Estrella";
 import { ScrollReveal } from "./ScrollReveal";
 import { NumeroAnimado } from "./NumeroAnimado";
 
-// Estructura Empresarial 2025, Tabla 16 (documento técnico, anexo A): comerciantes
-// matriculados o renovados en 2025 que la Cámara clasifica en la comuna Manrique.
-const EMPRESAS_CAMARA = 2626;
-const FUENTE_CAMARA =
-  "Cámara de Comercio de Medellín para Antioquia, Estructura Empresarial 2025 · matriculadas o renovadas en 2025 · consultada el 1 de octubre de 2026";
+// La cifra de Cámara vive en lib/cifras.ts (la comparte /firmamento): Tabla 16
+// de la Estructura Empresarial 2025, matriculadas o renovadas en 2025.
 
 const datosOsm = datosOsmJson as unknown as DatosConstelaciones;
 
@@ -37,21 +37,10 @@ type Cifra = {
   fuente: string;
 };
 
-function Estrella() {
-  return (
-    <svg viewBox="-1 -1 26 26" width="20" height="20" aria-hidden="true" focusable="false" className="shrink-0 text-sodio">
-      <path
-        d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
-
 export async function MetricasSection() {
   const conteos = await contarAprobadosPorCategoria();
   const aliados = Object.values(conteos).reduce((a, b) => a + b, 0);
-  const hoy = new Intl.DateTimeFormat("es-CO", { dateStyle: "long", timeZone: "America/Bogota" }).format(new Date());
+  const hoy = fechaHoyBogota();
 
   const comercios = aplanarComercios(datosOsm).length;
   const fechaOsm = fechaLarga(datosOsm.osm_base);
@@ -76,10 +65,10 @@ export async function MetricasSection() {
       fuente: `Fuente: base de datos de Constelaciones · al ${hoy}`,
     },
     {
-      numero: EMPRESAS_CAMARA,
+      numero: CAMARA_EMPRESAS.numero ?? 0,
       etiqueta: "Empresas registradas en Cámara de Comercio, en Manrique",
       contexto: "Lo que ve el registro mercantil: solo lo formal.",
-      fuente: `Fuente: ${FUENTE_CAMARA}`,
+      fuente: `Fuente: ${FUENTE_CAMARA} · matriculadas o renovadas en ${CAMARA_EMPRESAS.fecha} · consultada el 1 de octubre de 2026`,
     },
   ];
 
@@ -111,9 +100,9 @@ export async function MetricasSection() {
               <ScrollReveal delay={indice * 0.1} className="h-full">
                 <div className="flex h-full flex-col border border-trazo bg-noche-2 p-5">
                   <p className="flex items-center gap-3 font-cifra text-5xl font-medium text-sodio">
-                    <Estrella />
+                    <Estrella tamano={20} color="currentColor" className="shrink-0 text-sodio" />
                     {/* El conteo animado es aria-hidden: el lector de pantalla lee el valor final. */}
-                    <span className="sr-only">{c.numero.toLocaleString("es-CO")}</span>
+                    <span className="sr-only">{formatearNumero(c.numero)}</span>
                     <NumeroAnimado numero={c.numero} decimales={0} />
                   </p>
                   <p className="mt-4 font-sans text-base font-medium text-estrella">{c.etiqueta}</p>

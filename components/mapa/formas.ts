@@ -29,9 +29,18 @@ export function svgForma(grupo: Grupo, tamano: number): string {
   return `${base}${CUERPO[grupo.forma]} fill="${grupo.color}" stroke="${CONTORNO}" stroke-width="2" stroke-linejoin="round"/></svg>`;
 }
 
+/**
+ * Estrella de cuatro puntas: el ÚNICO dibujo (DESIGN.md › Firmamento › Motivos).
+ * Lo usan el marcador del mapa (`svgEstrella`) y el componente `Estrella`
+ * (portada, /firmamento, leyendas). El viewBox deja 1 unidad de margen para que
+ * el trazo no se corte en las puntas.
+ */
+export const ESTRELLA_PATH = 'M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z';
+export const ESTRELLA_VIEWBOX = '-1 -1 26 26';
+
 /** Estrella de cuatro puntas: un comercio de OpenStreetMap (no es aliado). */
 export function svgEstrella(tamano: number): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="-1 -1 26 26" aria-hidden="true" focusable="false"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4 Z" fill="${FONDO_ESTRELLA}" stroke="${TRAZO_ESTRELLA}" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke"/></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="${ESTRELLA_VIEWBOX}" aria-hidden="true" focusable="false"><path d="${ESTRELLA_PATH}" fill="${FONDO_ESTRELLA}" stroke="${TRAZO_ESTRELLA}" stroke-width="1.5" stroke-linejoin="round" paint-order="stroke"/></svg>`;
 }
 
 /** Punto suelto de OSM: un comercio que no cayó en ninguna constelación. Más tenue que la estrella. */

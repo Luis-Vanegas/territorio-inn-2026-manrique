@@ -3,6 +3,9 @@
  * fuente y su año, y se copian tal cual. Lo que sí sale de un archivo (OSM, el
  * modelo, los aliados) se lee de él en `datos.ts`, nunca se escribe acá.
  *
+ * Un solo lugar para portada (banda Firmamento) y /firmamento: la misma cifra no
+ * se escribe dos veces.
+ *
  * Regla de DESIGN.md › Firmamento: toda cifra lleva su fuente y su fecha debajo.
  * Por eso cada una trae `fuente` (quién la publica) y `fecha` (el año o corte
  * al que se refiere, no el día que la copiamos).
@@ -23,7 +26,7 @@ export type CifraConFuente = {
 };
 
 const DAP = 'Ficha DAP Comuna 3, Alcaldía de Medellín';
-const CAMARA = 'Cámara de Comercio de Medellín para Antioquia, Estructura Empresarial 2025';
+export const FUENTE_CAMARA = 'Cámara de Comercio de Medellín para Antioquia, Estructura Empresarial 2025';
 const EMICRON = 'DANE (2026), boletín EMICRON 2025, 30 de julio de 2026';
 // Las dos cifras de EMICRON se tomaron de la asesoría y falta contrastarlas con
 // el boletín original; la nota va visible en la tarjeta, no solo en el código.
@@ -35,7 +38,7 @@ export const CAMARA_EMPRESAS: CifraConFuente = {
   numero: 2626,
   decimales: 0,
   etiqueta: 'empresas con registro mercantil en Manrique',
-  fuente: `${CAMARA}, Tabla 16`,
+  fuente: `${FUENTE_CAMARA}, Tabla 16`,
   fecha: '2025',
 };
 
@@ -98,7 +101,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 2569,
     decimales: 0,
     etiqueta: 'son microempresas',
-    fuente: `${CAMARA}, Tabla 14`,
+    fuente: `${FUENTE_CAMARA}, Tabla 14`,
     fecha: '2025',
   },
   {
@@ -106,7 +109,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 1091,
     decimales: 0,
     etiqueta: 'empresas de comercio',
-    fuente: `${CAMARA}, Tabla 16`,
+    fuente: `${FUENTE_CAMARA}, Tabla 16`,
     fecha: '2025',
   },
   {
@@ -114,7 +117,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 309,
     decimales: 0,
     etiqueta: 'empresas de manufactura',
-    fuente: `${CAMARA}, Tabla 16`,
+    fuente: `${FUENTE_CAMARA}, Tabla 16`,
     fecha: '2025',
   },
   {
@@ -122,7 +125,7 @@ export const TEJIDO_CAMARA: CifraConFuente[] = [
     numero: 288,
     decimales: 0,
     etiqueta: 'empresas de alojamiento y comida',
-    fuente: `${CAMARA}, Tabla 16`,
+    fuente: `${FUENTE_CAMARA}, Tabla 16`,
     fecha: '2025',
   },
 ];

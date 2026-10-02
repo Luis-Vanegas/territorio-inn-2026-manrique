@@ -2,13 +2,12 @@
 // diluirse en el mismo fondo del resto del sitio.
 //
 // Colores FIJOS, no los tokens hueso/tinta: esos se invierten con el modo, y
-// en oscuro el footer pasaba a ser una banda casi blanca — con los logos
-// institucionales (dibujados en claro, fill #F7F5F0) invisibles encima. La
-// banda queda oscura en los dos modos; en oscuro la separa el borde superior.
+// en oscuro el footer pasaba a ser una banda casi blanca. La banda queda oscura
+// en los dos modos; en oscuro la separa el borde superior.
 // Sobre #1A1A1A: white/65 da 7.3:1 y azul base 5.1:1.
 //
 // Las instituciones van en texto DM Sans: no hay logos oficiales con permiso de
-// uso y los SVG anteriores solo dibujaban el nombre en monoespaciada (D3).
+// uso (los SVG que solo dibujaban el nombre en monoespaciada se borraron, D3).
 
 import Link from "next/link";
 import { footer } from "@/lib/content";

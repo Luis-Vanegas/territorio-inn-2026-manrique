@@ -231,7 +231,12 @@ El motivo es el dato; nada decorativo que no salga de uno.
 - Ninguna pieza usa datos simulados.
 - Las celdas con menos de 5 casos se muestran como «<5», con una nota que explique
   por qué (protege a los vecinos; ver `docs/seguridad.md`).
-- El número de aliados sale de `/api/datos`, no se escribe a mano.
+- El número de aliados nunca se escribe a mano y tiene dos fuentes según la pieza:
+  la **portada** muestra el total de aprobados leído de la base
+  (`contarAprobadosPorCategoria`), que es público porque la vitrina ya los lista uno
+  por uno; `/firmamento` solo usa los **agregados con k ≥ 5** de
+  `obtenerDatosAbiertos` (el mismo repo de `/api/datos`), con celdas «<5». Ningún
+  otro componente consulta la base para una cifra de aliados.
 
 ### DM Mono: rol cerrado
 
@@ -382,8 +387,8 @@ en la base, ninguna pieza simulada).
   en vivo, ζ indicadores de otras entidades, η método y límites. La vigía de
   convocatorias del prototipo no entra: aún no tiene dato propio en el sitio.
 - **Cifras**: las de nuestros archivos se leen en `datos.ts` (OSM, modelo, datos
-  abiertos); las de otras entidades están en `cifras.ts`, cada una con fuente y
-  año. Si la base no responde, el indicador de aliados dice que no pudo
+  abiertos); las de otras entidades (Cámara, DANE, DAP) están en `lib/cifras.ts`, cada una con
+  fuente y año, y la portada importa de ahí la misma cifra de Cámara. Si la base no responde, el indicador de aliados dice que no pudo
   consultarse; no se deja en cero.
 - **Cielo** (`CieloConstelaciones`): comercios y líneas del MST proyectados del
   lat/lon real dentro del contorno de la comuna. Las líneas se trazan con
@@ -427,8 +432,8 @@ La banda es «El proyecto, en números»: las visitas se quitaron (las infla el 
 equipo; siguen en el panel de administración). Muestra datos del **territorio**, cada
 uno con su fuente y su fecha en `font-cifra` debajo: comercios mapeados en OpenStreetMap
 y constelaciones (de `public/firmamento/constelaciones.json`, fecha de la base de OSM),
-aliados en la red (de la base de datos, fecha de hoy) y empresas registradas en Cámara
-de Comercio en Manrique (2.626; Cámara de Comercio de Medellín para Antioquia,
+aliados en la red (total de aprobados de la base de datos, fecha de hoy; regla en «Reglas de cifras») y empresas registradas en Cámara
+de Comercio en Manrique (2.626, de `lib/cifras.ts`; Cámara de Comercio de Medellín para Antioquia,
 Estructura Empresarial 2025). Cada cifra lleva la estrella de cuatro puntas. El
 mensaje es «La brecha es nuestra línea base» y el botón lleva a `/firmamento`. La
 transición día→noche es un degradado de borde (sin JS), no una animación.

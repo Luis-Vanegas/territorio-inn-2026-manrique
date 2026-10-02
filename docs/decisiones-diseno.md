@@ -38,7 +38,7 @@ Si dudas qué color lleva algo nuevo, pregúntate qué hace, no cómo se ve: si 
 
 ### Superficies que no se invierten
 
-El footer usa colores **fijos** (`bg-[#1A1A1A]`, `text-white/65`), no `bg-tinta`/`text-hueso`: esos tokens se invierten con el modo, y los logos institucionales están dibujados en claro (`#F7F5F0`). Con tokens, en oscuro el footer pasaba a ser una banda clara con los logos invisibles. Cualquier superficie que cargue una imagen pensada para un fondo concreto tiene que fijar ese fondo.
+El footer usa colores **fijos** (`bg-[#1A1A1A]`, `text-white/65`), no `bg-tinta`/`text-hueso`: esos tokens se invierten con el modo y, con ellos, en oscuro el footer pasaba a ser una banda casi blanca. Los logos institucionales que antes iban encima se quitaron (D3: sin permiso de uso, las instituciones van en texto), pero el criterio sigue: cualquier superficie que deba verse igual en los dos modos, o que cargue una imagen pensada para un fondo concreto, tiene que fijar ese fondo.
 
 ## Tipografía
 
