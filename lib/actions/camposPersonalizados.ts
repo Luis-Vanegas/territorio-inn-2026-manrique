@@ -8,9 +8,11 @@ import {
   editarCampo,
   cambiarActivo,
   obtenerCampo,
+  cambiarPublico,
 } from '@/lib/db/camposPersonalizados.repo';
 import {
   definicionCampoSchema,
+  cambioPublicoSchema,
   generarSlug,
 } from '@/lib/validation/camposPersonalizados.schema';
 
@@ -142,4 +144,42 @@ export async function cambiarActivoCampoAction(formData: FormData): Promise<void
   revalidatePath('/admin/campos');
   revalidatePath('/aliados/registro');
   invalidarVitrina();
+}
+
+/**
+ * Publicar o esconder un campo en la vitrina. Es la única forma de que un campo
+ * personalizado vuelva a verse (default `false` desde la 032), así que llama
+ * `invalidarVitrina()`: sin eso lo público quedaría viejo hasta 10 minutos.
+ */
+export async function cambiarPublicoCampoAction(
+  _anterior: EstadoCampo,
+  formData: FormData,
+): Promise<EstadoCampo> {
+  const sesion = await verificarSesion();
+  if (!sesion) return { estado: 'error', mensaje: 'Tu sesión venció. Vuelve a entrar.' };
+
+  const parsed = cambioPublicoSchema.safeParse({
+    id: formData.get('id'),
+    publico: formData.get('publico'),
+  });
+  if (!parsed.success) return { estado: 'error', mensaje: 'No pudimos leer el cambio.' };
+
+  const campo = await obtenerCampo(parsed.data.id);
+  if (!campo) return { estado: 'error', mensaje: 'Ese campo ya no existe.' };
+
+  try {
+    await cambiarPublico(parsed.data.id, parsed.data.publico);
+  } catch (error) {
+    console.error('[cambiarPublicoCampoAction]', error);
+    return { estado: 'error', mensaje: 'No se pudo guardar el cambio.' };
+  }
+
+  revalidatePath('/admin/campos');
+  invalidarVitrina();
+  return {
+    estado: 'ok',
+    mensaje: parsed.data.publico
+      ? `«${campo.etiqueta}» ahora se ve en la vitrina.`
+      : `«${campo.etiqueta}» ya no se ve en la vitrina.`,
+  };
 }

@@ -14,12 +14,14 @@ export type DefinicionCampo = {
   ayuda: string | null;
   orden: number;
   activo: boolean;
+  /** true = el valor sale en la vitrina pública (migración 032, default false). */
+  publico: boolean;
 };
 
 /** Lo que ve el formulario público y las vistas de la vitrina: solo lo activo. */
 export async function listarCamposActivos(): Promise<DefinicionCampo[]> {
   const rows = await sql`
-    select id, slug, etiqueta, tipo, opciones, requerido, ayuda, orden, activo
+    select id, slug, etiqueta, tipo, opciones, requerido, ayuda, orden, activo, publico
     from definiciones_campo
     where activo = true
     order by orden, etiqueta
@@ -30,7 +32,7 @@ export async function listarCamposActivos(): Promise<DefinicionCampo[]> {
 /** Lo que ve el admin: todo, para poder reactivar un campo desactivado. */
 export const listarTodosLosCampos = cachearVitrina(async (): Promise<DefinicionCampo[]> => {
   const rows = await sql`
-    select id, slug, etiqueta, tipo, opciones, requerido, ayuda, orden, activo
+    select id, slug, etiqueta, tipo, opciones, requerido, ayuda, orden, activo, publico
     from definiciones_campo
     order by activo desc, orden, etiqueta
   `;
@@ -39,7 +41,7 @@ export const listarTodosLosCampos = cachearVitrina(async (): Promise<DefinicionC
 
 export async function obtenerCampo(id: string): Promise<DefinicionCampo | null> {
   const rows = await sql`
-    select id, slug, etiqueta, tipo, opciones, requerido, ayuda, orden, activo
+    select id, slug, etiqueta, tipo, opciones, requerido, ayuda, orden, activo, publico
     from definiciones_campo
     where id = ${id}
   `;
@@ -96,4 +98,13 @@ export async function editarCampo(id: string, datos: EdicionCampo): Promise<void
 
 export async function cambiarActivo(id: string, activo: boolean): Promise<void> {
   await sql`update definiciones_campo set activo = ${activo} where id = ${id}`;
+}
+
+/**
+ * Prende o apaga la publicación del campo en la vitrina. Va aparte de `editarCampo`
+ * a propósito: es una decisión de privacidad (Ley 1581), no un cambio de forma, y
+ * no debe poder colarse en una edición de etiqueta.
+ */
+export async function cambiarPublico(id: string, publico: boolean): Promise<void> {
+  await sql`update definiciones_campo set publico = ${publico} where id = ${id}`;
 }

@@ -1,9 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
-import { editarCampoAction, cambiarActivoCampoAction } from '@/lib/actions/camposPersonalizados';
+import {
+  editarCampoAction,
+  cambiarActivoCampoAction,
+  cambiarPublicoCampoAction,
+  type EstadoCampo,
+} from '@/lib/actions/camposPersonalizados';
 import { FormularioCampo } from './FormularioCampo';
 
 const ETIQUETA_TIPO: Record<DefinicionCampo['tipo'], string> = {
@@ -23,6 +28,43 @@ function BotonToggle({ activo }: { activo: boolean }) {
     >
       {activo ? 'desactivar' : 'reactivar'}
     </button>
+  );
+}
+
+const ESTADO_INICIAL: EstadoCampo = { estado: 'inicial' };
+
+/**
+ * Interruptor «se ve en la vitrina». Un campo nuevo nace cerrado: lo que la gente
+ * escribe ahí no se publica hasta que un moderador lo decide a propósito.
+ */
+function InterruptorPublico({ campo }: { campo: DefinicionCampo }) {
+  const [estado, accion, pendiente] = useActionState(cambiarPublicoCampoAction, ESTADO_INICIAL);
+
+  return (
+    <form action={accion} className="flex flex-col items-end gap-1">
+      <input type="hidden" name="id" value={campo.id} />
+      <input type="hidden" name="publico" value={String(!campo.publico)} />
+      <button
+        type="submit"
+        role="switch"
+        aria-checked={campo.publico}
+        disabled={pendiente}
+        className="inline-flex min-h-11 items-center gap-2 font-sans text-xs text-tinta/70 hover:text-azul-texto disabled:opacity-40"
+      >
+        <span
+          aria-hidden="true"
+          className={`flex h-4 w-8 items-center border border-tinta/55 px-0.5 ${
+            campo.publico ? 'justify-end bg-azul-texto' : 'justify-start'
+          }`}
+        >
+          <span className={`h-2.5 w-2.5 ${campo.publico ? 'bg-hueso' : 'bg-tinta/55'}`} />
+        </span>
+        {campo.publico ? 'Se ve en la vitrina' : 'Solo lo ve el panel'}
+      </button>
+      <p role="status" className="font-sans text-xs text-tinta/65">
+        {estado.estado === 'ok' || estado.estado === 'error' ? estado.mensaje : ''}
+      </p>
+    </form>
   );
 }
 
@@ -76,7 +118,9 @@ export function FilaCampo({ campo }: { campo: DefinicionCampo }) {
         {campo.ayuda && <p className="mt-1 font-sans text-xs text-tinta/65">{campo.ayuda}</p>}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
+        <InterruptorPublico campo={campo} />
+
         <button
           type="button"
           onClick={() => setEditando(true)}
