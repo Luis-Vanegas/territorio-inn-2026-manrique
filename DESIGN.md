@@ -159,7 +159,8 @@ una frase de texto corrido quedan exentos.
 
 Propuesta aprobada en `docs/plan-diseno-2026-10.md` §2 y §8; esta sección es la
 fuente de verdad de la identidad nocturna. Componentes hechos: el mapa (ver
-«Mapa»); el resto sigue en tokens de `tailwind.config.ts`.
+«Mapa») y la página `/firmamento` (ver «La página /firmamento»); los tokens
+viven en `lib/paleta.ts` y los esparce `tailwind.config.ts`.
 
 ### Metáfora
 
@@ -352,6 +353,52 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   usan `hueso`/`tinta` del tema (ver «Tema»); la leyenda y la línea de fuente se
   leen con `tinta/75` y `tinta/70`.
 - **Alternativa sin mapa**: enlace «Ver los aliados en lista» sobre el mapa.
+
+### La página /firmamento
+
+Ruta `app/(site)/firmamento/`, componentes en `components/firmamento/`. Siempre de
+noche, sin seguir el selector de tema, y lee solo datos que ya existen (nada nuevo
+en la base, ninguna pieza simulada).
+
+- **`.modo-noche`** (styles/globals.css) envuelve la página y redefine los mismos
+  tokens `hueso`/`tinta`/`azul-texto`/`morado-texto` con `noche`, `estrella`,
+  `noche-azul` y `noche-morado`. Así el mapa existente (popups, controles,
+  leyenda, ficha de comercio) sale con la paleta nocturna sin duplicar clases; el
+  foco pasa a `sodio` (12:1 sobre `noche`). `MapaAliados` recibe `noche` y no sigue
+  el tema; `constelacionElegida` y `alElegirConstelacion` dejan que la tabla
+  controle el filtro del mapa. No hay un segundo mapa.
+- **Fraunces itálica** se carga solo en esta ruta (`layout.tsx` de la carpeta,
+  variable `--font-fraunces-italica`, clase `.font-italica`): el layout raíz solo
+  trae la Fraunces normal y sin ella el navegador inclinaría la letra a la fuerza.
+  Va en el titular (itálica 300, «mento» en peso 600 `sodio`), en las letras
+  griegas y en el índice.
+- **Secciones** (solo las que tienen dato real): α cielo de hoy (4 indicadores
+  con estrella + el cielo proyectado), β mapa estelar, γ tabla de constelaciones
+  (tocar el código de una fila la enciende en el mapa; se apaga al tocarla otra
+  vez), δ la brecha («tres miradas» lado a lado con la nota de que **no** son
+  comparables como porcentaje, y la red por categoría con celdas «<5»), ε sugeridor
+  en vivo, ζ indicadores de otras entidades, η método y límites. La vigía de
+  convocatorias del prototipo no entra: aún no tiene dato propio en el sitio.
+- **Cifras**: las de nuestros archivos se leen en `datos.ts` (OSM, modelo, datos
+  abiertos); las de otras entidades están en `cifras.ts`, cada una con fuente y
+  año. Si la base no responde, el indicador de aliados dice que no pudo
+  consultarse; no se deja en cero.
+- **Cielo** (`CieloConstelaciones`): comercios y líneas del MST proyectados del
+  lat/lon real dentro del contorno de la comuna. Las líneas se trazan con
+  `pathLength` (≤ 900 ms en total) al entrar en pantalla y las estrellas parpadean
+  en 4 grupos desfasados (0,6 ↔ 1, de 3 a 6 s). Con menos movimiento aparece todo
+  directo. Sin JavaScript se ve entero: framer rinde el trazo en 0, así que
+  `.linea-cielo` lo anula sin la clase `js` y lo revela a los 4 s sin `js-listo`
+  (las mismas tres capas de «Movimiento»).
+- **Horizonte**: cada luz es un comercio de OSM y su posición de oeste a este es
+  su longitud; la altura dentro de la ladera es solo reparto visual.
+- **Índice**: barra pegajosa bajo el encabezado, con enlaces de 44 px; en pantallas
+  angostas se desplaza dentro de su barra, no la página.
+- **Tabla de constelaciones**: `caption`, `th scope`, botón de 44 px con
+  `aria-pressed` en el código de cada fila. Bajo `sm` el radio y la mezcla bajan
+  bajo el nombre para que no haya scroll horizontal a 320 px.
+- **Celdas «<5»**: se muestran tal cual, con la nota de por qué (menos de 5
+  negocios podrían señalar a una persona; Ley 1581).
 
 ## Idioma
 
