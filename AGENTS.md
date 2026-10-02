@@ -234,6 +234,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `app/(site)/aliados/page.tsx` lo importa, en el servidor, para los conteos del
   filtro de categorías (`unirCategorias`: aliados + comercios de OSM, así se
   puede filtrar por cualquier negocio del mapa aunque no tenga aliados).
+- **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades viven en `cifras.ts` con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
 - **Comentarios**: solo cuando explican el WHY (una decisión no obvia, un
   trade-off). Los shortcuts deliberados se marcan con `ponytail: <qué se
   omitió y cuándo ampliarlo>`. No comentar lo que el código ya dice solo.
