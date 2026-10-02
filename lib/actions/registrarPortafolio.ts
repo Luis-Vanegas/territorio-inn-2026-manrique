@@ -193,8 +193,11 @@ export async function registrarPortafolio(
 
   // Sugeridor de categoría: SOLO la categoría que infirió el modelo, con su
   // confianza, y si la persona quedó con ella. Jamás el nombre que escribió (el
-  // formulario ni lo manda en estos campos). Sin FK al negocio: no se puede
-  // reunir con él. Es telemetría: si falla, el registro ya está guardado.
+  // formulario ni lo manda en estos campos). Sin FK al negocio y con la fecha
+  // truncada al día (no la hora), para que no se cruce con el registro por el
+  // instante de creación; con muy poco volumen, categoría + día aún podrían
+  // coincidir con un solo registro. Es telemetría: si falla, el registro ya está
+  // guardado.
   try {
     const sugerencia = sugerenciaDesdeFormData(formData);
     if (sugerencia) {
