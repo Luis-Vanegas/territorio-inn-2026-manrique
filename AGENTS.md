@@ -163,13 +163,22 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   escribe en el nombre no sale de su pantalla. Con confianza >= 0,45 sugiere una;
   si no, las 3 mejores (`sugerirCategoria`). Replica a `pipeline/verificar_salidas.py`:
   al reentrenar hay que regenerar los casos de `scripts/verificar-sugeridor.mjs`.
-  Si se guarda algo del sugeridor (`sugerencias_categoria`), es la categoría
-  inferida y si la aceptó, NUNCA el texto escrito. El archivo no lleva
-  `server-only` ni imports de valor, para que el verificador lo importe.
+  En el registro lo monta `SugeridorCategoria.tsx` bajo «Nombre del negocio»
+  (aria-live polite; ≥ 0,45 «Usar esta», si no las 3 mejores). Lo único que
+  viaja al enviar son dos campos ocultos (`sugerencia_categoria`,
+  `sugerencia_confianza`); `registrarPortafolio` los lee con
+  `sugerenciaDesdeFormData` y guarda en `sugerencias_categoria` la categoría
+  inferida, su confianza y si la aceptó (`aceptada` = la `categoria_id` enviada
+  coincide), NUNCA el texto escrito. Es telemetría: si falla no tumba el
+  registro. El archivo no lleva `server-only` ni imports de valor, para que el
+  verificador lo importe.
 - **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
   la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
   vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
-  componente: el dueño y el panel leen `COLUMNAS_PROPIAS` (todo).
+  componente: el dueño y el panel leen `COLUMNAS_PROPIAS` (todo). El
+  moderador lo prende en `/admin/campos` (interruptor por fila →
+  `cambiarPublicoCampoAction`, con Zod e `invalidarVitrina()`); `publico` es
+  una decisión de privacidad y por eso NO viaja en `editarCampo`.
 - **Endpoints de máquina** (`/api/cron/purgar`, `/api/ingesta/convocatorias`):
   secreto en variable de entorno (`CRON_SECRET`, `INGESTA_SECRETO`), comparado con
   `secretoValido` de `lib/auth/secreto.ts`; sin la variable fallan CERRADOS (503),
@@ -208,7 +217,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   de TERCEROS (los clientes del negocio, que no se registraron acá). Toda
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
-  falla si una consulta nueva lo olvida. Lo mínimo por Ley 1581: nombre,
+  falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
+  que alimenta «Mi cuenta»: categorías del vecino y «Tu negocio en números»;
+  una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro). Lo mínimo por Ley 1581: nombre,
   teléfono y nota; nada de cédula, dirección ni correo. El contacto sale por
   WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
@@ -226,6 +237,24 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
   `where` del repo, no en políticas de fila.
+- **Convocatorias** (`lib/db/convocatorias.repo.ts`, migración 032): el vigía las
+  ingesta `pendiente`; el moderador decide en `/admin/convocatorias`
+  (`moderarConvocatoria`: aprobar, descartar/retirar, marcar vencida, con quién y
+  cuándo). Las transiciones válidas viven en el `where` de `decidirConvocatoria`
+  (una descartada no se reabre; una ya cerrada no se aprueba), no en la
+  pantalla. Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» de
+  Mi cuenta (`convocatoriasParaTi`, filtra por `aplica_a` contra las categorías
+  del vecino). No van en la vitrina: no llaman `invalidarVitrina()`.
+- **Constelación de un aliado**: no se guarda (`portafolios.constelacion` sigue
+  sin escribirse), se calcula al vuelo con `constelacionDe` /
+  `vecinosDeConstelacion` (`lib/geo/comerciosOsm.ts`): centroide más cercano y
+  dentro de su `radio_p90_m`, si no `null` y la ficha no muestra la sección.
+  Los comercios que lista son de OSM, con la etiqueta «OpenStreetMap · no es
+  aliado». Un id guardado quedaría colgando al regenerar el JSON.
+- **Endpoints de máquina sin IP**: `verificarLimite` deja pasar cuando no hay IP,
+  así que quien quita los headers se saltaría el cupo. `/api/ingesta/convocatorias`
+  suma un contador en memoria compartido para esas peticiones
+  (`lib/limiteMemoria.ts`), y si `verificarLimite` falla responde 503, no 500.
 - **Grupos de categoría del mapa**: `lib/categorias/grupos.ts` es el único lugar
   que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md).
   Categoría nueva en la base = su id en ese archivo; si no, cae en «Otros». Las
@@ -244,7 +273,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML) y datos abiertos (k = 5)
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto y datos abiertos (k = 5)
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)

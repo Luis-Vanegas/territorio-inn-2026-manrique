@@ -16,6 +16,10 @@ import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { clasificar, sugerirCategoria, normalizar } from '../lib/ml/categoria.ts';
+import {
+  sugerenciaDesdeFormData,
+  respuestaASugerencia,
+} from '../lib/validation/sugerenciaCategoria.schema.ts';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const modelo = JSON.parse(readFileSync(join(RAIZ, 'public/modelo_categoria.json'), 'utf8'));
@@ -80,6 +84,41 @@ for (const vacio of ['', '   ', '\n']) {
   if (sugerirCategoria(modelo, vacio).tipo !== 'nada') errores.push(`texto vacío ${JSON.stringify(vacio)} sugiere algo`);
 }
 if (sugerirCategoria(modelo, '\u{1F600}\u{1F600}').tipo !== 'nada') errores.push('solo emojis sugiere algo');
+
+// Lo que viaja al servidor: solo la categoría inferida y su confianza, y un dato
+// inválido o ausente no registra nada (en vez de romper el envío del registro).
+const form = (campos) => {
+  const f = new FormData();
+  for (const [k, val] of Object.entries(campos)) f.set(k, val);
+  return f;
+};
+const ok = sugerenciaDesdeFormData(form({ sugerencia_categoria: 'panaderia', sugerencia_confianza: '0.8579' }));
+if (!ok || ok.categoria_inferida !== 'panaderia' || ok.confianza !== 0.8579) errores.push('sugerencia válida mal leída');
+if (Object.keys(ok ?? {}).sort().join() !== 'categoria_inferida,confianza') {
+  errores.push('la sugerencia lleva campos de más (¿el texto escrito?)');
+}
+const nombreEscrito = sugerenciaDesdeFormData(
+  form({ sugerencia_categoria: 'panaderia', sugerencia_confianza: '0.5', nombre: 'Panadería La Espiga' }),
+);
+if (nombreEscrito && 'nombre' in nombreEscrito) errores.push('el nombre escrito llegó a la sugerencia');
+for (const [cat, conf] of [
+  ['Panadería La Espiga', '0.5'], // un nombre en el campo de la categoría
+  ['panaderia', '1.5'],
+  ['panaderia', '-0.1'],
+  ['panaderia', 'abc'],
+  ['', '0.5'],
+  ['a'.repeat(61), '0.5'],
+]) {
+  if (sugerenciaDesdeFormData(form({ sugerencia_categoria: cat, sugerencia_confianza: conf }))) {
+    errores.push(`sugerencia inválida aceptada: ${cat.slice(0, 20)} / ${conf}`);
+  }
+}
+if (sugerenciaDesdeFormData(form({ sugerencia_categoria: 'panaderia' }))) errores.push('sin confianza aceptó');
+if (sugerenciaDesdeFormData(new FormData())) errores.push('formulario sin sugeridor registró algo');
+if (respuestaASugerencia('panaderia', 'panaderia') !== true) errores.push('aceptada: true');
+if (respuestaASugerencia('panaderia', 'comidas') !== false) errores.push('aceptada: false');
+if (respuestaASugerencia('panaderia', '') !== null) errores.push('aceptada: null (sin elegir)');
+if (respuestaASugerencia('panaderia', null) !== null) errores.push('aceptada: null (sin campo)');
 
 if (modelo.umbral_confianza !== 0.45) errores.push(`umbral ${modelo.umbral_confianza} != 0.45`);
 

@@ -346,3 +346,66 @@ export function lineaMezcla(c: Constelacion): string {
   if (resto > 0) partes.push(`Otros ${resto}`);
   return partes.join(' · ');
 }
+
+// ── Ficha de un aliado: a qué constelación pertenece ──────────────────
+
+type Punto = { lat: number; lon: number };
+
+/**
+ * Metros entre dos puntos con la aproximación plana (equirectangular). A escala
+ * de barrio (cientos de metros) el error frente a Haversine es de centímetros, y
+ * se escribe acá en vez de importar `lib/geo/distancia.ts` por la misma razón de
+ * arriba: el verificador carga este archivo con `--experimental-strip-types`, que
+ * no resuelve imports de valor sin extensión.
+ */
+function metrosEntre(a: Punto, b: Punto): number {
+  const M_POR_GRADO = 111_320;
+  const dx = (b.lon - a.lon) * Math.cos(((a.lat + b.lat) / 2) * (Math.PI / 180)) * M_POR_GRADO;
+  const dy = (b.lat - a.lat) * M_POR_GRADO;
+  return Math.hypot(dx, dy);
+}
+
+/**
+ * La constelación de OSM a la que pertenece un punto (la ubicación de un aliado):
+ * la del centroide MÁS CERCANO, y solo si el punto cae dentro de su `radio_p90_m`
+ * (el radio que contiene al 90 % de sus comercios). Fuera de ese radio es `null`:
+ * un negocio aislado no pertenece a ninguna, y decir que sí sería inventar un
+ * vecindario. Se calcula al vuelo y no se guarda (la columna `portafolios.constelacion`
+ * de la 032 sigue sin escribirse): el JSON se regenera con el pipeline y un id
+ * guardado quedaría apuntando a una constelación que ya no existe.
+ */
+export function constelacionDe(punto: Punto, constelaciones: Constelacion[]): Constelacion | null {
+  let mejor: Constelacion | null = null;
+  let distanciaMejor = Infinity;
+  for (const c of constelaciones) {
+    const d = metrosEntre(punto, c.centroide);
+    if (d < distanciaMejor) {
+      mejor = c;
+      distanciaMejor = d;
+    }
+  }
+  return mejor && distanciaMejor <= mejor.radio_p90_m ? mejor : null;
+}
+
+export type ComercioVecino = { comercio: EstrellaOsm; metros: number };
+
+/**
+ * «Otros negocios de tu constelación»: hasta `max` comercios CON NOMBRE de la
+ * constelación del punto, del más cercano al más lejano. `total` cuenta todos los
+ * que tienen nombre, para poder decir «y N más». `null` si el punto no cae en
+ * ninguna constelación (la ficha no muestra la sección).
+ */
+export function vecinosDeConstelacion(
+  punto: Punto,
+  datos: Pick<DatosConstelaciones, 'constelaciones'>,
+  max = 5,
+): { constelacion: Constelacion; comercios: ComercioVecino[]; total: number } | null {
+  const constelacion = constelacionDe(punto, datos.constelaciones);
+  if (!constelacion) return null;
+
+  const conNombre = comerciosConNombre(constelacion.estrellas)
+    .map((comercio) => ({ comercio, metros: metrosEntre(punto, { lat: comercio.lat, lon: comercio.lon }) }))
+    .sort((a, b) => a.metros - b.metros);
+
+  return { constelacion, comercios: conNombre.slice(0, max), total: conNombre.length };
+}

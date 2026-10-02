@@ -351,6 +351,7 @@ export function VitrinaAliados({
               definicionesCampos={definicionesCampos}
               distancia={l.distancia}
               activo={l.portafolio.id === seleccionado}
+              datosOsm={datosOsm}
             />
           ))}
         </div>
