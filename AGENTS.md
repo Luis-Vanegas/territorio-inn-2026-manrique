@@ -262,10 +262,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `barrioDe(lat, lon)` es pura y devuelve el nombre o `null`; es una AYUDA (aviso del
   registro, barrio de cada comercio OSM), no una regla de admisión: esa sigue siendo
   `dentroDeManrique`. El ray casting vive UNA vez en `lib/geo/puntoEnPoligono.ts` y lo
-  usan los dos; no lo copies. Ese módulo se importa con extensión
-  (`./puntoEnPoligono.ts`, permitido por `allowImportingTsExtensions` en tsconfig)
-  porque los verificadores cargan `lib/` con `--experimental-strip-types`, que no
-  resuelve imports de valor sin extensión. El pipeline (`02_constelaciones.py`) calcula
+  usan los dos (y `scripts/extraer-barrios.mjs`); no lo copies. Se importa con
+  extensión: ver «Imports con extensión `.ts`». El pipeline (`02_constelaciones.py`) calcula
   el mismo barrio con shapely y lo escribe en cada comercio de `constelaciones.json`;
   `verificar-barrios.mjs` exige que coincida con `barrioDe`. Una constelación sin calle
   se llama «Barrio <X> · <categoría>». Si cambia el dataset: re-correr el script, luego
@@ -287,7 +285,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   ./distancia.ts`): `allowImportingTsExtensions` está activo en `tsconfig.json`
   (vale por `noEmit`). Ejemplo: `lib/geo/comerciosOsm.ts`. Restricción: todo lo que
   carga un verificador (`lib/busqueda.ts`, `lib/geo/distancia.ts`, `lib/marca.ts`,
-  `lib/geo/comerciosOsm.ts`…) solo puede tener `import type` hacia el resto del
+  `lib/geo/comerciosOsm.ts`, `lib/geo/puntoEnPoligono.ts`, `lib/geo/barrioOficial.ts`…) solo puede tener `import type` hacia el resto del
   proyecto (los alias `@/` no los resuelve Node) y entre ellos usar `.ts`. Si
   necesitas un valor de `@/…`, ese archivo no puede cargarlo un verificador.
 - **Comentarios**: solo cuando explican el WHY (una decisión no obvia, un

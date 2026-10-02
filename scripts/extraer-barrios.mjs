@@ -3,7 +3,7 @@
  * Extrae los 15 barrios de la Comuna 3 (Manrique) desde el GeoJSON de barrios de
  * Medellín (329 polígonos) y los deja listos para el navegador y el pipeline.
  *
- *   node scripts/extraer-barrios.mjs [--input <ruta>]
+ *   node --experimental-strip-types scripts/extraer-barrios.mjs [--input <ruta>]
  *
  * Fuente: pendiente de confirmar por el equipo (probablemente GeoMedellín,
  * «Barrio Vereda»). No se inventa acá: queda así en `metadata.fuente` hasta que
@@ -23,6 +23,9 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// El ray casting vive una sola vez (lib/geo/puntoEnPoligono.ts): por eso este script
+// corre con --experimental-strip-types, igual que los verificadores.
+import { dentroDeAnillos } from '../lib/geo/puntoEnPoligono.ts';
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -98,19 +101,6 @@ function bboxDe(geometrias) {
   return [minX, minY, maxX, maxY];
 }
 
-/** Even-odd sobre todos los anillos de una geometría. */
-function dentro(anillos, x, y) {
-  let d = false;
-  for (const a of anillos) {
-    for (let i = 0, j = a.length - 1; i < a.length; j = i++) {
-      const [xi, yi] = a[i];
-      const [xj, yj] = a[j];
-      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) d = !d;
-    }
-  }
-  return d;
-}
-
 /**
  * Cobertura por muestreo en malla (~10 m): el polígono de la comuna contra la
  * unión de los barrios. Sin turf: @turf/union no está instalado y esto alcanza
@@ -124,8 +114,8 @@ function cobertura(comuna, barrios) {
   let enComuna = 0, enComunaYBarrio = 0, enBarrios = 0, enBarriosFuera = 0, solapados = 0;
   for (let y = y0; y <= y1; y += paso) {
     for (let x = x0; x <= x1; x += paso) {
-      const c = dentro(anillosComuna, x, y);
-      const n = anillosBarrios.filter((a) => dentro(a, x, y)).length;
+      const c = dentroDeAnillos(anillosComuna, y, x);
+      const n = anillosBarrios.filter((a) => dentroDeAnillos(a, y, x)).length;
       if (n > 1) solapados++;
       if (c) enComuna++;
       if (n > 0) enBarrios++;
