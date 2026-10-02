@@ -147,6 +147,16 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   sin la etiqueta de la vitrina), CORS `*`, rate limit de `rateLimit.ts` con
   origen propio `datos`. `scripts/verificar-datos-k.mjs` lo comprueba (y contra
   un servidor vivo con `VERIFICAR_URL_DATOS=http://localhost:3000/api/datos`).
+- **Ubicación dentro de la Comuna 3** (`lib/geo/dentroDeManrique.ts`): función
+  pura (ray casting sobre `manrique.json`, sin `server-only`, con 40 m de
+  tolerancia al borde por el GPS y la simplificación del polígono). La exige el
+  schema de `portafolio.schema.ts` en registro (propio y asistido) y en las dos
+  ediciones (dueño por token y moderador) con `ubicacionEnManrique`, y la usa el
+  selector del registro para avisar en vivo sin bloquear el arrastre. Un
+  schema nuevo que reciba coordenadas de negocios debe pasar por ese refinamiento
+  (aplicarlo DESPUÉS de `.omit()`). Moderar (aprobar/rechazar) no valida el
+  punto; editar un negocio fuera del polígono obliga a corregirlo. Lo comprueba
+  `scripts/verificar-geo.mjs` (corre con `--experimental-strip-types`).
 - **Sugeridor de categoría** (`lib/ml/categoria.ts`): TF-IDF de n-gramas + regresión
   logística exportados a `public/modelo_categoria.json` (los genera
   `pipeline/03_clasificador.py`), inferencia en el NAVEGADOR: lo que la persona
