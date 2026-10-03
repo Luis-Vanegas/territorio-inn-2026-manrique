@@ -386,6 +386,23 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   (cifras de la banda de la portada), `app/(site)/firmamento/datos.ts` y
   `lib/firmamento/territorio.ts` (panel del equipo; `server-only`).
 - **Firmamento con sesión (puerta y paneles, de día)**: `app/(firmamento)/firmamento/layout.tsx` monta el `SiteHeader`; `PanelShell` arma encabezado del panel + pestañas (`lib/firmamento/navegacion.ts`: `NAV` por rol, el equipo agrupa en `pestana` Hoy/Red/Datos/Guías y `pestanasDe` las deriva). Piezas únicas, no escribas otras: `Tarjeta` (`components/firmamento/panel/Tarjeta.tsx`, variantes `tarjeta`/`seccion`, `plegable`; reemplazó a `ModuloDesplegable`), `Plegable` (`<details>` + framer, funciona sin JS), `Kpi` + `GrupoCifras` (una línea de fuente por grupo), `VentanaNoche` (`.modo-noche` para cifras y mapas dentro de una página de día), `BarraPestanas`/`SubPestanas` (`panel/Pestanas.tsx`). Estas piezas escriben `hueso`/`tinta` y usan variantes `[.modo-noche_&]:` para la noche: dentro de una `VentanaNoche` cambian solas. Nada de tokens de noche (`estrella`, `tenue`, `noche-2`…) sueltos en una página de panel fuera de una ventana.
+- **Visualizaciones de Firmamento** (`components/firmamento/`): una sola pieza por cosa,
+  no se copian. `BarrasCategoria` es la ÚNICA barra horizontal (forma del grupo, celda
+  «<5» con barra vacía, tabla `sr-only` dentro de un `<div className="sr-only">`; `PistaBarra`
+  es su pista sin texto, la usa también «Tu ficha está al N %»). `MapaEstelar`
+  (`useConstelacionElegida` + `MapaEstelar` + `BotonConstelacion`) es el «mapa + lista que
+  enciende una constelación» de `MapaYTabla` y `ObservatorioCielo`; el hook se desestructura
+  (pasar el objeto entero a un componente rompe la regla `react-hooks/refs`). `MapaBarrios`
+  pinta los 15 barrios por una cifra con la escala de `lib/escalaSecuencial.ts` (5 clases
+  para conteos, 6 para la matriz; el número del barrio va escrito, el color solo agrupa).
+  Solo cifras públicas (comercios de OSM, `contarPorBarrio`); una cifra de aliados por barrio
+  pasaría antes por `suprimir()`. `MatrizConfusion`, `F1PorCategoria` y `ConfusionDelModelo`
+  leen `public/firmamento/modelo_evaluacion.json`, que NO se edita: lo genera
+  `node scripts/exportar-evaluacion-modelo.mjs` desde `pipeline/reporte_modelo.md` (correrlo
+  después de cada `03_clasificador.py`; `verificar-evaluacion-modelo.mjs` falla si quedó
+  viejo). Cifra del modelo: F1 macro del holdout agrupado por nombre, nunca la del split
+  ingenuo ni la de la asesoría. Los comercios de OSM en el mapa llevan la forma y el color de
+  su grupo, más chicos y tenues que los aliados (`svgForma(grupo, tam, { tenue: true })`).
 - **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
 - **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
   datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`

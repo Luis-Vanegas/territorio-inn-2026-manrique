@@ -359,6 +359,38 @@ html.js:not(.js-listo) [data-reveal] {
   display: none;
 }
 
+/* Mapa de barrios coloreado (components/firmamento/MapaBarriosClient.tsx): el
+   número del barrio sobre su polígono y, al acercar, su nombre. El color del
+   texto lo pone el componente según el relleno de la clase (4,5:1 o más). */
+.leaflet-container .leaflet-tooltip.etiqueta-valor-barrio {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  text-align: center;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+.leaflet-tooltip.etiqueta-valor-barrio::before {
+  display: none;
+}
+.etiqueta-valor-barrio span span,
+.etiqueta-valor-barrio b {
+  display: block;
+}
+.etiqueta-valor-barrio .barrio-nombre {
+  font-size: 12px;
+  font-weight: 500;
+}
+.etiqueta-valor-barrio b {
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 16px;
+  font-weight: 500;
+}
+.etiquetas-barrio-ocultas .etiqueta-valor-barrio .barrio-nombre {
+  display: none;
+}
+
 /* Constelaciones sobre teselas oscuras: el noche-3 se perdía (1,2:1). Pasan a
    noche-azul (#7FB0FF), la misma familia de color. */
 :root[data-theme='dark'] .halo-constelacion,

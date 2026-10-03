@@ -1,3 +1,4 @@
+import { PistaBarra } from '@/components/firmamento/BarrasCategoria';
 import type { PasoFicha } from '@/lib/firmamento/ficha';
 
 /**
@@ -18,9 +19,9 @@ export function BarraFicha({ porcentaje }: { porcentaje: number }) {
         aria-valuemax={100}
         aria-valuenow={porcentaje}
         aria-valuetext={`${porcentaje} por ciento`}
-        className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-tinta/5"
+        className="mt-2"
       >
-        <div className="h-full rounded-full bg-azul-texto" style={{ width: `${porcentaje}%` }} />
+        <PistaBarra proporcion={porcentaje / 100} color="rgb(var(--azul-texto-rgb))" redonda className="h-2.5" />
       </div>
     </div>
   );

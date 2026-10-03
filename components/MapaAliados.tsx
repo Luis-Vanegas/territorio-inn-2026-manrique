@@ -14,7 +14,7 @@ import {
   filtrarPorCategoria,
   lineaMezcla,
 } from '@/lib/geo/comerciosOsm';
-import { svgEstrella, svgForma } from './mapa/formas';
+import { svgForma } from './mapa/formas';
 import { useConstelaciones } from './mapa/useConstelaciones';
 
 /**
@@ -200,14 +200,32 @@ export function MapaAliados({
             {g.nombre} ({g.formaNombre}) · {conteos[g.id]}
           </li>
         ))}
-        {activa && datos && (
+        {portafolios.length > 0 && (
           <li className="inline-flex items-center gap-1.5">
             <span
               aria-hidden="true"
               className="inline-flex"
-              dangerouslySetInnerHTML={{ __html: svgEstrella(12) }}
+              dangerouslySetInnerHTML={{ __html: svgForma(GRUPOS[0]!, 20) }}
             />
-            Estrella: comercio mapeado en OpenStreetMap, no es aliado. Tócala para ver su nombre y dirección
+            Grande y de color pleno: aliado de Constelaciones
+          </li>
+        )}
+        {activa && datos && (
+          <li className="inline-flex items-start gap-1.5">
+            <span
+              aria-hidden="true"
+              className="inline-flex shrink-0 items-center gap-0.5 pt-0.5"
+              dangerouslySetInnerHTML={{
+                __html:
+                  svgForma(GRUPOS[0]!, 11, { tenue: true }) +
+                  svgForma(GRUPOS[2]!, 11, { tenue: true }) +
+                  svgForma(GRUPOS[4]!, 11, { tenue: true }),
+              }}
+            />
+            <span>
+              Pequeño y tenue, con la forma de su grupo: comercio mapeado en OpenStreetMap, no es aliado.
+              Tócalo para ver su nombre y dirección
+            </span>
           </li>
         )}
       </ul>

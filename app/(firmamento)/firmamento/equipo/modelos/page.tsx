@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 
+import { ConfusionDelModelo, F1PorCategoria } from '@/components/firmamento/EvaluacionModelo';
 import { hoyBogota, LineaFuente, Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import modeloJson from '@/public/modelo_categoria.json';
 import { exigirEquipo } from '@/lib/auth/firmamento';
 import { aprendizajeSugeridor } from '@/lib/db/equipo.repo';
+import { EVALUACION } from '@/lib/firmamento/evaluacionModelo';
 import { OSM } from '@/lib/firmamento/territorio';
 
 export const metadata: Metadata = { title: 'Modelos' };
@@ -12,8 +14,9 @@ export const dynamic = 'force-dynamic';
 
 /**
  * Fichas de los dos modelos del sitio, solo con cifras que existen en archivos
- * o en la base: el clasificador (`public/modelo_categoria.json`, el reporte
- * completo está en `pipeline/reporte_modelo.md`), las constelaciones
+ * o en la base: el clasificador (`public/modelo_categoria.json`; F1 por categoría
+ * y matriz de confusión salen de `public/firmamento/modelo_evaluacion.json`,
+ * exportado del reporte `pipeline/reporte_modelo.md`), las constelaciones
  * (`public/firmamento/constelaciones.json`) y lo que el sugeridor va
  * aprendiendo del registro (`sugerencias_categoria`).
  */
@@ -91,14 +94,19 @@ export default async function ModelosPage() {
           Las {modelo.clases.length} categorías que conoce
         </h3>
         <p className="mt-2 font-sans text-sm leading-relaxed text-tenue">{modelo.nombres.join(' · ')}</p>
-        <p className="mt-3 font-sans text-sm leading-relaxed text-tenue">
-          La precisión por categoría y la matriz de confusión están en{' '}
-          <code className="text-estrella">pipeline/reporte_modelo.md</code>.
-        </p>
         <LineaFuente>
           Fuente: {modelo.fuente} · corrida {modelo.fecha_corrida.slice(0, 10)}
         </LineaFuente>
       </Tarjeta>
+
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+        <Tarjeta titulo="Qué tan bien acierta cada categoría" id="titulo-f1">
+          <F1PorCategoria evaluacion={EVALUACION} />
+        </Tarjeta>
+        <Tarjeta titulo="Dónde se equivoca" id="titulo-confusion">
+          <ConfusionDelModelo evaluacion={EVALUACION} />
+        </Tarjeta>
+      </div>
 
       <Tarjeta titulo="Lo que aprende del registro" id="titulo-aprendizaje">
         {aprendizaje.total === 0 ? (

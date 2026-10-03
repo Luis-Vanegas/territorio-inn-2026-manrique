@@ -304,6 +304,21 @@ export function contarPorCategoria(comercios: EstrellaOsm[]): Record<string, num
 }
 
 /**
+ * Conteo de comercios por barrio oficial (el que escribió el pipeline en cada
+ * comercio). Cada barrio de `barrios` sale en el resultado, con 0 si no tiene
+ * ninguno: que uno falte diría que no existe. Un comercio en un hueco entre
+ * polígonos (`barrio` nulo) no cuenta en ninguno.
+ */
+export function contarPorBarrio(
+  comercios: EstrellaOsm[],
+  barrios: readonly string[],
+): { barrio: string; valor: number }[] {
+  const cuenta = new Map<string, number>();
+  for (const e of comercios) if (e.barrio) cuenta.set(e.barrio, (cuenta.get(e.barrio) ?? 0) + 1);
+  return barrios.map((barrio) => ({ barrio, valor: cuenta.get(barrio) ?? 0 }));
+}
+
+/**
  * Las categorías que ofrece el filtro de la vitrina: las de aliados Y las que
  * solo existen entre los comercios de OSM, con el conteo de los dos juntos.
  * Las de la base conservan su orden; las que solo trae OSM van después, de más
