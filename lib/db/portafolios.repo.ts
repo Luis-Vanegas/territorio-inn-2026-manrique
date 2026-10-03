@@ -438,7 +438,7 @@ export type EdicionPortafolio = {
 };
 
 /** Lo que devuelve una edición: el id y los nombres de los campos que cambiaron. */
-export type EdicionAplicada = { id: string; campos: string[] };
+export type EdicionAplicada = { id: string; estado: EstadoPortafolio; campos: string[] };
 
 /**
  * Nombres (nunca valores) de los campos que cambió un update, para la bitácora.
@@ -468,9 +468,16 @@ const CAMPOS_CAMBIADOS = `array_remove(array[
 ], null)`;
 
 /**
- * Vuelve a 'pendiente' siempre que se guarda una edición: un moderador ya
- * aprobó una versión de estos datos, no la que se acaba de escribir. También
- * limpia el motivo de rechazo — si lo estaba corrigiendo por eso, ya no aplica.
+ * Edición del dueño, por las dos puertas (enlace con token y sesión de cuenta,
+ * que resuelve el token con `tokenPropio`): la MISMA regla para las dos.
+ *
+ * Una ficha `aprobado` SIGUE aprobada y publica directo: el cambio se ve de
+ * inmediato y el equipo corrige después, guiado por la bitácora (decisión de
+ * Luis, 2-oct-2026; antes volvía a `pendiente` en cada edición, ver
+ * docs/firmamento-modulos.md). Una `pendiente` sigue pendiente y una
+ * `rechazada` vuelve a `pendiente` para que la revisen de nuevo; en ese caso
+ * también se limpia el motivo (si lo estaba corrigiendo por eso, ya no aplica).
+ * Una `archivado` no se toca: no hay edición que la reviva.
  *
  * Devuelve el id y los NOMBRES de los campos que cambiaron (para la bitácora),
  * o null si el token no matchea.
@@ -498,13 +505,45 @@ export async function actualizarPorToken(
         horario = ${datos.horario}::text[],
         medios_pago = ${datos.medios_pago}::text[],
         productos = ${JSON.stringify(datos.productos)}::jsonb,
-        estado = 'pendiente',
+        estado = case when p.estado = 'aprobado' then 'aprobado'::portafolio_estado else 'pendiente'::portafolio_estado end,
         motivo_rechazo = null
     from (select * from portafolios where token_publico = ${token}) as previo
-    where p.token_publico = ${token}
-    returning p.id, ${sql.unsafe(CAMPOS_CAMBIADOS)} as campos
+    where p.token_publico = ${token} and p.estado <> 'archivado'
+    returning p.id, p.estado, ${sql.unsafe(CAMPOS_CAMBIADOS)} as campos
   `;
   return (rows[0] as EdicionAplicada | undefined) ?? null;
+}
+
+/**
+ * Los negocios de una cuenta se leen SIEMPRE con `p.usuario_id = ${usuarioId}`
+ * (el id sale de la sesión): un id de la URL o del formulario se puede inventar.
+ */
+export async function obtenerPropio(
+  usuarioId: string,
+  portafolioId: string,
+): Promise<PortafolioAdmin | null> {
+  const rows = await sql`
+    select ${sql.unsafe(COLUMNAS_PROPIAS)},
+           p.estado, p.motivo_rechazo, p.moderado_por, p.moderado_en,
+           p.foto_blob_pathname, p.menu_blob_pathname
+    from portafolios p
+    join categorias c on c.id = p.categoria_id
+    where p.id = ${portafolioId} and p.usuario_id = ${usuarioId}
+  `;
+  return (rows[0] as PortafolioAdmin) ?? null;
+}
+
+/**
+ * El token de un negocio de esta cuenta, para que la sesión use las mismas
+ * escrituras que el enlace (`actualizarPorToken`, `archivarPorToken`) sin una
+ * segunda ruta de SQL que se desincronice. El token no sale de servidor.
+ */
+export async function tokenPropio(usuarioId: string, portafolioId: string): Promise<string | null> {
+  const rows = await sql`
+    select p.token_publico from portafolios p
+    where p.id = ${portafolioId} and p.usuario_id = ${usuarioId}
+  `;
+  return (rows[0] as { token_publico: string } | undefined)?.token_publico ?? null;
 }
 
 export async function archivarPorToken(
@@ -601,8 +640,8 @@ export async function moderar(
  * Edición desde el panel de moderación: mismos campos de contenido que
  * `actualizarPorToken`, pero a propósito NO toca `estado`, `motivo_rechazo`
  * NI `moderado_por`/`moderado_en` — un moderador corrigiendo una ficha ya
- * aprobada no la manda de vuelta a revisión (esa es una decisión del dueño,
- * ver comentario de `actualizarPorToken`) y tampoco se roba la trazabilidad
+ * aprobada no la toca de estado (la del dueño tampoco: sigue aprobada, ver
+ * `actualizarPorToken`) y tampoco se roba la trazabilidad
  * de quién la aprobó: la migración 002 protege esas dos columnas a propósito
  * para poder demostrar quién decidió publicar cada ficha, y `moderado_en` ya
  * queda registrado por el trigger de `actualizado_en`.
@@ -637,7 +676,7 @@ export async function editarComoModerador(
         productos = ${JSON.stringify(datos.productos)}::jsonb
     from (select * from portafolios where id = ${id}) as previo
     where p.id = ${id} and p.estado = 'aprobado'
-    returning p.id, ${sql.unsafe(CAMPOS_CAMBIADOS)} as campos
+    returning p.id, p.estado, ${sql.unsafe(CAMPOS_CAMBIADOS)} as campos
   `;
   return (rows[0] as EdicionAplicada | undefined) ?? null;
 }

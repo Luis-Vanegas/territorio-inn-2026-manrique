@@ -42,7 +42,7 @@ export default async function ConvocatoriasPage({
 
       <p className="mt-3 max-w-xl font-sans text-sm text-tinta/60">
         Oferta de entidades que detecta el vigía cada día. Todo entra pendiente:
-        solo las que apruebes aparecen en «Para ti», dentro de Mi cuenta, y solo
+        solo las que apruebes aparecen en «Para ti», dentro del panel del negocio, y solo
         a los negocios de las categorías y la formalidad que marques al aprobar.
         El texto viene de páginas de terceros: revisa el enlace antes de aprobar.
       </p>

@@ -63,7 +63,7 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
         })
       )}
 
-      {/* /mi-cuenta enlaza directo a "#videos" — el id vive en el contenido,
+      {/* el panel del negocio enlaza directo a "#videos" — el id vive en el contenido,
           no en el módulo, para que el navegador lo despliegue solo al llegar
           por ese link. Ver el comentario de ModuloDesplegable. */}
       <ModuloDesplegable titulo="Videos y tutoriales" cantidad={VIDEOS.length} id="videos">

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Comprueba que ninguna consulta de lib/db/clientes.repo.ts ni de
- * lib/db/cuenta.repo.ts (Mi cuenta: categorías, vistas y contactos) olvide
+ * lib/db/cuenta.repo.ts (panel del negocio: categorías, semanas de vistas y contactos, comparación con la categoría) olvide
  * filtrar por el dueño del negocio.
  *
  *   node scripts/verificar-clientes.mjs

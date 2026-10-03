@@ -222,8 +222,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
   falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
-  que alimenta «Mi cuenta»: categoría y formalidad de sus negocios para «Para ti» y «Tu negocio en números»;
-  una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro).
+  que alimenta el panel del negocio: categoría y formalidad para «Para ti», semanas de vistas y
+  contactos, comparación con la categoría; una consulta nueva del panel va en ese archivo y con ese filtro).
   Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
   correo. El contacto sale por
   WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
@@ -248,13 +248,29 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `lib/auth/destino.ts` al guardar y al leer; la comprueba `scripts/verificar-destino.mjs`).
   El login del equipo reutiliza `iniciarSesion` de `sesionAdmin.ts` con un campo
   oculto `destino`.
+- **Panel del negocio** (`/firmamento/negocio/{,ficha,para-ti,constelacion,clientes}`, antes
+  `/mi-cuenta`, que redirige en `next.config.mjs`): cada page llama `exigirNegocio()` (devuelve
+  `usuarioId`) y lee con `negocioActivo(usuarioId)` (`lib/firmamento/negocio.ts`): el negocio activo
+  sale de la cookie `negocio_activo` (solo preferencia; se valida contra los negocios de la sesión en
+  cada lectura; la fija `elegirNegocio`). Cifras del inicio: 8 semanas de `interacciones_portafolio`
+  (`semanasDeNegocio`) y cuentas puras en `lib/firmamento/ficha.ts` (completitud de la ficha en 8 pasos,
+  variación contra las 4 semanas anteriores). La comparación con la categoría
+  (`comparacionCategoria`) devuelve null con menos de 5 negocios (k = 5) y en «Otros». Posibles
+  alianzas: `lib/firmamento/alianzas.ts`, una tabla simétrica de rubros complementarios (ropa↔modistería,
+  comidas↔panadería…); mismo rubro nunca es alianza; se amplía agregando una pareja. `/mi-cuenta` ya no
+  existe: el destino tras Google es `/firmamento/negocio`. `/entrar` sigue como puerta de día (trae el
+  acceso por enlace). `constelaciones.json` también se importa en el servidor en
+  `negocio/constelacion/page.tsx`.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
   `token_publico` — para quien registramos en campo y no maneja tecnología.
   `origen_registro` distingue `propio` de `asistido`; es una columna, no otra
   tabla. Un registro `asistido` EXIGE `consentimiento_asistido` y
   `capturado_por` por restricción de base: Ley 1581 de 2012, el consentimiento
-  lo da el titular y hay que poder demostrar cómo.
+  lo da el titular y hay que poder demostrar cómo. **La edición del dueño de una ficha APROBADA publica
+  directo** (sigue `aprobado`, invalida la vitrina y deja fila en `bitacora`), por las dos puertas: la
+  cuenta (`actualizarFichaDeCuenta`) resuelve el token con `tokenPropio` y usa el mismo
+  `actualizarPorToken`. Pendiente sigue pendiente; rechazada vuelve a pendiente; archivada no se edita.
 - **RLS no se usa acá y no hace falta**: el navegador nunca habla con Postgres.
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
@@ -271,7 +287,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   la 033, o nace una entidad duplicada. A quién aplica lo elige el moderador AL
   APROBAR: `convocatoria_categorias` (ninguna fila = todas) y `aplica_formalidad`
   (vacío = cualquiera), escritos en la misma sentencia que el cambio de estado.
-  Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» de Mi cuenta
+  Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» del panel del negocio
   (`convocatoriasParaTi` con `perfilesParaTi` de `cuenta.repo.ts`): cruza
   NEGOCIO POR NEGOCIO categoría y formalidad (`aliados_investigacion`); formalidad
   desconocida (null o `prefiero_no_decir`) ve también las restringidas. No van en

@@ -427,6 +427,7 @@ Siempre de noche (`.modo-noche`), sin el encabezado del sitio de día.
   `noche-activa` y una barra `sodio` (no solo color). Las insignias de conteo van en
   `font-cifra` sobre `sodio`. Pie: atribución OSM en `font-cifra` y «Datos abiertos con
   supresión de celdas menores a 5».
+- **Panel del negocio** (`negocio/`): Inicio (saludo, «Tu ficha está al N %», cuatro cifras con `Kpi` —cada una con fuente y fecha—, gráfico de 8 semanas en SVG propio con barras horizontales: vistas lisas, contactos rayadas, cifra al lado y tabla `sr-only`; sin animación), Mi ficha (formulario del sitio con sus tokens remapeados por `.modo-noche`, vista previa clara y lista de lo que falta con ✓ / + y texto), Para ti (convocatorias con «Fuente oficial» y «Compartir»), Mi constelación (el mapa de siempre en noche; vecinos de OSM con «OpenStreetMap · no es aliado»), Mis clientes. Sin datos: estado vacío honesto, nunca cifras de ejemplo. La comparación con la categoría solo con 5 o más negocios.
 - **Vacío honesto**: una sección sin construir muestra «En construcción» y no rellena con
   cifras de ejemplo.
 

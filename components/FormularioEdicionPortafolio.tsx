@@ -11,6 +11,7 @@ import type { Categoria, PortafolioAdmin } from '@/lib/db/portafolios.repo';
 import type { Posicion } from '@/app/(site)/aliados/registro/_components/SelectorUbicacionClient';
 import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
 import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
+import { SugeridorCategoria } from '@/app/(site)/aliados/registro/_components/SugeridorCategoria';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 
@@ -118,10 +119,13 @@ export function FormularioEdicionPortafolio({
   portafolio,
   categorias,
   accion,
+  variante = 'sitio',
 }: {
   portafolio: PortafolioAdmin;
   categorias: Categoria[];
   accion: (estado: EstadoEdicion, formData: FormData) => Promise<EstadoEdicion>;
+  /** `panel`: dentro del panel de Firmamento (sin el margen de `.seccion`; la barra de guardar se sube sobre la barra inferior del celular). */
+  variante?: 'sitio' | 'panel';
 }) {
   const [estado, accionFormulario] = useActionState(accion, ESTADO_INICIAL);
 
@@ -137,6 +141,8 @@ export function FormularioEdicionPortafolio({
     lng: portafolio.longitud,
   });
   const [categoriaId, setCategoriaId] = useState(portafolio.categoria_id);
+  // Controlado solo para alimentar al sugeridor, que corre en el navegador.
+  const [nombre, setNombre] = useState(portafolio.nombre);
 
   const barrioConocido = BARRIOS_COMUNA_3.includes(portafolio.barrio);
   const [barrio, setBarrio] = useState(portafolio.barrio);
@@ -228,12 +234,20 @@ export function FormularioEdicionPortafolio({
               type="text"
               required
               maxLength={80}
-              defaultValue={portafolio.nombre}
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
               placeholder="Panadería La Esperanza"
               className={claseInput}
             />
           )}
         </CampoFormulario>
+
+        <SugeridorCategoria
+          nombre={nombre}
+          categorias={categorias}
+          categoriaId={categoriaId}
+          alElegir={setCategoriaId}
+        />
 
         <CampoFormulario
           id={idCampo('categoria_id')}
@@ -511,7 +525,14 @@ export function FormularioEdicionPortafolio({
         {nombreMenu && <p className="font-sans text-xs text-tinta/65">{nombreMenu}</p>}
       </Seccion>
 
-      <div className="sticky bottom-0 -mx-[clamp(1.5rem,5vw,6rem)] border-t border-tinta/12 bg-hueso/95 px-[clamp(1.5rem,5vw,6rem)] py-4 backdrop-blur">
+      <div
+        className={`sticky bg-hueso/95 backdrop-blur ${
+          variante === 'panel'
+            ? // Flota sobre el contenido; en el celular se sube para no quedar bajo la barra inferior del panel (56 px).
+              'bottom-[72px] z-10 rounded-xl border border-trazo-2 px-4 py-3 lg:bottom-4'
+            : 'bottom-0 -mx-[clamp(1.5rem,5vw,6rem)] border-t border-tinta/12 px-[clamp(1.5rem,5vw,6rem)] py-4'
+        }`}
+      >
         <BotonGuardar />
       </div>
     </form>

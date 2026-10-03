@@ -24,15 +24,18 @@ import { NavInferior, NavLateral, TituloPanel } from './NavPanel';
 export function PanelShell({
   contexto,
   insignias,
+  hrefSitio,
   children,
 }: {
   contexto: ContextoPanel;
   insignias?: Record<string, number>;
+  /** Destino del botón superior cuando depende de los datos (la ficha pública del negocio); si no, el de `BOTON_SITIO`. */
+  hrefSitio?: string;
   children: React.ReactNode;
 }) {
   const { rol } = contexto;
   const items = NAV[rol];
-  const sitio = BOTON_SITIO[rol];
+  const sitio = { ...BOTON_SITIO[rol], href: hrefSitio ?? BOTON_SITIO[rol].href };
 
   return (
     <div className="modo-noche min-h-screen lg:grid lg:grid-cols-[264px_minmax(0,1fr)]">

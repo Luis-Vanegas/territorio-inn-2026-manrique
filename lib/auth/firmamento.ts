@@ -38,10 +38,15 @@ export interface ContextoPanel {
   foto: string | null;
 }
 
-export async function exigirNegocio(): Promise<ContextoPanel> {
+/** El panel del negocio además necesita el id de la cuenta para filtrar sus consultas (nunca viaja a la pantalla). */
+export interface ContextoNegocio extends ContextoPanel {
+  usuarioId: string;
+}
+
+export async function exigirNegocio(): Promise<ContextoNegocio> {
   const sesion = await sesionActual();
   if (!sesion) redirect('/firmamento/entrar?rol=negocio');
-  return { rol: 'negocio', nombre: sesion.nombre, foto: sesion.foto };
+  return { rol: 'negocio', nombre: sesion.nombre, foto: sesion.foto, usuarioId: sesion.id };
 }
 
 export async function exigirEquipo(): Promise<ContextoPanel> {
