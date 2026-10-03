@@ -29,7 +29,8 @@ export function Kpi({
   etiqueta: string;
   fuente: string;
   fecha: string;
-  aclaracion?: string;
+  /** Texto, o un enlace corto (p. ej. «Ver y proponer») cuando la cifra lleva a otra pantalla. */
+  aclaracion?: React.ReactNode;
   tono?: 'sodio' | 'estrella' | 'ladrillo';
 }) {
   const color =
@@ -52,7 +53,7 @@ export function Kpi({
         )}
       </p>
       <p className="mt-3 font-sans text-base font-medium leading-snug text-estrella">{etiqueta}</p>
-      {aclaracion && <p className="mt-1 font-sans text-sm leading-snug text-tenue">{aclaracion}</p>}
+      {aclaracion && <div className="mt-1 font-sans text-sm leading-snug text-tenue">{aclaracion}</div>}
       <p className="mt-3 break-words font-cifra text-xs leading-relaxed text-tenue">
         Fuente: {fuente} · {fecha}
       </p>

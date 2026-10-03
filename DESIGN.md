@@ -427,6 +427,16 @@ Siempre de noche (`.modo-noche`), sin el encabezado del sitio de día.
   `noche-activa` y una barra `sodio` (no solo color). Las insignias de conteo van en
   `font-cifra` sobre `sodio`. Pie: atribución OSM en `font-cifra` y «Datos abiertos con
   supresión de celdas menores a 5».
+- **Panel de entidad**: cada página abre con el nombre de la entidad (el `h1` de la barra es la
+  sección) y una frase de qué se ve. Observatorio: 4 indicadores con estrella (`Kpi`, cada uno con
+  fuente y fecha), el mapa de constelaciones sin aliados, «Dónde apoyar primero» (las 3
+  constelaciones más grandes, con botón de 44 px «Ver en el mapa» que la enciende) y la
+  composición de la red por categoría con la forma de su grupo; la barra de una celda «<5» queda
+  vacía para no revelar el número. Convocatorias: tarjetas de las vigentes («Cierra en N días»
+  en `sodio`, fuente oficial en pestaña nueva), formulario con error junto a cada casilla y en un
+  resumen `role="alert"`, y «Tus propuestas» con el estado en palabras (En revisión, Aprobada, No
+  aprobada, Cerrada). Datos abiertos: qué publica, qué nunca sale, descargas, enlace con botón
+  de copiar y la vista previa como tablas (no JSON crudo: nada de monoespaciada).
 - **Vacío honesto**: una sección sin construir muestra «En construcción» y no rellena con
   cifras de ejemplo.
 

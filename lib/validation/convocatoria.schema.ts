@@ -56,3 +56,54 @@ export const decisionConvocatoriaSchema = z.object({
   categorias: z.array(texto(1, 60)).max(60).default([]),
   formalidades: z.array(z.enum(OPCIONES_FORMALIDAD)).max(OPCIONES_FORMALIDAD.length).default([]),
 });
+
+/**
+ * Lo que una entidad aliada propone desde su panel (`/firmamento/entidad/convocatorias`).
+ * Texto de una persona, no del vigía: mensajes en «tú» porque salen tal cual a la
+ * pantalla. NO trae `entidad`: sale de la membresía de la sesión (`entidadDeSesion`),
+ * nunca del formulario, o una entidad podría proponer a nombre de otra. Entra
+ * `pendiente`: el equipo decide.
+ *
+ * `tema` es una lista cerrada (en la base es texto libre de 2 a 80 letras): con
+ * lista, el equipo no recibe «financiacion», «Financiación» y «plata» como tres temas.
+ */
+export const TEMAS_CONVOCATORIA = [
+  'Financiación',
+  'Capacitación',
+  'Formalización',
+  'Comercialización y ventas',
+  'Tecnología y digitalización',
+  'Otro',
+] as const;
+
+/** AAAA-MM-DD de hoy en Bogotá: a las 8 p. m. de Colombia en UTC ya es mañana. */
+function hoyBogota(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
+}
+
+export const propuestaConvocatoriaSchema = z.object({
+  titulo: z
+    .string()
+    .trim()
+    .min(5, 'Escribe el nombre completo de la convocatoria (mínimo 5 letras).')
+    .max(200, 'El nombre es muy largo: máximo 200 letras.'),
+  url: z
+    .string()
+    .trim()
+    .max(500, 'El enlace es muy largo.')
+    .refine((u) => /^https?:\/\//i.test(u), 'El enlace debe empezar por https://')
+    .refine((u) => z.url().safeParse(u).success, 'Ese enlace no parece válido.'),
+  resumen: z.string().trim().max(600, 'El resumen es muy largo: máximo 600 letras.').optional(),
+  fecha_cierre: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Elige la fecha de cierre en el calendario.')
+    .refine((f) => {
+      const d = new Date(`${f}T00:00:00Z`);
+      return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === f;
+    }, 'Esa fecha no existe.')
+    .refine((f) => f >= hoyBogota(), 'La fecha de cierre ya pasó: no tendría a quién avisarle.')
+    .optional(),
+  tema: z.enum(TEMAS_CONVOCATORIA, 'Elige un tema de la lista.'),
+});
+
+export type PropuestaConvocatoria = z.infer<typeof propuestaConvocatoriaSchema>;

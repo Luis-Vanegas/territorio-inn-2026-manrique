@@ -272,3 +272,81 @@ export async function convocatoriasParaTi(
   `;
   return rows as ConvocatoriaParaTi[];
 }
+
+// ── Panel de entidad: ver lo vigente y proponer ─────────────
+//
+// Estas tres funciones solo tocan `convocatorias` y `entidades`: una entidad no
+// lee negocios (docs/firmamento-modulos.md › «Quién ve qué»). La entidad que
+// propone y quien la propone llegan de la sesión (`entidadDeSesion`), no de un
+// formulario.
+
+/** Lo vigente para una entidad: aprobadas y que no han cerrado, la más próxima a cerrar primero. */
+export async function listarConvocatoriasVigentes(): Promise<ConvocatoriaParaTi[]> {
+  const rows = await sql`
+    select c.id, c.titulo, e.nombre as entidad, c.tema, c.url, c.resumen,
+      to_char(c.fecha_cierre, 'YYYY-MM-DD') as fecha_cierre, c.fuente
+    from convocatorias c
+    join entidades e on e.id = c.entidad_id
+    where c.estado = 'aprobada'
+      and (c.fecha_cierre is null or c.fecha_cierre >= current_date)
+    order by c.fecha_cierre asc nulls last, c.detectada_en desc
+    limit 50
+  `;
+  return rows as ConvocatoriaParaTi[];
+}
+
+export type PropuestaDeEntidad = Pick<
+  Convocatoria,
+  'id' | 'titulo' | 'tema' | 'url' | 'fecha_cierre' | 'estado'
+> & {
+  /** AAAA-MM-DD en hora de Bogotá. */
+  propuesta_en: string;
+};
+
+/** «Tus propuestas»: las que llegaron por esta entidad, de cualquier estado, la más reciente primero. */
+export async function listarPropuestasDeEntidad(entidadId: string): Promise<PropuestaDeEntidad[]> {
+  const rows = await sql`
+    select c.id, c.titulo, c.tema, c.url, c.estado,
+      to_char(c.fecha_cierre, 'YYYY-MM-DD') as fecha_cierre,
+      to_char(c.detectada_en at time zone 'America/Bogota', 'YYYY-MM-DD') as propuesta_en
+    from convocatorias c
+    where c.entidad_id = ${entidadId} and c.origen = 'entidad'
+    order by c.detectada_en desc
+    limit 50
+  `;
+  return rows as PropuestaDeEntidad[];
+}
+
+/**
+ * Inserta la propuesta `pendiente` con `origen = 'entidad'` y `propuesta_por` =
+ * la cuenta que la envió (la 033 lo exige con `chk_convocatoria_propuesta`).
+ * Devuelve el id, o `null` si esa URL ya existe o la entidad no está activa: la
+ * URL es única y la comparten el vigía, el equipo y las entidades, así que no se
+ * duplica ni se reabre una descartada. `fuente` dice quién la trajo.
+ *
+ * ponytail: la URL se compara tal cual (sin quitar «/» final ni parámetros): una
+ * variante se cuela como otra convocatoria y el equipo la ve al moderar.
+ */
+export async function proponerConvocatoria(
+  entidadId: string,
+  usuarioId: string,
+  datos: {
+    titulo: string;
+    url: string;
+    tema: string;
+    resumen?: string;
+    fecha_cierre?: string;
+  },
+): Promise<string | null> {
+  const rows = await sql`
+    insert into convocatorias
+      (titulo, entidad_id, tema, url, resumen, fecha_cierre, fuente, origen, propuesta_por)
+    select ${datos.titulo}, e.id, ${datos.tema}, ${datos.url}, ${datos.resumen ?? null},
+      ${datos.fecha_cierre ?? null}::date, left('Propuesta de ' || e.nombre, 120), 'entidad', ${usuarioId}
+    from entidades e
+    where e.id = ${entidadId} and e.activa
+    on conflict (url) do nothing
+    returning id
+  `;
+  return (rows[0] as { id: string } | undefined)?.id ?? null;
+}
