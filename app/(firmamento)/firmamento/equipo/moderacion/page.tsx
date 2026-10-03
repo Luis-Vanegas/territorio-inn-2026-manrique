@@ -8,9 +8,10 @@ import { listarBitacora } from '@/lib/db/bitacora.repo';
 import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
 import { cambiosDeDuenos, fichasParaCalidad } from '@/lib/db/equipo.repo';
 import { listarCategorias, listarParaModerar } from '@/lib/db/portafolios.repo';
+import { fichasConCategoriaRevisada } from '@/lib/db/sugerencias.repo';
 import { alertasDeCalidad, type TipoAlerta } from '@/lib/firmamento/calidad';
 import { FichaModeracion } from '../aliados/_components/FichaModeracion';
-import { SugerenciaOtros } from './_components/SugerenciaOtros';
+import { SugeridorModeracion } from './_components/SugeridorModeracion';
 
 export const metadata: Metadata = { title: 'Moderación' };
 
@@ -88,7 +89,11 @@ export default async function ModeracionPage({
   );
 
   if (vista === 'revisar') {
-    const [definicionesCampos, categorias] = await Promise.all([listarTodosLosCampos(), listarCategorias()]);
+    const [definicionesCampos, categorias, revisadas] = await Promise.all([
+      listarTodosLosCampos(),
+      listarCategorias(),
+      fichasConCategoriaRevisada(pendientes.map((r) => r.id)),
+    ]);
     return (
       <div>
         {pestanas}
@@ -101,7 +106,13 @@ export default async function ModeracionPage({
             <p className="border-t border-tinta/12 pt-8 font-sans text-tenue">No hay nada esperando revisión.</p>
           ) : (
             pendientes.map((r) => (
-              <FichaModeracion key={r.id} portafolio={r} definicionesCampos={definicionesCampos} categorias={categorias} />
+              <FichaModeracion
+                key={r.id}
+                portafolio={r}
+                definicionesCampos={definicionesCampos}
+                categorias={categorias}
+                categoriaRevisada={revisadas.has(r.id)}
+              />
             ))
           )}
         </section>
@@ -151,6 +162,11 @@ export default async function ModeracionPage({
   }
 
   if (vista === 'alertas') {
+    const [categorias, revisadas] = await Promise.all([
+      listarCategorias(),
+      fichasConCategoriaRevisada(alertas.filter((a) => a.tipo === 'otros').map((a) => a.ficha.id)),
+    ]);
+    const otros = { id: 'otros', nombre: categorias.find((c) => c.id === 'otros')?.nombre ?? 'Otros' };
     return (
       <div>
         {pestanas}
@@ -183,7 +199,15 @@ export default async function ModeracionPage({
                       )}
                     </p>
                     <p className="mt-1 font-sans text-sm leading-relaxed text-tenue">{a.texto}</p>
-                    {a.textoParaSugerir && <SugerenciaOtros texto={a.textoParaSugerir} />}
+                    {a.textoParaSugerir && (
+                      <SugeridorModeracion
+                        portafolioId={a.ficha.id}
+                        texto={a.textoParaSugerir}
+                        actual={otros}
+                        categorias={categorias}
+                        revisada={revisadas.has(a.ficha.id)}
+                      />
+                    )}
                   </div>
                   <Link href={enlaceFicha(a.ficha.id)} className={CLASE_BOTON_PANEL}>
                     {a.ficha.estado === 'aprobado' ? 'Corregir la ficha' : 'Ver la ficha'}
