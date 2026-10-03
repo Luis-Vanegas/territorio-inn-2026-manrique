@@ -208,7 +208,7 @@ export async function decidirConvocatoria(
   return rows.length > 0;
 }
 
-// ── Mi cuenta: «Para ti» ────────────────────────────────────
+// ── Panel del negocio: «Para ti» ────────────────────────────────────
 
 export type ConvocatoriaParaTi = Pick<
   Convocatoria,

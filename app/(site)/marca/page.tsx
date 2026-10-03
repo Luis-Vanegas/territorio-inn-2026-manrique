@@ -32,7 +32,7 @@ export default async function MarcaPage() {
       coleccion={MARCA}
       base="/marca"
       etiqueta="tu espacio · guías del equipo"
-      volver={{ href: '/mi-cuenta', etiqueta: '← Volver a mi cuenta' }}
+      volver={{ href: '/firmamento/negocio', etiqueta: '← Volver a mi panel' }}
     />
   );
 }

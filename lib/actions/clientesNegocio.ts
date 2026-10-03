@@ -43,7 +43,7 @@ export async function guardarCliente(_anterior: EstadoCliente, formData: FormDat
     return { estado: 'error', mensaje: 'No pudimos guardar. Intenta de nuevo en un momento.' };
   }
 
-  revalidatePath('/mi-cuenta/clientes');
+  revalidatePath('/firmamento/negocio/clientes');
   return { estado: 'ok', mensaje: id ? 'Cambios guardados.' : `${datos.nombre} quedó en tu lista.` };
 }
 
@@ -57,5 +57,5 @@ export async function borrarClienteAction(formData: FormData): Promise<void> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return;
 
   await borrarCliente(sesion.id, id);
-  revalidatePath('/mi-cuenta/clientes');
+  revalidatePath('/firmamento/negocio/clientes');
 }

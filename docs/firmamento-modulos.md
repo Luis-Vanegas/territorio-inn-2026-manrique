@@ -83,7 +83,7 @@ propuestas.
 
 1. 033 + el código que la acompaña, en una **rama de Neon** (la `dev` está archivada; `.env.local` apunta a producción).
 2. `/firmamento/entrar` + layout del panel (diseño del prototipo, tokens de `DESIGN.md`).
-3. Panel negocio (mover `/mi-cuenta`).
+3. Panel negocio (mover `/mi-cuenta`). Hecho: ver AGENTS.md › Panel del negocio.
 4. Panel equipo (mover `/admin` + resumen y alertas de calidad).
 5. Panel entidad + alta de miembros desde el equipo.
 6. Redirecciones, `sitemap`, enlaces del menú, AGENTS.md.

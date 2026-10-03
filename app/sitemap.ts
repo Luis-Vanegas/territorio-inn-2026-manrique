@@ -28,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { ruta: '/aliados/registro', prioridad: 0.8 },
     // Pública aunque su contenido completo pida sesión: sin sesión sirve una
     // vista previa real, y es la página por la que la gente llega a registrarse.
-    // /entrar y /mi-cuenta NO van — las dos son noindex.
+    // /entrar y el panel (/firmamento/negocio) NO van — son privadas y noindex.
     { ruta: '/formalizacion', prioridad: 0.7 },
     // Datos del territorio: OSM, constelaciones y cifras con fuente. Sin flag,
     // lee archivos del repo y los datos abiertos agregados (regla k = 5).
