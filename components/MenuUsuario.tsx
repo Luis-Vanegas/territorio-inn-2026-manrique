@@ -19,7 +19,7 @@ export const ENLACES_PRIVADOS = [
 ];
 
 /** Solo para quien también tiene sesión de moderación (ver SiteHeader). */
-export const ENLACE_MODERACION = { href: '/admin/aliados', etiqueta: 'Panel de moderación' };
+export const ENLACE_MODERACION = { href: '/firmamento/equipo', etiqueta: 'Panel del equipo' };
 
 /**
  * Identidad de la persona conectada, y su salida.

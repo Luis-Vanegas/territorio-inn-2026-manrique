@@ -51,6 +51,6 @@ export async function registrarPeticion(
     };
   }
 
-  revalidatePath('/admin/peticiones');
+  revalidatePath('/firmamento/equipo', 'layout');
   return { estado: 'ok' };
 }

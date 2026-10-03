@@ -75,7 +75,7 @@ export async function moderarConvocatoria(
         : ['estado'],
   });
 
-  revalidatePath('/admin/convocatorias');
+  revalidatePath('/firmamento/equipo', 'layout');
   revalidatePath('/mi-cuenta');
   return { estado: 'ok', mensaje: MENSAJE_OK[parsed.data.decision] };
 }

@@ -13,7 +13,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
       disallow: [
-        // Panel de moderación: no es contenido público.
+        // Rutas viejas del panel del equipo (redirigen a /firmamento/equipo).
         '/admin',
         // Firmamento con sesión: la puerta y los tres paneles (negocio, equipo,
         // entidad). `/firmamento` a secas es público y sí se indexa.

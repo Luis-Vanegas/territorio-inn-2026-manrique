@@ -23,7 +23,15 @@ export type NombreIcono =
   | 'megafono'
   | 'datos'
   | 'cerebro'
-  | 'ojo';
+  | 'ojo'
+  | 'grafica'
+  | 'personas'
+  | 'buzon'
+  | 'maletin'
+  | 'ajustes'
+  | 'libro'
+  | 'chat'
+  | 'mas';
 
 export type ItemNav = {
   href: string;
@@ -31,6 +39,12 @@ export type ItemNav = {
   /** Rótulo de la barra inferior del celular, donde no cabe el largo (≤ 8 letras). */
   corta?: string;
   icono: NombreIcono;
+  /**
+   * Sin grupo = sección principal: va suelta arriba del menú lateral y en la
+   * barra inferior del celular. Con grupo = va bajo ese encabezado en el lateral
+   * y, en el celular, detrás del botón «Más».
+   */
+  grupo?: string;
 };
 
 export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
@@ -45,6 +59,8 @@ export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
       icono: 'mapa',
     },
   ],
+  // Equipo: lo de todos los días va suelto (y en la barra del celular); el resto,
+  // agrupado. Con 16 secciones, una lista plana no se recorre de un vistazo.
   equipo: [
     { href: '/firmamento/equipo', etiqueta: 'Resumen', icono: 'inicio' },
     { href: '/firmamento/equipo/moderacion', etiqueta: 'Moderación', corta: 'Moderar', icono: 'escudo' },
@@ -55,8 +71,23 @@ export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
       icono: 'megafono',
     },
     { href: '/firmamento/equipo/territorio', etiqueta: 'Territorio', corta: 'Mapa', icono: 'mapa' },
-    { href: '/firmamento/equipo/datos', etiqueta: 'Datos abiertos', corta: 'Datos', icono: 'datos' },
-    { href: '/firmamento/equipo/modelos', etiqueta: 'Modelos', icono: 'cerebro' },
+    { href: '/firmamento/equipo/datos', etiqueta: 'Datos abiertos', icono: 'datos', grupo: 'Datos' },
+    { href: '/firmamento/equipo/modelos', etiqueta: 'Modelos', icono: 'cerebro', grupo: 'Datos' },
+    { href: '/firmamento/equipo/estadisticas', etiqueta: 'Estadísticas', icono: 'grafica', grupo: 'Datos' },
+    { href: '/firmamento/equipo/aliados', etiqueta: 'Fichas de aliados', icono: 'ficha', grupo: 'Red' },
+    { href: '/firmamento/equipo/entidades', etiqueta: 'Entidades', icono: 'personas', grupo: 'Red' },
+    { href: '/firmamento/equipo/peticiones', etiqueta: 'Peticiones', icono: 'buzon', grupo: 'Red' },
+    { href: '/firmamento/equipo/empleo', etiqueta: 'Empleo', icono: 'maletin', grupo: 'Red' },
+    { href: '/firmamento/equipo/campos', etiqueta: 'Campos del registro', icono: 'ajustes', grupo: 'Red' },
+    {
+      href: '/firmamento/equipo/formalizacion',
+      etiqueta: 'Formalización',
+      icono: 'libro',
+      grupo: 'Lo que ve un negocio',
+    },
+    { href: '/firmamento/equipo/marca', etiqueta: 'Marca', icono: 'libro', grupo: 'Lo que ve un negocio' },
+    { href: '/firmamento/equipo/ventas', etiqueta: 'Ventas', icono: 'libro', grupo: 'Lo que ve un negocio' },
+    { href: '/firmamento/equipo/asesor', etiqueta: 'Asesor', icono: 'chat', grupo: 'Lo que ve un negocio' },
   ],
   entidad: [
     { href: '/firmamento/entidad', etiqueta: 'Observatorio', icono: 'ojo' },

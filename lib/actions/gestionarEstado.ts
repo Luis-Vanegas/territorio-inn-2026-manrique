@@ -116,7 +116,7 @@ export async function actualizarPortafolio(
 
   revalidatePath('/aliados');
   invalidarVitrina();
-  revalidatePath('/admin/aliados');
+  revalidatePath('/firmamento/equipo', 'layout');
   revalidatePath(`/aliados/estado/${token}`);
 
   const base = 'Guardado. Como cambiaste datos publicados, un moderador los revisa de nuevo antes de que se vean.';
@@ -187,7 +187,7 @@ export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
 
   revalidatePath('/aliados');
   invalidarVitrina();
-  revalidatePath('/admin/aliados');
+  revalidatePath('/firmamento/equipo', 'layout');
   revalidatePath(`/aliados/estado/${token}`);
 
   return { estado: 'ok', mensaje: 'Tu negocio se borró del directorio.' };

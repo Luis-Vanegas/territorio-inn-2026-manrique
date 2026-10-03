@@ -37,6 +37,30 @@ const TRAZOS: Record<NombreIcono, React.ReactNode> = {
       <circle cx="12" cy="12" r="3" />
     </>
   ),
+  grafica: <path d="M4 4v16h16M8 16v-4m4 4V8m4 8v-6" />,
+  personas: (
+    <>
+      <circle cx="9" cy="8" r="3" />
+      <path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5M15.5 5.2a3 3 0 0 1 0 5.6M17 14.6c2 .5 3.5 2.3 3.5 4.9" />
+    </>
+  ),
+  buzon: <path d="M3.5 13.5 6 5h12l2.5 8.5V19h-17v-5.5Zm0 0H8l1.5 2.5h5l1.5-2.5h4.5" />,
+  maletin: (
+    <>
+      <rect x="3.5" y="7.5" width="17" height="12" rx="2" />
+      <path d="M9 7.5V5.5h6v2M3.5 12.5h17" />
+    </>
+  ),
+  ajustes: <path d="M4 7h10m4 0h2M4 17h4m4 0h8M14 4.5v5M8 14.5v5" />,
+  libro: <path d="M4 5.5C6.5 4.5 9.5 4.5 12 6v13.5c-2.5-1.5-5.5-1.5-8-.5V5.5Zm16 0c-2.5-1-5.5-1-8 .5v13.5c2.5-1.5 5.5-1.5 8-.5V5.5Z" />,
+  chat: <path d="M4.5 5.5h15v10h-8l-4.5 3.5v-3.5H4.5v-10Z" />,
+  mas: (
+    <>
+      <circle cx="6" cy="12" r="1.25" />
+      <circle cx="12" cy="12" r="1.25" />
+      <circle cx="18" cy="12" r="1.25" />
+    </>
+  ),
 };
 
 export function IconoPanel({ nombre, tamano = 20 }: { nombre: NombreIcono; tamano?: number }) {

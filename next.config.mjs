@@ -174,6 +174,17 @@ const nextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: cabecerasSeguridad }];
   },
+  // El panel de moderación se mudó a Firmamento (docs/firmamento-modulos.md).
+  // Los enlaces viejos (marcadores, mensajes del equipo) siguen funcionando.
+  // Temporales (307): si algún día /admin vuelve a significar algo, un 308 ya
+  // habría quedado guardado en los navegadores. El login va primero: gana la
+  // primera regla que coincide.
+  async redirects() {
+    return [
+      { source: '/admin/login', destination: '/firmamento/entrar?rol=equipo', permanent: false },
+      { source: '/admin/:path*', destination: '/firmamento/equipo/:path*', permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;

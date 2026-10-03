@@ -84,7 +84,7 @@ export async function crearCampoAction(
     return { estado: 'error', mensaje: 'No se pudo crear el campo. Intenta de nuevo.' };
   }
 
-  revalidatePath('/admin/campos');
+  revalidatePath('/firmamento/equipo/campos');
   revalidatePath('/aliados/registro');
   invalidarVitrina();
   return { estado: 'ok', mensaje: `Campo "${parsed.data.etiqueta}" creado.` };
@@ -125,7 +125,7 @@ export async function editarCampoAction(
     return { estado: 'error', mensaje: 'No se pudo guardar el cambio.' };
   }
 
-  revalidatePath('/admin/campos');
+  revalidatePath('/firmamento/equipo/campos');
   revalidatePath('/aliados/registro');
   invalidarVitrina();
   return { estado: 'ok', mensaje: 'Campo actualizado.' };
@@ -141,7 +141,7 @@ export async function cambiarActivoCampoAction(formData: FormData): Promise<void
   if (!id) return;
 
   await cambiarActivo(id, activo);
-  revalidatePath('/admin/campos');
+  revalidatePath('/firmamento/equipo/campos');
   revalidatePath('/aliados/registro');
   invalidarVitrina();
 }
@@ -176,7 +176,7 @@ export async function cambiarPublicoCampoAction(
     return { estado: 'error', mensaje: 'No se pudo guardar el cambio.' };
   }
 
-  revalidatePath('/admin/campos');
+  revalidatePath('/firmamento/equipo/campos');
   invalidarVitrina();
   return {
     estado: 'ok',

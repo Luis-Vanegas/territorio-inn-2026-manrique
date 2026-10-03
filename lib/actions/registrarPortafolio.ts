@@ -268,7 +268,7 @@ export async function registrarPortafolio(
   }
 
   // El panel de moderación tiene que ver el registro nuevo sin esperar cache.
-  revalidatePath('/admin/aliados');
+  revalidatePath('/firmamento/equipo', 'layout');
 
   // La confirmación ya no es la página de estado: es un modal en el inicio.
   // El token viaja en la query porque sigue siendo la única credencial para

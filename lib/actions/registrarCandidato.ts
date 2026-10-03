@@ -86,6 +86,6 @@ export async function registrarCandidato(
     };
   }
 
-  revalidatePath('/admin/empleo');
+  revalidatePath('/firmamento/equipo/empleo');
   redirect('/empleo?registrado=1');
 }
