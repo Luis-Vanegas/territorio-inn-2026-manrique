@@ -87,6 +87,11 @@ agregar código nuevo — seguí el patrón existente.
 app/
   (site)/           route group del sitio público (aliados, servicios, contacto, legal)
   admin/(panel)/    route group del panel de administración
+  (firmamento)/firmamento/   Firmamento con sesión: `entrar` (puerta de 3 pestañas) y los
+                    paneles `negocio/`, `equipo/`, `entidad/`, cada uno con su `layout.tsx`
+                    (guarda + `PanelShell`). Convive con `(site)/firmamento/page.tsx` (el
+                    tablero público): los route groups no entran en la URL y ninguno define
+                    `page.tsx` en `/firmamento`; no crees uno en este grupo.
   api/              route handlers (cron, exportar, interacciones)
   <ruta>/_components/  componentes usados solo por esa ruta
 components/         componentes compartidos entre rutas
@@ -225,6 +230,23 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo
   único entre un vecino y el panel de moderación. No las unifiques.
+- **Firmamento con sesión** (`app/(firmamento)/firmamento/`, plan en
+  `docs/firmamento-modulos.md`): tres roles, dos cookies. Guardas en
+  `lib/auth/firmamento.ts` (`exigirNegocio` = `sesion_usuario`; `exigirEquipo` =
+  `admin_session`; `exigirEntidad` = `sesion_usuario` + membresía vía `entidadDeSesion`
+  de `lib/auth/entidad.ts`, un stub que devuelve null hasta que llegue el repo del
+  bloque A). Un layout NO basta (no se re-ejecuta al navegar entre hermanas): la
+  guarda va en el layout del rol Y en cada `page.tsx`, junto a la lectura de datos,
+  y cada action/repo revalida. La navegación es DATOS (`lib/firmamento/navegacion.ts`,
+  un arreglo por rol); una sección nueva = entrada ahí + carpeta
+  `<rol>/<seccion>/page.tsx`. Mientras no exista la carpeta, `<rol>/[...resto]/page.tsx`
+  muestra «En construcción» (y 404 si la ruta no está en el menú). El armazón es
+  `components/firmamento/panel/PanelShell.tsx`; las insignias del menú son una prop
+  (`insignias` por `href`). La puerta devuelve a una ruta interna con `?destino=` en
+  `/api/auth/google/iniciar` (cookie `oauth_destino`, validada con `rutaInterna` de
+  `lib/auth/destino.ts` al guardar y al leer; la comprueba `scripts/verificar-destino.mjs`).
+  El login del equipo reutiliza `iniciarSesion` de `sesionAdmin.ts` con un campo
+  oculto `destino`.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
   `token_publico` — para quien registramos en campo y no maneja tecnología.
