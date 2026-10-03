@@ -261,7 +261,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   la grafía de `BARRIOS_COMUNA_3` (una sola tabla de equivalencias, en el script).
   `barrioDe(lat, lon)` es pura y devuelve el nombre o `null`; es una AYUDA (aviso del
   registro, barrio de cada comercio OSM), no una regla de admisión: esa sigue siendo
-  `dentroDeManrique`. El ray casting vive UNA vez en `lib/geo/puntoEnPoligono.ts` y lo
+  `dentroDeManrique`. El mapa (`MapaAliadosClient`) dibuja su contorno siempre y el
+  nombre desde zoom 15 (`ZOOM_ETIQUETAS_BARRIO`), sin clics. El ray casting vive UNA vez en `lib/geo/puntoEnPoligono.ts` y lo
   usan los dos (y `scripts/extraer-barrios.mjs`); no lo copies. Se importa con
   extensión: ver «Imports con extensión `.ts`». El pipeline (`02_constelaciones.py`) calcula
   el mismo barrio con shapely y lo escribe en cada comercio de `constelaciones.json`;
