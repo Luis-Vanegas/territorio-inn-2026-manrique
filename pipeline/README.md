@@ -22,6 +22,7 @@ python 01_osm_overpass.py     # descarga de OSM -> pipeline/datos/*.csv  (necesi
 python 01_osm_overpass.py --solo-comuna3   # solo la consulta de la comuna (con y sin nombre); no toca el Valle
 python 02_constelaciones.py   # -> public/firmamento/constelaciones.json
 python 03_clasificador.py     # -> public/modelo_categoria.json + reporte_modelo.md
+# luego, desde la raíz: node scripts/exportar-evaluacion-modelo.mjs  -> public/firmamento/modelo_evaluacion.json (F1 por categoría y matriz que dibuja el sitio)
 python verificar_salidas.py   # revisa los JSON públicos (sale con código != 0 si algo falla)
 ```
 

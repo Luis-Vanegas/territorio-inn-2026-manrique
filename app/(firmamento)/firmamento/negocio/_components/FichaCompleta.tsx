@@ -1,3 +1,5 @@
+import { PistaBarra } from '@/components/firmamento/BarrasCategoria';
+import { PALETA_NOCHE } from '@/lib/paleta';
 import type { PasoFicha } from '@/lib/firmamento/ficha';
 
 /**
@@ -18,9 +20,9 @@ export function BarraFicha({ porcentaje }: { porcentaje: number }) {
         aria-valuemax={100}
         aria-valuenow={porcentaje}
         aria-valuetext={`${porcentaje} por ciento`}
-        className="mt-2 h-2.5 w-full overflow-hidden rounded-full bg-noche-3"
+        className="mt-2"
       >
-        <div className="h-full rounded-full bg-sodio" style={{ width: `${porcentaje}%` }} />
+        <PistaBarra proporcion={porcentaje / 100} color={PALETA_NOCHE.sodio} redonda className="h-2.5" />
       </div>
     </div>
   );

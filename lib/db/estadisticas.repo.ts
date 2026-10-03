@@ -67,11 +67,12 @@ export async function resumenGeneral(): Promise<ResumenGeneral> {
   };
 }
 
-export type FilaCategoria = { nombre: string; total: number; aprobados: number };
+export type FilaCategoria = { id: string; nombre: string; total: number; aprobados: number };
 
 export async function porCategoria(): Promise<FilaCategoria[]> {
   const rows = await sql`
     select
+      c.id,
       c.nombre,
       count(p.id)::int                                       as total,
       count(p.id) filter (where p.estado = 'aprobado')::int   as aprobados

@@ -8,17 +8,21 @@ import type { Coordenada } from '@/lib/geo/constantes';
 import type { Constelacion, DatosConstelaciones, EstrellaOsm } from '@/lib/geo/constelaciones';
 import { nombreVisible } from '@/lib/geo/comerciosOsm';
 import { distanciaMetros } from '@/lib/geo/distancia';
+import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import { FichaComercioOsm } from './FichaComercioOsm';
-import { svgEstrella, svgPunto } from './formas';
+import { svgForma } from './formas';
 
 /**
  * Capa de constelaciones: halo + líneas del árbol de expansión mínima + estrellas.
  *
- * Son comercios de OpenStreetMap, no aliados. Por eso van en `noche-3` (azul
- * oscuro) y pequeños, y se dibujan DEBAJO de los marcadores de aliados
- * (`zIndexOffset` negativo). Cada estrella y cada punto suelto es un marcador
+ * Son comercios de OpenStreetMap, no aliados. Cada uno lleva la forma y el color
+ * de su grupo de categoría (`grupos.ts`, igual que un aliado) pero más chica y
+ * más tenue: 14 px y relleno a 80 % las que están en una constelación, 10 px y
+ * a 60 % los sueltos, contra 26 px y color pleno de un aliado. Así se ve de qué
+ * es cada comercio sin que le quiten protagonismo a la red. Se dibujan DEBAJO de
+ * los marcadores de aliados (`zIndexOffset` negativo). Cada uno es un marcador
  * tocable y enfocable: abre un popup con lo que OSM sabe del comercio
- * (FichaComercioOsm). La estrella dibujada mide 11 px; la caja táctil, 44.
+ * (FichaComercioOsm). La caja táctil mide 44.
  *
  * Con ~200 comercios el rendimiento importa: los íconos se crean una vez, cada
  * marcador es `memo` y el popup solo monta su contenido mientras está abierto
@@ -35,25 +39,35 @@ const TEXTO_ATRIBUCION =
   '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL)';
 
 /** Un icono por estrella: el desfase del parpadeo va en variables CSS. */
-function iconoEstrella(indice: number) {
+function iconoEstrella(grupo: Grupo, indice: number) {
   const duracion = 3 + (indice % 4); // 3–6 s
   const desfase = -((indice * 0.7) % duracion);
   return L.divIcon({
     className: '',
-    html: `<span class="caja-estrella"><span class="estrella-osm" style="animation-duration:${duracion}s;animation-delay:${desfase.toFixed(2)}s">${svgEstrella(11)}</span></span>`,
+    html: `<span class="caja-estrella"><span class="estrella-osm" style="animation-duration:${duracion}s;animation-delay:${desfase.toFixed(2)}s">${svgForma(grupo, 14, { tenue: true })}</span></span>`,
     iconSize: [44, 44],
     iconAnchor: [22, 22],
     popupAnchor: [0, -10],
   });
 }
 
-const ICONO_SUELTO = L.divIcon({
-  className: '',
-  html: `<span class="caja-estrella">${svgPunto(8)}</span>`,
-  iconSize: [44, 44],
-  iconAnchor: [22, 22],
-  popupAnchor: [0, -8],
-});
+/** Los sueltos no parpadean (son los más tenues) y comparten un icono por grupo. */
+const ICONOS_SUELTOS = new Map<string, L.DivIcon>();
+
+function iconoSuelto(grupo: Grupo) {
+  let icono = ICONOS_SUELTOS.get(grupo.id);
+  if (!icono) {
+    icono = L.divIcon({
+      className: '',
+      html: `<span class="caja-estrella" style="opacity:0.7">${svgForma(grupo, 10, { tenue: true })}</span>`,
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
+      popupAnchor: [0, -8],
+    });
+    ICONOS_SUELTOS.set(grupo.id, icono);
+  }
+  return icono;
+}
 
 // Un divIcon no es una imagen, así que el marcador no trae nombre accesible:
 // se le pone el del comercio. Y al cerrar el popup con Esc el foco caería a
@@ -100,7 +114,7 @@ const MarcadorComercio = memo(function MarcadorComercio({
   );
 });
 
-function Atribucion() {
+export function Atribucion() {
   const mapa = useMap();
   useEffect(() => {
     mapa.attributionControl.addAttribution(TEXTO_ATRIBUCION);
@@ -137,7 +151,7 @@ function Constelacion({
   // Los iconos se crean una vez: un icono nuevo por render obligaría a Leaflet
   // a reemplazar el nodo de cada estrella.
   const iconos = useMemo(
-    () => c.estrellas.map((_, i) => iconoEstrella(orden * 17 + i)),
+    () => c.estrellas.map((e, i) => iconoEstrella(grupoDeCategoria(e.categoria), orden * 17 + i)),
     [c, orden],
   );
 
@@ -200,7 +214,12 @@ export function CapaConstelaciones({
       <Atribucion />
       {!filtroId &&
         datos.puntos_sueltos.map((p) => (
-          <MarcadorComercio key={p.osm} e={p} icono={ICONO_SUELTO} ubicacion={ubicacion} />
+          <MarcadorComercio
+            key={p.osm}
+            e={p}
+            icono={iconoSuelto(grupoDeCategoria(p.categoria))}
+            ubicacion={ubicacion}
+          />
         ))}
       {visibles.map((c, i) => (
         <Constelacion key={c.id} c={c} orden={i} activa={Boolean(filtroId)} ubicacion={ubicacion} />

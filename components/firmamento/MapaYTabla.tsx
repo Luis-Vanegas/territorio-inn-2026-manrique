@@ -1,12 +1,9 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { useReducedMotion } from 'framer-motion';
-import { MapaAliados } from '@/components/MapaAliados';
-import { svgForma } from '@/components/mapa/formas';
 import { fechaLarga } from '@/lib/geo/constelaciones';
-import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { BarraCategoria, FilaConstelacion } from '@/app/(site)/firmamento/datos';
+import { BarrasCategoria } from './BarrasCategoria';
+import { BotonConstelacion, MapaEstelar, useConstelacionElegida } from './MapaEstelar';
 import { Seccion } from './Seccion';
 
 /**
@@ -14,12 +11,9 @@ import { Seccion } from './Seccion';
  * constelación elegida. Tocar una fila de la tabla la enciende en el mapa; el
  * selector del propio mapa («Ver una sola») cambia la fila marcada.
  *
- * El mapa es el de siempre (`MapaAliados`), en modo noche fijo: aquí no hay un
- * segundo mapa.
+ * El estado y el mapa viven en `MapaEstelar` (los comparte con el observatorio
+ * de la entidad): aquí no hay un segundo mapa.
  */
-
-// Referencia estable: un `[]` nuevo por render recalcularía los conteos del mapa.
-const SIN_ALIADOS: Portafolio[] = [];
 
 type Props = {
   /** Mínimo de comercios por constelación (del JSON de OSM, no escrito a mano). */
@@ -39,24 +33,7 @@ export function MapaYTabla({
   osmBase,
   fechaCorrida,
 }: Props) {
-  const [elegida, setElegida] = useState('');
-  const cajaMapa = useRef<HTMLDivElement>(null);
-  const sinMovimiento = useReducedMotion();
-
-  function elegir(id: string) {
-    const nueva = id === elegida ? '' : id;
-    setElegida(nueva);
-    // La tabla queda debajo del mapa: si el mapa no se ve entero, se lo trae a la vista.
-    const caja = cajaMapa.current;
-    if (nueva && caja) {
-      const r = caja.getBoundingClientRect();
-      if (r.top < 120 || r.bottom > window.innerHeight) {
-        caja.scrollIntoView({ behavior: sinMovimiento ? 'auto' : 'smooth', block: 'center' });
-      }
-    }
-  }
-
-  const maximo = Math.max(...barras.map((b) => b.n), 1);
+  const { elegida, elegir, fijar, caja } = useConstelacionElegida();
 
   return (
     <>
@@ -66,31 +43,24 @@ export function MapaYTabla({
         titulo="Mapa estelar de la Comuna 3"
         descripcion={`${totalComercios} comercios mapeados en OpenStreetMap dentro de la comuna. Las líneas unen a los de cada constelación; los aliados se ven en la sección Aliados.`}
       >
-        <div ref={cajaMapa}>
-          <MapaAliados
-            portafolios={SIN_ALIADOS} // sin aliados individuales: aquí solo van agregados (k = 5)
-            variante="vitrina"
-            conFiltro
-            noche
-            constelacionElegida={elegida}
-            alElegirConstelacion={setElegida}
-          />
-        </div>
+        <MapaEstelar elegida={elegida} fijar={fijar} caja={caja} />
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           <div className="border border-trazo bg-noche-2 p-5">
             <h3 className="font-sans text-lg font-medium text-estrella">Cómo leerlo</h3>
             <ul className="mt-3 list-disc space-y-2 pl-5 font-sans text-base leading-relaxed text-estrella marker:text-sodio">
               <li>
-                Cada estrella es un comercio mapeado en OpenStreetMap. No es aliado: tócala para ver su
+                Cada marca es un comercio mapeado en OpenStreetMap, y su forma dice a qué grupo pertenece
+                (círculo, cuadrado, rombo, triángulo, cruz o anillo). No es aliado: tócala para ver su
                 nombre y su dirección.
               </li>
               <li>
-                Las estrellas unidas por líneas forman una constelación: un grupo de al menos {minCluster}
+                Los comercios unidos por líneas forman una constelación: un grupo de al menos {minCluster}{' '}
                 comercios vecinos.
               </li>
               <li>
-                Los puntos pequeños y sueltos son comercios que no quedaron en ninguna constelación.
+                Las marcas más pequeñas y tenues, sin líneas, son comercios que no quedaron en ninguna
+                constelación.
               </li>
               <li>
                 Para encender una constelación, elige una fila de la tabla de abajo o usa «Ver una
@@ -101,29 +71,12 @@ export function MapaYTabla({
 
           <div className="border border-trazo bg-noche-2 p-5">
             <h3 className="font-sans text-lg font-medium text-estrella">Qué hay, por categoría</h3>
-            <ul className="mt-3 space-y-3">
-              {barras.map((b) => (
-                <li key={b.id}>
-                  <div className="flex items-center justify-between gap-3 font-sans text-sm text-estrella">
-                    <span className="flex min-w-0 items-center gap-2">
-                      <span
-                        aria-hidden="true"
-                        className="inline-flex shrink-0"
-                        dangerouslySetInnerHTML={{ __html: svgForma(b.grupo, 16) }}
-                      />
-                      <span className="min-w-0 break-words">{b.nombre}</span>
-                    </span>
-                    <span className="shrink-0 font-cifra tabular-nums text-estrella">{b.n}</span>
-                  </div>
-                  <div className="mt-1 h-2 bg-noche-3" aria-hidden="true">
-                    <div
-                      className="h-full"
-                      style={{ width: `${(b.n / maximo) * 100}%`, backgroundColor: b.grupo.color }}
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <BarrasCategoria
+              className="mt-3"
+              columna="Comercios"
+              descripcion="Comercios mapeados en OpenStreetMap dentro de la Comuna 3, por categoría, con la forma de su grupo"
+              filas={barras.map((b) => ({ id: b.id, nombre: b.nombre, valor: b.n, grupo: b.grupo }))}
+            />
             <p className="mt-4 font-sans text-sm leading-relaxed text-tenue">
               Cada categoría lleva la forma de su grupo: el color solo la refuerza. Cuenta los comercios
               con y sin nombre.
@@ -178,19 +131,11 @@ export function MapaYTabla({
                     }`}
                   >
                     <th scope="row" className="px-2 py-1 align-middle font-normal sm:px-3">
-                      <button
-                        type="button"
-                        aria-pressed={activa}
-                        onClick={() => elegir(f.id)}
-                        aria-label={`${activa ? 'Apagar' : 'Encender'} ${f.codigo} en el mapa`}
-                        className={`inline-flex min-h-[44px] min-w-[52px] items-center justify-center border px-2 font-sans text-sm font-medium transition-colors ${
-                          activa
-                            ? 'border-sodio bg-sodio text-noche'
-                            : 'border-trazo-2 text-sodio hover:border-sodio'
-                        }`}
-                      >
-                        {f.codigo}
-                      </button>
+                      <BotonConstelacion
+                        codigo={f.codigo}
+                        activa={activa}
+                        alAlternar={() => elegir(f.id)}
+                      />
                     </th>
                     <td className="min-w-0 px-2 py-2 align-middle sm:px-3">
                       <span className="break-words text-estrella">{f.nombre}</span>

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { BarrasCategoria, type FilaBarra } from '@/components/firmamento/BarrasCategoria';
 import { exigirEquipo } from '@/lib/auth/firmamento';
+import { grupoDeCategoria } from '@/lib/categorias/grupos';
 
 import {
   resumenGeneral,
@@ -41,47 +43,40 @@ function Metrica({
   );
 }
 
-/** Barras en CSS puro: una librería de gráficos para esto sería desproporcionado. */
+/** Barras compartidas (`BarrasCategoria`); acá solo se arman las filas y el texto de apoyo. */
 function Barras({
   filas,
   vacio,
+  columna,
+  descripcion,
+  encabezado,
   sufijoSecundario = 'publicados',
 }: {
-  filas: { etiqueta: string; valor: number; secundario?: number }[];
+  filas: { etiqueta: string; valor: number; secundario?: number; grupoDe?: string }[];
   vacio: string;
+  columna: string;
+  descripcion: string;
+  encabezado: string;
   sufijoSecundario?: string;
 }) {
-  if (filas.length === 0) {
-    return <p className="font-sans text-sm text-tinta/65">{vacio}</p>;
-  }
-
-  const max = Math.max(...filas.map((f) => f.valor), 1);
-
+  const barras: FilaBarra[] = filas.map((f, i) => ({
+    id: `${i}-${f.etiqueta}`,
+    nombre: f.etiqueta,
+    valor: f.valor,
+    grupo: f.grupoDe ? grupoDeCategoria(f.grupoDe) : undefined,
+    nota:
+      f.secundario !== undefined && f.secundario !== f.valor
+        ? `${f.secundario} ${sufijoSecundario}`
+        : undefined,
+  }));
   return (
-    <ul className="flex flex-col gap-3">
-      {filas.map((f) => (
-        <li key={f.etiqueta}>
-          <div className="flex items-baseline justify-between gap-4">
-            <span className="font-sans text-sm text-tinta/75">{f.etiqueta}</span>
-            <span className="font-cifra text-xs text-tinta/65">
-              {f.valor}
-              {f.secundario !== undefined && f.secundario !== f.valor && (
-                <span className="text-tinta/60">
-                  {' '}
-                  · {f.secundario} {sufijoSecundario}
-                </span>
-              )}
-            </span>
-          </div>
-          <div className="mt-1.5 h-1 w-full bg-tinta/8">
-            <div
-              className="h-full bg-azul-texto"
-              style={{ width: `${(f.valor / max) * 100}%` }}
-            />
-          </div>
-        </li>
-      ))}
-    </ul>
+    <BarrasCategoria
+      filas={barras}
+      vacio={vacio}
+      columna={columna}
+      descripcion={descripcion}
+      encabezado={encabezado}
+    />
   );
 }
 
@@ -318,6 +313,9 @@ export default async function EstadisticasPage() {
         <div className="mt-8 max-w-2xl">
           <Barras
             vacio="Todavía nadie abrió una ficha. Los números aparecen apenas haya visitas."
+            encabezado="Negocio"
+            columna="Fichas abiertas"
+            descripcion="Fichas abiertas por negocio en los últimos 30 días, con los contactos tocados"
             sufijoSecundario="contactos"
             filas={interes.map((f) => ({
               etiqueta: f.nombre,
@@ -336,7 +334,11 @@ export default async function EstadisticasPage() {
           <div className="mt-6">
             <Barras
               vacio="Todavía no hay registros."
+              encabezado="Categoría"
+              columna="Registros"
+              descripcion="Registros por categoría, con cuántos están publicados"
               filas={categorias.map((c) => ({
+                grupoDe: c.id,
                 etiqueta: c.nombre,
                 valor: c.total,
                 secundario: c.aprobados,
@@ -352,6 +354,9 @@ export default async function EstadisticasPage() {
           <div className="mt-6">
             <Barras
               vacio="Todavía no hay emprendimientos publicados."
+              encabezado="Barrio"
+              columna="Publicados"
+              descripcion="Emprendimientos publicados por barrio"
               filas={barrios.map((b) => ({ etiqueta: b.barrio, valor: b.total }))}
             />
           </div>
@@ -366,6 +371,9 @@ export default async function EstadisticasPage() {
           <div className="mt-6 max-w-lg">
             <Barras
               vacio="Sin moderaciones aún."
+              encabezado="Moderador"
+              columna="Decisiones"
+              descripcion="Decisiones de moderación por persona"
               filas={moderadores.map((m) => ({
                 etiqueta: m.moderado_por,
                 valor: m.total,

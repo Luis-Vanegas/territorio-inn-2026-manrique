@@ -2,11 +2,12 @@ import 'server-only';
 
 import datosOsmJson from '@/public/firmamento/constelaciones.json';
 import modeloJson from '@/public/modelo_categoria.json';
-import { POLIGONO_MANRIQUE } from '@/lib/geo/constantes';
+import { BARRIOS_COMUNA_3, POLIGONO_MANRIQUE } from '@/lib/geo/constantes';
 import { barrioDe } from '@/lib/geo/barrioOficial';
 import type { DatosConstelaciones } from '@/lib/geo/constelaciones';
 import {
   aplanarComercios,
+  contarPorBarrio,
   contarPorCategoria,
   lineaMezcla,
   nombreCategoriaOsm,
@@ -14,6 +15,7 @@ import {
 } from '@/lib/geo/comerciosOsm';
 import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import { obtenerDatosAbiertos, type DatosAbiertos } from '@/lib/db/datos.repo';
+import { EVALUACION, type EvaluacionModelo } from '@/lib/firmamento/evaluacionModelo';
 
 /**
  * Todo lo que lee /firmamento, resuelto en el servidor y en un solo lugar.
@@ -23,7 +25,8 @@ import { obtenerDatosAbiertos, type DatosAbiertos } from '@/lib/db/datos.repo';
  * - Aliados: SOLO el repo de datos abiertos (`obtenerDatosAbiertos`, regla k = 5),
  *   no un fetch a nuestra propia API. Si la base no responde, la página sigue y
  *   dice que no pudo consultarlo: no se inventa ni se deja en cero.
- * - Modelo: solo la ficha de métricas de `public/modelo_categoria.json`.
+ * - Modelo: solo la ficha de métricas de `public/modelo_categoria.json` y la
+ *   evaluación por categoría (`public/firmamento/modelo_evaluacion.json`).
  *
  * Ninguna cifra de este archivo se escribe a mano.
  */
@@ -93,6 +96,8 @@ export type DatosFirmamento = {
   filas: FilaConstelacion[];
   barras: BarraCategoria[];
   cielo: Cielo;
+  /** Comercios de OSM por barrio oficial (públicos): los 15 barrios, con 0 donde no hay. */
+  barrios: { barrio: string; valor: number }[];
   /** Posición horizontal (0 a 1, oeste a este) de cada comercio, para el horizonte. */
   posicionesHorizonte: number[];
   red: { datos: DatosAbiertos | null };
@@ -107,6 +112,7 @@ export type DatosFirmamento = {
     f1Comuna3: number;
     nComuna3: number;
   };
+  evaluacion: EvaluacionModelo;
 };
 
 // ── Proyección del cielo ────────────────────────────────────────────────
@@ -221,6 +227,7 @@ export async function leerFirmamento(): Promise<DatosFirmamento> {
     })),
     barras,
     cielo: proyectar(),
+    barrios: contarPorBarrio(comercios, BARRIOS_COMUNA_3),
     posicionesHorizonte: lonsComercios.map((lon) => (lon - minLon) / rango),
     red: {
       datos: abiertos.status === 'fulfilled' ? abiertos.value : null,
@@ -236,5 +243,6 @@ export async function leerFirmamento(): Promise<DatosFirmamento> {
       f1Comuna3: metricas.f1_macro_holdout_geografico_comuna3,
       nComuna3: metricas.n_holdout_geografico,
     },
+    evaluacion: EVALUACION,
   };
 }

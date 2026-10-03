@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { BarrasCategoria } from '@/components/firmamento/BarrasCategoria';
 import { Estrella } from '@/components/firmamento/Estrella';
 import { ListaBitacora } from '@/components/firmamento/panel/Bitacora';
 import { CLASE_BOTON_PANEL, hoyBogota, LineaFuente, Tarjeta } from '@/components/firmamento/panel/Tarjeta';
@@ -76,7 +77,6 @@ export default async function EquipoResumenPage() {
   ]
     .map(([id, v]) => ({ id, ...v, grupo: grupoDeCategoria(id) }))
     .sort((a, b) => b.n - a.n || a.nombre.localeCompare(b.nombre, 'es'));
-  const maximo = porCategoria[0]?.n ?? 1;
   const enOtros = porCategoria.find((c) => c.id === 'otros')?.n ?? 0;
 
   return (
@@ -114,24 +114,12 @@ export default async function EquipoResumenPage() {
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <Tarjeta titulo="Aliados publicados por categoría" id="titulo-categorias">
-          {porCategoria.length === 0 ? (
-            <p className="font-sans text-sm text-tenue">Todavía no hay aliados publicados.</p>
-          ) : (
-            <ul className="flex flex-col gap-2.5">
-              {porCategoria.map((c) => (
-                <li key={c.id} className="grid grid-cols-[minmax(0,10rem)_minmax(0,1fr)_2.5rem] items-center gap-3 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)_2.5rem]">
-                  <span className="font-sans text-sm leading-snug text-estrella">{c.nombre}</span>
-                  <span className="h-2 rounded-full bg-noche-3" aria-hidden="true">
-                    <span
-                      className="block h-full rounded-full"
-                      style={{ width: `${(c.n / maximo) * 100}%`, backgroundColor: c.grupo.color }}
-                    />
-                  </span>
-                  <span className="text-right font-cifra text-sm text-estrella">{c.n}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+          <BarrasCategoria
+            columna="Aliados publicados"
+            descripcion="Aliados publicados por categoría"
+            vacio="Todavía no hay aliados publicados."
+            filas={porCategoria.map((c) => ({ id: c.id, nombre: c.nombre, valor: c.n, grupo: c.grupo }))}
+          />
           {enOtros > 0 && (
             <p className="mt-4 font-sans text-sm text-tenue">
               «Otros» concentra <span className="font-cifra">{enOtros}</span>{' '}

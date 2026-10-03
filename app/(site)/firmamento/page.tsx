@@ -2,9 +2,12 @@ import type { Metadata } from 'next';
 
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { CieloConstelaciones } from '@/components/firmamento/CieloConstelaciones';
+import { CtaAliado } from '@/components/firmamento/CtaAliado';
+import { ConfusionDelModelo, F1PorCategoria } from '@/components/firmamento/EvaluacionModelo';
 import { Horizonte } from '@/components/firmamento/Horizonte';
 import { IndiceSecciones, type EntradaIndice } from '@/components/firmamento/IndiceSecciones';
 import { Kpi } from '@/components/firmamento/Kpi';
+import { MapaBarrios } from '@/components/firmamento/MapaBarrios';
 import { MapaYTabla } from '@/components/firmamento/MapaYTabla';
 import { Seccion } from '@/components/firmamento/Seccion';
 import { Sugeridor } from '@/components/firmamento/Sugeridor';
@@ -34,10 +37,11 @@ const INDICE: EntradaIndice[] = [
   { id: 'cielo', letra: 'α', nombre: 'El cielo de hoy' },
   { id: 'mapa', letra: 'β', nombre: 'Mapa estelar' },
   { id: 'constelaciones', letra: 'γ', nombre: 'Constelaciones' },
-  { id: 'brecha', letra: 'δ', nombre: 'La brecha' },
-  { id: 'sugeridor', letra: 'ε', nombre: 'Sugeridor' },
-  { id: 'indicadores', letra: 'ζ', nombre: 'Indicadores' },
-  { id: 'metodo', letra: 'η', nombre: 'Qué hay detrás' },
+  { id: 'barrios', letra: 'δ', nombre: 'Barrios' },
+  { id: 'brecha', letra: 'ε', nombre: 'La brecha' },
+  { id: 'sugeridor', letra: 'ζ', nombre: 'Sugeridor' },
+  { id: 'indicadores', letra: 'η', nombre: 'Indicadores' },
+  { id: 'metodo', letra: 'θ', nombre: 'Qué hay detrás' },
 ];
 
 const fmt = formatearNumero;
@@ -90,7 +94,7 @@ export default async function FirmamentoPage() {
         ? {
             valor: CELDA_PEQUENA,
             numero: undefined,
-            aclaracion: 'Con menos de 5 no publicamos la cifra exacta (mira la nota de la sección δ).',
+            aclaracion: 'Con menos de 5 no publicamos la cifra exacta (mira la nota de la sección ε).',
             fecha: `consultado el ${fechaLarga(datosRed.generado_en)}`,
           }
         : {
@@ -124,6 +128,7 @@ export default async function FirmamentoPage() {
         <p className="mt-4 font-cifra text-sm leading-relaxed text-tenue">
           Datos de OpenStreetMap al {fechaOsm}
         </p>
+        <CtaAliado variante="cabecera" />
         <p className="mt-6 max-w-3xl font-sans text-sm leading-relaxed text-tenue">
           Cada luz del horizonte es uno de los {osm.totalComercios} comercios mapeados en OpenStreetMap,
           de oeste a este.
@@ -207,10 +212,25 @@ export default async function FirmamentoPage() {
         fechaCorrida={osm.fechaCorrida}
       />
 
-      {/* δ · La brecha */}
+      {/* δ · Barrios: ventana de noche con el mapa coloreado */}
+      <Seccion
+        id="barrios"
+        letra="δ"
+        titulo="Los 15 barrios"
+        descripcion="Cuántos comercios mapeó OpenStreetMap en cada barrio de la Comuna 3. No es un censo: lo dibujan voluntarios, y un cero quiere decir que nadie ha mapeado ahí, no que no haya comercio."
+      >
+        <MapaBarrios
+          filas={d.barrios}
+          cifra="comercios"
+          descripcion="Comercios mapeados en OpenStreetMap por barrio oficial de la Comuna 3, de más a menos"
+          fuente={`Fuente: ${fuenteOsm} · datos al ${fechaOsm} · barrios: Alcaldía de Medellín`}
+        />
+      </Seccion>
+
+      {/* ε · La brecha */}
       <Seccion
         id="brecha"
-        letra="δ"
+        letra="ε"
         titulo="La brecha de visibilidad"
         descripcion="Tres miradas al mismo territorio. La distancia entre ellas es nuestra línea base."
       >
@@ -274,10 +294,10 @@ export default async function FirmamentoPage() {
         )}
       </Seccion>
 
-      {/* ε · Sugeridor */}
+      {/* ζ · Sugeridor */}
       <Seccion
         id="sugeridor"
-        letra="ε"
+        letra="ζ"
         titulo="Sugeridor de categoría"
         descripcion="Un modelo de aprendizaje automático entrenado con datos abiertos. Corre aquí mismo, en tu navegador."
       >
@@ -340,12 +360,27 @@ export default async function FirmamentoPage() {
             </p>
           </Panel>
         </div>
+
+        <ScrollReveal>
+          <div className="mt-6 grid gap-6 lg:grid-cols-2 lg:items-start">
+            <Panel titulo="Qué tan bien acierta cada categoría">
+              <div className="mt-3">
+                <F1PorCategoria evaluacion={d.evaluacion} />
+              </div>
+            </Panel>
+            <Panel titulo="Dónde se equivoca">
+              <div className="mt-3">
+                <ConfusionDelModelo evaluacion={d.evaluacion} />
+              </div>
+            </Panel>
+          </div>
+        </ScrollReveal>
       </Seccion>
 
-      {/* ζ · Indicadores con fuente */}
+      {/* η · Indicadores con fuente */}
       <Seccion
         id="indicadores"
-        letra="ζ"
+        letra="η"
         titulo="Indicadores con fuente"
         descripcion="Cifras de otras entidades que ayudan a leer el territorio. Cada una dice de dónde sale y a qué año corresponde."
       >
@@ -379,10 +414,10 @@ export default async function FirmamentoPage() {
         </div>
       </Seccion>
 
-      {/* η · Qué hay detrás */}
+      {/* θ · Qué hay detrás */}
       <Seccion
         id="metodo"
-        letra="η"
+        letra="θ"
         titulo="Qué hay detrás"
         descripcion="Cómo se hizo este cielo y qué no alcanza a ver."
       >
@@ -462,6 +497,8 @@ export default async function FirmamentoPage() {
           </ScrollReveal>
         </div>
       </Seccion>
+
+      <CtaAliado variante="cierre" />
     </main>
   );
 }
