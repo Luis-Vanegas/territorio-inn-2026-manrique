@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { ConstelacionViva, fuenteConstelacionViva } from '@/components/firmamento/ConstelacionViva';
 import { FormaRol } from '@/components/firmamento/FormaRol';
 import { Plegable } from '@/components/firmamento/Plegable';
 import { verificarSesion } from '@/lib/auth/admin';
@@ -121,62 +122,78 @@ export default async function EntrarFirmamentoPage({
   };
 
   return (
-    <main className="margen-editorial pb-20 pt-10 sm:pt-16">
-      <div className="mx-auto max-w-xl">
-        <h1 className="font-display text-4xl font-medium leading-tight tracking-tight text-tinta sm:text-5xl">
-          Entra a Firmamento
-        </h1>
-        <p className="mt-3 font-sans text-base text-tinta/70">Elige cómo participas en la red.</p>
+    <main className="margen-editorial pb-20 pt-6 sm:pt-16">
+      <div className="mx-auto flex max-w-xl flex-col lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-16">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+          <h1 className="font-display text-4xl font-medium leading-tight tracking-tight text-tinta sm:text-5xl">
+            Entra a Firmamento
+          </h1>
+          <p className="mt-3 font-sans text-base text-tinta/70">Elige cómo participas en la red.</p>
 
-        {mensajeError && (
-          <p
-            role="alert"
-            className="mt-6 border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
-          >
-            {mensajeError}
-          </p>
-        )}
-
-        <div className="mt-8 divide-y divide-tinta/12 overflow-hidden rounded-2xl border border-tinta/12">
-          {ROLES.map((r) => (
-            <Plegable
-              key={r.rol}
-              name="rol"
-              abierto={r.rol === abierto}
-              className="group"
-              claseResumen="flex min-h-[72px] items-center gap-4 px-4 py-3 transition-colors hover:bg-tinta/[0.03] focus-visible:[outline-offset:-3px] sm:px-5"
-              claseContenido="flex flex-col gap-4 px-4 pb-6 pt-1 sm:px-5 sm:pl-[5.25rem]"
-              resumen={
-                <>
-                  <FormaRol rol={r.rol} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-sans text-lg font-medium leading-snug text-tinta">{r.titulo}</span>
-                    <span className="block font-sans text-sm leading-snug text-tinta/70">{r.descripcion}</span>
-                  </span>
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="20"
-                    height="20"
-                    aria-hidden="true"
-                    focusable="false"
-                    className="shrink-0 text-tinta/70 transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
-                  >
-                    <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </>
-              }
+          {mensajeError && (
+            <p
+              role="alert"
+              className="mt-6 border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
             >
-              {acciones[r.rol]}
-            </Plegable>
-          ))}
+              {mensajeError}
+            </p>
+          )}
+
+          <div className="mt-8 divide-y divide-tinta/12 overflow-hidden rounded-2xl border border-tinta/12">
+            {ROLES.map((r) => (
+              <Plegable
+                key={r.rol}
+                name="rol"
+                abierto={r.rol === abierto}
+                className="group"
+                claseResumen="flex min-h-[72px] items-center gap-4 px-4 py-3 transition-colors hover:bg-tinta/[0.03] focus-visible:[outline-offset:-3px] sm:px-5"
+                claseContenido="flex flex-col gap-4 px-4 pb-6 pt-1 sm:px-5 sm:pl-[5.25rem]"
+                resumen={
+                  <>
+                    <FormaRol rol={r.rol} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-sans text-lg font-medium leading-snug text-tinta">{r.titulo}</span>
+                      <span className="block font-sans text-sm leading-snug text-tinta/70">{r.descripcion}</span>
+                    </span>
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="20"
+                      height="20"
+                      aria-hidden="true"
+                      focusable="false"
+                      className="shrink-0 text-tinta/70 transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
+                    >
+                      <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </>
+                }
+              >
+                {acciones[r.rol]}
+              </Plegable>
+            ))}
+          </div>
+
+          <p className="mt-6 font-sans text-base text-tinta/70">
+            ¿No estás en la red?{' '}
+            <Link href="/aliados/registro" className={`inline-flex min-h-[44px] items-center ${CLASE_ENLACE}`}>
+              Regístrate gratis
+            </Link>
+          </p>
         </div>
 
-        <p className="mt-6 font-sans text-base text-tinta/70">
-          ¿No estás en la red?{' '}
-          <Link href="/aliados/registro" className={`inline-flex min-h-[44px] items-center ${CLASE_ENLACE}`}>
-            Regístrate gratis
-          </Link>
-        </p>
+        {/* Constelación viva compacta (DESIGN.md › Firmamento › Constelación viva):
+            decorativa y con su frase al lado. Va después en el HTML para que el
+            lector de pantalla llegue primero al título; en el celular sube como
+            franja baja de 64 px para no empujar el menú de roles (a 320 × 700 la
+            última fila sigue en pantalla). */}
+        <div className="order-first mb-5 flex items-center gap-4 rounded-2xl bg-noche px-4 py-2 lg:order-none lg:col-start-2 lg:row-start-1 lg:mb-0 lg:flex-col lg:items-stretch lg:gap-5 lg:p-6">
+          <ConstelacionViva variante="compacta" className="h-16 shrink-0 lg:h-auto lg:w-full" />
+          <p className="font-sans text-sm leading-snug text-tenue lg:text-base">
+            Los negocios de Manrique forman constelaciones.{' '}
+            <span className="hidden text-estrella sm:inline">Entra y cuida la tuya.</span>
+          </p>
+          <p className="hidden font-sans text-xs leading-relaxed text-tenue lg:block">{fuenteConstelacionViva()}</p>
+        </div>
       </div>
     </main>
   );
