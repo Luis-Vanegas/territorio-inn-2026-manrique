@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation';
 
 import { sesionActual } from '@/lib/auth/usuario';
 import { negociosDe } from '@/lib/db/usuarios.repo';
-import { categoriasDe, negociosEnNumeros } from '@/lib/db/cuenta.repo';
+import { perfilesParaTi, negociosEnNumeros } from '@/lib/db/cuenta.repo';
 import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { salir } from '@/lib/actions/sesionUsuario';
 import { PASOS, VIDEOS } from '@/lib/formalizacion';
@@ -41,7 +41,7 @@ export default async function MiCuentaPage() {
   // «Para ti» y «en números» son un extra: si su consulta falla, el resto de la
   // página (los negocios y sus enlaces) tiene que seguir funcionando.
   const [paraTi, enNumeros] = await Promise.all([
-    (negocios.length === 0 ? Promise.resolve([]) : categoriasDe(sesion.id).then(convocatoriasParaTi)).catch((e) => {
+    (negocios.length === 0 ? Promise.resolve([]) : perfilesParaTi(sesion.id).then(convocatoriasParaTi)).catch((e) => {
       console.error('[mi-cuenta] «Para ti» falló', e instanceof Error ? e.message : e);
       return [];
     }),

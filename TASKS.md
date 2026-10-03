@@ -72,9 +72,14 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
 
 Diseño en `docs/firmamento-modulos.md`. Neon se queda; la edición del dueño publica directo.
 
-- [ ] Migración 033 según `docs/base-de-datos.md` (entidades, barrios, convocatorias rehecha,
+- [x] Migración 033 según `docs/base-de-datos.md` (entidades, barrios, convocatorias rehecha,
       bitácora, sugerencias con portafolio) + el código que la acompaña, en rama de Neon.
-- [ ] Rellenar `barrio_oficial` (hoy 10/10 en null: nadie la escribe) con `barrioDe`.
+      Aplicada SOLO en la rama de prueba. Falta producción (con OK de Luis), en el mismo
+      despliegue que el código: la 033 borra columnas que el código anterior lee.
+- [x] Rellenar `barrio_oficial` con `barrioDe`: `scripts/rellenar-barrio-oficial.mjs`
+      (idempotente, `--seco` para contar). En la rama de prueba: 6 llenos, 4 en null
+      (los 4 caen fuera de la Comuna 3: 3 aprobados y 1 archivado). Correrlo en
+      producción después de la 033.
 - [ ] Restaurante sazón al carbón declara «Campo Valdés No. 1» (Comuna 4): corregir.
 - [ ] `/firmamento/entrar` con 3 pestañas + layout del panel.
 - [ ] Panel negocio (mover `/mi-cuenta`), panel equipo (mover `/admin`), panel entidad.

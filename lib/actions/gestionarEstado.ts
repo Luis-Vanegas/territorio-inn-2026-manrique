@@ -10,7 +10,9 @@ import {
 import {
   actualizarPorToken,
   archivarPorToken,
+  type EdicionAplicada,
 } from '@/lib/db/portafolios.repo';
+import { registrarEnBitacora, camposConArchivos } from '@/lib/db/bitacora.repo';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 import { borrarFoto, extraerArchivoValidado } from '@/lib/blob/fotos';
 import { reemplazarArchivos } from '@/lib/blob/reemplazar';
@@ -65,9 +67,9 @@ export async function actualizarPortafolio(
   }
   const menu = validacionMenu.archivo;
 
-  let id: string | null;
+  let edicion: EdicionAplicada | null;
   try {
-    id = await actualizarPorToken(token, {
+    edicion = await actualizarPorToken(token, {
       nombre: datos.nombre,
       descripcion: datos.descripcion,
       categoria_id: datos.categoria_id,
@@ -90,17 +92,27 @@ export async function actualizarPortafolio(
     return { estado: 'error', mensaje: 'No pudimos guardar los cambios. Intenta de nuevo.' };
   }
 
-  if (!id) {
+  if (!edicion) {
     return {
       estado: 'error',
       mensaje: 'No encontramos ese registro — puede que el link esté mal copiado.',
     };
   }
+  const { id } = edicion;
 
   // Igual que en el registro: la foto es lo último y lo que menos importa
   // perder. A diferencia del registro, acá sí hay a dónde volver a mostrar el
   // aviso: esta misma respuesta.
   const avisos = await reemplazarArchivos(id, { foto, menu }, 'actualizarPortafolio');
+
+  // Sin actor: quien edita por enlace no tiene otra identidad que el token.
+  await registrarEnBitacora({
+    actor_tipo: 'negocio',
+    actor: null,
+    accion: 'ficha_editada',
+    portafolio_id: id,
+    campos: camposConArchivos(edicion.campos, { foto, menu }),
+  });
 
   revalidatePath('/aliados');
   invalidarVitrina();
@@ -165,6 +177,13 @@ export async function borrarPortafolio(token: string): Promise<EstadoEdicion> {
       console.error('[borrarPortafolio] no se pudo borrar el menú', error);
     }
   }
+
+  await registrarEnBitacora({
+    actor_tipo: 'negocio',
+    actor: null,
+    accion: 'archivado',
+    portafolio_id: resultado.id,
+  });
 
   revalidatePath('/aliados');
   invalidarVitrina();

@@ -168,7 +168,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `sugerencia_confianza`); `registrarPortafolio` los lee con
   `sugerenciaDesdeFormData` y guarda en `sugerencias_categoria` la categoría
   inferida, su confianza y si la aceptó (`aceptada` = la `categoria_id` enviada
-  coincide), NUNCA el texto escrito. Es telemetría: si falla no tumba el
+  coincide) y, desde la 033, el `portafolio_id` (para reentrenar con la
+  categoría final de la ficha), NUNCA el texto escrito. Es telemetría: si falla no tumba el
   registro. El archivo no lleva `server-only` ni imports de valor, para que el
   verificador lo importe.
 - **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
@@ -216,7 +217,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
   falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
-  que alimenta «Mi cuenta»: categorías del vecino y «Tu negocio en números»;
+  que alimenta «Mi cuenta»: categoría y formalidad de sus negocios para «Para ti» y «Tu negocio en números»;
   una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro).
   Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
   correo. El contacto sale por
@@ -236,16 +237,51 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
   `where` del repo, no en políticas de fila.
-- **Convocatorias** (`lib/db/convocatorias.repo.ts`, migración 032): el vigía las
-  ingesta `pendiente`; el moderador decide en `/admin/convocatorias`
+- **Convocatorias** (`lib/db/convocatorias.repo.ts`, migraciones 032 y 033): el
+  vigía las ingesta `pendiente`; el moderador decide en `/admin/convocatorias`
   (`moderarConvocatoria`: aprobar, descartar/retirar, marcar vencida, con quién y
   cuándo). Las transiciones válidas viven en el `where` de `decidirConvocatoria`
   (una descartada no se reabre; una ya cerrada no se aprueba), no en la
-  pantalla. Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» de
-  Mi cuenta (`convocatoriasParaTi`, filtra por `aplica_a` contra las categorías
-  del vecino). No van en la vitrina: no llaman `invalidarVitrina()`.
-- **Constelación de un aliado**: no se guarda (`portafolios.constelacion` sigue
-  sin escribirse), se calcula al vuelo con `constelacionDe` /
+  pantalla. La entidad es `entidad_id` (FK a `entidades`): la ingesta manda el
+  NOMBRE y `resolverEntidadOferente` (`entidades.repo.ts`) lo busca y, si no
+  existe, lo crea como `oferente` (sin miembros: no da acceso a nada). El nombre
+  de `pipeline/fuentes_convocatorias.json` tiene que ser idéntico al sembrado en
+  la 033, o nace una entidad duplicada. A quién aplica lo elige el moderador AL
+  APROBAR: `convocatoria_categorias` (ninguna fila = todas) y `aplica_formalidad`
+  (vacío = cualquiera), escritos en la misma sentencia que el cambio de estado.
+  Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» de Mi cuenta
+  (`convocatoriasParaTi` con `perfilesParaTi` de `cuenta.repo.ts`): cruza
+  NEGOCIO POR NEGOCIO categoría y formalidad (`aliados_investigacion`); formalidad
+  desconocida (null o `prefiero_no_decir`) ve también las restringidas. No van en
+  la vitrina: no llaman `invalidarVitrina()`.
+- **Barrio oficial de un negocio** (`portafolios.barrio_oficial`, FK a `barrios`,
+  migración 033): lo calcula `portafolios.repo.ts` con `barrioDe` en las tres
+  escrituras con coordenadas (`crearPortafolio`, `actualizarPorToken`,
+  `editarComoModerador`), no la acción: una puerta nueva no puede olvidarlo.
+  `barrio` es lo que dice la persona; `barrio_oficial`, lo que dice el punto
+  (null = fuera de los 15). Las filas viejas se rellenan con
+  `scripts/rellenar-barrio-oficial.mjs` (idempotente, `--seco` para contar).
+- **Bitácora** (`lib/db/bitacora.repo.ts`, tabla `bitacora`, 033): toda acción que
+  cambia un negocio o una convocatoria llama `registrarEnBitacora` (registro,
+  ediciones, aprobar/rechazar/archivar, decisiones de convocatoria). Guarda
+  NOMBRES de campos, NUNCA valores (un WhatsApp viejo ahí sería un dato personal
+  duplicado). Las ediciones devuelven los campos cambiados desde el propio
+  `update` (`CAMPOS_CAMBIADOS`: `previo` vs `p` en el `returning`); foto y menú
+  se suman con `camposConArchivos`. Si el moderador cambia la categoría la
+  acción es `categoria_corregida` (señal para reentrenar el sugeridor).
+  `registrarEnBitacora` NUNCA lanza: si falla, loguea y la acción sigue.
+  Lee: el equipo todo; el negocio solo su ficha; la entidad nada.
+- **Entidades** (`lib/db/entidades.repo.ts`, `entidades` + `miembros_entidad`, 033):
+  una tabla para las territoriales (JAL, CEDEZO, CVS) y las oferentes (SENA,
+  Bancóldex…). Lo que da acceso al panel es la fila en `miembros_entidad`
+  (`entidadesDeUsuario(usuarioId)` con el id de `sesion_usuario`), no el tipo ni
+  un rol en la cookie. Los miembros se agregan por correo de una cuenta que YA
+  entró con Google (`agregarMiembroPorCorreo`; no crea usuarios). Una entidad
+  NUNCA lee `portafolios` fila por fila: solo agregados k = 5
+  (`obtenerDatosAbiertos`). `scripts/verificar-entidades.mjs` falla si una
+  consulta de `entidades.repo.ts` nombra una tabla de negocios.
+- **Constelación de un aliado**: no se guarda (la columna `portafolios.constelacion`
+  se borró en la 033), se calcula al vuelo con `constelacionDe` /
   `vecinosDeConstelacion` (`lib/geo/comerciosOsm.ts`): centroide más cercano y
   dentro de su `radio_p90_m`, si no `null` y la ficha no muestra la sección.
   Los comercios que lista son de OSM, con la etiqueta «OpenStreetMap · no es
@@ -299,7 +335,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales y datos abiertos (k = 5)
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales, entidades (no leen negocios) y datos abiertos (k = 5)
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)

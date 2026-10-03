@@ -1,5 +1,6 @@
 import 'server-only';
 import { sql } from './neon';
+import type { PerfilParaTi } from './convocatorias.repo';
 
 /**
  * Lecturas de «Mi cuenta» que cruzan datos de un negocio con la sesión del
@@ -8,16 +9,21 @@ import { sql } from './neon';
  * falla si una consulta nueva lo olvida. Mismo patrón que `clientes.repo.ts`.
  */
 
-/** Categorías de los negocios de esta cuenta: con ellas se filtra «Para ti». */
-export async function categoriasDe(usuarioId: string): Promise<string[]> {
+/**
+ * Categoría y formalidad de cada negocio de esta cuenta: con eso se filtra «Para
+ * ti» (`convocatoriasParaTi`). La formalidad sale de `aliados_investigacion`,
+ * que es privada: no viaja a la pantalla, solo filtra en el servidor.
+ */
+export async function perfilesParaTi(usuarioId: string): Promise<PerfilParaTi[]> {
   const rows = (await sql`
-    select distinct p.categoria_id
+    select distinct p.categoria_id, i.formalidad
     from portafolios p
+    left join aliados_investigacion i on i.portafolio_id = p.id
     where p.usuario_id = ${usuarioId}
       and p.estado <> 'archivado'
       and p.categoria_id is not null
-  `) as { categoria_id: string }[];
-  return rows.map((r) => r.categoria_id);
+  `) as PerfilParaTi[];
+  return rows;
 }
 
 export type MesInteraccion = {
