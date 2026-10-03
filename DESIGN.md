@@ -407,6 +407,29 @@ en la base, ninguna pieza simulada).
 - **Celdas «<5»**: se muestran tal cual, con la nota de por qué (menos de 5
   negocios podrían señalar a una persona; Ley 1581).
 
+### Firmamento con sesión (puerta y paneles)
+
+Rutas `app/(firmamento)/firmamento/` (`entrar`, `negocio`, `equipo`, `entidad`).
+Siempre de noche (`.modo-noche`), sin el encabezado del sitio de día.
+
+- **Puerta** (`/firmamento/entrar`): foto de la ladera (`public/fotos/manrique-iglesia.jpg`)
+  con velo `noche`, titular «Firmamento» como el de `/firmamento`, tres beneficios y tres
+  cifras con fuente y fecha (OSM, constelaciones, Cámara; las mismas de la portada). A la
+  derecha, una tarjeta `noche-2` con tres pestañas (Mi negocio · Equipo · Entidad):
+  `role="tablist"`, flechas, Inicio y Fin; fundido de 180 ms solo al cambiar, directo con
+  menos movimiento y sin JS. En celular la foto es una franja bajo el título y la tarjeta
+  sube antes que los beneficios. Botón de Google en `estrella` con texto `noche`; acción
+  primaria del equipo en `sodio`.
+- **Panel** (`PanelShell`): barra lateral de 264 px en `noche-2` (marca, etiqueta de rol en
+  mayúsculas cortas, navegación, tarjeta «La cara de la red es Constelaciones»), barra
+  superior pegajosa con el título (único `h1`), botón al sitio y menú de la persona, y barra
+  inferior de celular con rótulos cortos. El ítem activo lleva `aria-current`, peso, fondo
+  `noche-activa` y una barra `sodio` (no solo color). Las insignias de conteo van en
+  `font-cifra` sobre `sodio`. Pie: atribución OSM en `font-cifra` y «Datos abiertos con
+  supresión de celdas menores a 5».
+- **Vacío honesto**: una sección sin construir muestra «En construcción» y no rellena con
+  cifras de ejemplo.
+
 ## Navegación
 
 Ítems del encabezado (`components/SiteHeader.tsx`): Inicio · Aliados · **Aprende ▾**
