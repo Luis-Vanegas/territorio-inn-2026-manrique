@@ -31,9 +31,9 @@ Documento para el equipo y para el cliente. Explica cómo está armada la app, d
 | **Formalización + asesor** | `/formalizacion`, botón flotante `AsesorFlotante` | En vivo, solo con sesión | Catálogo de 11 pasos (trámites y apoyos) (`lib/formalizacion.ts`) personalizado por lo que el vecino contestó. El asesor es un modelo de lenguaje que elige cuál del catálogo le sirve. | lee `aliados_investigacion` |
 | **Marca** | `/marca`, `/marca/[guia]` | En vivo; sin sesión solo vista previa | Guías del equipo (fotos con el celular, Instagram, WhatsApp, pitch) como láminas JPG en `public/marca/`. | ninguna (contenido del repo) |
 | **Mi cuenta / Entrar** | `/entrar`, `/mi-cuenta` | En vivo | Ingreso con Google; lista los negocios del vecino y su estado. | `usuarios` |
-| **Contacto** | `/contacto` | En vivo | Buzón: el mensaje llega a `/admin/peticiones`; el equipo responde por fuera con el contacto que dejó la persona. **El sitio no envía correos** (no hay librería de correo en `package.json`). | `peticiones` |
+| **Contacto** | `/contacto` | En vivo | Buzón: el mensaje llega a `/firmamento/equipo/peticiones`; el equipo responde por fuera con el contacto que dejó la persona. **El sitio no envía correos** (no hay librería de correo en `package.json`). | `peticiones` |
 | **Inventario predictivo** | `/inventario-predictivo` | Apagado (stub, flag `NEXT_PUBLIC_MODULO_INVENTARIO`) | Sin datos detrás. Apagado devuelve 404 y no sale en menú ni sitemap. | ninguna |
-| **Panel admin** | `/admin/login`, `/admin/aliados`, `empleo`, `peticiones`, `campos`, `estadisticas`, `asesor`, `formalizacion`, `marca`, `/api/admin/exportar` | En vivo | Moderación (aprobar, rechazar con motivo, archivar), campos personalizados del formulario, estadísticas, exportación CSV. | `admins` y todas las anteriores |
+| **Panel del equipo** (Firmamento) | `/firmamento/entrar?rol=equipo`, `/firmamento/equipo/aliados`, `moderacion`, `convocatorias`, `territorio`, `datos`, `modelos`, `entidades`, `empleo`, `peticiones`, `campos`, `estadisticas`, `asesor`, `formalizacion`, `marca`, `ventas`, `/api/admin/exportar` (los enlaces viejos a `/admin/*` redirigen) | En vivo | Moderación (aprobar, rechazar con motivo, archivar), campos personalizados del formulario, estadísticas, exportación CSV. | `admins` y todas las anteriores |
 
 Módulo eliminado: **Servicios** (migración 028 borró `servicios` y `servicios_privado`); quien presta un oficio entra por Aliados [V: `lib/content.ts`, `028_eliminar_servicios.sql`].
 
@@ -96,7 +96,7 @@ Puntos que conviene saber (todos [V], salen del código):
 | | `admin_session` | `sesion_usuario` |
 |---|---|---|
 | Quién | Moderadores (equipo) | Vecinos |
-| Cómo entra | Contraseña (`scrypt`, `/admin/login`) o Google si su `sub` está en `ADMIN_GOOGLE_SUBS` | Google OAuth 2.0 con PKCE `S256`, `state` aleatorio |
+| Cómo entra | Contraseña (`scrypt`, pestaña Equipo de `/firmamento/entrar`) o Google si su `sub` está en `ADMIN_GOOGLE_SUBS` | Google OAuth 2.0 con PKCE `S256`, `state` aleatorio |
 | Duración | 8 h | 14 días |
 | Firma | HMAC-SHA256 con `ADMIN_SESSION_SECRET`, `httpOnly`, `sameSite=lax`, `secure` en producción | Igual; en producción con prefijo `__Host-` |
 | Identidad | correo del moderador | `google_sub`, **nunca el correo** |
@@ -322,7 +322,7 @@ Lectura honesta: a 10× puedes seguir en $0 con Hobby y Free, pero (a) no cumple
 Solo lo que se puede justificar con el repo o con las fuentes:
 
 - **Dominio `.co`**: se paga por año; precio **[SV]** (5.2). Un dominio institucional obliga a tocar `NEXT_PUBLIC_SITE_URL`, la URI de retorno de Google y, si se activa la CSP, los orígenes permitidos.
-- **Correo**: el sitio **no envía** correos (no hay librería de correo; el buzón de contacto se lee en `/admin/peticiones`). No hay costo de correo transaccional. Un correo institucional con el dominio, si el cliente lo pide, no se cotizó: **[SV]**.
+- **Correo**: el sitio **no envía** correos (no hay librería de correo; el buzón de contacto se lee en `/firmamento/equipo/peticiones`). No hay costo de correo transaccional. Un correo institucional con el dominio, si el cliente lo pide, no se cotizó: **[SV]**.
 - **Tiempo de moderación**: es el costo humano real del modelo (nada se publica sin aprobación). No se pone cifra porque no hay datos de volumen. El panel ya calcula `horas_hasta_moderacion` en la exportación CSV (`/api/admin/exportar?conjunto=aliados`): úsala para medir cuánto tardan hoy las decisiones y cuánto tiempo le toma a un moderador atender N registros por semana.
 - **Atender derechos de los titulares** (consultar, corregir, suprimir): la política los recibe por el formulario de contacto y promete respuesta «en los términos de ley». También es tiempo del equipo.
 - **Asientos de Vercel Pro**: $20/mes por cada persona que despliegue (5.3).
@@ -411,7 +411,7 @@ Cada fila es un disparador medible. El «dónde mirar» es la pantalla que da el
 ## Apéndice: cómo medir lo que este documento estima
 
 - **Tamaño de fila pública:** `select avg(pg_column_size(p.*)) from portafolios p where estado = 'aprobado';`
-- **Aprobados y visitas del mes:** `/admin/estadisticas` y la tabla `visitas_sitio`.
+- **Aprobados y visitas del mes:** `/firmamento/equipo/estadisticas` y la tabla `visitas_sitio`.
 - **Uso de Vercel:** pestaña **Usage** del proyecto (invocaciones, CPU activa, transferencia, solicitudes CDN, transformaciones de imagen).
 - **Uso de Neon:** consola → Monitoring/Billing (CU-horas, almacenamiento, transferencia).
 - **Eventos de Analytics y Speed Insights:** pestañas del proyecto en Vercel.
