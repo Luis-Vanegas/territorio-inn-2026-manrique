@@ -41,7 +41,7 @@ export default async function AdminEmpleoPage({
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
         Personas que buscan trabajo. Aquí se publican teléfonos reales, así que
         la moderación filtra spam y datos falsos antes de que salgan a la
         vitrina.
@@ -51,7 +51,7 @@ export default async function AdminEmpleoPage({
 
       <section aria-label="Registros" className="mt-8">
         {registros.length === 0 ? (
-          <p className="border-t border-tinta/12 pt-8 font-sans text-tenue">
+          <p className="border-t border-tinta/12 pt-8 font-sans text-tinta/70">
             {estadoActivo === 'pendiente'
               ? 'No hay nada esperando revisión.'
               : 'No hay registros en este estado.'}

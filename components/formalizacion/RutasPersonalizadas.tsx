@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useState } from 'react';
 
 import { ScrollReveal } from '@/components/ScrollReveal';
-import { ModuloDesplegable } from '@/components/ModuloDesplegable';
+import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import {
   ETIQUETA_TIPO,
   INTRO_TIPO,
@@ -79,11 +79,14 @@ export function RutasPersonalizadas({
             if (pasos.length === 0) return null;
 
             return (
-              <ModuloDesplegable
+              <Tarjeta
                 key={tipo}
+                variante="seccion"
+                plegable
+                id={`modulo-${tipo}`}
                 titulo={ETIQUETA_TIPO[tipo]}
-                cantidad={pasos.length}
-                abierto={tipo === 'tramite'}
+                resumen={pasos.length}
+                abierta={tipo === 'tramite'}
               >
                 <p className="max-w-xl font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
 
@@ -94,7 +97,7 @@ export function RutasPersonalizadas({
                     </ScrollReveal>
                   ))}
                 </ul>
-              </ModuloDesplegable>
+              </Tarjeta>
             );
           })}
         </motion.div>

@@ -30,14 +30,14 @@ function diasEntre(desde: string, hasta: string): number {
 
 function Cierre({ fecha, hoy }: { fecha: string | null; hoy: string }) {
   if (!fecha) {
-    return <p className="font-sans text-sm text-tenue">Sin fecha de cierre</p>;
+    return <p className="font-sans text-sm text-tinta/70">Sin fecha de cierre</p>;
   }
   const dias = diasEntre(hoy, fecha);
   const aviso = dias === 0 ? 'Cierra hoy' : dias === 1 ? 'Cierra mañana' : dias <= 7 ? `Cierra en ${dias} días` : null;
   return (
-    <p className="font-sans text-sm text-tenue">
-      Cierra el <span className="font-cifra text-estrella">{fechaLarga(fecha)}</span>
-      {aviso && <span className="ml-2 font-medium text-sodio">· {aviso}</span>}
+    <p className="font-sans text-sm text-tinta/70">
+      Cierra el <span className="font-sans text-tinta tabular-nums">{fechaLarga(fecha)}</span>
+      {aviso && <span className="ml-2 font-medium text-azul-texto">· {aviso}</span>}
     </p>
   );
 }
@@ -48,7 +48,7 @@ function EnlaceOficial({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex min-h-[44px] items-center rounded-lg border border-trazo-2 px-4 font-sans text-sm text-estrella hover:border-sodio hover:text-sodio"
+      className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:border-azul hover:text-azul-texto"
     >
       Fuente oficial
       <span className="sr-only"> (se abre en otra pestaña)</span>
@@ -61,7 +61,7 @@ function EnlaceOficial({ url }: { url: string }) {
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-trazo-2 px-2.5 py-0.5 font-sans text-xs text-tenue">
+    <span className="inline-flex items-center rounded-full border border-tinta/55 px-2.5 py-0.5 font-sans text-xs text-tinta/70">
       {children}
     </span>
   );
@@ -69,14 +69,14 @@ function Chip({ children }: { children: React.ReactNode }) {
 
 function TarjetaVigente({ c, hoy }: { c: ConvocatoriaParaTi; hoy: string }) {
   return (
-    <li className="border border-trazo bg-noche-2 p-5">
+    <li className="border border-tinta/12 bg-hueso p-5">
       <div className="flex flex-wrap gap-2">
         <Chip>{c.entidad}</Chip>
         {c.tema && <Chip>{c.tema}</Chip>}
       </div>
-      <h3 className="mt-3 break-words font-sans text-lg font-medium leading-snug text-estrella">{c.titulo}</h3>
+      <h3 className="mt-3 break-words font-sans text-lg font-medium leading-snug text-tinta">{c.titulo}</h3>
       {c.resumen && (
-        <p className="mt-2 break-words font-sans text-sm leading-relaxed text-tenue">{c.resumen}</p>
+        <p className="mt-2 break-words font-sans text-sm leading-relaxed text-tinta/70">{c.resumen}</p>
       )}
       <div className="mt-3">
         <Cierre fecha={c.fecha_cierre} hoy={hoy} />
@@ -98,30 +98,30 @@ function describirEstado(p: PropuestaDeEntidad, hoy: string): { rotulo: string; 
     return {
       rotulo: 'Aprobada',
       detalle: 'Ya la ven los negocios a los que aplica.',
-      clase: 'border-sodio text-sodio',
+      clase: 'border-azul text-azul-texto',
     };
   }
   if (p.estado === 'descartada') {
     return {
       rotulo: 'No aprobada',
       detalle: 'El equipo no la publicó.',
-      clase: 'border-ladrillo text-ladrillo',
+      clase: 'border-amarillo text-morado-texto',
     };
   }
   if (p.estado === 'vencida' || cerro) {
-    return { rotulo: 'Cerrada', detalle: 'Ya pasó su fecha de cierre.', clase: 'border-trazo-2 text-tenue' };
+    return { rotulo: 'Cerrada', detalle: 'Ya pasó su fecha de cierre.', clase: 'border-tinta/55 text-tinta/70' };
   }
   return {
     rotulo: 'En revisión',
     detalle: 'El equipo la está revisando. No se muestra a nadie todavía.',
-    clase: 'border-trazo-2 text-estrella',
+    clase: 'border-tinta/55 text-tinta',
   };
 }
 
 function FilaPropuesta({ p, hoy }: { p: PropuestaDeEntidad; hoy: string }) {
   const e = describirEstado(p, hoy);
   return (
-    <li className="border-b border-trazo py-4 last:border-b-0">
+    <li className="border-b border-tinta/12 py-4 last:border-b-0">
       <div className="flex flex-wrap items-center gap-2">
         <span
           className={`inline-flex items-center rounded-full border px-2.5 py-0.5 font-sans text-xs font-medium ${e.clase}`}
@@ -130,10 +130,10 @@ function FilaPropuesta({ p, hoy }: { p: PropuestaDeEntidad; hoy: string }) {
         </span>
         {p.tema && <Chip>{p.tema}</Chip>}
       </div>
-      <p className="mt-2 break-words font-sans text-base font-medium leading-snug text-estrella">{p.titulo}</p>
-      <p className="mt-1 font-sans text-sm leading-relaxed text-tenue">{e.detalle}</p>
-      <p className="mt-1 font-sans text-sm text-tenue">
-        Enviada el <span className="font-cifra">{fechaLarga(p.propuesta_en)}</span>
+      <p className="mt-2 break-words font-sans text-base font-medium leading-snug text-tinta">{p.titulo}</p>
+      <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">{e.detalle}</p>
+      <p className="mt-1 font-sans text-sm text-tinta/70">
+        Enviada el <span className="tabular-nums">{fechaLarga(p.propuesta_en)}</span>
       </p>
     </li>
   );
@@ -173,22 +173,22 @@ export default async function EntidadConvocatoriasPage() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
         <section aria-labelledby="vigentes-titulo" className="min-w-0">
-          <h2 id="vigentes-titulo" className="font-display text-2xl font-medium text-estrella sm:text-3xl">
+          <h2 id="vigentes-titulo" className="font-display text-2xl font-medium text-tinta sm:text-3xl">
             Abiertas ahora
           </h2>
           <a
             href="#proponer"
-            className="mt-2 inline-flex min-h-[44px] items-center font-sans text-sm text-sodio underline underline-offset-4 lg:hidden"
+            className="mt-2 inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4 lg:hidden"
           >
             Ir a proponer una convocatoria
           </a>
 
           {vigentes === null ? (
-            <p role="status" className="mt-4 font-sans text-base leading-relaxed text-tenue">
+            <p role="status" className="mt-4 font-sans text-base leading-relaxed text-tinta/70">
               No pudimos consultar las convocatorias en este momento. Vuelve a intentarlo en unos minutos.
             </p>
           ) : vigentes.length === 0 ? (
-            <p className="mt-4 max-w-xl border border-trazo bg-noche-2 p-5 font-sans text-base leading-relaxed text-tenue">
+            <p className="mt-4 max-w-xl border border-tinta/12 bg-hueso p-5 font-sans text-base leading-relaxed text-tinta/70">
               Todavía no hay convocatorias abiertas aprobadas. Cuando el equipo apruebe una, aparece aquí
               con su fecha de cierre y su fuente oficial.
             </p>
@@ -206,16 +206,16 @@ export default async function EntidadConvocatoriasPage() {
             <FormularioPropuesta temas={TEMAS_CONVOCATORIA} hoy={hoy} />
           </section>
 
-          <section aria-labelledby="propuestas-titulo" className="border border-trazo bg-noche-2 p-5 sm:p-6">
-            <h2 id="propuestas-titulo" className="font-display text-2xl font-medium text-estrella">
+          <section aria-labelledby="propuestas-titulo" className="border border-tinta/12 bg-hueso p-5 sm:p-6">
+            <h2 id="propuestas-titulo" className="font-display text-2xl font-medium text-tinta">
               Tus propuestas
             </h2>
             {propuestas === null ? (
-              <p role="status" className="mt-3 font-sans text-sm leading-relaxed text-tenue">
+              <p role="status" className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
                 No pudimos consultar tus propuestas ahora. Vuelve a intentarlo en unos minutos.
               </p>
             ) : propuestas.length === 0 ? (
-              <p className="mt-3 font-sans text-sm leading-relaxed text-tenue">
+              <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
                 Aún no has enviado ninguna. Cuando envíes una, aquí ves si el equipo la aprobó.
               </p>
             ) : (

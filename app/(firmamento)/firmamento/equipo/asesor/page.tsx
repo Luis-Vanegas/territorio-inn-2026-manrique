@@ -16,13 +16,13 @@ export default async function EquipoAsesorPage() {
 
   return (
     <div className="max-w-3xl">
-      <p className="max-w-xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
         El mismo asesor que ve un negocio. Prueba qué responde, o úsalo para
         orientar a un negocio sin abrir su ficha. Aquí la consulta es general: no
         lleva los datos de ningún negocio.
       </p>
 
-      <p className="mt-3 max-w-xl font-sans text-sm leading-relaxed text-tenue">
+      <p className="mt-3 max-w-xl font-sans text-sm leading-relaxed text-tinta/70">
         Responde solo con el catálogo de trámites y apoyos, igual que en la ficha
         de un negocio. No guarda las preguntas ni las respuestas, y comparte el
         tope de consultas por IP con el resto del sitio.

@@ -9,11 +9,11 @@ import { Estrella } from '@/components/firmamento/Estrella';
 export function EncabezadoEntidad({ entidad, children }: { entidad: string; children: React.ReactNode }) {
   return (
     <div className="mb-8 max-w-3xl">
-      <p className="flex items-center gap-2.5 font-display text-2xl font-medium leading-tight text-estrella sm:text-3xl">
+      <p className="flex items-center gap-2.5 font-display text-2xl font-medium leading-tight text-tinta sm:text-3xl">
         <Estrella tamano={20} className="shrink-0" />
         <span className="min-w-0 break-words">{entidad}</span>
       </p>
-      <p className="mt-3 font-sans text-base leading-relaxed text-tenue">{children}</p>
+      <p className="mt-3 font-sans text-base leading-relaxed text-tinta/70">{children}</p>
     </div>
   );
 }

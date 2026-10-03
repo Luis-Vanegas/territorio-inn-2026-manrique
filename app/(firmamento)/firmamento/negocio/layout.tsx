@@ -33,6 +33,7 @@ export default async function PanelNegocioLayout({ children }: { children: React
   return (
     <PanelShell
       contexto={contexto}
+      titular={actual?.nombre}
       hrefSitio={hrefFichaPublica(actual)}
       insignias={paraTi.length > 0 ? { '/firmamento/negocio/para-ti': paraTi.length } : undefined}
     >

@@ -25,7 +25,7 @@ Tres familias, cada una con un rol cerrado. Una cuarta no entra.
 | Rol | Familia | Por qué |
 |---|---|---|
 | Títulos | **Fraunces** (serif) | Las láminas titulan en serif de alto contraste y caja normal («Menos cosas = mejor foto.»). Fraunces es la equivalente libre y ya estaba en el proyecto. |
-| Cifras, fuentes y fechas | **DM Mono** (`font-cifra`) | Rol cerrado, ver «DM Mono: rol cerrado» abajo. |
+| Cifras grandes | **DM Mono** (`font-cifra`) | Rol cerrado: solo la cifra de un indicador. Ver «DM Mono: rol cerrado» abajo. |
 | Todo lo demás | **DM Sans** | Cuerpo, botones, etiquetas, menú y formularios. Geométrica, redonda, de buena altura de x: es lo más cercano a la sans amigable de las láminas. |
 
 ### Por qué se sacó JetBrains Mono
@@ -45,8 +45,8 @@ se lee más lento y comunica «panel técnico» justo donde hacía falta comunic
 
 Si algún día hay que mostrar algo que de verdad pide alineación monoespaciada
 que no es una cifra, una fuente ni una fecha —una clave, un identificador—, va
-en un `<code>` y lo resuelve la fuente del sistema. Las cifras tienen su propia
-familia: DM Mono.
+en un `<code>` y lo resuelve la fuente del sistema. Las cifras grandes tienen su
+propia familia: DM Mono.
 
 ### Parámetros
 
@@ -166,8 +166,9 @@ viven en `lib/paleta.ts` y los esparce `tailwind.config.ts`.
 
 *De día el barrio, de noche el firmamento.* El sitio de día (hueso, como hoy) es
 donde el vecino **hace** cosas: buscar, registrarse, aprender. El Firmamento es
-donde se **leen** los datos del territorio. Vive en la página `/firmamento` y en
-una banda nocturna de la portada. El sitio no abre en noche: el tema inicial sigue
+donde se **leen** los datos del territorio. Vive en la página `/firmamento`, en
+una banda nocturna de la portada y en las «ventanas» de noche de los paneles con
+sesión (que son de día: ahí se hacen cosas). El sitio no abre en noche: el tema inicial sigue
 siendo claro (ver «Tema»); el Firmamento es una superficie propia, no el modo
 oscuro. Por eso sus colores no cambian con el selector de tema.
 
@@ -228,6 +229,14 @@ El motivo es el dato; nada decorativo que no salga de uno.
 ### Reglas de cifras
 
 - **Toda cifra visible lleva su fuente y su fecha debajo.** Sin excepción.
+- **Una sola línea de fuente por grupo.** Cuando varias cifras juntas comparten fuente y
+  fecha (las cuatro de un panel, que salen de la misma base en la misma carga), la línea
+  va una vez, debajo del grupo (`GrupoCifras`), no repetida bajo cada cifra. Si una cifra
+  del grupo viene de otro lado, esa lleva la suya y la del grupo dice de dónde salen las
+  demás. Repetir cuatro veces «Fuente: base de datos de Constelaciones · hoy» no informa
+  más y llena la pantalla de letra chica.
+- La línea de fuente va en **DM Sans pequeña** (`text-xs`, `tinta/70` de día, `tenue` de
+  noche), con el formato «Fuente: … · fecha». No en DM Mono (ver abajo).
 - Ninguna pieza usa datos simulados.
 - Las celdas con menos de 5 casos se muestran como «<5», con una nota que explique
   por qué (protege a los vecinos; ver `docs/seguridad.md`).
@@ -240,28 +249,30 @@ El motivo es el dato; nada decorativo que no salga de uno.
 
 ### DM Mono: rol cerrado
 
-**Decisión tomada**: Luis, 1-oct-2026, siguiendo a la asesoría (`manual.html`:
-«DM Sans para todo el texto · DM Mono para cifras, fuentes y fechas» y «toda cifra
-lleva su fuente y su fecha en DM Mono debajo»). Se eligió la opción de usar DM Mono
-**en todo el sitio**, no solo en el Firmamento, y se descartó DM Sans con
-`tabular-nums`. Esto enmienda «Dos familias. No tres.» (ver «Tipografía»).
+**Decisión vigente**: Luis, 3-oct-2026 (rediseño «Ventana al cielo»,
+`docs/plan-rediseno-firmamento.md`). Enmienda la del 1-oct-2026, que había seguido a
+la asesoría y ponía DM Mono también en fuentes y fechas: el primer Firmamento salió con
+tanta letra monoespaciada chica que volvió a parecer un panel técnico, que es justo lo
+que se quiso evitar al sacar JetBrains Mono.
 
-Va en DM Mono (`font-cifra`, cargada en `app/layout.tsx`, pesos 400 y 500):
+Va en DM Mono (`font-cifra`, cargada en `app/layout.tsx`, pesos 400 y 500) **solo la
+cifra grande de un indicador**: el número de un `Kpi`, de la banda de la portada o de
+una ventana de noche (`text-3xl` o más). Nada más.
 
-- **Cifras**: un dato numérico que se presenta como dato (indicadores, métricas,
-  conteos de un panel, valores de una gráfica).
-- **Fuentes**: la línea de fuente o crédito de un dato («Fuente: ...», «conteo
-  anónimo, últimos 30 días»).
-- **Fechas** y horas.
+**No** va en DM Mono, aunque tenga números: las fuentes y las fechas (DM Sans pequeña,
+ver «Reglas de cifras»), las insignias de conteo del menú, los valores al lado de una
+barra o en una celda de tabla (DM Sans con `tabular-nums`), el menú, los botones, las
+etiquetas, los formularios, el cuerpo de texto, las mayúsculas de sección («MINI
+GUÍA»), los títulos y los números que son parte de una frase («3 trámites», «Paso 2
+de 5»). Si dudas, es DM Sans.
 
-**No** va en DM Mono, aunque tenga números: el menú, los botones, las etiquetas, los
-formularios, el cuerpo de texto, las mayúsculas de sección («MINI GUÍA»), los títulos
-y los números que son parte de una frase («3 trámites», «Paso 2 de 5»). Si dudas, es
-DM Sans.
+Deuda conocida: varias piezas anteriores a esta decisión (líneas de fuente del mapa y
+de la banda de la portada, `/firmamento`) todavía ponen fuentes y fechas en
+`font-cifra`. Se pasan a DM Sans al tocarlas; un componente nuevo ya no lo hace.
 
 Costo: una familia más que descargar con datos móviles. Se mitiga con solo dos pesos y
 el subconjunto latino, `display: swap` (el texto se ve de inmediato con la fuente de
-respaldo) y porque DM Mono solo se pinta en las pocas piezas de datos.
+respaldo) y porque DM Mono solo se pinta en las pocas cifras grandes.
 
 ### Categorías
 
@@ -410,43 +421,73 @@ en la base, ninguna pieza simulada).
 ### Firmamento con sesión (puerta y paneles)
 
 Rutas `app/(firmamento)/firmamento/` (`entrar`, `negocio`, `equipo`, `entidad`).
-Siempre de noche (`.modo-noche`), sin el encabezado del sitio de día.
+Dirección «Ventana al cielo» (Luis, 3-oct-2026; `docs/plan-rediseno-firmamento.md`).
+Reemplaza la primera versión, que copió el prototipo de la asesoría (todo de noche,
+foto a la izquierda, beneficios, mucha monoespaciada) y se descartó por eso.
 
-- **Puerta** (`/firmamento/entrar`): foto de la ladera (`public/fotos/manrique-iglesia.jpg`)
-  con velo `noche`, titular «Firmamento» como el de `/firmamento`, tres beneficios y tres
-  cifras con fuente y fecha (OSM, constelaciones, Cámara; las mismas de la portada). A la
-  derecha, una tarjeta `noche-2` con tres pestañas (Mi negocio · Equipo · Entidad):
-  `role="tablist"`, flechas, Inicio y Fin; fundido de 180 ms solo al cambiar, directo con
-  menos movimiento y sin JS. En celular la foto es una franja bajo el título y la tarjeta
-  sube antes que los beneficios. Botón de Google en `estrella` con texto `noche`; acción
-  primaria del equipo en `sodio`.
-- **Panel** (`PanelShell`): barra lateral de 264 px en `noche-2` (marca, etiqueta de rol en
-  mayúsculas cortas, navegación, tarjeta «La cara de la red es Constelaciones»), barra
-  superior pegajosa con el título (único `h1`), botón al sitio y menú de la persona, y barra
-  inferior de celular con rótulos cortos. El ítem activo lleva `aria-current`, peso, fondo
-  `noche-activa` y una barra `sodio` (no solo color). Las insignias de conteo van en
-  `font-cifra` sobre `sodio`. Pie: atribución OSM en `font-cifra` y «Datos abiertos con
-  supresión de celdas menores a 5».
-  Con muchas secciones (equipo, 16) el menú se agrupa: las de todos los días sueltas y el resto
-  bajo encabezados cortos en `tenue-2` (Datos, Red, Lo que ve un negocio); el lateral se
-  desplaza dentro de su barra. En el celular la barra inferior lleva solo las sueltas más «Más»
-  (`aria-expanded`, Esc devuelve el foco, se cierra al navegar), que abre los grupos encima.
-- **Panel del equipo** (`equipo/`): tarjetas `noche-2` con título en Fraunces (`h2`; el `h1`
-  es la barra) y línea de fuente en `font-cifra`; subvistas por URL como pastillas (activa en
-  `estrella` con texto `noche`, `aria-current`). Las secciones mudadas de `/admin` conservan sus
-  formularios (sus tokens `hueso`/`tinta` los remapea `.modo-noche`) y sus botones suben a 44 px.
-  Las tablas largas esconden columnas secundarias bajo `sm` en vez de desbordar a 320 px.
-- **Panel del negocio** (`negocio/`): Inicio (saludo, «Tu ficha está al N %», cuatro cifras con `Kpi` —cada una con fuente y fecha—, gráfico de 8 semanas en SVG propio con barras horizontales: vistas lisas, contactos rayadas, cifra al lado y tabla `sr-only`; sin animación), Mi ficha (formulario del sitio con sus tokens remapeados por `.modo-noche`, vista previa clara y lista de lo que falta con ✓ / + y texto), Para ti (convocatorias con «Fuente oficial» y «Compartir»), Mi constelación (el mapa de siempre en noche; vecinos de OSM con «OpenStreetMap · no es aliado»), Mis clientes. Sin datos: estado vacío honesto, nunca cifras de ejemplo. La comparación con la categoría solo con 5 o más negocios.
-- **Panel de entidad**: cada página abre con el nombre de la entidad (el `h1` de la barra es la
-  sección) y una frase de qué se ve. Observatorio: 4 indicadores con estrella (`Kpi`, cada uno con
-  fuente y fecha), el mapa de constelaciones sin aliados, «Dónde apoyar primero» (las 3
-  constelaciones más grandes, con botón de 44 px «Ver en el mapa» que la enciende) y la
-  composición de la red por categoría con la forma de su grupo; la barra de una celda «<5» queda
-  vacía para no revelar el número. Convocatorias: tarjetas de las vigentes («Cierra en N días»
-  en `sodio`, fuente oficial en pestaña nueva), formulario con error junto a cada casilla y en un
-  resumen `role="alert"`, y «Tus propuestas» con el estado en palabras (En revisión, Aprobada, No
-  aprobada, Cerrada). Datos abiertos: qué publica, qué nunca sale, descargas, enlace con botón
-  de copiar y la vista previa como tablas (no JSON crudo: nada de monoespaciada).
+**De día, con ventanas de noche.** La puerta y los paneles son superficies de día
+(`hueso`/`tinta`, siguen el selector de tema como el resto del sitio) porque ahí se
+**hacen** cosas: entrar, moderar, editar la ficha, proponer una convocatoria. La noche
+aparece solo donde se **leen** datos: una banda de cifras, un mapa, el observatorio. Es
+la misma regla de «Metáfora», aplicada adentro de una página.
+
+- **Encabezado**: el `SiteHeader` de siempre, arriba de la puerta y de los tres paneles
+  (lo pone `app/(firmamento)/firmamento/layout.tsx`). El enlace a Constelaciones es el
+  logo de siempre; no hay una barra propia ni una tarjeta «La cara de la red».
+- **Puerta** (`/firmamento/entrar`): un título («Entra a Firmamento») y un **menú de
+  roles** de tres filas, cada una con su forma de grupo y su acento de marca:
+  ✦ Tengo un negocio (estrella, `amarillo`) · ● Soy del equipo (círculo, `azul`) ·
+  ■ Represento una entidad (cuadrado, `morado`). La forma es la que identifica (no solo
+  el color). Cada fila es un `<details name="rol">` nativo (se abre una a la vez, sin JS)
+  con su acción adentro: Google para negocio; correo y contraseña, o Google, para el
+  equipo; Google para entidad. El servidor abre la del `?rol=` (o ninguna). Con JS el
+  contenido entra con un fundido y 6 px de desplazamiento (`AnimatePresence`, 200 ms;
+  no se anima la altura, solo `opacity` y `transform`; directo con menos movimiento) y el `summary` anuncia `aria-expanded`. Debajo, una sola línea: «¿No estás
+  en la red? Regístrate gratis». **Sin foto, sin beneficios, sin cifras.** Los errores
+  de ingreso salen arriba del menú (`role="alert"`, borde `amarillo`, texto `tinta`).
+- **Panel** (`PanelShell`): bajo el `SiteHeader`, un encabezado de panel con el rol en
+  mayúsculas cortas (`morado-texto`, la excepción de voz de marca), el nombre del negocio
+  o de la entidad en Fraunces, el botón al sitio («Mi ficha pública», «Ver
+  Constelaciones») y el menú de la persona. Debajo, **pestañas horizontales**: el ítem
+  activo lleva `aria-current`, peso y una raya `azul` de 3 px que se desliza entre
+  pestañas (`layoutId`; con menos movimiento salta directo). En el celular la fila se
+  desplaza dentro de sí misma (nunca la página) y usa los rótulos cortos. El título de
+  la sección (`h1`) abre el contenido; cada bloque titula con `h2`.
+- **Pestañas del equipo**: cuatro, no dieciséis entradas sueltas: **Hoy** (Resumen,
+  Moderación, Convocatorias, Peticiones), **Red** (Fichas de aliados, Entidades, Empleo,
+  Campos del registro), **Datos** (Territorio, Datos abiertos, Modelos, Estadísticas) y
+  **Guías** (Formalización, Marca, Ventas, Asesor). Dentro de cada una, sus secciones van
+  como **subpestañas** con el mismo lenguaje (texto, peso y raya `azul` de 2 px, más
+  chica). Las vistas por URL de una página (`?vista=`) usan el mismo componente
+  (`SubPestanas`). Insignias de conteo reales: `amarillo` con texto `tinta`, DM Sans; la
+  pestaña suma las de sus secciones. Negocio y entidad no tienen subpestañas.
+- **Bloques**: `Tarjeta` (borde `tinta/12`, `rounded-xl`, título Fraunces). Con
+  `plegable` es un `<details>` (`Plegable`: abre sin JS; con JS el contenido entra con
+  un fundido de `AnimatePresence`) para ahorrar alto en lo que no se consulta todos los días; la
+  variante `seccion` (sin marco, raya arriba) es la de las guías de `/formalizacion`.
+- **Cifras**: `Kpi` (cifra en DM Mono, etiqueta en DM Sans, estrella `morado` de día y
+  `sodio` de noche) dentro de un `GrupoCifras`, que imprime UNA línea de fuente para el
+  grupo. Las bandas de cifras y los mapas van en una `VentanaNoche` (`.modo-noche`,
+  `rounded-2xl`): adentro, `Tarjeta` y `Kpi` toman solos la paleta de noche porque leen
+  `hueso`/`tinta` y sus variantes `[.modo-noche_&]`.
+- **Pie**: atribución OSM y «Datos abiertos con supresión de celdas menores a 5», en DM
+  Sans pequeña.
+- **Formularios mudados de `/admin`**: escriben `hueso`/`tinta`, así que de día se ven
+  como el resto del sitio sin remapeo. Botones de 44 px. Las tablas largas esconden
+  columnas secundarias bajo `sm` en vez de desbordar a 320 px.
+- **Panel del negocio** (`negocio/`): Inicio (saludo, «Tu ficha está al N %», cuatro
+  cifras en una ventana de noche con una línea de fuente, gráfico de 8 semanas en SVG
+  propio con tabla `sr-only`), Mi ficha (formulario del sitio, vista previa y lista de lo
+  que falta con ✓ / + y texto), Para ti (convocatorias con «Fuente oficial» y
+  «Compartir»), Mi constelación (el mapa en una ventana de noche; vecinos de OSM con
+  «OpenStreetMap · no es aliado»), Mis clientes. Sin datos: estado vacío honesto, nunca
+  cifras de ejemplo. La comparación con la categoría solo con 5 o más negocios.
+- **Panel de entidad**: Observatorio (indicadores y mapa de constelaciones sin aliados
+  en una ventana de noche, «Dónde apoyar primero», composición de la red por categoría
+  con la forma de su grupo; la barra de una celda «<5» queda vacía), Convocatorias
+  (vigentes con «Cierra en N días», formulario con error junto a cada casilla y resumen
+  `role="alert"`, «Tus propuestas» con el estado en palabras) y Datos abiertos (qué
+  publica, qué nunca sale, descargas y vista previa como tablas, nunca JSON crudo).
 - **Vacío honesto**: una sección sin construir muestra «En construcción» y no rellena con
   cifras de ejemplo.
 

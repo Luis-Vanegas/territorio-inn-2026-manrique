@@ -63,26 +63,26 @@ export function ListaBitacora({ filas }: { filas: readonly FilaBitacora[] }) {
       {filas.map((f) => (
         <li
           key={f.id}
-          className="grid gap-x-4 gap-y-1 border-t border-trazo py-3 first:border-t-0 first:pt-0 sm:grid-cols-[9.5rem_minmax(0,1fr)]"
+          className="grid gap-x-4 gap-y-1 border-t border-tinta/12 py-3 first:border-t-0 first:pt-0 sm:grid-cols-[9.5rem_minmax(0,1fr)]"
         >
-          <time dateTime={f.creado_en.replace(' ', 'T')} className="font-cifra text-xs leading-6 text-tenue">
+          <time dateTime={f.creado_en.replace(' ', 'T')} className="font-sans text-xs leading-6 text-tinta/70 tabular-nums">
             {f.creado_en}
           </time>
-          <p className="min-w-0 break-words font-sans text-sm leading-6 text-estrella">
+          <p className="min-w-0 break-words font-sans text-sm leading-6 text-tinta">
             {quien(f)} {ACCION[f.accion] ?? f.accion}
             {f.portafolio_id && (
               <>
                 {' '}
                 <Link
                   href={`/firmamento/equipo/aliados?ficha=${f.portafolio_id}`}
-                  className="text-sodio underline underline-offset-4"
+                  className="text-azul-texto underline underline-offset-4"
                 >
                   {f.portafolio_nombre ?? 'una ficha'}
                 </Link>
               </>
             )}
             {f.campos.length > 0 && f.accion !== 'aprobado' && f.accion !== 'rechazado' && f.accion !== 'archivado' && (
-              <span className="text-tenue"> · {textoCampos(f.campos)}</span>
+              <span className="text-tinta/70"> · {textoCampos(f.campos)}</span>
             )}
           </p>
         </li>

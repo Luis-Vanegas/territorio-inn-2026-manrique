@@ -13,8 +13,8 @@ import {
 const INICIAL: EstadoEntidad = { estado: 'inicial' };
 
 const CLASE_CAMPO =
-  'mt-1 block min-h-[44px] w-full rounded-lg border border-trazo-2 bg-noche px-3 font-sans text-base text-estrella placeholder:text-tenue-2';
-const CLASE_ETIQUETA = 'block font-sans text-sm font-medium text-estrella';
+  'mt-1 block min-h-[44px] w-full rounded-lg border border-tinta/55 bg-tinta/[0.03] px-3 font-sans text-base text-tinta placeholder:text-tinta/65';
+const CLASE_ETIQUETA = 'block font-sans text-sm font-medium text-tinta';
 
 function Enviar({ texto, pendiente, principal = false }: { texto: string; pendiente: string; principal?: boolean }) {
   const { pending } = useFormStatus();
@@ -23,7 +23,7 @@ function Enviar({ texto, pendiente, principal = false }: { texto: string; pendie
       type="submit"
       disabled={pending}
       className={`inline-flex min-h-[44px] items-center justify-center rounded-lg px-4 font-sans text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
-        principal ? 'bg-sodio text-noche' : 'border border-trazo-2 text-estrella hover:bg-noche-3'
+        principal ? 'bg-azul-texto text-hueso' : 'border border-tinta/55 text-tinta hover:bg-tinta/5'
       }`}
     >
       {pending ? pendiente : texto}
@@ -36,7 +36,7 @@ function Mensaje({ estado }: { estado: EstadoEntidad }) {
   return (
     <p
       role={estado.estado === 'error' ? 'alert' : 'status'}
-      className={`mt-3 font-sans text-sm ${estado.estado === 'error' ? 'text-ladrillo' : 'text-menta'}`}
+      className={`mt-3 font-sans text-sm ${estado.estado === 'error' ? 'text-morado-texto' : 'text-azul-texto'}`}
     >
       {estado.mensaje}
     </p>
@@ -58,19 +58,19 @@ export function FormularioNuevaEntidad() {
       <fieldset>
         <legend className={CLASE_ETIQUETA}>Tipo</legend>
         <div className="mt-1 flex flex-col">
-          <label className="flex min-h-[44px] items-center gap-2 font-sans text-sm text-estrella">
-            <input type="radio" name="tipo" value="territorial" defaultChecked className="h-4 w-4 accent-sodio" />
+          <label className="flex min-h-[44px] items-center gap-2 font-sans text-sm text-tinta">
+            <input type="radio" name="tipo" value="territorial" defaultChecked className="h-4 w-4 accent-azul" />
             Territorial (mira el observatorio)
           </label>
-          <label className="flex min-h-[44px] items-center gap-2 font-sans text-sm text-estrella">
-            <input type="radio" name="tipo" value="oferente" className="h-4 w-4 accent-sodio" />
+          <label className="flex min-h-[44px] items-center gap-2 font-sans text-sm text-tinta">
+            <input type="radio" name="tipo" value="oferente" className="h-4 w-4 accent-azul" />
             Oferente (publica convocatorias)
           </label>
         </div>
       </fieldset>
       <div>
         <label htmlFor={`${id}-sitio`} className={CLASE_ETIQUETA}>
-          Sitio web <span className="font-normal text-tenue">(opcional)</span>
+          Sitio web <span className="font-normal text-tinta/70">(opcional)</span>
         </label>
         <input
           id={`${id}-sitio`}
@@ -112,7 +112,7 @@ export function FormularioMiembro({ entidadId, entidadNombre }: { entidadId: str
         />
         <Enviar texto="Agregar" pendiente="Agregando…" />
       </div>
-      <p id={`${id}-ayuda`} className="mt-1 font-sans text-sm text-tenue">
+      <p id={`${id}-ayuda`} className="mt-1 font-sans text-sm text-tinta/70">
         La persona tiene que haber entrado una vez con Google en Constelaciones.
       </p>
       <Mensaje estado={estado} />
@@ -143,12 +143,12 @@ export function BotonQuitarMiembro({
       <button
         type="submit"
         aria-label={`Quitar a ${nombre}`}
-        className="inline-flex min-h-[44px] items-center rounded-lg border border-trazo-2 px-3 font-sans text-sm text-ladrillo transition-colors hover:bg-noche-3"
+        className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-3 font-sans text-sm text-morado-texto transition-colors hover:bg-tinta/5"
       >
         Quitar
       </button>
       {estado.estado === 'error' && (
-        <p role="alert" className="mt-1 font-sans text-sm text-ladrillo">
+        <p role="alert" className="mt-1 font-sans text-sm text-morado-texto">
           {estado.mensaje}
         </p>
       )}

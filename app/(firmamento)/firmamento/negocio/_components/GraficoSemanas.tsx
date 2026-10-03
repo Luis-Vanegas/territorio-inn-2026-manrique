@@ -67,15 +67,15 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
         })}
       </svg>
 
-      <figcaption className="mt-3 flex flex-wrap gap-x-5 gap-y-2 font-sans text-sm text-tenue">
+      <figcaption className="mt-3 flex flex-wrap gap-x-5 gap-y-2 font-sans text-sm text-tinta/70">
         <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="h-3 w-3 rounded-sm bg-noche-azul" />
+          <span aria-hidden="true" className="h-3 w-3 rounded-sm bg-azul" />
           Vistas de tu ficha
         </span>
         <span className="inline-flex items-center gap-2">
           <span
             aria-hidden="true"
-            className="h-3 w-3 rounded-sm border border-sodio"
+            className="h-3 w-3 rounded-sm border border-azul"
             style={{ backgroundImage: 'repeating-linear-gradient(45deg,#F4CC48 0 2px,#0B1026 2px 5px)' }}
           />
           Toques para contactarte

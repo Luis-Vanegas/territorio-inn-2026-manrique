@@ -23,7 +23,7 @@ export function Invitar({ mensaje }: { mensaje: string }) {
 
   return (
     <div>
-      <p className="rounded-lg border border-trazo bg-noche p-3 font-sans text-sm leading-relaxed text-estrella">
+      <p className="rounded-lg border border-tinta/12 bg-tinta/[0.03] p-3 font-sans text-sm leading-relaxed text-tinta">
         {mensaje}
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
@@ -31,7 +31,7 @@ export function Invitar({ mensaje }: { mensaje: string }) {
           href={`https://wa.me/?text=${encodeURIComponent(mensaje)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-[44px] items-center rounded-lg bg-sodio px-4 font-sans text-sm font-medium text-noche"
+          className="inline-flex min-h-[44px] items-center rounded-lg bg-azul-texto px-4 font-sans text-sm font-medium text-hueso"
         >
           Invitar por WhatsApp
           <span className="sr-only"> (se abre en otra pestaña)</span>
@@ -39,12 +39,12 @@ export function Invitar({ mensaje }: { mensaje: string }) {
         <button
           type="button"
           onClick={copiar}
-          className="inline-flex min-h-[44px] items-center rounded-lg border border-trazo-2 px-4 font-sans text-sm text-estrella hover:bg-noche-3"
+          className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-tinta/5"
         >
           Copiar mensaje
         </button>
       </div>
-      <p role="status" aria-live="polite" className="mt-2 min-h-[1.25rem] font-sans text-sm text-tenue">
+      <p role="status" aria-live="polite" className="mt-2 min-h-[1.25rem] font-sans text-sm text-tinta/70">
         {copiado === 'si' && 'Mensaje copiado. Pégalo donde quieras.'}
         {copiado === 'no' && 'No pudimos copiarlo solo. Selecciona el texto de arriba y cópialo.'}
       </p>

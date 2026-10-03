@@ -54,7 +54,7 @@ export default async function ConvocatoriasPage({
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
         Oferta de entidades: la que detecta el vigía cada día y la que proponen
         las entidades aliadas desde su panel. Todo entra por revisar: solo las que
         apruebes aparecen en «Para ti» de los negocios, y solo a los de las
@@ -70,15 +70,15 @@ export default async function ConvocatoriasPage({
       />
 
       {propuestas > 0 && (
-        <p className="mt-6 font-sans text-sm text-tenue">
-          <span className="font-cifra text-estrella">{propuestas}</span>{' '}
+        <p className="mt-6 font-sans text-sm text-tinta/70">
+          <span className="font-sans text-tinta tabular-nums">{propuestas}</span>{' '}
           {propuestas === 1 ? 'la propuso una entidad' : 'las propusieron entidades'}; van primero.
         </p>
       )}
 
       <section aria-label="Convocatorias" className="mt-8">
         {ordenadas.length === 0 ? (
-          <p className="border-t border-tinta/12 pt-8 font-sans text-tenue">
+          <p className="border-t border-tinta/12 pt-8 font-sans text-tinta/70">
             No hay convocatorias en este estado.
           </p>
         ) : (

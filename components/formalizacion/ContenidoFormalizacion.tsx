@@ -1,4 +1,4 @@
-import { ModuloDesplegable } from '@/components/ModuloDesplegable';
+import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { VideoEmbebido } from '@/components/VideoEmbebido';
 import {
   ETIQUETA_FORMALIDAD,
@@ -43,13 +43,16 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
           if (pasos.length === 0) return null;
 
           return (
-            <ModuloDesplegable
+            <Tarjeta
               key={tipo}
+              variante="seccion"
+              plegable
+              id={`modulo-${tipo}`}
               titulo={ETIQUETA_TIPO[tipo]}
-              cantidad={pasos.length}
+              resumen={pasos.length}
               // Trámite abre de entrada: es lo primero que necesita quien no
               // tiene nada. Apoyo económico y Formación arrancan cerrados.
-              abierto={tipo === 'tramite'}
+              abierta={tipo === 'tramite'}
             >
               <p className="max-w-xl font-sans text-tinta/60">{INTRO_TIPO[tipo]}</p>
 
@@ -58,15 +61,21 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
                   <TarjetaPaso key={paso.id} paso={paso} />
                 ))}
               </ul>
-            </ModuloDesplegable>
+            </Tarjeta>
           );
         })
       )}
 
-      {/* el panel del negocio enlaza directo a "#videos" — el id vive en el contenido,
-          no en el módulo, para que el navegador lo despliegue solo al llegar
-          por ese link. Ver el comentario de ModuloDesplegable. */}
-      <ModuloDesplegable titulo="Videos y tutoriales" cantidad={VIDEOS.length} id="videos">
+      {/* el panel del negocio enlaza directo a "#videos": `ancla` lo abre solo al
+          llegar por ese link (ver Plegable). */}
+      <Tarjeta
+        variante="seccion"
+        plegable
+        id="modulo-videos"
+        titulo="Videos y tutoriales"
+        resumen={VIDEOS.length}
+        ancla="videos"
+      >
         <p className="max-w-xl font-sans text-tinta/60">
           De canales oficiales verificados, agrupados por tema. Se reproducen
           acá mismo, o los abres en YouTube si prefieres verlos allá.
@@ -125,7 +134,7 @@ export function ContenidoFormalizacion({ formalidad }: { formalidad: string | nu
             </div>
           );
         })}
-      </ModuloDesplegable>
+      </Tarjeta>
     </>
   );
 }

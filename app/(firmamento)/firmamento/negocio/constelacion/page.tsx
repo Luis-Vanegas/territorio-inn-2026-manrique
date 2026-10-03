@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { MapaAliados } from '@/components/MapaAliados';
+import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { exigirNegocio } from '@/lib/auth/firmamento';
 import { listarAprobados, obtenerPropio, type Portafolio } from '@/lib/db/portafolios.repo';
 import { posiblesAlianzas } from '@/lib/firmamento/alianzas';
@@ -31,7 +32,7 @@ const datosOsm = datosOsmJson as unknown as DatosConstelaciones;
 /** Hasta dónde se considera «cerca» un aliado de la plataforma. */
 const METROS_ALIADOS_CERCA = 1500;
 
-const tarjeta = 'min-w-0 rounded-xl border border-trazo bg-noche-2 p-5';
+const tarjeta = 'min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5';
 
 export default async function NegocioConstelacionPage() {
   const { usuarioId, nombre } = await exigirNegocio();
@@ -119,28 +120,28 @@ export default async function NegocioConstelacionPage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start">
         <div className="flex min-w-0 flex-col gap-6">
           <section aria-labelledby="tu-constelacion" className={tarjeta}>
-            <h2 id="tu-constelacion" className="font-display text-2xl font-medium text-estrella">
+            <h2 id="tu-constelacion" className="font-display text-2xl font-medium text-tinta">
               {constelacion ? 'Eres parte de una constelación' : 'Por ahora eres una estrella suelta'}
             </h2>
             {constelacion ? (
               <>
-                <p className="mt-2 font-sans text-base leading-relaxed text-estrella">{etiquetaConstelacion(constelacion)}</p>
-                <p className="mt-1 font-sans text-sm leading-relaxed text-tenue">
+                <p className="mt-2 font-sans text-base leading-relaxed text-tinta">{etiquetaConstelacion(constelacion)}</p>
+                <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">
                   Qué hay en tu constelación: {lineaMezcla(constelacion)}.
                 </p>
-                <p className="mt-3 font-sans text-sm leading-relaxed text-tenue">
+                <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
                   Una constelación es un grupo de comercios que están muy cerca unos de otros, según el mapa abierto
                   de OpenStreetMap. Sus clientes suelen ser los mismos: gente que pasa a pie por la cuadra.
                 </p>
               </>
             ) : (
-              <p className="mt-2 font-sans text-base leading-relaxed text-tenue">
+              <p className="mt-2 font-sans text-base leading-relaxed text-tinta/70">
                 Una constelación es un grupo de comercios muy cercanos entre sí, según el mapa abierto de OpenStreetMap.
                 Tu negocio queda lejos de todos los grupos
                 {masCercana && (
                   <>
                     {' '}(el más cercano, {masCercana.c.codigo ?? 'otro'}, está a{' '}
-                    <span className="font-cifra">{formatearDistancia(masCercana.metros)}</span>)
+                    <span className="tabular-nums">{formatearDistancia(masCercana.metros)}</span>)
                   </>
                 )}
                 . Los negocios fuera de las vías comerciales son justo los que Constelaciones quiere hacer visibles.
@@ -148,11 +149,8 @@ export default async function NegocioConstelacionPage() {
             )}
           </section>
 
-          {/* El mapa de siempre (el de /aliados y /firmamento), en modo noche; no hay un segundo mapa. */}
-          <section aria-labelledby="mapa" className={tarjeta}>
-            <h2 id="mapa" className="mb-3 font-display text-2xl font-medium text-estrella">
-              Tu cuadra en el mapa
-            </h2>
+          {/* El mapa de siempre (el de /aliados y /firmamento), en una ventana de noche; no hay un segundo mapa. */}
+          <VentanaNoche titulo="Tu cuadra en el mapa" id="mapa">
             <MapaAliados
               portafolios={enElMapa}
               noche
@@ -160,15 +158,15 @@ export default async function NegocioConstelacionPage() {
               constelacionElegida={constelacion?.id}
               hrefLista="/aliados#listado"
             />
-          </section>
+          </VentanaNoche>
         </div>
 
         <div className="flex min-w-0 flex-col gap-6">
           <section aria-labelledby="alianzas" className={tarjeta}>
-            <h2 id="alianzas" className="font-display text-2xl font-medium text-estrella">
+            <h2 id="alianzas" className="font-display text-2xl font-medium text-tinta">
               Posibles alianzas
             </h2>
-            <p className="mt-1 font-sans text-sm leading-relaxed text-tenue">
+            <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">
               Negocios cercanos de un rubro que se complementa con el tuyo: quien le compra a uno suele necesitar al
               otro. Es una sugerencia por categoría, no una garantía.
             </p>
@@ -181,7 +179,7 @@ export default async function NegocioConstelacionPage() {
           </section>
 
           <section aria-labelledby="aliados-cerca" className={tarjeta}>
-            <h2 id="aliados-cerca" className="font-display text-2xl font-medium text-estrella">
+            <h2 id="aliados-cerca" className="font-display text-2xl font-medium text-tinta">
               Aliados cerca de ti
             </h2>
             <div className="mt-2">
@@ -194,7 +192,7 @@ export default async function NegocioConstelacionPage() {
 
           {constelacion && (
             <section aria-labelledby="vecinos-osm" className={tarjeta}>
-              <h2 id="vecinos-osm" className="font-display text-2xl font-medium text-estrella">
+              <h2 id="vecinos-osm" className="font-display text-2xl font-medium text-tinta">
                 Otros negocios de tu constelación
               </h2>
               <div className="mt-2">
@@ -204,21 +202,21 @@ export default async function NegocioConstelacionPage() {
                 />
               </div>
               {comerciosCerca.length > 6 && (
-                <p className="mt-2 font-sans text-sm text-tenue">
+                <p className="mt-2 font-sans text-sm text-tinta/70">
                   Y {comerciosCerca.length - 6} más con nombre en esta constelación.
                 </p>
               )}
-              <p className="mt-3 font-cifra text-xs leading-relaxed text-tenue">
+              <p className="mt-3 font-sans text-xs leading-relaxed text-tinta/70 tabular-nums">
                 Fuente: © colaboradores de OpenStreetMap (ODbL) · datos al {fechaLarga(datosOsm.osm_base)}
               </p>
             </section>
           )}
 
           <section aria-labelledby="invitar" className={tarjeta}>
-            <h2 id="invitar" className="font-display text-2xl font-medium text-estrella">
+            <h2 id="invitar" className="font-display text-2xl font-medium text-tinta">
               Invita a tus vecinos
             </h2>
-            <p className="mt-1 font-sans text-sm leading-relaxed text-tenue">
+            <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">
               Cada vecino que se registra hace más fácil que los clientes encuentren la cuadra entera.
             </p>
             <div className="mt-3">

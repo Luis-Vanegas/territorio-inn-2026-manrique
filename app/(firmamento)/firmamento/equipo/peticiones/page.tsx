@@ -35,7 +35,7 @@ export default async function PeticionesPage({
 
   return (
     <div>
-      <p className="max-w-xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
         Mensajes que dejó la gente desde /contacto. Se responden por fuera, con
         el contacto que dejó cada uno.
       </p>
@@ -44,7 +44,7 @@ export default async function PeticionesPage({
 
       <section aria-label="Mensajes" className="mt-8">
         {peticiones.length === 0 ? (
-          <p className="border-t border-tinta/12 pt-8 font-sans text-tenue">
+          <p className="border-t border-tinta/12 pt-8 font-sans text-tinta/70">
             {estadoActivo === 'nueva'
               ? 'No hay mensajes nuevos.'
               : 'No hay mensajes en este estado.'}

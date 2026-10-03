@@ -15,7 +15,7 @@ ambos agentes repliquen un patrón que ya no existe.
 
 - Next.js 16 (App Router), React 18, TypeScript
 - Tailwind CSS. Tipografía con rol cerrado (ver `DESIGN.md`): Fraunces títulos, DM Sans
-  todo lo demás, DM Mono (`font-cifra`) SOLO cifras, fuentes y fechas. Tokens de noche
+  todo lo demás, DM Mono (`font-cifra`) SOLO la cifra grande de un indicador (fuentes y fechas van en DM Sans pequeña). Tokens de noche
   (`noche`, `sodio`, `estrella`…) solo para Firmamento y la banda nocturna.
 - Zod para validación de datos
 - Neon (Postgres serverless) como base de datos
@@ -368,6 +368,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
   (cifras de la banda de la portada), `app/(site)/firmamento/datos.ts` y
   `lib/firmamento/territorio.ts` (panel del equipo; `server-only`).
+- **Firmamento con sesión (puerta y paneles, de día)**: `app/(firmamento)/firmamento/layout.tsx` monta el `SiteHeader`; `PanelShell` arma encabezado del panel + pestañas (`lib/firmamento/navegacion.ts`: `NAV` por rol, el equipo agrupa en `pestana` Hoy/Red/Datos/Guías y `pestanasDe` las deriva). Piezas únicas, no escribas otras: `Tarjeta` (`components/firmamento/panel/Tarjeta.tsx`, variantes `tarjeta`/`seccion`, `plegable`; reemplazó a `ModuloDesplegable`), `Plegable` (`<details>` + framer, funciona sin JS), `Kpi` + `GrupoCifras` (una línea de fuente por grupo), `VentanaNoche` (`.modo-noche` para cifras y mapas dentro de una página de día), `BarraPestanas`/`SubPestanas` (`panel/Pestanas.tsx`). Estas piezas escriben `hueso`/`tinta` y usan variantes `[.modo-noche_&]:` para la noche: dentro de una `VentanaNoche` cambian solas. Nada de tokens de noche (`estrella`, `tenue`, `noche-2`…) sueltos en una página de panel fuera de una ventana.
 - **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
 - **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
   datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`

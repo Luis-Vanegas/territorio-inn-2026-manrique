@@ -18,9 +18,9 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
 
   if (!datos) {
     return (
-      <div className="border border-trazo bg-noche-2 p-5">
-        <h2 className="font-sans text-lg font-medium text-estrella">Composición de la red</h2>
-        <p role="status" className="mt-3 font-sans text-base leading-relaxed text-tenue">
+      <div className="border border-tinta/12 bg-hueso p-5">
+        <h2 className="font-sans text-lg font-medium text-tinta">Composición de la red</h2>
+        <p role="status" className="mt-3 font-sans text-base leading-relaxed text-tinta/70">
           No pudimos consultar la red en este momento. Vuelve a intentarlo en unos minutos.
         </p>
       </div>
@@ -32,9 +32,9 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
   const maximo = Math.max(1, ...filas.map((f) => (typeof f.negocios === 'number' ? f.negocios : 0)));
 
   return (
-    <div className="border border-trazo bg-noche-2 p-5">
-      <h2 className="font-sans text-lg font-medium text-estrella">Composición de la red</h2>
-      <p className="mt-2 font-sans text-sm leading-relaxed text-tenue">
+    <div className="border border-tinta/12 bg-hueso p-5">
+      <h2 className="font-sans text-lg font-medium text-tinta">Composición de la red</h2>
+      <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
         {filas.length} categorías activas
         {ocultas > 0 ? `; ${ocultas} salen como «${CELDA_PEQUENA}»` : ''}. Una celda con menos de 5 negocios
         no muestra su número, para que nadie pueda reconocer a una persona (Ley 1581 de 2012).
@@ -45,8 +45,8 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
           const grupo = grupoDeCategoria(f.id);
           const oculta = f.negocios === CELDA_PEQUENA;
           return (
-            <li key={f.id} className="border-b border-trazo py-2.5 last:border-b-0">
-              <div className="flex items-baseline justify-between gap-4 font-sans text-sm text-estrella">
+            <li key={f.id} className="border-b border-tinta/12 py-2.5 last:border-b-0">
+              <div className="flex items-baseline justify-between gap-4 font-sans text-sm text-tinta">
                 <span className="flex min-w-0 items-center gap-2">
                   <span
                     aria-hidden="true"
@@ -55,12 +55,12 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
                   />
                   <span className="min-w-0 break-words">{f.nombre}</span>
                 </span>
-                <span className="shrink-0 font-cifra tabular-nums text-sodio">
+                <span className="shrink-0 font-sans tabular-nums text-azul-texto">
                   {f.negocios}
                   {oculta && <span className="sr-only"> (menos de 5 negocios)</span>}
                 </span>
               </div>
-              <div className="mt-1.5 h-1.5 bg-noche-3" aria-hidden="true">
+              <div className="mt-1.5 h-1.5 bg-tinta/5" aria-hidden="true">
                 {!oculta && (
                   <div
                     className="h-full"
@@ -73,7 +73,7 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
         })}
       </ul>
 
-      <p className="mt-4 font-cifra text-xs leading-relaxed text-tenue">
+      <p className="mt-4 font-sans text-xs leading-relaxed text-tinta/70 tabular-nums">
         Fuente: {fuente} · consultado el {fechaLarga(datos.generado_en)}
       </p>
     </div>

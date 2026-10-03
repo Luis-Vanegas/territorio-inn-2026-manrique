@@ -55,7 +55,7 @@ export default async function AliadosEquipoPage({
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
         Cada registro aprobado se publica en el mapa de Aliados de inmediato. Las
         fichas publicadas se pueden corregir con «Editar ficha».
       </p>
@@ -63,11 +63,11 @@ export default async function AliadosEquipoPage({
       <PestanasEstado ruta={RUTA} estados={ESTADOS} activo={estadoActivo} conteos={conteos} />
 
       {ficha && (
-        <p className="mt-6 font-sans text-sm text-tenue">
+        <p className="mt-6 font-sans text-sm text-tinta/70">
           Viendo una sola ficha.{' '}
           <Link
             href={`${RUTA}?estado=${estadoActivo}`}
-            className="inline-flex min-h-[44px] items-center text-sodio underline underline-offset-4"
+            className="inline-flex min-h-[44px] items-center text-azul-texto underline underline-offset-4"
           >
             Ver toda la lista
           </Link>
@@ -76,7 +76,7 @@ export default async function AliadosEquipoPage({
 
       <section aria-label="Fichas" className="mt-8">
         {registros.length === 0 ? (
-          <p className="border-t border-tinta/12 pt-8 font-sans text-tenue">
+          <p className="border-t border-tinta/12 pt-8 font-sans text-tinta/70">
             {ficha
               ? 'Esa ficha no está en este estado: puede que ya la hayan movido.'
               : estadoActivo === 'pendiente'
