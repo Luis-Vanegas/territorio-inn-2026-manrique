@@ -222,8 +222,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
   falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
-  que alimenta «Mi cuenta»: categoría y formalidad de sus negocios para «Para ti» y «Tu negocio en números»;
-  una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro).
+  que alimenta el panel del negocio: categoría y formalidad para «Para ti», semanas de vistas y
+  contactos, comparación con la categoría; una consulta nueva del panel va en ese archivo y con ese filtro).
   Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
   correo. El contacto sale por
   WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
@@ -248,13 +248,29 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `lib/auth/destino.ts` al guardar y al leer; la comprueba `scripts/verificar-destino.mjs`).
   El login del equipo reutiliza `iniciarSesion` de `sesionAdmin.ts` con un campo
   oculto `destino`.
+- **Panel del negocio** (`/firmamento/negocio/{,ficha,para-ti,constelacion,clientes}`, antes
+  `/mi-cuenta`, que redirige en `next.config.mjs`): cada page llama `exigirNegocio()` (devuelve
+  `usuarioId`) y lee con `negocioActivo(usuarioId)` (`lib/firmamento/negocio.ts`): el negocio activo
+  sale de la cookie `negocio_activo` (solo preferencia; se valida contra los negocios de la sesión en
+  cada lectura; la fija `elegirNegocio`). Cifras del inicio: 8 semanas de `interacciones_portafolio`
+  (`semanasDeNegocio`) y cuentas puras en `lib/firmamento/ficha.ts` (completitud de la ficha en 8 pasos,
+  variación contra las 4 semanas anteriores). La comparación con la categoría
+  (`comparacionCategoria`) devuelve null con menos de 5 negocios (k = 5) y en «Otros». Posibles
+  alianzas: `lib/firmamento/alianzas.ts`, una tabla simétrica de rubros complementarios (ropa↔modistería,
+  comidas↔panadería…); mismo rubro nunca es alianza; se amplía agregando una pareja. `/mi-cuenta` ya no
+  existe: el destino tras Google es `/firmamento/negocio`. `/entrar` sigue como puerta de día (trae el
+  acceso por enlace). `constelaciones.json` también se importa en el servidor en
+  `negocio/constelacion/page.tsx`.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
   `token_publico` — para quien registramos en campo y no maneja tecnología.
   `origen_registro` distingue `propio` de `asistido`; es una columna, no otra
   tabla. Un registro `asistido` EXIGE `consentimiento_asistido` y
   `capturado_por` por restricción de base: Ley 1581 de 2012, el consentimiento
-  lo da el titular y hay que poder demostrar cómo.
+  lo da el titular y hay que poder demostrar cómo. **La edición del dueño de una ficha APROBADA publica
+  directo** (sigue `aprobado`, invalida la vitrina y deja fila en `bitacora`), por las dos puertas: la
+  cuenta (`actualizarFichaDeCuenta`) resuelve el token con `tokenPropio` y usa el mismo
+  `actualizarPorToken`. Pendiente sigue pendiente; rechazada vuelve a pendiente; archivada no se edita.
 - **RLS no se usa acá y no hace falta**: el navegador nunca habla con Postgres.
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
@@ -271,7 +287,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   la 033, o nace una entidad duplicada. A quién aplica lo elige el moderador AL
   APROBAR: `convocatoria_categorias` (ninguna fila = todas) y `aplica_formalidad`
   (vacío = cualquiera), escritos en la misma sentencia que el cambio de estado.
-  Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» de Mi cuenta
+  Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» del panel del negocio
   (`convocatoriasParaTi` con `perfilesParaTi` de `cuenta.repo.ts`): cruza
   NEGOCIO POR NEGOCIO categoría y formalidad (`aliados_investigacion`); formalidad
   desconocida (null o `prefiero_no_decir`) ve también las restringidas. No van en
@@ -337,6 +353,22 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
   (cifras de la banda de la portada) y `app/(site)/firmamento/datos.ts`.
 - **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
+- **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
+  datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`
+  (`app/(site)/firmamento/datos.ts`, que en la base solo usa `obtenerDatosAbiertos`), por
+  `obtenerDatosAbiertos` y por las funciones de entidad de `convocatorias.repo.ts`
+  (`listarConvocatoriasVigentes`, `listarPropuestasDeEntidad`, `proponerConvocatoria`); el
+  mapa es `MapaAliados` con `portafolios` vacío. Ninguna pantalla importa repos de negocios:
+  `scripts/verificar-entidades.mjs` lo comprueba por lista permitida (`datos.repo`,
+  `convocatorias.repo`, `entidades.repo`) y corre con `--experimental-strip-types`. Un cruce
+  nuevo con datos de la red va en `datos.repo.ts` y pasa por `suprimir()`. «Proponer una
+  convocatoria» (`lib/actions/proponerConvocatoria.ts`): revalida sesión + membresía, la
+  entidad sale de `entidadDeSesion()` (jamás del formulario), entra `pendiente` con
+  `origen = 'entidad'` y `propuesta_por`, URL repetida = mensaje claro, deja fila en
+  `bitacora` (`actor_tipo = 'entidad'`) y usa el cupo `estado` de `rateLimit.ts` (un origen
+  nuevo exigiría migrar el CHECK de `intentos_registro`). La descarga CSV
+  (`entidad/datos/csv/route.ts`, con guarda) sale de `lib/firmamento/datosAbiertos.ts`, que
+  solo reordena `DatosAbiertos`: una celda «<5» sigue «<5».
 - **Imports con extensión `.ts`**: los verificadores (`scripts/verificar-*.mjs`)
   corren con `--experimental-strip-types`, que no resuelve imports sin extensión.
   Para que compartan código con la app (y no copiarlo), un archivo que ellos

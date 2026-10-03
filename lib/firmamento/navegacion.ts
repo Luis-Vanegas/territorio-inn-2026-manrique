@@ -45,19 +45,22 @@ export type ItemNav = {
    * y, en el celular, detrás del botón «Más».
    */
   grupo?: string;
+  /** Qué cuenta la insignia de conteo, para el lector de pantalla («2 convocatorias»). Por defecto, «pendientes». */
+  unidad?: string;
 };
 
 export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
   negocio: [
     { href: '/firmamento/negocio', etiqueta: 'Inicio', icono: 'inicio' },
     { href: '/firmamento/negocio/ficha', etiqueta: 'Mi ficha', icono: 'ficha' },
-    { href: '/firmamento/negocio/para-ti', etiqueta: 'Para ti', icono: 'regalo' },
+    { href: '/firmamento/negocio/para-ti', etiqueta: 'Para ti', icono: 'regalo', unidad: 'convocatorias' },
     {
       href: '/firmamento/negocio/constelacion',
       etiqueta: 'Mi constelación',
       corta: 'Mi mapa',
       icono: 'mapa',
     },
+    { href: '/firmamento/negocio/clientes', etiqueta: 'Mis clientes', corta: 'Clientes', icono: 'personas' },
   ],
   // Equipo: lo de todos los días va suelto (y en la barra del celular); el resto,
   // agrupado. Con 16 secciones, una lista plana no se recorre de un vistazo.
@@ -110,8 +113,7 @@ export const ROL_TEXTO: Record<RolFirmamento, string> = {
 /** El botón de la barra superior que lleva de vuelta al sitio de la comunidad. */
 /** `corto` es lo que se ve en el celular; contiene siempre palabras de `etiqueta` (WCAG 2.5.3). */
 export const BOTON_SITIO: Record<RolFirmamento, { etiqueta: string; corto: string; href: string }> = {
-  // ponytail: sin la ficha del negocio a mano (la trae el panel de la Ola 2) se
-  // manda a la vitrina; cuando el panel conozca el portafolio, va a su ficha.
+  // El layout del panel lo reemplaza por la ficha real del negocio (prop `hrefSitio` de PanelShell); este es el respaldo.
   negocio: { etiqueta: 'Mi ficha pública', corto: 'Mi ficha', href: '/aliados' },
   equipo: { etiqueta: 'Ver Constelaciones', corto: 'Constelaciones', href: '/' },
   entidad: { etiqueta: 'Ver Constelaciones', corto: 'Constelaciones', href: '/' },

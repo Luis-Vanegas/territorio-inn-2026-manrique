@@ -18,11 +18,11 @@ import { IconoPanel } from './IconoPanel';
  */
 type Insignias = Record<string, number>;
 
-function Insignia({ n }: { n: number }) {
+function Insignia({ n, unidad = 'pendientes' }: { n: number; unidad?: string }) {
   return (
     <span className="ml-auto min-w-[22px] rounded-full bg-sodio px-1.5 py-0.5 text-center font-cifra text-xs font-medium leading-none text-noche">
       {n}
-      <span className="sr-only"> pendientes</span>
+      <span className="sr-only"> {unidad}</span>
     </span>
   );
 }
@@ -50,7 +50,7 @@ function EnlaceLateral({ it, activo, n }: { it: ItemNav; activo: boolean; n?: nu
     >
       <IconoPanel nombre={it.icono} />
       <span>{it.etiqueta}</span>
-      {n ? <Insignia n={n} /> : null}
+      {n ? <Insignia n={n} unidad={it.unidad} /> : null}
     </Link>
   );
 }
@@ -182,7 +182,7 @@ export function NavInferior({ items, insignias = {} }: { items: readonly ItemNav
               <Link
                 href={it.href}
                 aria-current={activo ? 'page' : undefined}
-                aria-label={n ? `${it.etiqueta}, ${n} pendientes` : it.etiqueta}
+                aria-label={n ? `${it.etiqueta}, ${n} ${it.unidad ?? 'pendientes'}` : it.etiqueta}
                 className={`${CLASE_INFERIOR} ${activo ? CLASE_INFERIOR_ACTIVA : 'text-tenue'}`}
               >
                 <span className="relative">

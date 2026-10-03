@@ -22,7 +22,7 @@ export default async function EntrarPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   // Quien ya entró no tiene nada que hacer en la puerta.
-  if (await sesionActual()) redirect('/mi-cuenta');
+  if (await sesionActual()) redirect('/firmamento/negocio');
 
   const { error } = await searchParams;
   const mensajeError = error ? MENSAJES_INGRESO[error] : null;

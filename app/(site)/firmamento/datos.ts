@@ -3,6 +3,7 @@ import 'server-only';
 import datosOsmJson from '@/public/firmamento/constelaciones.json';
 import modeloJson from '@/public/modelo_categoria.json';
 import { POLIGONO_MANRIQUE } from '@/lib/geo/constantes';
+import { barrioDe } from '@/lib/geo/barrioOficial';
 import type { DatosConstelaciones } from '@/lib/geo/constelaciones';
 import {
   aplanarComercios,
@@ -59,6 +60,8 @@ export type FilaConstelacion = {
   tamano: number;
   radioM: number;
   mezcla: string;
+  /** Barrio oficial donde cae el centro de la constelación; null en un hueco entre polígonos. */
+  barrio: string | null;
 };
 
 export type BarraCategoria = { id: string; nombre: string; n: number; grupo: Grupo };
@@ -214,6 +217,7 @@ export async function leerFirmamento(): Promise<DatosFirmamento> {
       tamano: c.tamano,
       radioM: Math.round(c.radio_m),
       mezcla: lineaMezcla(c),
+      barrio: barrioDe(c.centroide.lat, c.centroide.lon),
     })),
     barras,
     cielo: proyectar(),

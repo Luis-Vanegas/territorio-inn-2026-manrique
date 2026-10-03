@@ -11,7 +11,7 @@
 import assert from 'node:assert/strict';
 import { puertaDe, rutaInterna } from '../lib/auth/destino.ts';
 
-for (const bueno of ['/', '/firmamento/negocio', '/firmamento/equipo', '/firmamento/entidad', '/mi-cuenta']) {
+for (const bueno of ['/', '/firmamento/negocio', '/firmamento/equipo', '/firmamento/entidad', '/firmamento/negocio/clientes']) {
   assert.equal(rutaInterna(bueno), bueno, `acepta ${bueno}`);
 }
 
@@ -41,7 +41,7 @@ for (const malo of malos) {
 }
 
 assert.equal(puertaDe('/firmamento/entidad'), '/firmamento/entrar');
-assert.equal(puertaDe('/mi-cuenta'), '/entrar');
+assert.equal(puertaDe('/aliados/registro'), '/entrar');
 assert.equal(puertaDe(null), '/entrar');
 
 console.log('destino: OK — solo rutas internas; el resto se descarta');

@@ -32,7 +32,7 @@ export default async function VentasPage() {
       coleccion={VENTAS}
       base="/ventas"
       etiqueta="tu espacio · guías del equipo"
-      volver={{ href: '/mi-cuenta', etiqueta: '← Volver a mi cuenta' }}
+      volver={{ href: '/firmamento/negocio', etiqueta: '← Volver a mi panel' }}
     />
   );
 }

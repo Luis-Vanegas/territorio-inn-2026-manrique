@@ -132,7 +132,7 @@ export async function GET(request: Request) {
       await vincularNegocio(token, usuario.id);
     }
 
-    return NextResponse.redirect(new URL(destino ?? '/mi-cuenta', request.url));
+    return NextResponse.redirect(new URL(destino ?? '/firmamento/negocio', request.url));
   } catch (error) {
     console.error('[google] fallo al crear la sesión:', error);
     return alError(request, 'sesion', puerta);

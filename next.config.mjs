@@ -171,6 +171,15 @@ const nextConfig = {
     // Las fotos son inmutables por id: si cambia, cambia el id del registro.
     minimumCacheTTL: 60 * 60 * 24 * 365,
   },
+  // /mi-cuenta se mudó al panel de Firmamento (docs/firmamento-modulos.md). Los enlaces
+  // viejos (correos, WhatsApp, favoritos) siguen funcionando. 307 y no 308: mientras el
+  // panel se asienta no conviene que un navegador recuerde el redirect para siempre.
+  async redirects() {
+    return [
+      { source: '/mi-cuenta', destination: '/firmamento/negocio', permanent: false },
+      { source: '/mi-cuenta/clientes', destination: '/firmamento/negocio/clientes', permanent: false },
+    ];
+  },
   async headers() {
     return [{ source: '/:path*', headers: cabecerasSeguridad }];
   },

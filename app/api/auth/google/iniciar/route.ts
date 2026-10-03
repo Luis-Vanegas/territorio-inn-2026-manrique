@@ -28,7 +28,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   // `?destino=/firmamento/negocio`: adónde volver. Solo rutas internas; lo demás
-  // se descarta (open redirect) y se vuelve al /mi-cuenta de siempre.
+  // se descarta (open redirect) y se vuelve al panel del negocio (/firmamento/negocio).
   const destino = rutaInterna(new URL(request.url).searchParams.get('destino'));
   const puerta = puertaDe(destino);
 
