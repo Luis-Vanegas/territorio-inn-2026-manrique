@@ -3,6 +3,9 @@ Versión para entrega: 3 a 5 hojas, Arial 12, interlineado 1,5.
 Pasar a Word y medir la extensión real (las tablas ocupan más que el texto).
 Lo que dependa de métricas de datos-ml o de datos personales queda marcado y se completa antes de entregar.
 Antes de entregar: borrar este comentario y las marcas [PENDIENTE] y [COMPLETAR] que ya estén resueltas.
+Actualizado el 3 de octubre de 2026 con lo que está en producción. Esta versión creció con los
+paneles por rol: medir en Word y, si pasa de 5 hojas, recortar primero la tabla de fases y las
+referencias de segundo orden, no las cifras con fuente.
 -->
 
 # Constelaciones · Manrique
@@ -48,8 +51,8 @@ red estratégica con los pequeños comerciantes» (Alcaldía de Medellín, s. f.
 negocios y oficios de la comuna, los vecinos, la Junta Administradora Local y el Presupuesto
 Participativo, CEDEZO, el Centro del Valle del Software de Manrique, las entidades de apoyo y el ITM.
 
-**Producto de datos.** Firmamento es un tablero público que mide el territorio y la distancia entre
-el territorio y la red de negocios, **sin pedir datos sensibles** a ningún negocio. Sus datos salen
+**Producto de datos.** Firmamento, ya publicado, es un tablero público que mide el territorio y la
+distancia entre el territorio y la red de negocios, **sin pedir datos sensibles** a ningún negocio. Sus datos salen
 de tres capas: datos abiertos del territorio (OpenStreetMap), agregados de la red con supresión
 de celdas de menos de cinco negocios, y contadores de uso sin cookies ni identificadores. Dos
 modelos de aprendizaje automático lo alimentan, y ambos se entrenan con datos abiertos, no con los
@@ -93,22 +96,30 @@ OpenStreetMap los trae.
 
 ## c. Solución propuesta e implementación
 
-**Lo que ya funciona.** Constelaciones es un mapa donde cada negocio se registra gratis, en pocos
-minutos, con consentimiento de datos (Ley 1581 de 2012) y moderación humana antes de publicar.
-Incluye registro asistido para quien no usa celular, guías de marca y de ventas, y un asesor de
-formalización que solo recomienda trámites de un catálogo cerrado.
+**Lo que ya funciona (3 de octubre de 2026).** Constelaciones es un mapa donde cada negocio se
+registra gratis, en pocos minutos, con consentimiento de datos (Ley 1581 de 2012) y moderación
+humana antes de publicar. Incluye registro asistido para quien no usa celular, guías de marca y de
+ventas, y un asesor de formalización que solo recomienda trámites de un catálogo cerrado. Ya están
+publicados: el sugeridor de categoría en el registro; el tablero Firmamento y su mapa de
+constelaciones; el barrio oficial calculado por el punto (15 barrios, Alcaldía de Medellín); y
+paneles con sesión según el papel de cada persona. El **aliado** ve sus cifras, edita su ficha
+(con bitácora de cambios), recibe en «Para ti» las convocatorias que le aplican y ve su
+constelación. El **equipo** modera fichas y convocatorias y planea el censo de campo. La
+**entidad** (JAL, CEDEZO, Centro del Valle del Software de Manrique) ve solo agregados con
+supresión de celdas pequeñas y propone convocatorias que el equipo revisa. Todo es gratis para los
+negocios.
 
-**Lo que se propone sumar** (en desarrollo en octubre de 2026; todo gratis para los negocios):
-sugeridor de categoría en el registro; constelaciones y «negocios de tu misma constelación»;
-vigía de convocatorias, que cada día revisa páginas oficiales y deja lo nuevo en revisión humana;
-«Para ti», con las convocatorias que encajan con cada negocio; «Tu negocio en números»; y
-Firmamento público, con datos abiertos agregados para la comunidad y la JAL.
+**En implementación esta semana** (no se presenta como hecho): sugeridor en un clic dentro de la
+moderación, con reentrenamiento a partir de las decisiones del equipo; mapa de barrios coloreado;
+F1 por categoría y matriz de confusión en el panel de modelos; y rediseño visual de los paneles.
+El vigía, que cada día revisa páginas oficiales y deja lo nuevo en revisión humana, tiene ya su
+cola de revisión; su ejecución diaria automática [PENDIENTE: depende de habilitar GitHub Actions].
 
 El piloto sigue la ruta de innovación social (Pacheco et al., 2022):
 
 | Fase | Qué se hace | Semanas |
 |---|---|---|
-| Alistar | Ajustes de la plataforma, acuerdos con JAL, CEDEZO y CVS, línea base | 1–3 |
+| Alistar | Acuerdos con JAL, CEDEZO y CVS y alta de cada una en su panel; línea base | 1–3 |
 | Entender y analizar | Censo de campo con registro asistido; diálogo con 30 negocios | 3–8 |
 | Crear | Codiseño con los negocios del tablero y los servicios; taller de convergencia | 6–12 |
 | Operar | Seis talleres, moderación de convocatorias, reentrenamiento del modelo | 12–22 |
@@ -124,7 +135,10 @@ eso el censo de campo se concentra en los barrios con menos puntos y la cobertur
 observado en campo, no contra la Cámara de Comercio. El clasificador puede equivocarse con
 nombres propios, y en categorías con pocos ejemplos (por ejemplo, barbería, con 13): por debajo del
 umbral de confianza pregunta, y la persona y el moderador deciden.
-Los proveedores de lenguaje del asesor reciben la ficha del negocio: se nombrarán en la política de datos.
+Como el dueño edita su ficha y esta se publica directo, un dato equivocado puede quedar visible
+hasta que el equipo lo corrija: cada cambio queda en una bitácora y el panel del equipo marca las
+fichas con alertas de calidad. Los proveedores de lenguaje del asesor reciben la ficha del negocio:
+la política de datos los nombra [PENDIENTE: confirmar el despliegue de la versión de términos 2026-10-v5].
 
 ## d. Valor estimado de la implementación
 

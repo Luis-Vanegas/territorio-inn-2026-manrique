@@ -1,6 +1,6 @@
 # Notas internas del equipo (no se entregan al concurso)
 
-Control de pendientes del documento. Se actualiza al resolver cada punto. Última actualización: 2 de octubre de 2026 (corrida de OpenStreetMap con 320 establecimientos).
+Control de pendientes del documento. Se actualiza al resolver cada punto. Última actualización: 3 de octubre de 2026 (documento al día con lo publicado: Firmamento con sesión, sugeridor, barrio oficial, convocatorias y bitácora).
 
 ## Cifras excluidas a propósito
 
@@ -58,21 +58,28 @@ Siguen marcados como `[PENDIENTE: métrica de datos-ml]`.
 - Tabla de topes SENA 2026 con fecha de consulta.
 - Contraste del resto de cifras del Anexo A (población, área, desempleo, calidad de vida, DANE) contra los originales; no se pudo abrir el boletín DANE del 30 de julio de 2026.
 - Definición operativa de «informal» para la meta de al menos 40 %.
-- Confirmar si la formalidad declarada agregada se publica en `/api/datos` o queda solo en el panel.
+- ~~Confirmar si la formalidad declarada agregada se publica en `/api/datos`~~ **Resuelto (3-oct):** sí, con k = 5, junto con la mayor dificultad declarada (`lib/db/datos.repo.ts`). Medios de pago y origen de registro NO están en `/api/datos`: el indicador de registros asistidos necesita incluirlo.
+- Confirmar el despliegue de la política de datos con proveedores de IA y términos `2026-10-v5` (están en el repositorio) y que el cron de purga de IP corre en producción.
+- Medir cuántas ediciones de dueños corrige el equipo después de publicadas (la edición publica directo desde el 3-oct).
+- Probar en producción el ingreso real con Google de un negocio y de una entidad; dar de alta a la primera entidad.
+- Línea base de fichas con barrio confirmado: `TASKS.md` anota `barrio_oficial` relleno en 6 de 10 y 4 fuera de la comuna, pero otra línea habla de 3 aliados fuera del polígono. Releer de la base el día de la entrega antes de citar una cifra.
+- Contrastar con el boletín EMICRON las cifras de RUT y Cámara que ahora se muestran en `/firmamento` (la propia tarjeta dice «pendiente de contrastar»).
 - Acuerdos con la JAL y el CVS antes de afirmar que asumen el mantenimiento.
 - Confirmar que GitHub Actions es gratuito y está habilitado para el repositorio (la cuenta tiene presupuesto de $0 en Actions) y la pausa tras 60 días sin actividad.
 - Versión de 3 a 5 hojas: con las cifras nuevas probablemente se pasa de la extensión; medir en Word y recortar.
 
 ## Qué falta de la asesoría
 
-Piezas y decisiones de la asesoría que siguen sin cerrar. Mientras no existan, el documento las rotula «En desarrollo» o `[PENDIENTE]` y no las presenta como funcionando.
+Estado al 3 de octubre de 2026. Lo resuelto se marca con `[x]` y su evidencia (los hashes de commit son los que registra `TASKS.md`; verificar con `git log` antes de citarlos fuera del equipo). Lo que sigue abierto el documento lo rotula «En implementación» o `[PENDIENTE]` y no lo presenta como funcionando.
 
-1. **`/firmamento`** (tablero público y mapa estelar): el dato existe (`constelaciones.json`), la página no.
-2. **Sugeridor de categoría en el registro:** el modelo está entrenado y evaluado; falta la pieza en el formulario.
-3. **Mi cuenta:** «Para ti» (convocatorias que encajan con el negocio) y «Tu negocio en números».
-4. **Moderación de convocatorias:** cola de revisión humana de lo que trae el vigía; nada se publica sin aprobación.
-5. **Barrio oficial:** calcularlo por punto en polígono. Espera el GeoJSON de barrios (capa de GeoMedellín) y corrige la lista, que trae «Campo Valdés No. 1» (Comuna 4).
-6. **Vigía en GitHub Actions y secretos:** depende de las cuentas del equipo (habilitar Actions, cargar `INGESTA_SECRETO` y `CRON_SECRET`). Ver también el pendiente sobre el presupuesto de $0 en Actions.
+1. [x] **`/firmamento`** (tablero público y mapa estelar): en producción, secciones α a η. `app/(site)/firmamento/page.tsx`; commits `717984f` y `356d025`.
+2. [x] **Sugeridor de categoría en el registro:** en producción, corre en el navegador y guarda solo categoría inferida y confianza. `lib/ml/categoria.ts`, `SugeridorCategoria.tsx`; commit `717984f`. Falta la métrica de aceptación en uso real (sigue en «Pendientes que dependen de `datos-ml`»).
+3. [x] **«Para ti» y «Tu negocio en números»:** en producción en el panel del negocio (`/firmamento/negocio`, antes Mi cuenta). Commits `717984f` y `38f2c58`.
+4. [x] **Moderación de convocatorias:** en producción (`/firmamento/equipo/convocatorias`; el moderador elige categorías y formalidad al aprobar; migraciones 032 y 033). Sigue abierto que el vigía corra solo (punto 6).
+5. [x] **Barrio oficial por punto en polígono:** en producción (15 barrios, `lib/geo/barrios-manrique.json`; `portafolios.barrio_oficial` con FK desde la 033). Commit `2e04e9e`. Cierra el error de «Campo Valdés No. 1». Queda abierta la referencia bibliográfica de la capa (archivo entregado por la Alcaldía; ver `[COMPLETAR]` en las referencias).
+6. [ ] **Vigía en GitHub Actions y secretos:** depende de las cuentas del equipo (habilitar Actions, cargar `INGESTA_SECRETO` y `CRON_SECRET`). Ver también el pendiente sobre el presupuesto de $0 en Actions. Hasta que se resuelva, el documento no afirma que el vigía corra a diario.
+6a. [x] **Firmamento con sesión por rol** (no estaba en la asesoría v1; sale de la v2): puerta `/firmamento/entrar`, paneles de negocio, equipo y entidad; migración 033 (entidades, miembros, barrios, convocatorias rehecha, bitácora) aplicada en producción el 3-oct, con respaldo en la rama de Neon `respaldo-pre-033` (borrarla cuando se confirme que todo anda). Commit `38f2c58`. Abierto: probar el ingreso real con Google (negocio y entidad) y dar de alta a la primera entidad.
+6b. [ ] **En implementación esta semana:** sugeridor en un clic en la moderación con reentrenamiento; mapa de barrios coloreado y mapa en Territorio; F1 por categoría y matriz de confusión en «Modelos»; rediseño visual de los paneles (`docs/plan-rediseno-firmamento.md`). Cuando se publiquen, pasarlos a «En producción» en el documento técnico (cuadro de estado y 4.2), la versión corta y el guion.
 7. **Decisión `eom` o `leaf`:** con los 205 locales con nombre `eom` colapsaba (171 en un cúmulo) y por eso se eligió `leaf`; con los 320 ya no colapsa (`eom`: 18 constelaciones, cúmulo mayor de 29; `leaf`: 20 constelaciones, cúmulo mayor de 19). El equipo debe elegir y, si cambia, actualizar el documento técnico (4.2, 4.3 y Anexo A), la versión corta y el guion. `[PENDIENTE: decisión del equipo eom vs leaf]`
 8. **Presupuesto: $108.184.164 frente a $126,5 millones.** El equipo propone $108.184.164; la asesoría anota $126,5 millones como referencia de escala de la docente para el piloto (y $40 millones para el MVP, frente a $33.088.953 del equipo). Decidir si se presenta solo la cifra propia o se explica la diferencia. El desglose por rol sigue pendiente.
 9. **Respuesta del ITM (A4):** cesión de derechos y licencia MIT; hasta que responda no se plantea modelo comercial (sección 8.4). Preguntas en la sección siguiente.
@@ -94,3 +101,18 @@ El texto de la pregunta está en la sección 8.4 del documento técnico.
 - **Alojamiento:** Vercel Hobby no permite uso comercial; el documento lo declara como supuesto del presupuesto y como condición de sostenibilidad. Confirmar con el ITM o con el soporte del proveedor.
 - **Cifras de 2019:** desempleo, calidad de vida, jefatura femenina y hurto son de 2019 (ECV 2018 para jefatura). El documento lo advierte. Si existe un dato más reciente con fuente, reemplazar.
 - **Valor del piloto y selección `eom` o `leaf`:** ver «Qué falta de la asesoría», puntos 7 y 8.
+
+## Contradicciones entre documento, asesoría y repo (3-oct)
+
+Ninguna se resolvió a favor de la asesoría; el documento usa la cifra del repo y cita su fuente.
+
+- **Pipeline:** la asesoría v2 trae 15 constelaciones, 91 sueltos, F1 macro 0,63 y 3.398 locales de entrenamiento (312 establecimientos). El repo (corrida del 2-oct) trae 20, 107, 0,528 y 4.790 (320). El 0,63 no se cita.
+- **Edición del dueño:** el prototipo de la asesoría encolaba los cambios para revisión; el repo publica directo (decisión de Luis, `docs/firmamento-modulos.md`). El documento lo declara como riesgo.
+- **GitHub Actions:** la asesoría lo da por gratis en repositorios públicos; `TASKS.md` dice que la cuenta tiene $0 en Actions y la integración continua se retiró. El documento no afirma que el vigía corra solo.
+- **Negocios y visitas:** la asesoría anota 7 negocios y 1.013 visitas en 30 días; `docs/base-de-datos.md` cuenta 10 filas en `portafolios` (incluye no aprobadas) y el plan de diseño dice que las visitas están infladas. No se cita ninguna; la cifra de aliados es `[PENDIENTE]` el día de la entrega.
+- **Barrios:** la asesoría pide la capa de GeoMedellín; el repo usa un archivo de polígonos entregado por la Alcaldía (`metadata.fuente`). Hay un `[COMPLETAR]` para su referencia.
+- **Aliados fuera del polígono:** `TASKS.md` dice 3 en un lugar y «4 fuera de la comuna, 6 de 10 con barrio» en otro. No se cita.
+- **Base de datos:** `docs/firmamento-modulos.md` habla de ~33 MB de «1 GB» del plan gratis; la revisión de `TASKS.md` del 29-ago habla de 512 MB de límite. No se cita en el documento.
+- **Presupuesto:** $108.184.164 del equipo frente a $126,5 millones de referencia de la asesoría (punto 8).
+- **Numeración de la asesoría:** la v2 trae las preguntas guía en su sección 5 y las cifras en la 6 (la sección 4 es la auditoría del resultado previo); algunas indicaciones internas las citan como 4 y 6.
+- **`TASKS.md` desactualizado:** conserva ítems abiertos ya resueltos (por ejemplo, «Documento: cifras nuevas con fuente», y la Fase 1 con 192 comercios). No se tocó (fuera de `docs/concurso/`).

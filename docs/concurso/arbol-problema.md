@@ -41,10 +41,12 @@ flowchart LR
 
 ## Correspondencia con la solución (referencia interna, no hace parte del árbol)
 
-| Causa | Qué responde hoy | Qué está en desarrollo |
+Estado al 3 de octubre de 2026.
+
+| Causa | Qué responde hoy (en producción) | Qué falta o está en implementación |
 |---|---|---|
-| C1 | Directorio con mapa, registro gratuito y moderación humana | Constelaciones comerciales y tablero Firmamento |
-| C2 | Registro asistido con consentimiento para quien no usa celular | Censo de campo del piloto |
-| C3 | Datos propios agregados y exportación para el panel de moderación | Datos abiertos agregados (`/api/datos`) |
-| C4 | Asesor de formalización con catálogo cerrado | Vigía de convocatorias y «Para ti» |
-| C5 | Fichas públicas con contacto directo | «Negocios de tu misma constelación» |
+| C1 | Directorio con mapa, registro gratuito y moderación humana; barrio oficial calculado por el punto; tablero público Firmamento con constelaciones | Mapa de barrios coloreado (en implementación); censo de campo del piloto |
+| C2 | Registro asistido con consentimiento para quien no usa celular; edición de la ficha por su dueño | Censo de campo del piloto |
+| C3 | Datos abiertos agregados con supresión de celdas pequeñas (`/api/datos`, `/firmamento`) y observatorio de la entidad | Cruces por constelación y por origen de registro (pendientes de diseño) |
+| C4 | Asesor de formalización con catálogo cerrado; moderación de convocatorias y «Para ti» | Ejecución diaria automática del vigía (depende de GitHub Actions) |
+| C5 | Fichas públicas con contacto directo; constelación del aliado con los comercios vecinos; panel de la entidad para que la JAL, CEDEZO y el Centro del Valle del Software vean el territorio | Talleres y codiseño del piloto |

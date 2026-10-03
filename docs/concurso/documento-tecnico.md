@@ -4,14 +4,15 @@
 
 Territorio INN 2026 · Línea 1 Socioeconómica · Reto #2 Empleo y Desarrollo Económico · Comuna 3 – Manrique
 
-Documento técnico completo. Versión de trabajo del 1 de octubre de 2026; entrega del concurso: 11 de octubre de 2026.
+Documento técnico completo. Versión de trabajo del 3 de octubre de 2026; entrega del concurso: 11 de octubre de 2026.
 
 > **Cómo leer las marcas de este documento**
 >
 > - Las cifras del pipeline de datos y aprendizaje automático salen de la corrida reproducible del 2 de octubre de 2026 (`pipeline/reporte_modelo.md` y `pipeline/README.md`). `[PENDIENTE: métrica de datos-ml]` indica ahora solo un valor que ese pipeline todavía no produce (por ejemplo, la medición contra registros propios o la revisión manual de etiquetas).
 > - `[PENDIENTE: ...]` con otra descripción indica un dato que depende de otra persona o de otro proceso.
 > - `[COMPLETAR]` indica un dato personal o administrativo que completan los integrantes.
-> - «En desarrollo» indica una pieza que se construye en octubre de 2026 y que **no** debe leerse como funcionando.
+> - «En producción» indica una pieza publicada en el sitio a la fecha de este documento (3 de octubre de 2026).
+> - «En implementación» indica una pieza que el equipo construye en la semana de esta versión y que **no** debe leerse como funcionando.
 > - Las secciones 1 a 4.1 del formato (identificación, descripción del reto, solución y mapa de aliados) se conservan del documento del equipo; este archivo desarrolla el resumen ejecutivo, las palabras clave y las secciones 4.2, 4.3, 5, 6, 7 y 8, y trae el árbol de problema rehecho en `arbol-problema.md`.
 
 ## Integrantes
@@ -30,11 +31,12 @@ Las unidades productivas de la Comuna 3 – Manrique son poco visibles para sus 
 otras unidades productivas y para las instituciones que podrían apoyarlas, y las estadísticas
 oficiales no bajan a escala de comuna. Constelaciones es una plataforma pública y gratuita donde
 cada negocio se registra en pocos minutos, con consentimiento y moderación humana, y aparece en un
-mapa del territorio. El piloto propuesto le suma Firmamento, un tablero de datos abiertos con
-aprendizaje automático que mide el territorio y la distancia entre el territorio y la red, sin
-pedirle datos sensibles a ningún negocio: sugiere la categoría de un negocio a partir de su
-nombre, agrupa los comercios en «constelaciones» por cercanía y avisa de convocatorias oficiales
-que encajan con cada negocio. Para los negocios el servicio es gratis siempre; el piloto de seis
+mapa del territorio. Firmamento, su tablero de datos abiertos con aprendizaje automático, ya está
+publicado: mide el territorio y la distancia entre el territorio y la red, sin pedirle datos
+sensibles a ningún negocio; sugiere la categoría de un negocio a partir de su nombre, agrupa los
+comercios en «constelaciones» por cercanía y ofrece paneles al negocio, al equipo y a las
+entidades, con convocatorias oficiales que una persona revisa. El piloto lo valida en campo con
+los negocios. Para los negocios el servicio es gratis siempre; el piloto de seis
 meses tiene un valor estimado de $108.184.164, financiable con Presupuesto Participativo y
 condicionado a la cesión de derechos al ITM. La plataforma hace visible el tejido productivo; no
 garantiza por sí sola empleo digno.
@@ -48,29 +50,39 @@ espacial (constelaciones comerciales) · Comuna 3 Manrique
 
 ---
 
-## Estado de la plataforma: qué existe hoy y qué está en desarrollo
+## Estado de la plataforma: qué existe hoy y qué está en implementación
 
-Este cuadro separa lo que funciona en producción de lo que se construye durante octubre. Todo lo
-que dice «En desarrollo» se describe en el resto del documento como diseño, no como resultado.
+Este cuadro separa lo que funciona en producción de lo que se construye en la semana de esta
+versión. Lo que dice «En implementación» se describe en el resto del
+documento como diseño, no como resultado. Que una pieza esté en producción dice que existe y se
+puede usar; no dice que se haya medido su efecto (ver sección 7).
 
-| Pieza | Estado al 1 de octubre de 2026 | Evidencia |
+| Pieza | Estado al 3 de octubre de 2026 | Evidencia |
 |---|---|---|
 | Directorio de negocios con mapa, registro público sin cuenta y moderación humana antes de publicar | En producción | `README.md`; `docs/arquitectura-y-costos.md` §1 |
 | Consentimiento: versión de términos guardada, dos casillas obligatorias, hash de IP en el registro de consentimiento | En producción | `docs/arquitectura-y-costos.md` §2.5 |
 | Registro asistido (para quien no usa celular), con consentimiento y persona que captura exigidos por restricción de base | En producción | `AGENTS.md`, patrón «Dos puertas, una ficha» |
-| Ingreso de vecinos con Google (identidad por `google_sub`, no por correo) y «Mi cuenta» | En producción | `docs/arquitectura-y-costos.md` §2.2 |
+| Ingreso de vecinos con Google (identidad por `google_sub`, no por correo) y panel del negocio (antes «Mi cuenta», hoy en `/firmamento/negocio`) | En producción | `docs/arquitectura-y-costos.md` §2.2 |
 | Asesor de formalización con catálogo cerrado de trámites y apoyos, proveedores de lenguaje gratuitos con rotación, solo con sesión | En producción | `docs/arquitectura-y-costos.md` §1 y §2.1 |
 | Guías de Marca y de Ventas para los aliados; «Mis clientes» (CRM mínimo con nombre, teléfono y nota) | Implementado en el repositorio | `AGENTS.md`; `lib/content.ts` |
 | Analítica agregada sin cookies: visitas por día y vistas y contactos por negocio y día; sin IP, sin recorridos | En producción | `docs/analitica.md` |
 | Validación geográfica del punto contra el polígono de la comuna | En producción | `docs/analitica.md`, «Seguridad del sitio» |
-| Pipeline de datos (OpenStreetMap, agrupamiento HDBSCAN, clasificador de categoría) | Ejecutado el 2 de octubre de 2026; salidas y métricas reproducibles. Su integración al sitio sigue en desarrollo | `pipeline/README.md`; `pipeline/reporte_modelo.md` |
-| Firmamento (tablero público), mapa estelar de constelaciones | **En desarrollo** | `docs/plan-reto-2026-10.md`, Fases 1 y 3 |
-| Sugeridor de categoría en el registro (el modelo existe y está evaluado; falta la pieza en el formulario) | **En desarrollo** | Fases 1 y 2; `pipeline/reporte_modelo.md` |
-| `/api/datos` (agregados con supresión de celdas pequeñas) | **En desarrollo** | Fase 2 |
-| Vigía de convocatorias, «Para ti», «Tu negocio en números» | **En desarrollo** | Fases 2 y 3 |
-| Barrio oficial calculado por punto en polígono (corrige además la lista de barrios: la comuna tiene 15 barrios oficiales y el sitio listaba «Campo Valdés No. 1», que es de la Comuna 4) | **En desarrollo** | Fase 2, hallazgo A1 de la asesoría; Anexo A |
-| Campos personalizados públicos solo si están marcados; hash y purga de la IP de registro | **En desarrollo** | Fase 2, hallazgo A2 |
-| Política de datos que nombra a los proveedores de IA y nueva versión de términos | **En desarrollo** | Fase 2, hallazgo A3 |
+| Pipeline de datos (OpenStreetMap, agrupamiento HDBSCAN, clasificador de categoría) | Ejecutado el 2 de octubre de 2026; salidas y métricas reproducibles. Sus salidas (`constelaciones.json` y el modelo del sugeridor) ya se sirven desde el sitio | `pipeline/README.md`; `pipeline/reporte_modelo.md`; `public/firmamento/` |
+| `/firmamento`: tablero público de datos (secciones α a η) y mapa estelar con las constelaciones sobre OpenStreetMap | En producción | `app/(site)/firmamento/page.tsx`; `AGENTS.md`, patrón «`/firmamento`» |
+| Sugeridor de categoría en el formulario de registro (corre en el navegador; solo viajan la categoría inferida y su confianza, nunca el texto escrito) | En producción | `AGENTS.md`, patrón «Sugeridor de categoría» |
+| `/api/datos`: agregados de negocios aprobados con supresión de celdas pequeñas (k = 5) | En producción | `AGENTS.md`, patrón «Datos abiertos y regla k = 5»; `lib/db/datos.repo.ts` |
+| Firmamento con sesión: una puerta (`/firmamento/entrar`) y tres paneles por rol: **negocio**, **equipo** y **entidad** (detalle en 4.2) | En producción | `docs/firmamento-modulos.md`; `AGENTS.md`; `TASKS.md`, sección «Firmamento: login por rol y paneles» (despliegue del 3 de octubre de 2026) |
+| Edición directa de la ficha por su dueño, con bitácora de cambios (nombres de los campos, nunca los valores; migración 033) | En producción | `docs/base-de-datos.md`; `AGENTS.md`, patrones «Bitácora» y «Dos puertas, una ficha» |
+| Moderación de convocatorias: lo que trae el vigía entra «pendiente» y una persona decide a qué categorías y formalidad aplica | En producción (la cola y la decisión humana). La ejecución diaria automática del vigía depende de GitHub Actions: ver 8.3 | `AGENTS.md`, patrón «Convocatorias» |
+| «Para ti» (convocatorias aprobadas que aplican a cada negocio) y «Tu negocio en números» (vistas y contactos propios, 8 semanas) en el panel del negocio | En producción | `AGENTS.md`, patrón «Panel del negocio» |
+| Barrio oficial calculado por punto en polígono (15 barrios, Alcaldía de Medellín); corrige además la lista de barrios: el sitio listaba «Campo Valdés No. 1», que es de la Comuna 4 | En producción | `lib/geo/barrios-manrique.json`; `AGENTS.md`, patrones «Barrios oficiales» y «Barrio oficial de un negocio»; Anexo A |
+| Campos personalizados públicos solo si están marcados; la IP de registro se guarda en claro 30 días y luego se anula (queda su hash en el registro de consentimiento) | Implementado en el repositorio; la migración 032 está aplicada en producción. [PENDIENTE: confirmar que el cron de purga corre en producción] | `AGENTS.md`, patrones «Campos personalizados públicos» e «IP» |
+| Política de datos que nombra a los proveedores de IA y nueva versión de términos (`2026-10-v5`) | Implementado en el repositorio. [PENDIENTE: confirmar el despliegue de la versión v5] | `lib/validation/portafolio.schema.ts`; `app/(site)/legal/politica-datos/page.tsx` |
+| Sugeridor en un clic dentro de la moderación («Usar X» o «Mantener»), con reentrenamiento a partir de las decisiones del equipo | **En implementación** | `docs/plan-rediseno-firmamento.md`, brecha 1 |
+| Mapa de los 15 barrios coloreado (hoy el mapa dibuja el contorno de los barrios y su nombre, sin color por barrio) | **En implementación** | `docs/plan-rediseno-firmamento.md`, brecha 2; `AGENTS.md`, patrón «Barrios oficiales» |
+| F1 por categoría y matriz de confusión dentro del panel «Modelos» (las cifras existen en `pipeline/reporte_modelo.md`; falta mostrarlas en el panel) | **En implementación** | `docs/plan-rediseno-firmamento.md`, brecha 3 |
+| Rediseño visual de los paneles («Ventana al cielo»: login por roles, pestañas, cifras con una sola fuente por grupo) | **En implementación** | `docs/plan-rediseno-firmamento.md` |
+| Mapa dentro de «Territorio» del panel del equipo (hoy muestra tablas) | **En implementación** | `docs/plan-rediseno-firmamento.md`, brecha 2; `TASKS.md` |
 
 ---
 
@@ -78,8 +90,10 @@ que dice «En desarrollo» se describe en el resto del documento como diseño, n
 
 ### Qué es y qué no es
 
-Firmamento es un tablero público, de lectura, que mide **el territorio y la distancia entre el
-territorio y la red**, no solo a Constelaciones. Se organiza en tres capas y ninguna le pide un
+Firmamento tiene dos caras. La primera es un tablero público, de lectura (`/firmamento`, en
+producción), que mide **el territorio y la distancia entre el territorio y la red**, no solo a
+Constelaciones. La segunda son los paneles con sesión para quien tiene un papel en la red (ver
+«Firmamento con sesión», más abajo). El tablero se organiza en tres capas y ninguna le pide un
 dato nuevo al negocio:
 
 1. **Territorio**: datos abiertos y fuentes oficiales (OpenStreetMap, DANE, Departamento
@@ -95,7 +109,10 @@ Reglas de diseño del producto de datos:
 - **Supresión de celdas pequeñas (k = 5):** toda celda con menos de cinco negocios se publica como
   «<5». Con una red pequeña, la mayoría de las celdas saldrán suprimidas, y eso es lo correcto:
   se explica en el propio tablero como decisión de protección de datos (Ley 1581 de 2012).
-- **Las búsquedas se guardan como la categoría inferida**, nunca como el texto escrito por la persona.
+- **Lo que escribe la persona no sale de su pantalla.** El sugeridor corre en el navegador; lo único
+  que viaja al registrarse es la categoría inferida, su confianza y si la persona la aceptó, nunca el
+  texto escrito. Las búsquedas sin resultado, cuando se midan, se guardarán como categoría inferida
+  y no como texto (hoy esa medición no existe).
 - **Toda cifra lleva fuente y fecha** debajo; ninguna pieza usa datos simulados.
 - **Los colores de categoría solo identifican**, nunca juzgan; cada categoría se distingue
   también por forma o letra (daltonismo).
@@ -109,21 +126,51 @@ Reglas de diseño del producto de datos:
 
 | # | Componente del tablero | Capa | Indicador que muestra | Cómo se calcula | De dónde sale el dato | Actualización | Estado |
 |---|---|---|---|---|---|---|---|
-| 1 | Cielo de hoy | Territorio | Establecimientos mapeados en OpenStreetMap dentro del polígono oficial de la comuna, con y sin nombre | Conteo de elementos de OpenStreetMap con etiqueta comercial cuyo punto cae dentro de `lib/geo/manrique.json`, exigiendo o no `name`, con duplicados descartados (la misma metodología de conteo de la asesoría) | OpenStreetMap vía API Overpass (OpenStreetMap contributors, 2026). Valor: **320 establecimientos mapeados** en la Comuna 3, de ellos 201 con nombre y 119 sin nombre, snapshot de OpenStreetMap del 2 de octubre de 2026 (17:01 UTC). Los 119 «sin nombre» incluyen 4 cuyo `name` en OpenStreetMap es literalmente «Sin nombre» | Se propone semanal, por flujo automático; cada salida lleva fecha y fuente | En desarrollo (el dato de la corrida existe) |
-| 2 | Mapa estelar | Territorio | Constelaciones comerciales (nodos de comercio vecino) y locales sueltos | Agrupamiento por densidad (HDBSCAN) sobre coordenadas en metros; centroide, radio, mezcla de categorías y árbol de expansión mínima para dibujar. Resultado: 20 constelaciones, 213 establecimientos agrupados y 107 sueltos (ver 4.3). Cada constelación lleva un código (C01…) y un nombre descriptivo «vía · categoría dominante» | Salida del paso 2 del pipeline (`constelaciones.json`) | Se propone semanal | En desarrollo (el dato de la corrida existe) |
-| 3 | Tabla de constelaciones | Territorio | Por constelación: número de locales, categorías presentes y barrio dominante | Resumen del paso anterior; al tocar una fila se enciende en el mapa | Mismo origen que el componente 2 | Semanal | En desarrollo |
-| 4 | Contexto del territorio | Territorio | Población, área, desempleo e índice de condiciones de vida de la comuna frente a la ciudad | Valores publicados, sin cálculo propio (Anexo A) | Alcaldía de Medellín, Departamento Administrativo de Planeación (2021) | Anual, cuando se publique una ficha nueva | En desarrollo (los datos son estáticos) |
-| 5 | Referencia nacional de micronegocios | Territorio | Proporción de micronegocios con RUT, con registro en Cámara de Comercio y que usan internet | Valores publicados para las 24 ciudades; se rotulan como referencia de ciudades, no de Manrique | DANE, EMICRON 2025 (2026) | Anual | En desarrollo |
-| 6 | Brecha territorio-red («embudo de visibilidad») | Red | Razón entre negocios aprobados en Constelaciones y establecimientos visibles en el mapa abierto, y de ahí a contactos | Aprobados ÷ establecimientos OSM; vistas y contactos en 30 días. Se rotula como **línea base**, no como cobertura del universo (ver sección 8.2) | `/api/datos` y paso 1 del pipeline | Cada hora (caché) | En desarrollo |
-| 7 | Red por categoría, barrio y constelación | Red | Número de aprobados por categoría, por barrio oficial y por constelación | Conteo con supresión: si n < 5, se muestra «<5» | `/api/datos` (solo aprobados; barrio por punto en polígono) | Cada hora (caché) | En desarrollo |
-| 8 | Formas de pago y formalidad declarada | Red | Distribución agregada de medios de pago y de formalidad declarada | Conteo con supresión (k = 5). **[PENDIENTE: confirmar con el equipo de integración si la formalidad agregada se publica o queda solo en el panel]** | `/api/datos` | Cada hora | En desarrollo |
-| 9 | Uso del sitio | Uso | Vistas de ficha y contactos iniciados en los últimos 30 días | Suma de contadores diarios ya existentes; no hay evento individual ni identificador | Tabla de interacciones por negocio, día y tipo (`docs/analitica.md`) | Diaria | Datos existen; vista pública en desarrollo |
-| 10 | Búsquedas sin resultado | Uso | Categorías que la gente busca y no encuentra en la red | Categoría inferida de la búsqueda; el texto original no se guarda | `/api/datos` | Cada hora | En desarrollo |
-| 11 | Sugeridor en vivo | Uso | Muestra el modelo respondiendo: categoría más probable y probabilidad, o las tres más probables si la confianza es baja | Inferencia en el navegador; ver 4.3 | Modelo exportado por el paso 3 del pipeline | Cuando se reentrena | En desarrollo |
-| 12 | Vigía de convocatorias | Uso | Convocatorias oficiales nuevas, revisadas por una persona, y cuántas se aprobaron | Revisión diaria de páginas oficiales; todo entra como pendiente hasta que un moderador lo aprueba | Páginas oficiales de Fondo Emprender, Bancóldex, Ruta N, Cámara de Comercio, SENA e iNNpulsa | Diaria | En desarrollo |
-| 13 | Indicadores con meta | Red y uso | Avance frente a las metas de la sección 7 | Cálculo directo sobre los componentes anteriores | `/api/datos` | Cada hora | En desarrollo |
+| 1 | Cielo de hoy | Territorio | Establecimientos mapeados en OpenStreetMap dentro del polígono oficial de la comuna, con y sin nombre | Conteo de elementos de OpenStreetMap con etiqueta comercial cuyo punto cae dentro de `lib/geo/manrique.json`, exigiendo o no `name`, con duplicados descartados (la misma metodología de conteo de la asesoría) | OpenStreetMap vía API Overpass (OpenStreetMap contributors, 2026). Valor: **320 establecimientos mapeados** en la Comuna 3, de ellos 201 con nombre y 119 sin nombre, snapshot de OpenStreetMap del 2 de octubre de 2026 (17:01 UTC). Los 119 «sin nombre» incluyen 4 cuyo `name` en OpenStreetMap es literalmente «Sin nombre» | Hoy se actualiza a mano, al repetir la corrida del pipeline; se propone semanal y automática [PENDIENTE: depende de GitHub Actions, ver 8.3]; cada salida lleva fecha y fuente | En producción (sección α de `/firmamento`) |
+| 2 | Mapa estelar | Territorio | Constelaciones comerciales (nodos de comercio vecino) y locales sueltos | Agrupamiento por densidad (HDBSCAN) sobre coordenadas en metros; centroide, radio, mezcla de categorías y árbol de expansión mínima para dibujar. Resultado: 20 constelaciones, 213 establecimientos agrupados y 107 sueltos (ver 4.3). Cada constelación lleva un código (C01…) y un nombre descriptivo «vía · categoría dominante» | Salida del paso 2 del pipeline (`constelaciones.json`) | Con cada corrida del pipeline | En producción (sección β) |
+| 3 | Tabla de constelaciones | Territorio | Por constelación: número de locales, categorías presentes y barrio dominante | Resumen del paso anterior; al tocar una fila se enciende en el mapa | Mismo origen que el componente 2 | Con cada corrida del pipeline | En producción (sección γ) |
+| 4 | Contexto del territorio | Territorio | Población, área, desempleo e índice de condiciones de vida de la comuna frente a la ciudad | Valores publicados, sin cálculo propio (Anexo A) | Alcaldía de Medellín, Departamento Administrativo de Planeación (2021) | Anual, cuando se publique una ficha nueva | En producción (sección ζ; el tablero muestra población, área y desempleo; el índice de condiciones de vida queda en este documento) |
+| 5 | Referencia nacional de micronegocios | Territorio | Proporción de micronegocios con RUT y con registro en Cámara de Comercio | Valores publicados para las 24 ciudades; se rotulan como referencia de ciudades, no de Manrique | DANE, EMICRON 2025 (2026) | Anual | En producción (sección ζ). **[PENDIENTE: contrastar las dos cifras con el boletín original; el tablero las rotula así]** |
+| 6 | Brecha territorio-red («embudo de visibilidad») | Red | Las tres miradas lado a lado: empresas con registro mercantil, establecimientos mapeados y aliados aprobados. El paso siguiente del embudo (de ahí a contactos) no está en el tablero público | Sin división entre cifras. Se rotula como **línea base**, no como cobertura del universo (ver sección 8.2) | Cámara de Comercio, paso 1 del pipeline y agregados de la red (`obtenerDatosAbiertos`) | Cada hora (caché) | En producción (sección δ); el tramo hacia contactos, pendiente de diseño |
+| 7 | Red por categoría, barrio y constelación | Red | Número de aprobados por categoría y por barrio oficial | Conteo con supresión: si n < 5, se muestra «<5»; si queda escondida una sola celda, se esconde también la menor visible | `/api/datos` (solo aprobados; barrio por punto en polígono). El tablero público muestra la categoría; el barrio sale en `/api/datos` y en el panel de la entidad | Cada hora (caché) | En producción para categoría y barrio. Por constelación: pendiente de diseño |
+| 8 | Formalidad declarada y mayor dificultad declarada | Red | Distribución agregada de la formalidad declarada y de la mayor dificultad (opciones cerradas) | Conteo con supresión (k = 5). Cada dimensión lista todas sus opciones. Medios de pago y origen de registro (propio o asistido) no están en `/api/datos` hoy | `/api/datos` | Cada hora | En producción (formalidad y mayor dificultad). Medios de pago y origen de registro: pendiente de diseño |
+| 9 | Uso del sitio | Uso | Vistas de ficha y contactos iniciados | Suma de contadores diarios ya existentes; no hay evento individual ni identificador | Tabla de interacciones por negocio, día y tipo (`docs/analitica.md`) | Diaria | En producción para cada negocio (sus propias cifras de 8 semanas en su panel). La vista pública agregada: pendiente de diseño |
+| 10 | Búsquedas sin resultado | Uso | Categorías que la gente busca y no encuentra en la red | Categoría inferida de la búsqueda; el texto original no se guarda | `/api/datos` | Cada hora | Pendiente de diseño (`docs/base-de-datos.md`, sección 6: falta saber si la búsqueda tuvo resultado) |
+| 11 | Sugeridor en vivo | Uso | Muestra el modelo respondiendo: categoría más probable y probabilidad, o las tres más probables si la confianza es baja | Inferencia en el navegador; ver 4.3 | Modelo exportado por el paso 3 del pipeline | Cuando se reentrena | En producción (sección ε y formulario de registro) |
+| 12 | Vigía de convocatorias | Uso | Convocatorias oficiales nuevas, revisadas por una persona, y cuántas se aprobaron | Revisión de páginas oficiales; todo entra como pendiente hasta que un moderador lo aprueba y elige a qué categorías y formalidad aplica | Páginas oficiales de Fondo Emprender, Bancóldex, Ruta N, Cámara de Comercio, SENA e iNNpulsa | Se propone diaria **[PENDIENTE: ejecución automática diaria, depende de GitHub Actions y de cargar los secretos de la ingesta; ver 8.3]** | En producción la moderación y «Para ti»; el contador público de convocatorias aprobadas, pendiente de diseño |
+| 13 | Indicadores con meta | Red y uso | Avance frente a las metas de la sección 7 | Cálculo directo sobre los componentes anteriores | `/api/datos` | Cada hora | Pendiente de diseño (el tablero publica «indicadores con fuente» de otras entidades, no avance frente a metas) |
 
 Hay al menos un componente de cada capa: territorio (1 a 5), red (6 a 8) y uso (9 a 12).
+
+### Firmamento con sesión: tres roles, tres paneles
+
+Además del tablero público, Firmamento tiene una puerta de entrada (`/firmamento/entrar`) y un
+panel por rol. Los tres están en producción desde el 3 de octubre de 2026. Lo que cada rol ve se
+decide en el servidor, en cada consulta, y no en la pantalla (`docs/firmamento-modulos.md`).
+
+| Rol | Cómo entra | Qué ve y qué hace | Qué no ve |
+|---|---|---|---|
+| **Aliado** (dueño de un negocio) | Cuenta de Google, o el enlace privado de su ficha | Sus propias cifras (vistas y contactos de 8 semanas); su ficha, que puede editar directamente, con la bitácora de cambios; «Para ti», con las convocatorias aprobadas que le aplican por categoría y formalidad; su constelación y los comercios vecinos de OpenStreetMap, rotulados «no es aliado»; sus clientes (CRM mínimo: nombre, teléfono y nota) | Los datos de otros negocios. La comparación con su categoría solo aparece si hay al menos cinco negocios |
+| **Equipo** (moderadores) | Cuenta de moderador (sesión propia de 8 horas) | Moderación de fichas; cola de convocatorias del vigía, con quién decidió y cuándo; territorio con plan de brigada para el censo de campo (exportable en CSV); datos abiertos; modelos; alta de entidades y de sus miembros | Los clientes de cada negocio: son datos de terceros y no los lee ni el equipo |
+| **Entidad** (por ejemplo, la Junta Administradora Local, CEDEZO y el Centro del Valle del Software de Manrique) | Cuenta de Google autorizada por el equipo (una fila de miembro de la entidad, no un rol dentro de la cookie) | Observatorio con **solo agregados con supresión k = 5**; descarga CSV de esos agregados; propuesta de convocatorias, que entran «pendientes» y que el equipo revisa antes de publicar | Cualquier fila de negocio: nombres, contactos, direcciones y coordenadas |
+
+Tres decisiones de diseño que importan para evaluar la propuesta:
+
+- **La edición del dueño publica directo.** Es un cambio frente al diseño anterior, en el que cada
+  edición devolvía la ficha a revisión. Se eligió para que un negocio pueda corregir su horario o
+  su teléfono sin esperar a un moderador. A cambio, un cambio malicioso o equivocado queda
+  visible hasta que el equipo lo vea: por eso cada edición deja una fila en la bitácora (guarda los
+  nombres de los campos cambiados, nunca los valores, para no duplicar datos personales) y el panel
+  del equipo calcula alertas de calidad (punto fuera de la comuna, barrio distinto del que dice el
+  punto, categoría «Otros» y ficha incompleta). Los registros nuevos y las fichas rechazadas siguen pasando por
+  moderación antes de publicarse. **[PENDIENTE: medir cuántas ediciones corrige el equipo después de publicadas; no hay dato todavía]**
+- **Dos poblaciones, dos cookies.** Los moderadores y los vecinos tienen sesiones separadas; la
+  entidad usa la sesión de vecino más su membresía.
+- **Una entidad nunca lee negocios fila por fila.** Lo comprueba un verificador automático del
+  repositorio (`scripts/verificar-entidades.mjs`).
+
+Falta probar en producción el ingreso real con Google de un negocio y de una entidad, y dar de alta
+a la primera entidad (`TASKS.md`). **[PENDIENTE: prueba de ingreso real con Google en producción y alta de la primera entidad]**
 
 ### Tres miradas del mismo territorio
 
@@ -156,7 +203,8 @@ Cómo leer el cuadro:
 | DANE, EMICRON 2025: boletines y anexos | Contexto de micronegocios en 24 ciudades | Disponible |
 | Estructura Empresarial 2025 de la Cámara de Comercio | Empresas registradas en Manrique (2.626), por tamaño y por sector | Leída del archivo original el 1 de octubre de 2026; ver Anexo A |
 | Exportación CSV del panel de moderación | Datos propios agregables de la red | En producción |
-| `/api/datos` | Agregados públicos con supresión | En desarrollo |
+| `/api/datos` | Agregados públicos con supresión (k = 5) de categoría, barrio, formalidad declarada y mayor dificultad declarada | En producción |
+| Barrios oficiales | Los 15 polígonos de barrio de la Comuna 3, para calcular el barrio de cada punto | Alcaldía de Medellín, polígonos de barrios (archivo entregado al equipo, 2026); recortados por `scripts/extraer-barrios.mjs` el 2 de octubre de 2026 |
 
 El pipeline aplica validaciones de calidad antes de cualquier modelo: eliminación de duplicados,
 descarte de coordenadas fuera del polígono, tratamiento de nulos y trazabilidad (fuente y fecha
@@ -180,6 +228,14 @@ en cada archivo de salida).
 - **No se entrena con los registros propios de la red:** son pocos y el entrenamiento sería
   inestable. Los registros propios son donde se aplica el modelo; las correcciones de los
   moderadores se suman después a los datos de entrenamiento.
+- **Qué se guarda del uso (en producción).** El modelo ya está en el formulario de registro y corre
+  en el navegador. Por cada registro se guarda la categoría que el modelo infirió, su confianza y si
+  la persona la aceptó (la categoría final coincide con la sugerida); nunca el texto escrito. Esa
+  tabla (`sugerencias_categoria`) es la que permitirá medir la aceptación y reentrenar, y desde la
+  migración 033 sabe de qué ficha vino cada sugerencia. Cuando un moderador cambia la categoría de
+  una ficha, la bitácora lo registra como `categoria_corregida`, que es la señal de corrección
+  para el reentrenamiento. El sugeridor en un clic dentro de la moderación, que guarda esa decisión
+  como ejemplo, está **en implementación**.
 
 | Variable | Papel | Tipo | Fuente | Modelo |
 |---|---|---|---|---|
@@ -244,7 +300,10 @@ en cada archivo de salida).
   categoría correcta. (5) Frente a la corrida anterior, el modelo sugiere una sola categoría con
   más frecuencia (84,6 % frente a 76,0 %) pero acierta menos en ellas (70,4 % frente a 73,8 %).
 - **Reentrenamiento:** periódico (propuesta: cada trimestre o cada cien correcciones de moderador),
-  sumando las correcciones propias a los datos de OpenStreetMap.
+  sumando las correcciones propias a los datos de OpenStreetMap. El reentrenamiento a partir de las
+  decisiones del equipo en la moderación está **en implementación**, como también la vista del F1
+  por categoría y de la matriz de confusión dentro del panel «Modelos» (hoy esas cifras están en
+  `pipeline/reporte_modelo.md` y en este documento).
 
 ### Modelo 2: constelaciones comerciales (agrupamiento espacial)
 
@@ -306,11 +365,11 @@ en cada archivo de salida).
 | Variable | Tipo | Fuente | Tratamiento de privacidad |
 |---|---|---|---|
 | Categoría | Categórica | Registro | Agregado con k = 5 |
-| Barrio oficial | Categórica | Calculado por punto en polígono con la capa de barrios de GeoMedellín | Agregado con k = 5; no se publica la coordenada |
-| Constelación | Categórica | Modelo 2 | Agregado con k = 5 |
-| Origen de registro (propio o asistido) | Categórica | Registro | Agregado con k = 5; sirve para medir inclusión |
-| Medios de pago | Categórica múltiple | Registro | Agregado con k = 5 |
-| Formalidad declarada | Categórica | Investigación del registro (privada) | Solo agregada, con k = 5, y sujeta a la confirmación indicada en 4.2 |
+| Barrio oficial | Categórica | Calculado por punto en polígono con la capa de barrios de la Alcaldía de Medellín (15 barrios); queda guardado en la ficha desde la migración 033 | Agregado con k = 5; no se publica la coordenada |
+| Constelación | Categórica | Modelo 2 | Para el aliado, se calcula al vuelo y no se guarda; el agregado con k = 5 por constelación está pendiente de diseño |
+| Origen de registro (propio o asistido) | Categórica | Registro | Agregado con k = 5 previsto para medir inclusión; hoy no está en `/api/datos` [PENDIENTE: incluirlo antes de medir el indicador de registros asistidos] |
+| Medios de pago | Categórica múltiple | Registro | Agregado con k = 5 previsto; hoy no está en `/api/datos` |
+| Formalidad declarada y mayor dificultad declarada | Categórica | Investigación del registro (privada) | Solo agregada, con k = 5, en `/api/datos` y en el tablero de la entidad; nunca por negocio |
 | Vistas y contactos por día | Conteo | Contadores existentes | Sin IP, sin cookie, sin identificador |
 
 Variables que **no** se usan: nombre del titular, documento, correo, teléfono, dirección exacta,
@@ -327,7 +386,7 @@ misma ruta, ajustadas a seis meses.
 
 | Fase | Qué se hace | Producto al final de la fase | Semanas |
 |---|---|---|---|
-| 1. Alistar | Ajustes de la plataforma (barrios, campos públicos, política de datos); acuerdos de trabajo con la Junta Administradora Local, CEDEZO y el Centro del Valle del Software de Manrique; definición de la línea base del tablero | Plataforma ajustada; actas de acuerdo; línea base publicada con fuente y fecha | 1–3 |
+| 1. Alistar | Acuerdos de trabajo con la Junta Administradora Local, CEDEZO y el Centro del Valle del Software de Manrique, y alta de cada entidad en su panel; definición de la línea base del tablero y de lo que significa «informal». Los ajustes de plataforma de esta fase (barrio oficial, campos públicos, política de datos) ya están hechos al 3 de octubre de 2026 | Actas de acuerdo; entidades con acceso a su panel; línea base publicada con fuente y fecha | 1–3 |
 | 2. Entender y analizar | **Censo de campo** con registro asistido en los barrios con menos puntos en el mapa abierto; diálogo con 30 negocios para entender dificultades y necesidades | Registros asistidos con consentimiento; síntesis de los diálogos; mapa de cobertura comparado con el mapa abierto | 3–8 |
 | 3. Crear | **Codiseño con los negocios** del tablero y de los servicios (sugeridor, «Para ti», «Tu negocio en números»); taller de convergencia | Versión del tablero y de los servicios validada con los negocios | 6–12 |
 | 4. Operar | Seis talleres con aliados; moderación de convocatorias del vigía; reentrenamiento del modelo con las correcciones de moderación | Talleres realizados; convocatorias aprobadas; modelo reentrenado | 12–22 |
@@ -384,10 +443,10 @@ predicciones.
 |---|---|---|---|---|
 | Más negocios visibles en el mapa | Aliados aprobados | [PENDIENTE: cifra de aliados aprobados al cierre de la entrega, tomada de `/api/datos`] | 150 aliados | Conteo de aprobados (componente 6 del tablero) |
 | La visibilidad llega a quien tiene menos acceso | Proporción de aliados informales | [PENDIENTE: línea base de formalidad declarada] | Al menos 40 % de los aliados, **con definición de «informal» fijada en la fase 1** | Formalidad declarada, agregada con k = 5 |
-| Registros asistidos efectivos | Aliados con origen «asistido» y consentimiento verificable | [PENDIENTE] | [COMPLETAR: meta; se propone derivarla del 40 % de informales] | Origen de registro (componente 7) |
-| Información confiable | Fichas con categoría y barrio confirmados | [PENDIENTE: línea base tras calcular el barrio oficial] | 95 % de las fichas | Fichas con categoría y barrio oficial confirmados ÷ aprobadas |
-| El sugeridor ayuda y no estorba | Proporción de sugerencias aceptadas y corregidas por las personas | [PENDIENTE: métrica de datos-ml; no existe hasta que el sugeridor esté en el formulario y haya registros. Referencia de laboratorio, no de uso: el modelo acierta 70,4 % de las sugerencias únicas sobre datos de OpenStreetMap] | [COMPLETAR: meta, tras medir el uso inicial] | Registro de sugerencias y de la categoría final elegida |
-| La oferta de apoyo llega | Aliados conectados con al menos una convocatoria que les aplica | 0 al inicio del piloto (la función no existe) | 30 % de los aliados | Convocatorias aprobadas y vistas desde «Para ti» (componente 12) |
+| Registros asistidos efectivos | Aliados con origen «asistido» y consentimiento verificable | [PENDIENTE: el dato está en la base, pero no sale en `/api/datos`] | [COMPLETAR: meta; se propone derivarla del 40 % de informales] | Origen de registro (componente 7) |
+| Información confiable | Fichas con categoría y barrio confirmados | [PENDIENTE: línea base al día de la entrega; el barrio oficial ya se calcula y se guarda en cada ficha, y el panel del equipo marca las que quedan fuera de la comuna o en «Otros»] | 95 % de las fichas | Fichas con categoría y barrio oficial confirmados ÷ aprobadas |
+| El sugeridor ayuda y no estorba | Proporción de sugerencias aceptadas y corregidas por las personas | [PENDIENTE: métrica de datos-ml; el sugeridor ya está en el formulario y guarda si la persona aceptó la sugerencia, pero aún no hay registros suficientes para una tasa. Referencia de laboratorio, no de uso: el modelo acierta 70,4 % de las sugerencias únicas sobre datos de OpenStreetMap] | [COMPLETAR: meta, tras medir el uso inicial] | Registro de sugerencias y de la categoría final elegida |
+| La oferta de apoyo llega | Aliados conectados con al menos una convocatoria que les aplica | [PENDIENTE: número de convocatorias aprobadas y de aliados con al menos una que les aplica, el día de la entrega; «Para ti» ya existe, y el vigía todavía no corre solo] | 30 % de los aliados | Convocatorias aprobadas y vistas desde «Para ti» (componente 12) |
 | Diálogo con el territorio | Negocios entrevistados | 0 al inicio del piloto | 30 negocios | Registro del equipo |
 | Formación | Talleres realizados | 0 al inicio del piloto | 6 talleres | Registro del equipo |
 | Tablero que se usa | Vistas y contactos mensuales de las fichas | [PENDIENTE: cifra del día de entrega] | [COMPLETAR: meta] | Contadores diarios (componente 9) |
@@ -418,7 +477,9 @@ ingreso.
 | El clasificador aprendió de nombres de comercios del Valle de Aburrá, muchos de cadenas y del centro; sus etiquetas vienen de OpenStreetMap sin revisión manual y no se ha validado con registros propios | Negocios con nombre propio o de categorías con pocos ejemplos (por ejemplo, barbería, con 13). Además, a veces sugiere con confianza alta una categoría errónea (por ejemplo, «Misceláneo El Vecino» como «comidas», con 0,90) | Umbral de confianza: por debajo, el sistema pregunta en lugar de sugerir; el modelo solo sugiere, y la persona y el moderador deciden; cada corrección reentrena con datos de Manrique |
 | La descripción libre de OpenStreetMap puede contener datos que identifican a una persona | Titulares de los comercios mapeados | La descripción no se publica ni sale en las constelaciones; solo se muestran dirección, horario, tipo de cocina y web cuando OpenStreetMap los trae; el pipeline no conserva teléfonos, contactos ni correos |
 | El registro mercantil solo ve lo formal: en las 24 ciudades que mide el DANE, 13,0 % de los micronegocios tiene registro en Cámara de Comercio (DANE, 2026). Esa cifra no es de Manrique y no se usa para estimar cuántos negocios informales hay en la comuna | Medir la cobertura contra la Cámara invisibilizaría a la mayoría | La cobertura se mide contra lo observado en campo y en el mapa abierto, no contra la Cámara; las 2.626 empresas registradas se muestran como una mirada más, no como el universo |
-| Los proveedores de lenguaje del asesor reciben la ficha del negocio | Titulares de datos, que no han sido informados de ese tratamiento (Ley 1581 de 2012) | Nombrar los proveedores en la política de datos y subir la versión de términos; no enviar respuestas de investigación a proveedores que entrenan con lo recibido. **En desarrollo** |
+| Los proveedores de lenguaje del asesor reciben la ficha del negocio | Titulares de datos, que no han sido informados de ese tratamiento (Ley 1581 de 2012) | La política de datos ya nombra a los proveedores y los datos que reciben, y la versión de términos subió a `2026-10-v5` (implementado en el repositorio; [PENDIENTE: confirmar el despliegue]). El asesor solo funciona con sesión; no se envían respuestas de investigación a proveedores que entrenan con lo recibido |
+| La edición del dueño publica directo, sin revisión previa | Vecinos y clientes que leen la vitrina: una ficha editada con un dato equivocado o abusivo queda visible hasta que alguien lo corrige | Bitácora de cada cambio (campos, quién y cuándo), alertas de calidad en el panel del equipo y corrección por el equipo; los registros nuevos y las fichas rechazadas siguen pasando por moderación. No hay todavía una medición de cuántas ediciones se corrigen [PENDIENTE] |
+| Una entidad con acceso a su panel podría llegar a datos de negocios | Titulares de datos | La entidad solo lee agregados con k = 5 y sus propias propuestas; lo comprueba un verificador automático; el acceso lo da el equipo, no la entidad |
 | Con pocos negocios, los agregados permitirían reidentificar a alguien | Los negocios de celdas pequeñas | Supresión de celdas con menos de cinco negocios; los textos de búsqueda no se guardan |
 | La brecha entre aliados y establecimientos podría leerse como «fracaso» o como «cobertura» | Lectores del tablero (JAL, comunidad) | Se rotula como **línea base**; el tablero explica la diferencia entre universo observado y red |
 | Brecha digital: quien no usa celular no se registra por su cuenta | Personas mayores y negocios sin tecnología | Registro asistido con consentimiento; enlace privado por negocio |
@@ -433,8 +494,10 @@ ingreso.
 - **Costo recurrente.** Estimado en USD 30 a 40 por mes para un uso diez veces mayor que el actual
   (Equipo Constelaciones, 2026a); el costo de personas, sobre todo de moderación, no está
   cuantificado porque no hay datos de volumen.
-- **Moderación humana.** Nada se publica sin aprobación; ese es el costo humano real del modelo
-  y se debe asignar a alguien con nombre.
+- **Moderación humana.** Ningún registro nuevo ni ninguna convocatoria se publica sin aprobación
+  de una persona; las ediciones de una ficha ya aprobada, en cambio, se publican directo y el
+  equipo las corrige después guiado por la bitácora y las alertas de calidad. Ese es el costo
+  humano real del modelo y se debe asignar a alguien con nombre.
 - **Alojamiento.** El plan gratuito actual no permite uso comercial; con financiación hay que pasar
   a un plan de pago (Equipo Constelaciones, 2026a).
 - **Automatización.** El vigía de convocatorias y la actualización semanal del pipeline están
@@ -513,7 +576,7 @@ boletín del DANE del 30 de julio de 2026.]**
 | Empresas registradas en Manrique | 2.626 (comerciantes matriculados y renovados en 2025; Tabla 16) | Cámara de Comercio de Medellín para Antioquia (2025), Base del Registro Mercantil; leída del archivo original | 1 de octubre de 2026 |
 | Empresas de Manrique por tamaño según activos | 2.569 microempresas (97,8 %), 51 pequeñas, 4 medianas, 2 grandes (Tabla 14) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
 | Empresas de Manrique por sector (seis mayores) | Comercio 1.091; industria manufacturera 309; alojamiento y comida 288; construcción 216; otras actividades de servicios 149; actividades profesionales, científicas y técnicas 130 (Tabla 16) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
-| Barrios oficiales de la Comuna 3 | 15 | Alcaldía de Medellín (2000), Decreto 346 de 2000, y geocatálogo de la Alcaldía (s. f.) | 1 de octubre de 2026 |
+| Barrios oficiales de la Comuna 3 | 15 | Alcaldía de Medellín (2000), Decreto 346 de 2000, y geocatálogo de la Alcaldía (s. f.). Polígonos usados para calcular el barrio: Alcaldía de Medellín, archivo entregado al equipo (2026), recortado el 2 de octubre de 2026 | 1 de octubre de 2026 (número de barrios); 2 de octubre de 2026 (polígonos) |
 | Establecimientos mapeados en OpenStreetMap | 5.423 comercios con nombre en el Valle de Aburrá (snapshot 04:40 UTC); 320 en la Comuna 3, 201 con nombre y 119 sin nombre (snapshot 17:01 UTC). Ambos del 2 de octubre de 2026, servidor principal de Overpass | OpenStreetMap contributors (2026), licencia ODbL; `pipeline/README.md` y `pipeline/reporte_modelo.md` | Corrida del 2 de octubre de 2026 |
 | Mandato local | Línea 4 Económica: «red estratégica con los pequeños comerciantes» (PDL Comuna 3, p. 114) | Alcaldía de Medellín (s. f.) | 1 de octubre de 2026 |
 
@@ -603,5 +666,7 @@ Learning Research, 12*, 2825–2830.
 Servicio Nacional de Aprendizaje. (2026). *[COMPLETAR: documento con los topes de honorarios 2026
 usados para el presupuesto]*. [COMPLETAR: URL y fecha de consulta].
 
-*(Referencia pendiente: GeoMedellín, capa de barrios usada para calcular el barrio por punto en
-polígono, si es distinta del registro del geocatálogo citado arriba.)*
+*(Referencia pendiente: [COMPLETAR: la capa de barrios usada para calcular el barrio por punto en
+polígono es un archivo que la Alcaldía entregó al equipo; el repositorio solo registra «Alcaldía de
+Medellín, polígonos de barrios, 2026». Indicar título, año y URL o responsable del archivo, o
+confirmar que coincide con el registro del geocatálogo citado arriba.])*
