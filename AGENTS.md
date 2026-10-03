@@ -178,6 +178,23 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   categoría final de la ficha), NUNCA el texto escrito. Es telemetría: si falla no tumba el
   registro. El archivo no lleva `server-only` ni imports de valor, para que el
   verificador lo importe.
+- **Sugeridor en la moderación** (`SugeridorModeracion.tsx` en
+  `equipo/moderacion/_components/`): el mismo modelo corre en el navegador del
+  equipo sobre nombre + descripción + `categoria_otra`, en cada registro
+  pendiente (`FichaModeracion`) y en cada alerta de «Otros». Un clic: «Usar «X»»,
+  «Mantener» o el selector «Corregir a mano»; si la propuesta ya es la actual,
+  solo «Correcta ✓». Lo decide `decidirCategoria` (`lib/actions/`, recibe un
+  objeto tipado, Zod `decisionCategoriaSchema`, revalida `admin_session`), que
+  llama `decidirCategoriaFicha` (`portafolios.repo.ts`): cambia la categoría Y
+  guarda el ejemplo en `sugerencias_categoria` (origen `moderacion`,
+  `decision_equipo` usada/corregida/mantenida, migración 034) en UNA sentencia,
+  solo si la categoría sigue siendo la que vio la pantalla. Al salir de «Otros»
+  borra `categoria_otra`. Bitácora `categoria_corregida` / `categoria_mantenida`
+  e `invalidarVitrina()` si cambió. Viajan ids y confianza, NUNCA el texto. El
+  ejemplo de reentrenamiento es `portafolios.nombre` + `portafolios.categoria_id`
+  de las filas con `portafolio_id` (ver docs/base-de-datos.md › 034). Una ficha
+  con decisión del equipo (`fichasConCategoriaRevisada`) ya no muestra los
+  botones: otro clic no es otro ejemplo.
 - **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
   la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
   vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
