@@ -43,7 +43,7 @@ Tabla `visitas_sitio`, una fila por día:
 | `conteo` | cuántas páginas se abrieron ese día |
 
 Se dispara desde `components/ContadorVisitas.tsx`, montado en el layout de
-`(site)` — así que **no cuenta `/admin`**. El disparo es del lado del cliente y
+`(site)` — así que **no cuenta los paneles de Firmamento** (`/firmamento/entrar`, `/negocio`, `/equipo`, `/entidad`, que viven en el grupo `(firmamento)`). El disparo es del lado del cliente y
 no en el render del servidor a propósito: los bots que no ejecutan JavaScript
 quedan afuera y un prefetch de Next no infla el número.
 
@@ -69,7 +69,7 @@ salieron de la portada a propósito, por dos razones:
    ecosistema es dato de gestión interna.
 
 Todo lo demás —vistas por ficha, contactos, ranking, tasa de mirar→contactar,
-negocios sin una sola visita— sigue completo en `/admin/estadisticas`, que está
+negocios sin una sola visita— sigue completo en `/firmamento/equipo/estadisticas`, que está
 detrás de sesión y excluido de buscadores.
 
 ## Interacciones con cada aliado (datos propios)
@@ -89,7 +89,7 @@ sin un solo contacto dicen que la ficha no convence; diez vistas con cinco
 contactos dicen que ese negocio funciona. Un solo número no dice ninguna de las
 dos cosas.
 
-Se ve en `/admin/estadisticas`, sección **03 · Interés por negocio**, con el
+Se ve en `/firmamento/equipo/estadisticas`, sección **03 · Interés por negocio**, con el
 ranking completo, el porcentaje que pasa de mirar a contactar, y cuántos
 negocios publicados no recibieron una sola visita — que es tan accionable como
 saber cuál es el más visto.

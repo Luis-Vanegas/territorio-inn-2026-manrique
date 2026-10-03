@@ -13,7 +13,7 @@ El sitio tiene exactamente cuatro puertas al mundo:
 | `/aliados/registro` | cualquiera, sin cuenta | crear un portafolio `pendiente` + subir una foto |
 | `/contacto` | cualquiera, sin cuenta | dejar un mensaje en el buzón |
 | `POST /api/interacciones` | cualquiera, sin cuenta | sumar 1 a un contador |
-| `/admin/login` | moderadores | obtener una sesión de 8 h |
+| `/firmamento/entrar?rol=equipo` (antes `/admin/login`) | moderadores | obtener una sesión de 8 h |
 
 Todo lo demás es lectura pública o está detrás de la sesión de moderación.
 
@@ -82,7 +82,7 @@ sesión de vecino se convierta en acceso de administrador — ni falsificándola
 porque el panel nunca la mira.
 
 **Moderador por Google (`ADMIN_GOOGLE_SUBS`).** Un moderador puede entrar por
-«Entrar con Google» en vez de por `/admin/login`. Cómo se mantiene la
+«Entrar con Google» en vez de por la contraseña de la pestaña Equipo de `/firmamento/entrar`. Cómo se mantiene la
 separación de arriba:
 
 - La concesión es una lista de `google_sub` en la variable de entorno
@@ -111,7 +111,7 @@ Riesgo asumido: quien controle esa cuenta de Google controla el panel. Por eso
 la cuenta debe tener verificación en dos pasos. Para revocar: quitar el `sub` de
 la variable y redesplegar; una `admin_session` ya emitida vale hasta 8 h.
 
-El guard vive en `app/admin/(panel)/layout.tsx`, no en `middleware.ts`. Se
+El guard es `exigirEquipo` (`lib/auth/firmamento.ts`) y se llama en el layout de `app/(firmamento)/firmamento/equipo/` Y en cada `page.tsx` (un layout no se re-ejecuta al navegar entre hermanas), no en `middleware.ts`. Se
 decidió así cuando el middleware era Edge-only (Next 14), donde no existen
 `node:crypto` ni `cookies()` de `next/headers` — justo lo que
 `verificarSesion()` necesita. Desde Next 16 el middleware ya soporta Node, pero
@@ -196,7 +196,7 @@ modo bloqueo, el mapa se habría quedado gris. Lo mismo con
 `va.vercel-scripts.com`, que sirve Analytics y Speed Insights.
 
 Orígenes verificados con cero violaciones en `/aliados`, `/aliados/registro`,
-`/entrar` y `/admin/login`.
+`/entrar` y `/admin/login` (verificación anterior a la mudanza: hoy esa puerta es `/firmamento/entrar`, sin re-verificar).
 
 **Antes de pasarla a modo bloqueo** (renombrar la cabecera a
 `Content-Security-Policy`), recorrer con la consola abierta lo que todavía no

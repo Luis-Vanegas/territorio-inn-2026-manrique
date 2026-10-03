@@ -113,7 +113,7 @@ Ajusté el fondo por defecto del script a `hueso` (#F7F5F0), no blanco puro — 
 
 ## 2. Categorías del mapa de Aliados — no son 9 fijas, son dinámicas
 
-El documento original asumía 9 categorías fijas con glifo asignado a mano. Acá no aplica igual: las categorías salen de `lib/db/portafolios.repo.ts` y se administran desde `/admin/campos` (`[app/admin/(panel)/campos/](app/admin/(panel)/campos/)`) — cualquier persona del equipo puede crear una categoría nueva sin tocar código. Eso significa que un mapeo fijo `categoría → glifo` en un objeto hardcodeado se desactualiza la primera vez que alguien agregue una categoría desde el panel.
+El documento original asumía 9 categorías fijas con glifo asignado a mano. Acá no aplica igual: las categorías salen de `lib/db/portafolios.repo.ts` y se administran desde `/firmamento/equipo/campos` (`[app/(firmamento)/firmamento/equipo/campos/](app/(firmamento)/firmamento/equipo/campos/)`) — cualquier persona del equipo puede crear una categoría nueva sin tocar código. Eso significa que un mapeo fijo `categoría → glifo` en un objeto hardcodeado se desactualiza la primera vez que alguien agregue una categoría desde el panel.
 
 **El problema de fondo sigue siendo el mismo** (nadie distingue 9+ colores en pines chicos, menos con daltonismo), pero la solución tiene que vivir donde vive el dato:
 
