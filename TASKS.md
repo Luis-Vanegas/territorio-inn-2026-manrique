@@ -85,6 +85,12 @@ Diseño en `docs/firmamento-modulos.md`. Neon se queda; la edición del dueño p
 - [ ] Panel negocio (mover `/mi-cuenta`), panel equipo (mover `/admin`), panel entidad.
 - [ ] Redirecciones `/admin/*` y `/mi-cuenta`, sitemap, menú y AGENTS.md.
 
+### 🟢 Para Antigravity (Firmamento)
+- [ ] Reemplazar `/admin` por `/firmamento/equipo` (y `/admin/login` por `/firmamento/entrar?rol=equipo`)
+      en `docs/analitica.md`, `docs/arquitectura-y-costos.md`, `docs/seguridad.md` y
+      `docs/sistema-diseno-a11y.md`. NO tocar `docs/auditoria-2026-08-16.md` (es histórico).
+      Las rutas `/api/admin/*` NO cambian.
+
 ## 🔎 Análisis de SonarCloud — 2026-08-31
 
 Primer análisis sobre `main` (commit `d120aa7`). Marcó Security C (1 issue),
