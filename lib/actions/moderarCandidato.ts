@@ -64,7 +64,7 @@ export async function moderarCandidatoAction(
     return { estado: 'error', mensaje: 'No se pudo aplicar el cambio.' };
   }
 
-  revalidatePath('/admin/empleo');
+  revalidatePath('/firmamento/equipo/empleo');
   revalidatePath('/empleo');
 
   const mensajes = {

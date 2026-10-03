@@ -151,7 +151,7 @@ async function editarFicha(
 
   revalidatePath('/aliados');
   invalidarVitrina();
-  revalidatePath('/admin/aliados');
+  revalidatePath('/firmamento/equipo', 'layout');
   for (const ruta of rutasExtra) revalidatePath(ruta);
 
   // Una ficha aprobada sigue aprobada: el cambio se ve al instante. Las demás
@@ -249,7 +249,7 @@ async function borrarFicha(token: string, actor: Actor, rutasExtra: string[]): P
 
   revalidatePath('/aliados');
   invalidarVitrina();
-  revalidatePath('/admin/aliados');
+  revalidatePath('/firmamento/equipo', 'layout');
   for (const ruta of rutasExtra) revalidatePath(ruta);
 
   return { estado: 'ok', mensaje: 'Tu negocio se borró del directorio.' };

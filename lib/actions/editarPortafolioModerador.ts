@@ -99,7 +99,7 @@ export async function editarPortafolioModerador(
     campos: camposConArchivos(cambio.campos, { foto, menu }),
   });
 
-  revalidatePath('/admin/aliados');
+  revalidatePath('/firmamento/equipo', 'layout');
   revalidatePath('/aliados');
   invalidarVitrina();
 

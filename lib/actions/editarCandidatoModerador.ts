@@ -52,7 +52,7 @@ export async function editarCandidatoModeradorAction(
     return { estado: 'error', mensaje: 'No se pudo guardar el cambio.' };
   }
 
-  revalidatePath('/admin/empleo');
+  revalidatePath('/firmamento/equipo/empleo');
   revalidatePath('/empleo');
 
   return { estado: 'ok', mensaje: 'Cambios guardados.' };

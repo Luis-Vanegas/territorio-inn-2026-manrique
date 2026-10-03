@@ -100,7 +100,7 @@ export async function moderarPortafolio(
     campos: ['estado'],
   });
 
-  revalidatePath('/admin/aliados');
+  revalidatePath('/firmamento/equipo', 'layout');
   revalidatePath('/aliados');
   invalidarVitrina();
 

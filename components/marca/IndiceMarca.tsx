@@ -9,7 +9,7 @@ import type { Coleccion } from '@/lib/marca';
 /**
  * Índice de un módulo de guías (Marca, Ventas…): `coleccion` trae qué mostrar.
  *
- * Compartido entre /marca (el negocio registrado) y /admin/marca (la
+ * Compartido entre /marca (el negocio registrado) y /firmamento/equipo/marca (la
  * moderación). `base` es la ruta donde vive cada copia: los enlaces a cada
  * guía se arman a partir de ella, así que ninguna copia apunta a la otra.
  * Quien llama decide la puerta (sesión de vecino o de moderador); acá no se
@@ -20,20 +20,25 @@ export function IndiceMarca({
   base,
   etiqueta,
   volver,
+  incrustado = false,
 }: {
   coleccion: Coleccion;
   base: string;
   etiqueta: string;
   volver: { href: string; etiqueta: string };
+  /** Dentro del panel del equipo: ya hay un <main> y un h1 (la barra superior). */
+  incrustado?: boolean;
 }) {
+  const Contenedor = incrustado ? 'div' : 'main';
+  const Titulo = incrustado ? 'h2' : 'h1';
   return (
-    <main className="seccion">
+    <Contenedor className={incrustado ? undefined : 'seccion'}>
       <header className="max-w-3xl">
         <EtiquetaPagina>{etiqueta}</EtiquetaPagina>
 
-        <h1 className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
+        <Titulo className="mt-4 font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl">
           {coleccion.nombre}
-        </h1>
+        </Titulo>
 
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
           {coleccion.bajada}
@@ -121,6 +126,6 @@ export function IndiceMarca({
       <EnlaceVolver href={volver.href} className="mt-24">
         {volver.etiqueta}
       </EnlaceVolver>
-    </main>
+    </Contenedor>
   );
 }

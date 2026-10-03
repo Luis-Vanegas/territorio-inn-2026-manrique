@@ -427,6 +427,15 @@ Siempre de noche (`.modo-noche`), sin el encabezado del sitio de día.
   `noche-activa` y una barra `sodio` (no solo color). Las insignias de conteo van en
   `font-cifra` sobre `sodio`. Pie: atribución OSM en `font-cifra` y «Datos abiertos con
   supresión de celdas menores a 5».
+  Con muchas secciones (equipo, 16) el menú se agrupa: las de todos los días sueltas y el resto
+  bajo encabezados cortos en `tenue-2` (Datos, Red, Lo que ve un negocio); el lateral se
+  desplaza dentro de su barra. En el celular la barra inferior lleva solo las sueltas más «Más»
+  (`aria-expanded`, Esc devuelve el foco, se cierra al navegar), que abre los grupos encima.
+- **Panel del equipo** (`equipo/`): tarjetas `noche-2` con título en Fraunces (`h2`; el `h1`
+  es la barra) y línea de fuente en `font-cifra`; subvistas por URL como pastillas (activa en
+  `estrella` con texto `noche`, `aria-current`). Las secciones mudadas de `/admin` conservan sus
+  formularios (sus tokens `hueso`/`tinta` los remapea `.modo-noche`) y sus botones suben a 44 px.
+  Las tablas largas esconden columnas secundarias bajo `sm` en vez de desbordar a 320 px.
 - **Panel del negocio** (`negocio/`): Inicio (saludo, «Tu ficha está al N %», cuatro cifras con `Kpi` —cada una con fuente y fecha—, gráfico de 8 semanas en SVG propio con barras horizontales: vistas lisas, contactos rayadas, cifra al lado y tabla `sr-only`; sin animación), Mi ficha (formulario del sitio con sus tokens remapeados por `.modo-noche`, vista previa clara y lista de lo que falta con ✓ / + y texto), Para ti (convocatorias con «Fuente oficial» y «Compartir»), Mi constelación (el mapa de siempre en noche; vecinos de OSM con «OpenStreetMap · no es aliado»), Mis clientes. Sin datos: estado vacío honesto, nunca cifras de ejemplo. La comparación con la categoría solo con 5 o más negocios.
 - **Panel de entidad**: cada página abre con el nombre de la entidad (el `h1` de la barra es la
   sección) y una frase de qué se ve. Observatorio: 4 indicadores con estrella (`Kpi`, cada uno con
