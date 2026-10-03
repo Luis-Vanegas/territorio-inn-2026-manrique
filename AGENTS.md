@@ -86,7 +86,13 @@ agregar código nuevo — seguí el patrón existente.
 ```
 app/
   (site)/           route group del sitio público (aliados, servicios, contacto, legal)
-  admin/(panel)/    route group del panel de administración
+  (firmamento)/firmamento/   Firmamento con sesión: `entrar` (puerta de 3 pestañas) y los
+                    paneles `negocio/`, `equipo/`, `entidad/`, cada uno con su `layout.tsx`
+                    (guarda + `PanelShell`). Convive con `(site)/firmamento/page.tsx` (el
+                    tablero público): los route groups no entran en la URL y ninguno define
+                    `page.tsx` en `/firmamento`; no crees uno en este grupo. El panel de
+                    moderación vive en `equipo/` (ya no hay `app/admin`: `/admin/*`
+                    redirige desde `next.config.mjs`).
   api/              route handlers (cron, exportar, interacciones)
   <ruta>/_components/  componentes usados solo por esa ruta
 components/         componentes compartidos entre rutas
@@ -168,14 +174,15 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `sugerencia_confianza`); `registrarPortafolio` los lee con
   `sugerenciaDesdeFormData` y guarda en `sugerencias_categoria` la categoría
   inferida, su confianza y si la aceptó (`aceptada` = la `categoria_id` enviada
-  coincide), NUNCA el texto escrito. Es telemetría: si falla no tumba el
+  coincide) y, desde la 033, el `portafolio_id` (para reentrenar con la
+  categoría final de la ficha), NUNCA el texto escrito. Es telemetría: si falla no tumba el
   registro. El archivo no lleva `server-only` ni imports de valor, para que el
   verificador lo importe.
 - **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
   la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
   vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
   componente: el dueño y el panel leen `COLUMNAS_PROPIAS` (todo). El
-  moderador lo prende en `/admin/campos` (interruptor por fila →
+  moderador lo prende en `/firmamento/equipo/campos` (interruptor por fila →
   `cambiarPublicoCampoAction`, con Zod e `invalidarVitrina()`); `publico` es
   una decisión de privacidad y por eso NO viaja en `editarCampo`.
 - **Endpoints de máquina** (`/api/cron/purgar`, `/api/ingesta/convocatorias`):
@@ -207,7 +214,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   propio archivo (`lib/ventas.ts`), con sus láminas en `public/<modulo>/laminas/`.
   `IndiceMarca`, `GuiaMarca` y `PuertaRegistro` (`components/marca/`) reciben la
   colección por prop. Un módulo nuevo = archivo de datos + `app/(site)/<modulo>/`
-  y `app/admin/(panel)/<modulo>/` (copiar los de ventas) + entrada en
+  y `app/(firmamento)/firmamento/equipo/<modulo>/` (copiar los de ventas, con `incrustado`) + entrada en
   `lib/content.ts`, `app/sitemap.ts`, el menú del panel y la lista de
   `scripts/verificar-marca.mjs`. Ojo: el archivo de datos importa de `./marca`
   SOLO tipos (`import type`); ver «Imports con extensión `.ts`» más abajo.
@@ -216,8 +223,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
   falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
-  que alimenta «Mi cuenta»: categorías del vecino y «Tu negocio en números»;
-  una consulta nueva de «Mi cuenta» va en ese archivo y con ese filtro).
+  que alimenta el panel del negocio: categoría y formalidad para «Para ti», semanas de vistas y
+  contactos, comparación con la categoría; una consulta nueva del panel va en ese archivo y con ese filtro).
   Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
   correo. El contacto sale por
   WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
@@ -225,27 +232,109 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo
   único entre un vecino y el panel de moderación. No las unifiques.
+- **Firmamento con sesión** (`app/(firmamento)/firmamento/`, plan en
+  `docs/firmamento-modulos.md`): tres roles, dos cookies. Guardas en
+  `lib/auth/firmamento.ts` (`exigirNegocio` = `sesion_usuario`; `exigirEquipo` =
+  `admin_session`; `exigirEntidad` = `sesion_usuario` + membresía vía `entidadDeSesion`
+  de `lib/auth/entidad.ts`, que lee `miembros_entidad` por el `usuario_id` de la
+  sesión con `cache` de React). Un layout NO basta (no se re-ejecuta al navegar entre hermanas): la
+  guarda va en el layout del rol Y en cada `page.tsx`, junto a la lectura de datos,
+  y cada action/repo revalida. La navegación es DATOS (`lib/firmamento/navegacion.ts`,
+  un arreglo por rol); una sección nueva = entrada ahí + carpeta
+  `<rol>/<seccion>/page.tsx`. Mientras no exista la carpeta, `<rol>/[...resto]/page.tsx`
+  muestra «En construcción» (y 404 si la ruta no está en el menú). El armazón es
+  `components/firmamento/panel/PanelShell.tsx`; las insignias del menú son una prop
+  (`insignias` por `href`). La puerta devuelve a una ruta interna con `?destino=` en
+  `/api/auth/google/iniciar` (cookie `oauth_destino`, validada con `rutaInterna` de
+  `lib/auth/destino.ts` al guardar y al leer; la comprueba `scripts/verificar-destino.mjs`).
+  El login del equipo reutiliza `iniciarSesion` de `sesionAdmin.ts` con un campo
+  oculto `destino`.
+- **Panel del equipo** (`/firmamento/equipo`, antes `/admin`): las lecturas propias del
+  panel (insignias, insumo de alertas y territorio, cambios de los dueños, aprendizaje del
+  sugeridor, alcance de una convocatoria) van en `lib/db/equipo.repo.ts`. Las alertas de
+  calidad NO se guardan: `alertasDeCalidad` (`lib/firmamento/calidad.ts`) las calcula al
+  vuelo con `dentroDeManrique`/`metrosAlBorde`, `barrio_oficial ?? barrioDe` y la categoría
+  `otros` (la propuesta del sugeridor corre en el navegador). `?ficha=<id>` en
+  `equipo/aliados` abre una ficha en su pestaña con la edición abierta: es el destino de
+  «Cambios recientes» y de las alertas. Los CSV del panel (aliados, interacciones, plan de
+  brigada, datos abiertos) salen de `/api/admin/exportar?conjunto=` (guarda propia).
+  Entidades y miembros: `lib/actions/gestionarEntidades.ts`; un miembro se agrega por el
+  correo de una cuenta que ya entró con Google (no se crean usuarios). Las actions que
+  cambian algo del panel revalidan `revalidatePath('/firmamento/equipo', 'layout')` para
+  que las insignias se actualicen. Ítems del menú con `grupo` van bajo su encabezado en el
+  lateral y detrás de «Más» en la barra del celular.
+- **Panel del negocio** (`/firmamento/negocio/{,ficha,para-ti,constelacion,clientes}`, antes
+  `/mi-cuenta`, que redirige en `next.config.mjs`): cada page llama `exigirNegocio()` (devuelve
+  `usuarioId`) y lee con `negocioActivo(usuarioId)` (`lib/firmamento/negocio.ts`): el negocio activo
+  sale de la cookie `negocio_activo` (solo preferencia; se valida contra los negocios de la sesión en
+  cada lectura; la fija `elegirNegocio`). Cifras del inicio: 8 semanas de `interacciones_portafolio`
+  (`semanasDeNegocio`) y cuentas puras en `lib/firmamento/ficha.ts` (completitud de la ficha en 8 pasos,
+  variación contra las 4 semanas anteriores). La comparación con la categoría
+  (`comparacionCategoria`) devuelve null con menos de 5 negocios (k = 5) y en «Otros». Posibles
+  alianzas: `lib/firmamento/alianzas.ts`, una tabla simétrica de rubros complementarios (ropa↔modistería,
+  comidas↔panadería…); mismo rubro nunca es alianza; se amplía agregando una pareja. `/mi-cuenta` ya no
+  existe: el destino tras Google es `/firmamento/negocio`. `/entrar` sigue como puerta de día (trae el
+  acceso por enlace). `constelaciones.json` también se importa en el servidor en
+  `negocio/constelacion/page.tsx`.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
   `token_publico` — para quien registramos en campo y no maneja tecnología.
   `origen_registro` distingue `propio` de `asistido`; es una columna, no otra
   tabla. Un registro `asistido` EXIGE `consentimiento_asistido` y
   `capturado_por` por restricción de base: Ley 1581 de 2012, el consentimiento
-  lo da el titular y hay que poder demostrar cómo.
+  lo da el titular y hay que poder demostrar cómo. **La edición del dueño de una ficha APROBADA publica
+  directo** (sigue `aprobado`, invalida la vitrina y deja fila en `bitacora`), por las dos puertas: la
+  cuenta (`actualizarFichaDeCuenta`) resuelve el token con `tokenPropio` y usa el mismo
+  `actualizarPorToken`. Pendiente sigue pendiente; rechazada vuelve a pendiente; archivada no se edita.
 - **RLS no se usa acá y no hace falta**: el navegador nunca habla con Postgres.
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
   `where` del repo, no en políticas de fila.
-- **Convocatorias** (`lib/db/convocatorias.repo.ts`, migración 032): el vigía las
-  ingesta `pendiente`; el moderador decide en `/admin/convocatorias`
+- **Convocatorias** (`lib/db/convocatorias.repo.ts`, migraciones 032 y 033): el
+  vigía las ingesta `pendiente`; el moderador decide en `/firmamento/equipo/convocatorias`
   (`moderarConvocatoria`: aprobar, descartar/retirar, marcar vencida, con quién y
   cuándo). Las transiciones válidas viven en el `where` de `decidirConvocatoria`
   (una descartada no se reabre; una ya cerrada no se aprueba), no en la
-  pantalla. Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» de
-  Mi cuenta (`convocatoriasParaTi`, filtra por `aplica_a` contra las categorías
-  del vecino). No van en la vitrina: no llaman `invalidarVitrina()`.
-- **Constelación de un aliado**: no se guarda (`portafolios.constelacion` sigue
-  sin escribirse), se calcula al vuelo con `constelacionDe` /
+  pantalla. La entidad es `entidad_id` (FK a `entidades`): la ingesta manda el
+  NOMBRE y `resolverEntidadOferente` (`entidades.repo.ts`) lo busca y, si no
+  existe, lo crea como `oferente` (sin miembros: no da acceso a nada). El nombre
+  de `pipeline/fuentes_convocatorias.json` tiene que ser idéntico al sembrado en
+  la 033, o nace una entidad duplicada. A quién aplica lo elige el moderador AL
+  APROBAR: `convocatoria_categorias` (ninguna fila = todas) y `aplica_formalidad`
+  (vacío = cualquiera), escritos en la misma sentencia que el cambio de estado.
+  Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» del panel del negocio
+  (`convocatoriasParaTi` con `perfilesParaTi` de `cuenta.repo.ts`): cruza
+  NEGOCIO POR NEGOCIO categoría y formalidad (`aliados_investigacion`); formalidad
+  desconocida (null o `prefiero_no_decir`) ve también las restringidas. No van en
+  la vitrina: no llaman `invalidarVitrina()`.
+- **Barrio oficial de un negocio** (`portafolios.barrio_oficial`, FK a `barrios`,
+  migración 033): lo calcula `portafolios.repo.ts` con `barrioDe` en las tres
+  escrituras con coordenadas (`crearPortafolio`, `actualizarPorToken`,
+  `editarComoModerador`), no la acción: una puerta nueva no puede olvidarlo.
+  `barrio` es lo que dice la persona; `barrio_oficial`, lo que dice el punto
+  (null = fuera de los 15). Las filas viejas se rellenan con
+  `scripts/rellenar-barrio-oficial.mjs` (idempotente, `--seco` para contar).
+- **Bitácora** (`lib/db/bitacora.repo.ts`, tabla `bitacora`, 033): toda acción que
+  cambia un negocio o una convocatoria llama `registrarEnBitacora` (registro,
+  ediciones, aprobar/rechazar/archivar, decisiones de convocatoria). Guarda
+  NOMBRES de campos, NUNCA valores (un WhatsApp viejo ahí sería un dato personal
+  duplicado). Las ediciones devuelven los campos cambiados desde el propio
+  `update` (`CAMPOS_CAMBIADOS`: `previo` vs `p` en el `returning`); foto y menú
+  se suman con `camposConArchivos`. Si el moderador cambia la categoría la
+  acción es `categoria_corregida` (señal para reentrenar el sugeridor).
+  `registrarEnBitacora` NUNCA lanza: si falla, loguea y la acción sigue.
+  Lee: el equipo todo; el negocio solo su ficha; la entidad nada.
+- **Entidades** (`lib/db/entidades.repo.ts`, `entidades` + `miembros_entidad`, 033):
+  una tabla para las territoriales (JAL, CEDEZO, CVS) y las oferentes (SENA,
+  Bancóldex…). Lo que da acceso al panel es la fila en `miembros_entidad`
+  (`entidadesDeUsuario(usuarioId)` con el id de `sesion_usuario`), no el tipo ni
+  un rol en la cookie. Los miembros se agregan por correo de una cuenta que YA
+  entró con Google (`agregarMiembroPorCorreo`; no crea usuarios). Una entidad
+  NUNCA lee `portafolios` fila por fila: solo agregados k = 5
+  (`obtenerDatosAbiertos`). `scripts/verificar-entidades.mjs` falla si una
+  consulta de `entidades.repo.ts` nombra una tabla de negocios.
+- **Constelación de un aliado**: no se guarda (la columna `portafolios.constelacion`
+  se borró en la 033), se calcula al vuelo con `constelacionDe` /
   `vecinosDeConstelacion` (`lib/geo/comerciosOsm.ts`): centroide más cercano y
   dentro de su `radio_p90_m`, si no `null` y la ficha no muestra la sección.
   Los comercios que lista son de OSM, con la etiqueta «OpenStreetMap · no es
@@ -261,7 +350,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   la grafía de `BARRIOS_COMUNA_3` (una sola tabla de equivalencias, en el script).
   `barrioDe(lat, lon)` es pura y devuelve el nombre o `null`; es una AYUDA (aviso del
   registro, barrio de cada comercio OSM), no una regla de admisión: esa sigue siendo
-  `dentroDeManrique`. El ray casting vive UNA vez en `lib/geo/puntoEnPoligono.ts` y lo
+  `dentroDeManrique`. El mapa (`MapaAliadosClient`) dibuja su contorno siempre y el
+  nombre desde zoom 15 (`ZOOM_ETIQUETAS_BARRIO`), sin clics. El ray casting vive UNA vez en `lib/geo/puntoEnPoligono.ts` y lo
   usan los dos (y `scripts/extraer-barrios.mjs`); no lo copies. Se importa con
   extensión: ver «Imports con extensión `.ts`». El pipeline (`02_constelaciones.py`) calcula
   el mismo barrio con shapely y lo escribe en cada comercio de `constelaciones.json`;
@@ -276,8 +366,25 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   importan en el servidor: `app/(site)/aliados/page.tsx` (conteos del filtro de
   categorías con `unirCategorias`: aliados + comercios de OSM, así se puede filtrar
   por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
-  (cifras de la banda de la portada) y `app/(site)/firmamento/datos.ts`.
+  (cifras de la banda de la portada), `app/(site)/firmamento/datos.ts` y
+  `lib/firmamento/territorio.ts` (panel del equipo; `server-only`).
 - **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
+- **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
+  datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`
+  (`app/(site)/firmamento/datos.ts`, que en la base solo usa `obtenerDatosAbiertos`), por
+  `obtenerDatosAbiertos` y por las funciones de entidad de `convocatorias.repo.ts`
+  (`listarConvocatoriasVigentes`, `listarPropuestasDeEntidad`, `proponerConvocatoria`); el
+  mapa es `MapaAliados` con `portafolios` vacío. Ninguna pantalla importa repos de negocios:
+  `scripts/verificar-entidades.mjs` lo comprueba por lista permitida (`datos.repo`,
+  `convocatorias.repo`, `entidades.repo`) y corre con `--experimental-strip-types`. Un cruce
+  nuevo con datos de la red va en `datos.repo.ts` y pasa por `suprimir()`. «Proponer una
+  convocatoria» (`lib/actions/proponerConvocatoria.ts`): revalida sesión + membresía, la
+  entidad sale de `entidadDeSesion()` (jamás del formulario), entra `pendiente` con
+  `origen = 'entidad'` y `propuesta_por`, URL repetida = mensaje claro, deja fila en
+  `bitacora` (`actor_tipo = 'entidad'`) y usa el cupo `estado` de `rateLimit.ts` (un origen
+  nuevo exigiría migrar el CHECK de `intentos_registro`). La descarga CSV
+  (`entidad/datos/csv/route.ts`, con guarda) sale de `lib/firmamento/datosAbiertos.ts`, que
+  solo reordena `DatosAbiertos`: una celda «<5» sigue «<5».
 - **Imports con extensión `.ts`**: los verificadores (`scripts/verificar-*.mjs`)
   corren con `--experimental-strip-types`, que no resuelve imports sin extensión.
   Para que compartan código con la app (y no copiarlo), un archivo que ellos
@@ -298,7 +405,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales y datos abiertos (k = 5)
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales, entidades (no leen negocios) y datos abiertos (k = 5)
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)

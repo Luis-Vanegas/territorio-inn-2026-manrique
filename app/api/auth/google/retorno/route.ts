@@ -3,10 +3,16 @@ import { timingSafeEqual } from 'node:crypto';
 import { cookies, headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-import { perfilDesdeCodigo, COOKIE_ESTADO, COOKIE_VERIFICADOR } from '@/lib/auth/google';
+import {
+  perfilDesdeCodigo,
+  COOKIE_DESTINO,
+  COOKIE_ESTADO,
+  COOKIE_VERIFICADOR,
+} from '@/lib/auth/google';
 import { ingresarConGoogle, vincularNegocio } from '@/lib/db/usuarios.repo';
 import { iniciarSesionAdmin, registrarModeradorGoogle } from '@/lib/auth/admin';
 import { opcionesBorrado } from '@/lib/auth/cookies';
+import { puertaDe, rutaInterna } from '@/lib/auth/destino';
 import { esModeradorGoogle } from '@/lib/auth/moderadoresGoogle';
 import { iniciarSesion } from '@/lib/auth/usuario';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
@@ -24,8 +30,8 @@ export const dynamic = 'force-dynamic';
 
 const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function alError(request: Request, motivo: string) {
-  return NextResponse.redirect(new URL(`/entrar?error=${motivo}`, request.url));
+function alError(request: Request, motivo: string, puerta = '/entrar') {
+  return NextResponse.redirect(new URL(`${puerta}?error=${motivo}`, request.url));
 }
 
 export async function GET(request: Request) {
@@ -33,13 +39,20 @@ export async function GET(request: Request) {
   const codigo = url.searchParams.get('code');
   const estadoRecibido = url.searchParams.get('state');
 
+  const galletas = await cookies();
+
+  // Adónde iba. Se revalida acá aunque ya se validó al guardarla: la cookie
+  // es del navegador y llega como entrada, no como algo propio.
+  const destino = rutaInterna(galletas.get(COOKIE_DESTINO)?.value);
+  const puerta = puertaDe(destino);
+  galletas.set(COOKIE_DESTINO, '', opcionesBorrado());
+
   // La persona apretó "cancelar" en la pantalla de Google. No es un error que
-  // valga la pena reportarle: se la devuelve a la página como si nada.
+  // valga la pena reportarle: se la devuelve a su puerta como si nada.
   if (url.searchParams.get('error')) {
-    return NextResponse.redirect(new URL('/entrar', request.url));
+    return NextResponse.redirect(new URL(puerta, request.url));
   }
 
-  const galletas = await cookies();
   const estadoGuardado = galletas.get(COOKIE_ESTADO)?.value;
   const verificador = galletas.get(COOKIE_VERIFICADOR)?.value;
 
@@ -53,7 +66,7 @@ export async function GET(request: Request) {
   galletas.set(COOKIE_VERIFICADOR, '', opcionesBorrado());
 
   if (!codigo || !estadoRecibido || !estadoGuardado || !verificador) {
-    return alError(request, 'estado');
+    return alError(request, 'estado', puerta);
   }
 
   // Comparación en tiempo constante: un `!==` corta en el primer byte que
@@ -62,7 +75,7 @@ export async function GET(request: Request) {
   const recibido = Buffer.from(estadoRecibido);
   const guardado = Buffer.from(estadoGuardado);
   if (recibido.length !== guardado.length || !timingSafeEqual(recibido, guardado)) {
-    return alError(request, 'estado');
+    return alError(request, 'estado', puerta);
   }
 
   const cabeceras = await headers();
@@ -71,7 +84,7 @@ export async function GET(request: Request) {
   // quien martille este endpoint con códigos inventados.
   const ip = ipDesdeHeaders(cabeceras);
   const limite = await verificarLimite(ip, 'login');
-  if (!limite.permitido) return alError(request, 'limite');
+  if (!limite.permitido) return alError(request, 'limite', puerta);
   await registrarIntento(ip, 'login');
 
   const host = cabeceras.get('x-forwarded-host') ?? cabeceras.get('host');
@@ -79,7 +92,7 @@ export async function GET(request: Request) {
   const origen = `${protocolo}://${host}`;
 
   const perfil = await perfilDesdeCodigo(codigo, origen, verificador);
-  if (!perfil) return alError(request, 'google');
+  if (!perfil) return alError(request, 'google', puerta);
 
   try {
     const ingreso = await ingresarConGoogle({
@@ -92,7 +105,7 @@ export async function GET(request: Request) {
     // El correo pertenece a otra cuenta de Google. No se abre sesión: dejar
     // pasar acá sería entregarle los negocios de una persona a otra.
     if (ingreso.estado === 'correo_tomado') {
-      return alError(request, 'correo_tomado');
+      return alError(request, 'correo_tomado', puerta);
     }
 
     const usuario = ingreso.usuario;
@@ -119,9 +132,9 @@ export async function GET(request: Request) {
       await vincularNegocio(token, usuario.id);
     }
 
-    return NextResponse.redirect(new URL('/mi-cuenta', request.url));
+    return NextResponse.redirect(new URL(destino ?? '/firmamento/negocio', request.url));
   } catch (error) {
     console.error('[google] fallo al crear la sesión:', error);
-    return alError(request, 'sesion');
+    return alError(request, 'sesion', puerta);
   }
 }

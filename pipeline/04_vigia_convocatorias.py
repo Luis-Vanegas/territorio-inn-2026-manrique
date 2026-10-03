@@ -120,7 +120,8 @@ def revisar_fuente(fuente: dict) -> list[dict]:
                 "titulo": texto,
                 "entidad": fuente["entidad"],
                 "url": destino,
-                "aplica_a": [],
+                # A quién aplica (categorías, formalidad) lo decide el moderador al
+                # aprobar (migración 033); `entidad` se resuelve por nombre en la ingesta.
             }
         )
     return salida

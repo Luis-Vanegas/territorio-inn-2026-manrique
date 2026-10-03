@@ -9,23 +9,28 @@ import { VisorLaminas } from './VisorLaminas';
 
 /**
  * Una guía completa. Compartida entre /marca/[guia] y
- * /admin/marca/[guia]; ver IndiceMarca para el porqué de `base`.
+ * /firmamento/equipo/marca/[guia]; ver IndiceMarca para el porqué de `base`.
  */
 export function GuiaMarca({
   coleccion,
   guia,
   base,
   etiqueta,
+  incrustado = false,
 }: {
   coleccion: Coleccion;
   guia: Guia;
   base: string;
   etiqueta: string;
+  /** Dentro del panel del equipo: ya hay un <main> y un h1 (la barra superior). */
+  incrustado?: boolean;
 }) {
+  const Contenedor = incrustado ? 'div' : 'main';
+  const Titulo = incrustado ? 'h2' : 'h1';
   const { anterior, siguiente } = vecinas(coleccion, guia.slug);
 
   return (
-    <main className="seccion">
+    <Contenedor className={incrustado ? undefined : 'seccion'}>
       <EnlaceVolver href={base}>← {coleccion.nombre}</EnlaceVolver>
 
       <header className="mt-10 max-w-3xl">
@@ -34,9 +39,9 @@ export function GuiaMarca({
           {guia.red && <IconoContacto tipo={guia.red} className="h-7 w-7 shrink-0" />}
         </div>
 
-        <h1 className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
+        <Titulo className="mt-4 font-display text-4xl font-medium leading-[1] text-tinta sm:text-6xl">
           {guia.titulo}
-        </h1>
+        </Titulo>
 
         <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tinta/70">
           {guia.bajada}
@@ -100,6 +105,6 @@ export function GuiaMarca({
           </Link>
         )}
       </nav>
-    </main>
+    </Contenedor>
   );
 }

@@ -7,7 +7,8 @@ import {
   actualizarPortafolioSchema,
   desdeFormDataEdicion,
 } from '@/lib/validation/portafolio.schema';
-import { editarComoModerador } from '@/lib/db/portafolios.repo';
+import { editarComoModerador, type EdicionAplicada } from '@/lib/db/portafolios.repo';
+import { registrarEnBitacora, camposConArchivos } from '@/lib/db/bitacora.repo';
 import { extraerArchivoValidado } from '@/lib/blob/fotos';
 import { reemplazarArchivos } from '@/lib/blob/reemplazar';
 import type { EstadoEdicion } from '@/lib/actions/gestionarEstado';
@@ -50,8 +51,9 @@ export async function editarPortafolioModerador(
   }
   const menu = validacionMenu.archivo;
 
+  let cambio: EdicionAplicada | null;
   try {
-    const cambio = await editarComoModerador(id, {
+    cambio = await editarComoModerador(id, {
       nombre: datos.nombre,
       descripcion: datos.descripcion,
       categoria_id: datos.categoria_id,
@@ -87,7 +89,17 @@ export async function editarPortafolioModerador(
 
   const avisos = await reemplazarArchivos(id, { foto, menu }, 'editarPortafolioModerador');
 
-  revalidatePath('/admin/aliados');
+  // Una corrección de categoría tiene su propia acción: es la señal con la que
+  // se reentrena el sugeridor (docs/base-de-datos.md, H6).
+  await registrarEnBitacora({
+    actor_tipo: 'equipo',
+    actor: sesion.email,
+    accion: cambio.campos.includes('categoria_id') ? 'categoria_corregida' : 'ficha_editada',
+    portafolio_id: cambio.id,
+    campos: camposConArchivos(cambio.campos, { foto, menu }),
+  });
+
+  revalidatePath('/firmamento/equipo', 'layout');
   revalidatePath('/aliados');
   invalidarVitrina();
 

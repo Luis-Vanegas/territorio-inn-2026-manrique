@@ -50,7 +50,7 @@ export function Footer() {
           {/* Mismo tratamiento visual que "Licencia": discreto, sin destacar, pero con
               texto legible — un link sin texto reconocible es un problema de accesibilidad,
               no solo de diseño. */}
-          <Link href="/admin/login" className="inline-flex min-h-[44px] min-w-[44px] items-center font-sans text-xs text-white/65 hover:text-azul">
+          <Link href="/firmamento/entrar?rol=equipo" className="inline-flex min-h-[44px] min-w-[44px] items-center font-sans text-xs text-white/65 hover:text-azul">
             Equipo
           </Link>
         </div>

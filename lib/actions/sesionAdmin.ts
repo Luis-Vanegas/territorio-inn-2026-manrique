@@ -2,7 +2,8 @@
 
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { autenticar, cerrarSesionAdmin, iniciarSesionAdmin } from '@/lib/auth/admin';
+import { rutaInterna } from '@/lib/auth/destino';
+import { autenticar, iniciarSesionAdmin } from '@/lib/auth/admin';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 
 export type EstadoSesion =
@@ -47,10 +48,7 @@ export async function iniciarSesion(
 
   await iniciarSesionAdmin(email);
 
-  redirect('/admin/aliados');
-}
-
-export async function cerrarSesion(): Promise<void> {
-  await cerrarSesionAdmin();
-  redirect('/admin/login');
+  // El login de Firmamento manda `destino` (campo oculto). `rutaInterna`
+  // descarta todo lo que no sea una ruta del propio sitio.
+  redirect(rutaInterna(formData.get('destino')) ?? '/firmamento/equipo');
 }

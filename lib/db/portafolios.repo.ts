@@ -1,6 +1,7 @@
 import 'server-only';
 import { sql } from './neon';
 import { cachearVitrina } from './cache';
+import { barrioDe } from '@/lib/geo/barrioOficial';
 import type { ProductoInput } from '@/lib/validation/portafolio.schema';
 
 export type EstadoPortafolio = 'pendiente' | 'aprobado' | 'rechazado' | 'archivado';
@@ -231,12 +232,18 @@ export type NuevoPortafolio = {
   productos: ProductoInput[];
 };
 
+/**
+ * `barrio_oficial` (FK a `barrios`, migración 033) se calcula ACÁ, en las tres
+ * escrituras que reciben coordenadas (crear y las dos ediciones), y no en cada
+ * acción: así ninguna puerta nueva puede olvidarlo. Es lo que dice el punto;
+ * `barrio` es lo que dijo la persona. null = cae fuera de los 15 barrios.
+ */
 export async function crearPortafolio(
   datos: NuevoPortafolio,
 ): Promise<{ id: string; token_publico: string }> {
   const rows = await sql`
     insert into portafolios (
-      nombre, descripcion, categoria_id, categoria_otra, direccion, barrio,
+      nombre, descripcion, categoria_id, categoria_otra, direccion, barrio, barrio_oficial,
       latitud, longitud,
       whatsapp, correo, instagram, facebook,
       acepto_terminos, acepto_habeas_data, version_terminos, ip_registro,
@@ -244,7 +251,7 @@ export async function crearPortafolio(
       punto_referencia, horario, medios_pago, productos
     ) values (
       ${datos.nombre}, ${datos.descripcion}, ${datos.categoria_id}, ${datos.categoria_otra},
-      ${datos.direccion}, ${datos.barrio},
+      ${datos.direccion}, ${datos.barrio}, ${barrioDe(datos.latitud, datos.longitud)},
       ${datos.latitud}, ${datos.longitud},
       ${datos.whatsapp}, ${datos.correo},
       ${datos.instagram}, ${datos.facebook},
@@ -430,23 +437,64 @@ export type EdicionPortafolio = {
   productos: ProductoInput[];
 };
 
+/** Lo que devuelve una edición: el id y los nombres de los campos que cambiaron. */
+export type EdicionAplicada = { id: string; estado: EstadoPortafolio; campos: string[] };
+
 /**
- * Vuelve a 'pendiente' siempre que se guarda una edición: un moderador ya
- * aprobó una versión de estos datos, no la que se acaba de escribir. También
- * limpia el motivo de rechazo — si lo estaba corrigiendo por eso, ya no aplica.
+ * Nombres (nunca valores) de los campos que cambió un update, para la bitácora.
+ * Compara `previo` (la fila antes del update, capturada con `from (select ...)`,
+ * mismo patrón que `moderar()`) contra `p` (la fila nueva en el `returning`). Se
+ * calcula en la base para no leer los valores viejos en la aplicación. Latitud y
+ * longitud salen juntas como `ubicacion`; `barrio_oficial` no se lista porque
+ * se deriva del punto.
+ */
+const CAMPOS_CAMBIADOS = `array_remove(array[
+  case when previo.nombre is distinct from p.nombre then 'nombre' end,
+  case when previo.descripcion is distinct from p.descripcion then 'descripcion' end,
+  case when previo.categoria_id is distinct from p.categoria_id then 'categoria_id' end,
+  case when previo.categoria_otra is distinct from p.categoria_otra then 'categoria_otra' end,
+  case when previo.direccion is distinct from p.direccion then 'direccion' end,
+  case when previo.barrio is distinct from p.barrio then 'barrio' end,
+  case when previo.latitud is distinct from p.latitud
+         or previo.longitud is distinct from p.longitud then 'ubicacion' end,
+  case when previo.punto_referencia is distinct from p.punto_referencia then 'punto_referencia' end,
+  case when previo.whatsapp is distinct from p.whatsapp then 'whatsapp' end,
+  case when previo.correo is distinct from p.correo then 'correo' end,
+  case when previo.instagram is distinct from p.instagram then 'instagram' end,
+  case when previo.facebook is distinct from p.facebook then 'facebook' end,
+  case when previo.horario is distinct from p.horario then 'horario' end,
+  case when previo.medios_pago is distinct from p.medios_pago then 'medios_pago' end,
+  case when previo.productos is distinct from p.productos then 'productos' end
+], null)`;
+
+/**
+ * Edición del dueño, por las dos puertas (enlace con token y sesión de cuenta,
+ * que resuelve el token con `tokenPropio`): la MISMA regla para las dos.
+ *
+ * Una ficha `aprobado` SIGUE aprobada y publica directo: el cambio se ve de
+ * inmediato y el equipo corrige después, guiado por la bitácora (decisión de
+ * Luis, 2-oct-2026; antes volvía a `pendiente` en cada edición, ver
+ * docs/firmamento-modulos.md). Una `pendiente` sigue pendiente y una
+ * `rechazada` vuelve a `pendiente` para que la revisen de nuevo; en ese caso
+ * también se limpia el motivo (si lo estaba corrigiendo por eso, ya no aplica).
+ * Una `archivado` no se toca: no hay edición que la reviva.
+ *
+ * Devuelve el id y los NOMBRES de los campos que cambiaron (para la bitácora),
+ * o null si el token no matchea.
  */
 export async function actualizarPorToken(
   token: string,
   datos: EdicionPortafolio,
-): Promise<string | null> {
+): Promise<EdicionAplicada | null> {
   const rows = await sql`
-    update portafolios
+    update portafolios as p
     set nombre = ${datos.nombre},
         descripcion = ${datos.descripcion},
         categoria_id = ${datos.categoria_id},
         categoria_otra = ${datos.categoria_otra},
         direccion = ${datos.direccion},
         barrio = ${datos.barrio},
+        barrio_oficial = ${barrioDe(datos.latitud, datos.longitud)},
         latitud = ${datos.latitud},
         longitud = ${datos.longitud},
         punto_referencia = ${datos.punto_referencia},
@@ -457,12 +505,45 @@ export async function actualizarPorToken(
         horario = ${datos.horario}::text[],
         medios_pago = ${datos.medios_pago}::text[],
         productos = ${JSON.stringify(datos.productos)}::jsonb,
-        estado = 'pendiente',
+        estado = case when p.estado = 'aprobado' then 'aprobado'::portafolio_estado else 'pendiente'::portafolio_estado end,
         motivo_rechazo = null
-    where token_publico = ${token}
-    returning id
+    from (select * from portafolios where token_publico = ${token}) as previo
+    where p.token_publico = ${token} and p.estado <> 'archivado'
+    returning p.id, p.estado, ${sql.unsafe(CAMPOS_CAMBIADOS)} as campos
   `;
-  return (rows[0] as { id: string } | undefined)?.id ?? null;
+  return (rows[0] as EdicionAplicada | undefined) ?? null;
+}
+
+/**
+ * Los negocios de una cuenta se leen SIEMPRE con `p.usuario_id = ${usuarioId}`
+ * (el id sale de la sesión): un id de la URL o del formulario se puede inventar.
+ */
+export async function obtenerPropio(
+  usuarioId: string,
+  portafolioId: string,
+): Promise<PortafolioAdmin | null> {
+  const rows = await sql`
+    select ${sql.unsafe(COLUMNAS_PROPIAS)},
+           p.estado, p.motivo_rechazo, p.moderado_por, p.moderado_en,
+           p.foto_blob_pathname, p.menu_blob_pathname
+    from portafolios p
+    join categorias c on c.id = p.categoria_id
+    where p.id = ${portafolioId} and p.usuario_id = ${usuarioId}
+  `;
+  return (rows[0] as PortafolioAdmin) ?? null;
+}
+
+/**
+ * El token de un negocio de esta cuenta, para que la sesión use las mismas
+ * escrituras que el enlace (`actualizarPorToken`, `archivarPorToken`) sin una
+ * segunda ruta de SQL que se desincronice. El token no sale de servidor.
+ */
+export async function tokenPropio(usuarioId: string, portafolioId: string): Promise<string | null> {
+  const rows = await sql`
+    select p.token_publico from portafolios p
+    where p.id = ${portafolioId} and p.usuario_id = ${usuarioId}
+  `;
+  return (rows[0] as { token_publico: string } | undefined)?.token_publico ?? null;
 }
 
 export async function archivarPorToken(
@@ -559,8 +640,8 @@ export async function moderar(
  * Edición desde el panel de moderación: mismos campos de contenido que
  * `actualizarPorToken`, pero a propósito NO toca `estado`, `motivo_rechazo`
  * NI `moderado_por`/`moderado_en` — un moderador corrigiendo una ficha ya
- * aprobada no la manda de vuelta a revisión (esa es una decisión del dueño,
- * ver comentario de `actualizarPorToken`) y tampoco se roba la trazabilidad
+ * aprobada no la toca de estado (la del dueño tampoco: sigue aprobada, ver
+ * `actualizarPorToken`) y tampoco se roba la trazabilidad
  * de quién la aprobó: la migración 002 protege esas dos columnas a propósito
  * para poder demostrar quién decidió publicar cada ficha, y `moderado_en` ya
  * queda registrado por el trigger de `actualizado_en`.
@@ -573,15 +654,16 @@ export async function moderar(
 export async function editarComoModerador(
   id: string,
   datos: EdicionPortafolio,
-): Promise<string | null> {
+): Promise<EdicionAplicada | null> {
   const rows = await sql`
-    update portafolios
+    update portafolios as p
     set nombre = ${datos.nombre},
         descripcion = ${datos.descripcion},
         categoria_id = ${datos.categoria_id},
         categoria_otra = ${datos.categoria_otra},
         direccion = ${datos.direccion},
         barrio = ${datos.barrio},
+        barrio_oficial = ${barrioDe(datos.latitud, datos.longitud)},
         latitud = ${datos.latitud},
         longitud = ${datos.longitud},
         punto_referencia = ${datos.punto_referencia},
@@ -592,10 +674,11 @@ export async function editarComoModerador(
         horario = ${datos.horario}::text[],
         medios_pago = ${datos.medios_pago}::text[],
         productos = ${JSON.stringify(datos.productos)}::jsonb
-    where id = ${id} and estado = 'aprobado'
-    returning id
+    from (select * from portafolios where id = ${id}) as previo
+    where p.id = ${id} and p.estado = 'aprobado'
+    returning p.id, p.estado, ${sql.unsafe(CAMPOS_CAMBIADOS)} as campos
   `;
-  return (rows[0] as { id: string } | undefined)?.id ?? null;
+  return (rows[0] as EdicionAplicada | undefined) ?? null;
 }
 
 export async function contarPorEstado(): Promise<Record<EstadoPortafolio, number>> {

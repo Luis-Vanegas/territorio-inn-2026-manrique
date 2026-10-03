@@ -202,22 +202,22 @@ export default async function FormalizacionPage() {
         </h2>
         <p className="mt-4 max-w-xl font-sans leading-relaxed text-tinta/70">
           El asesor responde según los datos de tu propio negocio. Lo abres
-          desde la ficha, en tu cuenta.
+          desde tu panel.
         </p>
 
         <Link
-          href="/mi-cuenta"
+          href="/firmamento/negocio"
           className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
         >
-          Ir a mi cuenta →
+          Ir a mi panel →
         </Link>
       </section>
 
       <Link
-        href="/mi-cuenta"
+        href="/firmamento/negocio"
         className="mt-24 inline-block font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
       >
-        ← Volver a mi cuenta
+        ← Volver a mi panel
       </Link>
     </main>
   );

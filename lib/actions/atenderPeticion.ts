@@ -33,6 +33,6 @@ export async function atenderPeticion(
     return { estado: 'error', mensaje: 'No se pudo aplicar el cambio.' };
   }
 
-  revalidatePath('/admin/peticiones');
+  revalidatePath('/firmamento/equipo', 'layout');
   return { estado: 'ok' };
 }

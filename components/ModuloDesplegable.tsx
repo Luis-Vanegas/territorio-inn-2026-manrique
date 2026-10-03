@@ -16,7 +16,7 @@ import type { ReactNode } from 'react';
  *
  * ── Por qué el `id` va en el contenido y no en `<details>` ──
  *
- * `/mi-cuenta` enlaza directo a "#videos". Los navegadores modernos expanden
+ * el panel del negocio (`/firmamento/negocio/para-ti`) enlaza directo a "#videos". Los navegadores modernos expanden
  * automáticamente un `<details>` cerrado cuando el fragmento de la URL cae
  * DENTRO de su contenido oculto — pero solo si el elemento con ese `id` está
  * genuinamente oculto. Puesto en el `<details>` mismo no serviría: el

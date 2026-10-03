@@ -12,14 +12,15 @@ import { salir } from '@/lib/actions/sesionUsuario';
  * de marca, lo que venga— se suma acá y aparece solo para quien corresponde.
  */
 export const ENLACES_PRIVADOS = [
-  { href: '/mi-cuenta', etiqueta: 'Mis negocios' },
-  { href: '/mi-cuenta/clientes', etiqueta: 'Mis clientes' },
+  { href: '/firmamento/negocio', etiqueta: 'Mi panel' },
+  { href: '/firmamento/negocio/ficha', etiqueta: 'Mi ficha' },
+  { href: '/firmamento/negocio/clientes', etiqueta: 'Mis clientes' },
   { href: '/formalizacion', etiqueta: 'Rutas y apoyos' },
   { href: '/formalizacion#videos', etiqueta: 'Videos y guías' },
 ];
 
 /** Solo para quien también tiene sesión de moderación (ver SiteHeader). */
-export const ENLACE_MODERACION = { href: '/admin/aliados', etiqueta: 'Panel de moderación' };
+export const ENLACE_MODERACION = { href: '/firmamento/equipo', etiqueta: 'Panel del equipo' };
 
 /**
  * Identidad de la persona conectada, y su salida.

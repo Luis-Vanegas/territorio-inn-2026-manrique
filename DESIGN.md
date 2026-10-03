@@ -407,6 +407,49 @@ en la base, ninguna pieza simulada).
 - **Celdas «<5»**: se muestran tal cual, con la nota de por qué (menos de 5
   negocios podrían señalar a una persona; Ley 1581).
 
+### Firmamento con sesión (puerta y paneles)
+
+Rutas `app/(firmamento)/firmamento/` (`entrar`, `negocio`, `equipo`, `entidad`).
+Siempre de noche (`.modo-noche`), sin el encabezado del sitio de día.
+
+- **Puerta** (`/firmamento/entrar`): foto de la ladera (`public/fotos/manrique-iglesia.jpg`)
+  con velo `noche`, titular «Firmamento» como el de `/firmamento`, tres beneficios y tres
+  cifras con fuente y fecha (OSM, constelaciones, Cámara; las mismas de la portada). A la
+  derecha, una tarjeta `noche-2` con tres pestañas (Mi negocio · Equipo · Entidad):
+  `role="tablist"`, flechas, Inicio y Fin; fundido de 180 ms solo al cambiar, directo con
+  menos movimiento y sin JS. En celular la foto es una franja bajo el título y la tarjeta
+  sube antes que los beneficios. Botón de Google en `estrella` con texto `noche`; acción
+  primaria del equipo en `sodio`.
+- **Panel** (`PanelShell`): barra lateral de 264 px en `noche-2` (marca, etiqueta de rol en
+  mayúsculas cortas, navegación, tarjeta «La cara de la red es Constelaciones»), barra
+  superior pegajosa con el título (único `h1`), botón al sitio y menú de la persona, y barra
+  inferior de celular con rótulos cortos. El ítem activo lleva `aria-current`, peso, fondo
+  `noche-activa` y una barra `sodio` (no solo color). Las insignias de conteo van en
+  `font-cifra` sobre `sodio`. Pie: atribución OSM en `font-cifra` y «Datos abiertos con
+  supresión de celdas menores a 5».
+  Con muchas secciones (equipo, 16) el menú se agrupa: las de todos los días sueltas y el resto
+  bajo encabezados cortos en `tenue-2` (Datos, Red, Lo que ve un negocio); el lateral se
+  desplaza dentro de su barra. En el celular la barra inferior lleva solo las sueltas más «Más»
+  (`aria-expanded`, Esc devuelve el foco, se cierra al navegar), que abre los grupos encima.
+- **Panel del equipo** (`equipo/`): tarjetas `noche-2` con título en Fraunces (`h2`; el `h1`
+  es la barra) y línea de fuente en `font-cifra`; subvistas por URL como pastillas (activa en
+  `estrella` con texto `noche`, `aria-current`). Las secciones mudadas de `/admin` conservan sus
+  formularios (sus tokens `hueso`/`tinta` los remapea `.modo-noche`) y sus botones suben a 44 px.
+  Las tablas largas esconden columnas secundarias bajo `sm` en vez de desbordar a 320 px.
+- **Panel del negocio** (`negocio/`): Inicio (saludo, «Tu ficha está al N %», cuatro cifras con `Kpi` —cada una con fuente y fecha—, gráfico de 8 semanas en SVG propio con barras horizontales: vistas lisas, contactos rayadas, cifra al lado y tabla `sr-only`; sin animación), Mi ficha (formulario del sitio con sus tokens remapeados por `.modo-noche`, vista previa clara y lista de lo que falta con ✓ / + y texto), Para ti (convocatorias con «Fuente oficial» y «Compartir»), Mi constelación (el mapa de siempre en noche; vecinos de OSM con «OpenStreetMap · no es aliado»), Mis clientes. Sin datos: estado vacío honesto, nunca cifras de ejemplo. La comparación con la categoría solo con 5 o más negocios.
+- **Panel de entidad**: cada página abre con el nombre de la entidad (el `h1` de la barra es la
+  sección) y una frase de qué se ve. Observatorio: 4 indicadores con estrella (`Kpi`, cada uno con
+  fuente y fecha), el mapa de constelaciones sin aliados, «Dónde apoyar primero» (las 3
+  constelaciones más grandes, con botón de 44 px «Ver en el mapa» que la enciende) y la
+  composición de la red por categoría con la forma de su grupo; la barra de una celda «<5» queda
+  vacía para no revelar el número. Convocatorias: tarjetas de las vigentes («Cierra en N días»
+  en `sodio`, fuente oficial en pestaña nueva), formulario con error junto a cada casilla y en un
+  resumen `role="alert"`, y «Tus propuestas» con el estado en palabras (En revisión, Aprobada, No
+  aprobada, Cerrada). Datos abiertos: qué publica, qué nunca sale, descargas, enlace con botón
+  de copiar y la vista previa como tablas (no JSON crudo: nada de monoespaciada).
+- **Vacío honesto**: una sección sin construir muestra «En construcción» y no rellena con
+  cifras de ejemplo.
+
 ## Navegación
 
 Ítems del encabezado (`components/SiteHeader.tsx`): Inicio · Aliados · **Aprende ▾**

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
 import { googleConfigurado } from '@/lib/auth/google';
+import { MENSAJES_INGRESO } from '@/lib/auth/mensajesIngreso';
 import { sesionActual } from '@/lib/auth/usuario';
 import { AccesoPorEnlace } from './_components/AccesoPorEnlace';
 
@@ -15,34 +16,16 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-/**
- * Los errores del retorno de Google llegan como ?error=<clave>. El texto real
- * del fallo nunca se muestra: los errores de OAuth traen identificadores de
- * cliente y descripciones internas que a la persona no le sirven de nada.
- */
-const MENSAJE_ERROR: Record<string, string> = {
-  estado: 'La sesión tardó demasiado. Intenta entrar otra vez.',
-  google: 'No pudimos confirmar tu cuenta de Google. Intenta de nuevo.',
-  limite: 'Hubo demasiados intentos. Espera unos minutos.',
-  sesion: 'No pudimos abrir tu sesión. Intenta de nuevo.',
-  sin_google: 'El ingreso con Google no está disponible por ahora.',
-  // Deliberadamente vago sobre el motivo: confirmarle a quien intenta entrar
-  // que ese correo ya está registrado le regala información sobre la cuenta
-  // de otra persona. El detalle queda en el log del servidor, para el equipo.
-  correo_tomado:
-    'No pudimos entrar con esa cuenta. Escríbenos y lo resolvemos contigo.',
-};
-
 export default async function EntrarPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
   // Quien ya entró no tiene nada que hacer en la puerta.
-  if (await sesionActual()) redirect('/mi-cuenta');
+  if (await sesionActual()) redirect('/firmamento/negocio');
 
   const { error } = await searchParams;
-  const mensajeError = error ? MENSAJE_ERROR[error] : null;
+  const mensajeError = error ? MENSAJES_INGRESO[error] : null;
   const conGoogle = googleConfigurado();
 
   return (

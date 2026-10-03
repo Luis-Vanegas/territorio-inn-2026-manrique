@@ -48,6 +48,13 @@ const SCOPES = 'openid email profile';
 const CON_PREFIJO = process.env.NODE_ENV === 'production';
 export const COOKIE_ESTADO = CON_PREFIJO ? '__Host-oauth_estado' : 'oauth_estado';
 export const COOKIE_VERIFICADOR = CON_PREFIJO ? '__Host-oauth_verif' : 'oauth_verif';
+/**
+ * Adónde mandar a la persona al volver (p. ej. /firmamento/negocio). Va en una
+ * cookie y no en el `state` ni en la URI de retorno: Google exige que la URI
+ * coincida exacto con la registrada, y el `state` es el secreto anti-CSRF.
+ * Siempre pasa por `rutaInterna` (lib/auth/destino.ts) al guardarse y al leerse.
+ */
+export const COOKIE_DESTINO = CON_PREFIJO ? '__Host-oauth_destino' : 'oauth_destino';
 
 export interface PerfilGoogle {
   /** Identificador estable de Google. La llave real — el correo puede cambiar. */

@@ -365,7 +365,7 @@ function metrosEntre(a: Punto, b: Punto): number {
  * (el radio que contiene al 90 % de sus comercios). Fuera de ese radio es `null`:
  * un negocio aislado no pertenece a ninguna, y decir que sí sería inventar un
  * vecindario. Se calcula al vuelo y no se guarda (la columna `portafolios.constelacion`
- * de la 032 sigue sin escribirse): el JSON se regenera con el pipeline y un id
+ * de la 032 nunca se escribió y la 033 la borró): el JSON se regenera con el pipeline y un id
  * guardado quedaría apuntando a una constelación que ya no existe.
  */
 export function constelacionDe(punto: Punto, constelaciones: Constelacion[]): Constelacion | null {

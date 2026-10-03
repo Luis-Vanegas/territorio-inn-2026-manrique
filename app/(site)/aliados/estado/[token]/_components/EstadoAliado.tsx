@@ -1,18 +1,16 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 import {
   actualizarPortafolio,
   borrarPortafolio,
-  type EstadoEdicion,
 } from '@/lib/actions/gestionarEstado';
 import type { Categoria, PortafolioAdmin } from '@/lib/db/portafolios.repo';
 import { Asesor } from '@/components/Asesor';
+import { BorrarNegocio } from '@/components/BorrarNegocio';
 import { FormularioEdicionPortafolio } from '@/components/FormularioEdicionPortafolio';
-
-const ESTADO_INICIAL: EstadoEdicion = { estado: 'inicial' };
 
 // ─── encabezado de estado ───────────────────────────────────────────────
 
@@ -39,7 +37,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
       <div className="border-l-2 border-azul bg-azul/[0.04] px-5 py-4">
         <p className="font-sans text-sm text-azul-texto">¡Publicado!</p>
         <p className="mt-1 font-sans text-sm text-tinta/70">
-          Tu negocio ya está en el mapa de Aliados.
+          Tu negocio ya está en el mapa de Aliados. Lo que cambies abajo se publica apenas guardes.
         </p>
         <Link
           href="/aliados"
@@ -98,56 +96,6 @@ function GuardarEnlace({ nombre }: { nombre: string }) {
       <span aria-hidden="true">↗</span>
       Guardar este enlace por WhatsApp
     </a>
-  );
-}
-
-// ─── borrar mi negocio ───────────────────────────────────────────────────
-
-function BorrarNegocio({
-  token,
-  alBorrar,
-}: {
-  token: string;
-  alBorrar: () => void;
-}) {
-  const [estado, setEstado] = useState<EstadoEdicion>(ESTADO_INICIAL);
-  const [borrando, setBorrando] = useState(false);
-
-  const handleBorrar = useCallback(async () => {
-    if (!window.confirm('¿Seguro que quieres borrar tu negocio del directorio?')) return;
-
-    setBorrando(true);
-    const resultado = await borrarPortafolio(token);
-    setBorrando(false);
-    setEstado(resultado);
-    if (resultado.estado === 'ok') alBorrar();
-  }, [token, alBorrar]);
-
-  return (
-    <div className="border-t border-tinta/12 pt-8">
-      <h2 className="font-sans text-xs uppercase tracking-wider text-tinta/60">
-        Borrar mi negocio
-      </h2>
-      <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/65">
-        Esto saca tu negocio del directorio y del mapa. No se puede deshacer — si más adelante
-        quieres volver a aparecer, tienes que registrarte de nuevo.
-      </p>
-
-      {estado.estado === 'error' && (
-        <p role="alert" className="mt-3 font-sans text-sm text-azul-texto">
-          {estado.mensaje}
-        </p>
-      )}
-
-      <button
-        type="button"
-        onClick={handleBorrar}
-        disabled={borrando}
-        className="mt-4 min-h-11 border border-azul-texto px-5 py-2.5 font-sans text-sm text-azul-texto transition-colors hover:bg-azul-texto hover:text-hueso disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {borrando ? 'Borrando…' : 'Borrar mi negocio'}
-      </button>
-    </div>
   );
 }
 
@@ -234,7 +182,7 @@ export function EstadoAliado({
             categorias={categorias}
             accion={actualizarPortafolio.bind(null, token)}
           />
-          <BorrarNegocio token={token} alBorrar={() => setBorrado(true)} />
+          <BorrarNegocio borrar={borrarPortafolio.bind(null, token)} alBorrar={() => setBorrado(true)} />
         </>
       )}
 
