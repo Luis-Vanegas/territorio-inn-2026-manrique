@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 
 import { FormularioEdicionPortafolio } from '@/components/FormularioEdicionPortafolio';
+import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { actualizarFichaDeCuenta } from '@/lib/actions/gestionarEstado';
 import { exigirNegocio } from '@/lib/auth/firmamento';
+import { listarBitacora, type FilaBitacora } from '@/lib/db/bitacora.repo';
 import { listarCategorias, obtenerPropio } from '@/lib/db/portafolios.repo';
 import { completitudFicha } from '@/lib/firmamento/ficha';
 import { negocioActivo } from '@/lib/firmamento/negocio';
 import { BorrarFichaPanel } from '../_components/BorrarFichaPanel';
+import { CambiosFicha } from '../_components/CambiosFicha';
 import { BarraFicha, ChecklistFicha } from '../_components/FichaCompleta';
 import { EstadoFicha } from '../_components/EstadoFicha';
 import { SelectorNegocio } from '../_components/SelectorNegocio';
@@ -28,56 +31,65 @@ export default async function NegocioFichaPage() {
   const [portafolio, categorias] = await Promise.all([obtenerPropio(usuarioId, actual.id), listarCategorias()]);
   if (!portafolio) return <SinNegocio aviso="No encontramos ese negocio en tu cuenta." />;
 
+  // La bitácora de ESTA ficha: `portafolio.id` ya pasó por `obtenerPropio` (filtra por la cuenta de la sesión).
+  // Es un extra: si falla, la ficha se puede editar igual.
+  const cambios: FilaBitacora[] = await listarBitacora({ portafolioId: portafolio.id })
+    .then((r) => r.filas)
+    .catch((e) => {
+      console.error('[panel negocio] cambios de la ficha falló', e instanceof Error ? e.message : e);
+      return [];
+    });
+
   const ficha = completitudFicha(portafolio);
 
   return (
     <div className="mx-auto max-w-6xl">
       <SelectorNegocio negocios={negocios} actual={actual} />
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-        <div className="min-w-0">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+        <div className="flex min-w-0 flex-col gap-5">
           <EstadoFicha estado={portafolio.estado} motivo={portafolio.motivo_rechazo} conAprobada />
 
-          <div className="mt-6 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
-            <h2 className="font-display text-2xl font-medium text-tinta">Datos de tu ficha</h2>
-            <p className="mt-1 font-sans text-sm text-tinta/70">
+          <Tarjeta titulo="Datos de tu ficha" id="datos-ficha">
+            <p className="-mt-2 font-sans text-sm text-tinta/70">
               Así los ven tus vecinos en Constelaciones. Corrige lo que haga falta y guarda al final.
             </p>
             {/* `key`: al cambiar de negocio el formulario arranca de cero; sus valores iniciales son los del negocio elegido. */}
             <FormularioEdicionPortafolio
               key={portafolio.id}
-              portafolio={portafolio}
+              // El correo de quien moderó no viaja al navegador del dueño.
+              portafolio={{ ...portafolio, moderado_por: null }}
               categorias={categorias}
               accion={actualizarFichaDeCuenta.bind(null, portafolio.id)}
               variante="panel"
             />
-          </div>
+          </Tarjeta>
 
-          <div className="mt-10">
-            <BorrarFichaPanel portafolioId={portafolio.id} />
-          </div>
+
+          <BorrarFichaPanel portafolioId={portafolio.id} />
         </div>
 
-        <aside className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-24">
-          <section aria-labelledby="vista-previa">
-            <h2 id="vista-previa" className="mb-3 font-display text-2xl font-medium text-tinta">
-              Vista previa en Constelaciones
-            </h2>
+        <aside className="flex min-w-0 flex-col gap-5">
+          <Tarjeta titulo="Vista previa" id="vista-previa" plegable abierta resumen="en Constelaciones">
             <VistaPreviaFicha portafolio={portafolio} />
             <p className="mt-2 font-sans text-sm text-tinta/70">Se actualiza cuando guardas.</p>
-          </section>
+          </Tarjeta>
 
-          <section aria-labelledby="lista-ficha" className="rounded-xl border border-tinta/12 bg-hueso p-5">
-            <h2 id="lista-ficha" className="font-display text-2xl font-medium text-tinta">
-              Qué le falta a tu ficha
-            </h2>
-            <div className="mt-3">
-              <BarraFicha porcentaje={ficha.porcentaje} />
-            </div>
+          <Tarjeta
+            titulo="Cambios en tu ficha"
+            id="cambios-ficha"
+            plegable
+            resumen={cambios.length > 0 ? `${cambios.length} anotados` : 'ninguno todavía'}
+          >
+            <CambiosFicha filas={cambios} />
+          </Tarjeta>
+
+          <Tarjeta titulo="Qué le falta a tu ficha" id="lista-ficha" plegable abierta resumen={`${ficha.porcentaje} %`}>
+            <BarraFicha porcentaje={ficha.porcentaje} />
             <div className="mt-2">
               <ChecklistFicha pasos={ficha.pasos} />
             </div>
-          </section>
+          </Tarjeta>
         </aside>
       </div>
     </div>

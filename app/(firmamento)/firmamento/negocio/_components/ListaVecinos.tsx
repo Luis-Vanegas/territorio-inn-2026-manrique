@@ -18,6 +18,8 @@ export type Vecino = {
   esAliado: boolean;
   /** Dirección que trae la fuente, si la hay. */
   direccion?: string | null;
+  /** Enlace de WhatsApp con el mensaje de alianza ya escrito; solo un aliado lo trae (un comercio de OSM no tiene contacto). */
+  contacto?: string | null;
 };
 
 export function ListaVecinos({ vecinos, etiquetaVacia }: { vecinos: Vecino[]; etiquetaVacia: string }) {
@@ -48,6 +50,17 @@ export function ListaVecinos({ vecinos, etiquetaVacia }: { vecinos: Vecino[]; et
               >
                 {v.esAliado ? 'Aliado de Constelaciones' : 'OpenStreetMap · no es aliado'}
               </span>
+              {v.contacto && (
+                <a
+                  href={v.contacto}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 flex min-h-[44px] w-fit items-center font-sans text-sm text-azul-texto underline underline-offset-4"
+                >
+                  Escribirle por WhatsApp
+                  <span className="sr-only"> a {v.nombre} (se abre en otra pestaña)</span>
+                </a>
+              )}
             </span>
           </li>
         );

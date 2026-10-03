@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 
+import { CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
 import {
   proponerConvocatoria,
   type CampoPropuesta,
@@ -23,7 +24,7 @@ function Boton() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-6 flex min-h-[48px] w-full items-center justify-center rounded-lg bg-azul-texto px-6 font-sans text-base font-medium text-hueso disabled:cursor-not-allowed disabled:opacity-60"
+      className={`${CLASE_BOTON_PRIMARIO} mt-6 w-full`}
     >
       {pending ? 'Enviando…' : 'Enviar al equipo'}
     </button>
@@ -102,9 +103,8 @@ export function FormularioPropuesta({ temas, hoy }: { temas: readonly string[]; 
   const valores = estado.estado === 'error' ? (estado.valores ?? {}) : {};
 
   return (
-    <form action={accion} className="border border-tinta/12 bg-hueso p-5 sm:p-6">
-      <h2 className="font-display text-2xl font-medium text-tinta">Proponer una convocatoria</h2>
-      <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
+    <form action={accion}>
+      <p className="font-sans text-sm leading-relaxed text-tinta/70">
         ¿Tu entidad abrió una convocatoria para negocios de la comuna? Cuéntanosla. El equipo la revisa
         antes de mostrarla: nada se publica solo.
       </p>

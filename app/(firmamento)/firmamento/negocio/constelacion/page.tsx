@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
 
 import { MapaAliados } from '@/components/MapaAliados';
+import { GrupoCifras, Kpi } from '@/components/firmamento/Kpi';
+import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { exigirNegocio } from '@/lib/auth/firmamento';
+import { enlaceWhatsapp } from '@/lib/contacto';
 import { listarAprobados, obtenerPropio, type Portafolio } from '@/lib/db/portafolios.repo';
 import { posiblesAlianzas } from '@/lib/firmamento/alianzas';
 import { negocioActivo } from '@/lib/firmamento/negocio';
+import { fechaHoyBogota, formatearNumero } from '@/lib/formato';
 import { fechaLarga, type DatosConstelaciones } from '@/lib/geo/constelaciones';
 import {
   constelacionDe,
@@ -32,8 +36,6 @@ const datosOsm = datosOsmJson as unknown as DatosConstelaciones;
 /** Hasta dónde se considera «cerca» un aliado de la plataforma. */
 const METROS_ALIADOS_CERCA = 1500;
 
-const tarjeta = 'min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5';
-
 export default async function NegocioConstelacionPage() {
   const { usuarioId, nombre } = await exigirNegocio();
   const { negocios, actual } = await negocioActivo(usuarioId);
@@ -52,6 +54,10 @@ export default async function NegocioConstelacionPage() {
   ]);
   if (!portafolio) return <SinNegocio aviso="No encontramos ese negocio en tu cuenta." />;
 
+  const primerNombre = nombre.trim().split(/\s+/)[0] ?? nombre;
+  // El mensaje de «cómo conectarme»: va ya escrito en el enlace de WhatsApp de cada aliado cercano.
+  const mensajeAlianza = `Hola, soy ${primerNombre}, de ${portafolio.nombre}. Estamos cerca en Manrique y creo que podemos ayudarnos a que más vecinos nos encuentren. ¿Hablamos?`;
+
   const punto = { lat: portafolio.latitud, lon: portafolio.longitud };
   const constelacion = constelacionDe(punto, datosOsm.constelaciones);
   const vecinosOsm = vecinosDeConstelacion(punto, datosOsm, Number.MAX_SAFE_INTEGER, portafolio.nombre);
@@ -66,6 +72,7 @@ export default async function NegocioConstelacionPage() {
       metros: distanciaMetros([punto.lat, punto.lon], [a.latitud, a.longitud]),
       esAliado: true,
       direccion: a.direccion,
+      contacto: a.whatsapp ? `${enlaceWhatsapp(a.whatsapp)}?text=${encodeURIComponent(mensajeAlianza)}` : null,
     }))
     .filter((a) => a.metros <= METROS_ALIADOS_CERCA)
     .sort((a, b) => a.metros - b.metros);
@@ -110,119 +117,145 @@ export default async function NegocioConstelacionPage() {
     { ...propioPublico, whatsapp: null },
   ];
 
-  const primerNombre = nombre.trim().split(/\s+/)[0] ?? nombre;
   const mensajeInvitar = `Hola, soy ${primerNombre}, de ${portafolio.nombre}. Estamos en Constelaciones, el mapa de los negocios de Manrique, y me encantaría verte ahí. Registra el tuyo gratis aquí: ${urlSitio()}/aliados/registro`;
 
+  const hoy = fechaHoyBogota();
+  const masDeOsm = comerciosCerca.length - 6;
+
   return (
-    <div className="mx-auto max-w-6xl">
+    <div className="mx-auto flex max-w-6xl flex-col gap-5">
       <SelectorNegocio negocios={negocios} actual={actual} />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_23rem] lg:items-start">
-        <div className="flex min-w-0 flex-col gap-6">
-          <section aria-labelledby="tu-constelacion" className={tarjeta}>
-            <h2 id="tu-constelacion" className="font-display text-2xl font-medium text-tinta">
-              {constelacion ? 'Eres parte de una constelación' : 'Por ahora eres una estrella suelta'}
-            </h2>
-            {constelacion ? (
-              <>
-                <p className="mt-2 font-sans text-base leading-relaxed text-tinta">{etiquetaConstelacion(constelacion)}</p>
-                <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">
-                  Qué hay en tu constelación: {lineaMezcla(constelacion)}.
-                </p>
-                <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
-                  Una constelación es un grupo de comercios que están muy cerca unos de otros, según el mapa abierto
-                  de OpenStreetMap. Sus clientes suelen ser los mismos: gente que pasa a pie por la cuadra.
-                </p>
-              </>
-            ) : (
-              <p className="mt-2 font-sans text-base leading-relaxed text-tinta/70">
-                Una constelación es un grupo de comercios muy cercanos entre sí, según el mapa abierto de OpenStreetMap.
-                Tu negocio queda lejos de todos los grupos
-                {masCercana && (
-                  <>
-                    {' '}(el más cercano, {masCercana.c.codigo ?? 'otro'}, está a{' '}
-                    <span className="tabular-nums">{formatearDistancia(masCercana.metros)}</span>)
-                  </>
-                )}
-                . Los negocios fuera de las vías comerciales son justo los que Constelaciones quiere hacer visibles.
-              </p>
-            )}
-          </section>
+      {/* La ventana: quién tengo cerca, en cifras y en el mapa (el de siempre; no hay un segundo mapa). */}
+      <VentanaNoche
+        titulo={constelacion ? 'Eres parte de una constelación' : 'Por ahora eres una estrella suelta'}
+        id="tu-constelacion"
+        descripcion={
+          constelacion ? (
+            <>
+              {etiquetaConstelacion(constelacion)}. Qué hay en ella: {lineaMezcla(constelacion)}.
+            </>
+          ) : (
+            <>
+              Tu negocio queda lejos de todos los grupos
+              {masCercana && (
+                <>
+                  {' '}(el más cercano, {masCercana.c.codigo ?? 'otro'}, está a{' '}
+                  <span className="tabular-nums">{formatearDistancia(masCercana.metros)}</span>)
+                </>
+              )}
+              . Los negocios fuera de las vías comerciales son justo los que Constelaciones quiere hacer visibles.
+            </>
+          )
+        }
+      >
+        <GrupoCifras
+          columnas={3}
+          fuente="aliados aprobados de Constelaciones y comercios de OpenStreetMap (ODbL); distancias en línea recta"
+          fecha={`aliados al ${hoy}, mapa abierto al ${fechaLarga(datosOsm.osm_base)}`}
+        >
+          <Kpi
+            valor={formatearNumero(aliadosCerca.length)}
+            numero={aliadosCerca.length}
+            etiqueta="Aliados a menos de 1,5 km"
+            aclaracion="Otros negocios de la red, ya registrados."
+          />
+          <Kpi
+            valor={constelacion ? formatearNumero(comerciosCerca.length) : '—'}
+            numero={constelacion ? comerciosCerca.length : undefined}
+            tono="estrella"
+            etiqueta="Comercios en tu constelación"
+            aclaracion={constelacion ? 'Con nombre en OpenStreetMap; no son aliados.' : 'Aún no estás dentro de un grupo.'}
+          />
+          <Kpi
+            valor={formatearNumero(alianzas.length)}
+            numero={alianzas.length}
+            tono="estrella"
+            etiqueta="Posibles alianzas"
+            aclaracion="Rubros que se complementan con el tuyo."
+          />
+        </GrupoCifras>
 
-          {/* El mapa de siempre (el de /aliados y /firmamento), en una ventana de noche; no hay un segundo mapa. */}
-          <VentanaNoche titulo="Tu cuadra en el mapa" id="mapa">
-            <MapaAliados
-              portafolios={enElMapa}
-              noche
-              seleccionado={portafolio.id}
-              constelacionElegida={constelacion?.id}
-              hrefLista="/aliados#listado"
-            />
-          </VentanaNoche>
+        <div className="mt-5">
+          <MapaAliados
+            portafolios={enElMapa}
+            noche
+            seleccionado={portafolio.id}
+            constelacionElegida={constelacion?.id}
+            hrefLista="/aliados#listado"
+          />
         </div>
+      </VentanaNoche>
 
-        <div className="flex min-w-0 flex-col gap-6">
-          <section aria-labelledby="alianzas" className={tarjeta}>
-            <h2 id="alianzas" className="font-display text-2xl font-medium text-tinta">
-              Posibles alianzas
-            </h2>
-            <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">
+      <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+        <div className="flex min-w-0 flex-col gap-5">
+          <Tarjeta
+            titulo="Posibles alianzas"
+            id="alianzas"
+            plegable
+            abierta
+            resumen={`${alianzas.length} cerca`}
+          >
+            <p className="font-sans text-sm leading-relaxed text-tinta/70">
               Negocios cercanos de un rubro que se complementa con el tuyo: quien le compra a uno suele necesitar al
               otro. Es una sugerencia por categoría, no una garantía.
             </p>
             <div className="mt-2">
               <ListaVecinos
-                vecinos={alianzas}
+                vecinos={alianzas.slice(0, 3)}
                 etiquetaVacia="No encontramos cerca un rubro que se complemente con el tuyo. Invita a tus vecinos y esto crece."
               />
             </div>
-          </section>
+          </Tarjeta>
 
-          <section aria-labelledby="aliados-cerca" className={tarjeta}>
-            <h2 id="aliados-cerca" className="font-display text-2xl font-medium text-tinta">
-              Aliados cerca de ti
-            </h2>
-            <div className="mt-2">
-              <ListaVecinos
-                vecinos={aliadosCerca.slice(0, 6)}
-                etiquetaVacia="Todavía no hay otros aliados a menos de 1,5 km. Puedes ser quien traiga a los demás."
-              />
-            </div>
-          </section>
+          <Tarjeta
+            titulo="Aliados cerca de ti"
+            id="aliados-cerca"
+            plegable
+            resumen={`${aliadosCerca.length} a menos de 1,5 km`}
+          >
+            <ListaVecinos
+              vecinos={aliadosCerca.slice(0, 4)}
+              etiquetaVacia="Todavía no hay otros aliados a menos de 1,5 km. Puedes ser quien traiga a los demás."
+            />
+          </Tarjeta>
+        </div>
 
-          {constelacion && (
-            <section aria-labelledby="vecinos-osm" className={tarjeta}>
-              <h2 id="vecinos-osm" className="font-display text-2xl font-medium text-tinta">
-                Otros negocios de tu constelación
-              </h2>
-              <div className="mt-2">
-                <ListaVecinos
-                  vecinos={comerciosCerca.slice(0, 6)}
-                  etiquetaVacia="OpenStreetMap no tiene otros comercios con nombre en tu constelación."
-                />
-              </div>
-              {comerciosCerca.length > 6 && (
-                <p className="mt-2 font-sans text-sm text-tinta/70">
-                  Y {comerciosCerca.length - 6} más con nombre en esta constelación.
-                </p>
-              )}
-              <p className="mt-3 font-sans text-xs leading-relaxed text-tinta/70 tabular-nums">
-                Fuente: © colaboradores de OpenStreetMap (ODbL) · datos al {fechaLarga(datosOsm.osm_base)}
-              </p>
-            </section>
-          )}
-
-          <section aria-labelledby="invitar" className={tarjeta}>
-            <h2 id="invitar" className="font-display text-2xl font-medium text-tinta">
-              Invita a tus vecinos
-            </h2>
-            <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">
+        <div className="flex min-w-0 flex-col gap-5">
+          <Tarjeta titulo="Invita a tus vecinos" id="invitar" plegable abierta resumen="el mensaje ya está escrito">
+            <p className="mb-3 font-sans text-sm leading-relaxed text-tinta/70">
               Cada vecino que se registra hace más fácil que los clientes encuentren la cuadra entera.
             </p>
-            <div className="mt-3">
-              <Invitar mensaje={mensajeInvitar} />
-            </div>
-          </section>
+            <Invitar mensaje={mensajeInvitar} />
+          </Tarjeta>
+
+          {constelacion && (
+            <Tarjeta
+              titulo="Otros negocios de tu constelación"
+              id="vecinos-osm"
+              plegable
+              resumen={`${comerciosCerca.length} con nombre`}
+            >
+              <ListaVecinos
+                vecinos={comerciosCerca.slice(0, 6)}
+                etiquetaVacia="OpenStreetMap no tiene otros comercios con nombre en tu constelación."
+              />
+              {masDeOsm > 0 && (
+                <p className="mt-2 font-sans text-sm text-tinta/70">Y {masDeOsm} más con nombre en esta constelación.</p>
+              )}
+              <p className="mt-3 font-sans text-xs leading-relaxed text-tinta/70">
+                Fuente: © colaboradores de OpenStreetMap (ODbL) · datos al {fechaLarga(datosOsm.osm_base)}
+              </p>
+            </Tarjeta>
+          )}
+
+          <Tarjeta titulo="¿Qué es una constelación?" id="que-es" plegable>
+            <p className="font-sans text-base leading-relaxed text-tinta/70">
+              Es un grupo de comercios muy cercanos entre sí, según el mapa abierto de OpenStreetMap. Sus clientes
+              suelen ser los mismos: gente que pasa a pie por la cuadra. Por eso aliarte con quien está cerca, con un
+              rubro que se complementa, te trae clientes sin salir de la cuadra.
+            </p>
+          </Tarjeta>
         </div>
       </div>
     </div>

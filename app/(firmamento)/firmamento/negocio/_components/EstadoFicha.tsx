@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
 import type { EstadoPortafolio } from '@/lib/db/portafolios.repo';
 
 /**
@@ -49,7 +50,7 @@ export function EstadoFicha({
         {enlaceFicha && (
           <Link
             href="/firmamento/negocio/ficha"
-            className="mt-3 inline-flex min-h-[44px] items-center rounded-lg bg-azul-texto px-4 font-sans text-sm font-medium text-hueso"
+            className={`${CLASE_BOTON_PRIMARIO} mt-3`}
           >
             Corregir mi ficha
           </Link>

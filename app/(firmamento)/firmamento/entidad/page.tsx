@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
 import { leerFirmamento } from '@/app/(site)/firmamento/datos';
-import { Kpi } from '@/components/firmamento/Kpi';
-import { ScrollReveal } from '@/components/ScrollReveal';
+import { GrupoCifras, Kpi } from '@/components/firmamento/Kpi';
+import { MapaBarrios } from '@/components/firmamento/MapaBarrios';
+import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { exigirEntidad } from '@/lib/auth/firmamento';
 import { listarConvocatoriasVigentes } from '@/lib/db/convocatorias.repo';
@@ -12,16 +12,12 @@ import { fechaHoyBogota, formatearNumero as fmt } from '@/lib/formato';
 import { fechaLarga } from '@/lib/geo/constelaciones';
 import { CELDA_PEQUENA } from '@/lib/privacidad/kAnonimato';
 import { ComposicionRed } from './_components/ComposicionRed';
-import { EncabezadoEntidad } from './_components/EncabezadoEntidad';
 import { ObservatorioCielo } from './_components/ObservatorioCielo';
 
 export const metadata: Metadata = { title: 'Observatorio' };
 
 // La sesión y la base se leen en cada carga.
 export const dynamic = 'force-dynamic';
-
-const FUENTE_OSM = 'OpenStreetMap, © colaboradores (ODbL)';
-const FUENTE_RED = 'Constelaciones · Manrique, aliados aprobados por moderación (datos abiertos, regla k = 5)';
 
 function KpiDe({ c }: { c: CifraConFuente }) {
   return (
@@ -46,7 +42,7 @@ function KpiDe({ c }: { c: CifraConFuente }) {
  * `scripts/verificar-entidades.mjs` lo comprueba.
  */
 export default async function EntidadObservatorioPage() {
-  const contexto = await exigirEntidad();
+  await exigirEntidad();
 
   const [d, vigentes] = await Promise.all([
     leerFirmamento(),
@@ -59,7 +55,7 @@ export default async function EntidadObservatorioPage() {
   const datosRed = red.datos;
 
   const fechaOsm = fechaLarga(osm.osmBase);
-  const agrupado = `agrupados el ${fechaLarga(osm.fechaCorrida)}`;
+  const fechaCorrida = fechaLarga(osm.fechaCorrida);
 
   // Aliados: la cifra sale de los datos abiertos; con menos de 5 es «<5», no un cero.
   const aliados = datosRed?.negocios_aprobados;
@@ -69,25 +65,31 @@ export default async function EntidadObservatorioPage() {
       : datosRed
         ? { valor: CELDA_PEQUENA, numero: undefined, nota: 'Con menos de 5 no publicamos la cifra exacta.' }
         : { valor: '—', numero: undefined, nota: 'No pudimos consultar este dato ahora. Vuelve a intentarlo en unos minutos.' };
-  const fechaRed = datosRed ? `consultado el ${fechaLarga(datosRed.generado_en)}` : 'sin consulta en este momento';
+
+  // Una sola línea de fuente para la banda: cada cifra viene de un lado y la línea dice de dónde.
+  const fuenteBanda = (
+    <>
+      aliados, datos abiertos de Constelaciones con la regla k = 5
+      {datosRed ? ` (consultado el ${fechaLarga(datosRed.generado_en)})` : ' (sin consulta en este momento)'}; locales
+      y constelaciones, OpenStreetMap © colaboradores (ODbL), datos al {fechaOsm} y agrupados con HDBSCAN el{' '}
+      {fechaCorrida}; convocatorias, aprobadas por el equipo.
+    </>
+  );
 
   return (
-    <div className="mx-auto max-w-[1280px]">
-      <EncabezadoEntidad entidad={contexto.nombre}>
-        Aquí ves la red como la ve Constelaciones: solo conteos, nunca un negocio por su nombre. Toda cifra
-        con menos de 5 negocios sale como «{CELDA_PEQUENA}».
-      </EncabezadoEntidad>
+    <div className="mx-auto flex max-w-[1280px] flex-col gap-5">
+      <p className="max-w-3xl font-sans text-base leading-relaxed text-tinta/70">
+        Aquí ves la red como la ve Constelaciones: solo conteos, nunca un negocio por su nombre. Toda cifra con menos
+        de 5 negocios sale como «{CELDA_PEQUENA}».
+      </p>
 
-      {/* Cifras de fuentes distintas: cada una lleva la suya (no hay GrupoCifras). */}
       <VentanaNoche titulo="La red y el territorio hoy" id="cifras-principales">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <GrupoCifras fuente={fuenteBanda} fecha={fechaHoyBogota()}>
           <Kpi
             valor={kpiRed.valor}
             numero={kpiRed.numero}
             etiqueta="aliados en la red"
             aclaracion={kpiRed.nota}
-            fuente={FUENTE_RED}
-            fecha={fechaRed}
           />
           <Kpi
             valor={fmt(osm.totalComercios)}
@@ -95,8 +97,6 @@ export default async function EntidadObservatorioPage() {
             tono="estrella"
             etiqueta="locales en el mapa abierto"
             aclaracion={`${fmt(osm.conNombre)} con nombre y ${fmt(osm.sinNombre)} sin nombre.`}
-            fuente={FUENTE_OSM}
-            fecha={`datos al ${fechaOsm}`}
           />
           <Kpi
             valor={fmt(osm.constelaciones)}
@@ -104,51 +104,29 @@ export default async function EntidadObservatorioPage() {
             tono="ladrillo"
             etiqueta="constelaciones comerciales"
             aclaracion={`${fmt(osm.sueltos)} locales sueltos, fuera de toda constelación.`}
-            fuente="HDBSCAN sobre los comercios de OpenStreetMap"
-            fecha={agrupado}
           />
           <Kpi
             valor={vigentes ? fmt(vigentes.length) : '—'}
             numero={vigentes ? vigentes.length : undefined}
             etiqueta="convocatorias abiertas ahora"
-            aclaracion={
-              vigentes ? (
-                <Link
-                  href="/firmamento/entidad/convocatorias"
-                  className="inline-flex min-h-[44px] items-center text-sodio underline underline-offset-4"
-                >
-                  Ver y proponer
-                </Link>
-              ) : (
-                'No pudimos consultarlas ahora. Vuelve a intentarlo en unos minutos.'
-              )
-            }
-            fuente="Constelaciones · Manrique, convocatorias aprobadas por el equipo"
-            fecha={`consultado el ${fechaHoyBogota()}`}
+            aclaracion={vigentes ? undefined : 'No pudimos consultarlas ahora. Vuelve a intentarlo en unos minutos.'}
+            enlace={vigentes ? { href: '/firmamento/entidad/convocatorias', texto: 'Ver y proponer' } : undefined}
           />
-        </div>
+        </GrupoCifras>
       </VentanaNoche>
 
-      <div className="mt-8">
-        <ObservatorioCielo
-          filas={d.filas}
-          osmBase={osm.osmBase}
-          fechaCorrida={osm.fechaCorrida}
-          composicion={<ComposicionRed datos={datosRed} />}
-        />
-      </div>
+      <ObservatorioCielo filas={d.filas} osmBase={osm.osmBase} fechaCorrida={osm.fechaCorrida} />
 
-      <section aria-labelledby="contexto-titulo" className="mt-12">
-        <ScrollReveal>
-          <h2 id="contexto-titulo" className="font-display text-2xl font-medium text-tinta sm:text-3xl">
-            El territorio, con su fuente
-          </h2>
-          <p className="mt-2 max-w-3xl font-sans text-base leading-relaxed text-tinta/70">
-            Cifras de otras entidades para leer la red en contexto. No se comparan como porcentaje: la
-            Cámara de Comercio cuenta empresas con registro, OpenStreetMap los locales que alguien mapeó y
-            la red solo a quienes se registraron aquí.
+      <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+        <ComposicionRed datos={datosRed} />
+
+        <Tarjeta titulo="El territorio, con su fuente" id="contexto-titulo" plegable resumen="Cámara, DANE y más">
+          <p className="max-w-3xl font-sans text-sm leading-relaxed text-tinta/70">
+            Cifras de otras entidades para leer la red en contexto. No se comparan como porcentaje: la Cámara de
+            Comercio cuenta empresas con registro, OpenStreetMap los locales que alguien mapeó y la red solo a quienes
+            se registraron aquí.
           </p>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <KpiDe c={CAMARA_EMPRESAS} />
             {TERRITORIO.map((c) => (
               <KpiDe key={c.etiqueta} c={c} />
@@ -157,8 +135,21 @@ export default async function EntidadObservatorioPage() {
               <KpiDe key={c.etiqueta} c={c} />
             ))}
           </div>
-        </ScrollReveal>
-      </section>
+        </Tarjeta>
+      </div>
+
+      {/* Comercios de OSM por barrio (públicos): la cobertura de aliados por barrio respeta k = 5 y no se pinta aquí. */}
+      <Tarjeta titulo="Los 15 barrios" id="barrios" plegable resumen="comercios mapeados por barrio">
+        <VentanaNoche>
+          <MapaBarrios
+            marco={false}
+            filas={d.barrios}
+            cifra="comercios"
+            descripcion="Comercios mapeados en OpenStreetMap por barrio oficial de la Comuna 3, de más a menos"
+            fuente={`Fuente: OpenStreetMap, © colaboradores (ODbL) · datos al ${fechaOsm} · barrios: Alcaldía de Medellín`}
+          />
+        </VentanaNoche>
+      </Tarjeta>
     </div>
   );
 }

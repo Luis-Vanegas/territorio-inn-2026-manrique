@@ -51,15 +51,15 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
           const lC = largo(s.contactos);
           return (
             <g key={i}>
-              <text x="0" y={y + 21} fontSize="12" fill="#B7BEDC" fontFamily="var(--font-dm-mono), monospace">
+              <text x="0" y={y + 21} fontSize="12" fill="#B7BEDC" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {etiqueta(i)}
               </text>
               <rect x={COL_ETIQUETA} y={y + 4} width={lV} height={ALTO_BARRA} fill="#7FB0FF" rx="2" />
-              <text x={COL_ETIQUETA + lV + 5} y={y + 14.5} fontSize="12" fill="#F3EFE4" fontFamily="var(--font-dm-mono), monospace">
+              <text x={COL_ETIQUETA + lV + 5} y={y + 14.5} fontSize="12" fill="#F3EFE4" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {s.vistas}
               </text>
               <rect x={COL_ETIQUETA} y={y + 4 + ALTO_BARRA + 2} width={lC} height={ALTO_BARRA} fill="url(#rayas-contacto)" stroke="#F4CC48" strokeWidth="1" rx="2" />
-              <text x={COL_ETIQUETA + lC + 5} y={y + 28.5} fontSize="12" fill="#F4CC48" fontFamily="var(--font-dm-mono), monospace">
+              <text x={COL_ETIQUETA + lC + 5} y={y + 28.5} fontSize="12" fill="#F4CC48" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {s.contactos}
               </text>
             </g>
@@ -69,13 +69,13 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
 
       <figcaption className="mt-3 flex flex-wrap gap-x-5 gap-y-2 font-sans text-sm text-tinta/70">
         <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="h-3 w-3 rounded-sm bg-azul" />
+          <span aria-hidden="true" className="h-3 w-3 rounded-sm" style={{ backgroundColor: "#7FB0FF" }} />
           Vistas de tu ficha
         </span>
         <span className="inline-flex items-center gap-2">
           <span
             aria-hidden="true"
-            className="h-3 w-3 rounded-sm border border-azul"
+            className="h-3 w-3 rounded-sm border border-[#F4CC48]"
             style={{ backgroundImage: 'repeating-linear-gradient(45deg,#F4CC48 0 2px,#0B1026 2px 5px)' }}
           />
           Toques para contactarte

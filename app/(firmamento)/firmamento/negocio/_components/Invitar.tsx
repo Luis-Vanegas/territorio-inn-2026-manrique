@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { CLASE_BOTON_PANEL, CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
+
 /**
  * «Invita a tus vecinos»: un mensaje ya escrito para mandar por WhatsApp o
  * copiar. El aviso de «Copiado» va en una región
@@ -31,7 +33,7 @@ export function Invitar({ mensaje }: { mensaje: string }) {
           href={`https://wa.me/?text=${encodeURIComponent(mensaje)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-[44px] items-center rounded-lg bg-azul-texto px-4 font-sans text-sm font-medium text-hueso"
+          className={CLASE_BOTON_PRIMARIO}
         >
           Invitar por WhatsApp
           <span className="sr-only"> (se abre en otra pestaña)</span>
@@ -39,7 +41,7 @@ export function Invitar({ mensaje }: { mensaje: string }) {
         <button
           type="button"
           onClick={copiar}
-          className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-tinta/5"
+          className={CLASE_BOTON_PANEL}
         >
           Copiar mensaje
         </button>
