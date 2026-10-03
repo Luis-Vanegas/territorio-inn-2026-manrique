@@ -48,7 +48,10 @@ export function PanelShell({
       </a>
 
       {/* ── Barra lateral (escritorio) ── */}
-      <aside className="hidden border-r border-trazo bg-noche-2 lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
+      {/* El fondo va en la celda del grid (se estira con la página) y el sticky en el aside:
+          con el fondo en el aside de 100vh, la columna quedaba sin color debajo. */}
+      <div className="hidden border-r border-trazo bg-noche-2 lg:block">
+      <aside className="flex flex-col lg:sticky lg:top-0 lg:h-screen">
         <Link
           href={items[0]!.href}
           className="flex min-h-[44px] items-center gap-3 px-5 pt-6"
@@ -86,6 +89,7 @@ export function PanelShell({
           </div>
         </div>
       </aside>
+      </div>
 
       <div className="flex min-h-screen min-w-0 flex-col">
         {/* ── Barra superior ── */}

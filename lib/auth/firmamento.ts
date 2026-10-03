@@ -20,9 +20,8 @@ import type { RolFirmamento } from '@/lib/firmamento/navegacion';
  * mandar al login antes de pintar el armazón) Y en cada `page.tsx` del panel,
  * junto a su lectura de datos; y cada Server Action y cada repo revalida por su
  * cuenta, porque una action es un endpoint invocable sin pasar por la página.
- * ponytail: sin `cache()` de React (sus tipos están solo en el canal canary);
- * la verificación de cookie es barata. Cuando `entidadDeSesion` consulte la
- * base, conviene cachearla por petición.
+ * ponytail: sin `cache()` de React acá: la verificación de cookie es barata.
+ * La que sí consulta la base, `entidadDeSesion`, ya va con `cache`.
  *
  * Tres roles, dos cookies (AGENTS.md › «Dos poblaciones, dos cookies»):
  *   negocio → `sesion_usuario`

@@ -174,25 +174,18 @@ const nextConfig = {
   // /mi-cuenta se mudó al panel de Firmamento (docs/firmamento-modulos.md). Los enlaces
   // viejos (correos, WhatsApp, favoritos) siguen funcionando. 307 y no 308: mientras el
   // panel se asienta no conviene que un navegador recuerde el redirect para siempre.
+  // /admin también (panel del equipo): el login va primero porque gana la primera regla que
+  // coincide. UN solo redirects(): un segundo método en el objeto pisa al primero sin aviso.
   async redirects() {
     return [
+      { source: '/admin/login', destination: '/firmamento/entrar?rol=equipo', permanent: false },
+      { source: '/admin/:path*', destination: '/firmamento/equipo/:path*', permanent: false },
       { source: '/mi-cuenta', destination: '/firmamento/negocio', permanent: false },
       { source: '/mi-cuenta/clientes', destination: '/firmamento/negocio/clientes', permanent: false },
     ];
   },
   async headers() {
     return [{ source: '/:path*', headers: cabecerasSeguridad }];
-  },
-  // El panel de moderación se mudó a Firmamento (docs/firmamento-modulos.md).
-  // Los enlaces viejos (marcadores, mensajes del equipo) siguen funcionando.
-  // Temporales (307): si algún día /admin vuelve a significar algo, un 308 ya
-  // habría quedado guardado en los navegadores. El login va primero: gana la
-  // primera regla que coincide.
-  async redirects() {
-    return [
-      { source: '/admin/login', destination: '/firmamento/entrar?rol=equipo', permanent: false },
-      { source: '/admin/:path*', destination: '/firmamento/equipo/:path*', permanent: false },
-    ];
   },
 };
 

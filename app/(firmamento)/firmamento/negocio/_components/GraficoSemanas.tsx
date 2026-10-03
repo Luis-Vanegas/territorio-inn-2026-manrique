@@ -82,7 +82,9 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
         </span>
       </figcaption>
 
-      <table className="sr-only">
+      {/* display:table ignora el ancho de 1 px de sr-only y desborda en móvil: va envuelta. */}
+      <div className="sr-only">
+      <table>
         <caption>Vistas y contactos por semana de {nombre}</caption>
         <thead>
           <tr>
@@ -106,6 +108,7 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
           })}
         </tbody>
       </table>
+      </div>
     </figure>
   );
 }

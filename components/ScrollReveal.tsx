@@ -26,9 +26,11 @@ export function ScrollReveal({ children, delay = 0, className }: ScrollRevealPro
       // oculto no puede quedarse en el HTML del servidor.
       data-reveal
       className={className}
-      initial={prefiereMenosMovimiento ? false : { opacity: 0, y: 16 }}
+      // `initial` constante: useReducedMotion da false en el servidor y true en el
+      // cliente, y un `initial` que dependa de él rompe la hidratación.
+      initial={{ opacity: 0, y: 16 }}
       animate={prefiereMenosMovimiento || enVista ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={prefiereMenosMovimiento ? { duration: 0 } : { duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>

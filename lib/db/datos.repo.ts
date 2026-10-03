@@ -57,10 +57,10 @@ async function calcularDatosAbiertos(): Promise<DatosAbiertos> {
       order by c.orden, c.nombre
     `,
     sql`
-      select barrio, count(*)::int as negocios
+      select barrio_oficial as barrio, count(*)::int as negocios
       from portafolios
       where estado = 'aprobado'
-      group by barrio
+      group by barrio_oficial
     `,
     sql`
       select i.formalidad as id, count(*)::int as negocios
@@ -81,9 +81,9 @@ async function calcularDatosAbiertos(): Promise<DatosAbiertos> {
 
   const total = (totalRows[0] as { total: number } | undefined)?.total ?? 0;
 
-  // Barrio: el campo es texto que escribió la persona (con «Otro» libre), así
-  // que un barrio que no esté en la lista oficial se agrupa: el texto libre
-  // podría ser una dirección.
+  // Barrio: el OFICIAL, calculado del punto (barrioDe), no el que escribió la
+  // persona (docs/base-de-datos.md). null = el punto cae fuera de los 15 barrios
+  // y va a «Otro barrio», junto con cualquier valor que no esté en la lista.
   const porBarrio = new Map<string, number>(BARRIOS_COMUNA_3.map((b) => [b, 0]));
   porBarrio.set(OTRO_BARRIO, 0);
   for (const r of barrioRows as { barrio: string; negocios: number }[]) {
