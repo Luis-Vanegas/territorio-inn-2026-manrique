@@ -68,22 +68,21 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.
 - [ ] Fase 2 · Integrador — lista para lanzar (A1 confirmado por el geocatálogo).
 
-## ✨ Firmamento: login por rol y paneles (asesoría v2, 2-oct)
+## ✨ Firmamento: login por rol y paneles (asesoría v2, 2–3 oct)
 
-Diseño en `docs/firmamento-modulos.md`. Neon se queda; la edición del dueño publica directo.
+Diseño en `docs/firmamento-modulos.md` y `docs/base-de-datos.md`; plan en `docs/plan-firmamento-2026-10.md`.
 
-- [x] Migración 033 según `docs/base-de-datos.md` (entidades, barrios, convocatorias rehecha,
-      bitácora, sugerencias con portafolio) + el código que la acompaña, en rama de Neon.
-      Aplicada SOLO en la rama de prueba. Falta producción (con OK de Luis), en el mismo
-      despliegue que el código: la 033 borra columnas que el código anterior lee.
-- [x] Rellenar `barrio_oficial` con `barrioDe`: `scripts/rellenar-barrio-oficial.mjs`
-      (idempotente, `--seco` para contar). En la rama de prueba: 6 llenos, 4 en null
-      (los 4 caen fuera de la Comuna 3: 3 aprobados y 1 archivado). Correrlo en
-      producción después de la 033.
-- [ ] Restaurante sazón al carbón declara «Campo Valdés No. 1» (Comuna 4): corregir.
-- [ ] `/firmamento/entrar` con 3 pestañas + layout del panel.
-- [ ] Panel negocio (mover `/mi-cuenta`), panel equipo (mover `/admin`), panel entidad.
-- [ ] Redirecciones `/admin/*` y `/mi-cuenta`, sitemap, menú y AGENTS.md.
+- [x] Migración 033 en PRODUCCIÓN (3-oct): entidades, miembros, barrios, convocatorias rehecha,
+      bitácora; `barrio_oficial` relleno (6 de 10; 4 fuera de la comuna). Respaldo previo en la
+      rama de Neon `respaldo-pre-033` (borrarla cuando se confirme que todo anda).
+- [x] `/firmamento/entrar` + paneles de negocio, equipo (ex `/admin`) y entidad. Desplegado en
+      `main` (`38f2c58`). Redirects `/admin/*` y `/mi-cuenta` verificados en producción.
+- [x] La edición del dueño de una ficha aprobada publica directo (decisión de Luis) con bitácora.
+- [ ] Probar el ingreso real con Google en producción (negocio y entidad); dar de alta a la
+      primera entidad y su miembro desde Equipo › Entidades.
+- [ ] Territorio sin mapa (hoy tablas). Insignias del menú no se refrescan al navegar.
+- [ ] El asesor flotante no se monta en el layout de Firmamento.
+- [ ] `constelaciones.json` no trae la referencia («UVA de los Sueños»): agregarla en el pipeline.
 
 ### 🟢 Para Antigravity (Firmamento)
 - [ ] Reemplazar `/admin` por `/firmamento/equipo` (y `/admin/login` por `/firmamento/entrar?rol=equipo`)
