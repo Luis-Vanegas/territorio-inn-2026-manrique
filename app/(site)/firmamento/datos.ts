@@ -16,6 +16,7 @@ import {
 import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import { obtenerDatosAbiertos, type DatosAbiertos } from '@/lib/db/datos.repo';
 import { EVALUACION, type EvaluacionModelo } from '@/lib/firmamento/evaluacionModelo';
+import { crearProyeccion } from '@/lib/firmamento/proyeccion';
 
 /**
  * Todo lo que lee /firmamento, resuelto en el servidor y en un solo lugar.
@@ -124,36 +125,12 @@ function proyectar(): Cielo {
   const anillo = (
     POLIGONO_MANRIQUE.features[0]!.geometry as unknown as { coordinates: number[][][] }
   ).coordinates[0]!;
-  const lons = anillo.map((p) => p[0] as number);
-  const lats = anillo.map((p) => p[1] as number);
-  const minLon = Math.min(...lons);
-  const maxLon = Math.max(...lons);
-  const minLat = Math.min(...lats);
-  const maxLat = Math.max(...lats);
-  // A esta latitud un grado de longitud mide cos(lat) veces uno de latitud:
-  // sin esta corrección la comuna saldría ensanchada.
-  const cos = Math.cos((((minLat + maxLat) / 2) * Math.PI) / 180);
-  const k = (ANCHO_CIELO - 2 * MARGEN_CIELO) / ((maxLon - minLon) * cos);
-  const alto = Math.round((maxLat - minLat) * k + 2 * MARGEN_CIELO);
-
-  const r1 = (n: number) => Math.round(n * 10) / 10;
-  const punto = (lat: number, lon: number): [number, number] => [
-    r1(MARGEN_CIELO + (lon - minLon) * cos * k),
-    r1(MARGEN_CIELO + (maxLat - lat) * k),
-  ];
-
-  const contorno =
-    anillo
-      .map((p, i) => {
-        const [x, y] = punto(p[1] as number, p[0] as number);
-        return `${i === 0 ? 'M' : 'L'}${x} ${y}`;
-      })
-      .join(' ') + ' Z';
+  const { ancho, alto, punto, trazo } = crearProyeccion(anillo, ANCHO_CIELO, MARGEN_CIELO);
 
   return {
-    ancho: ANCHO_CIELO,
+    ancho,
     alto,
-    contorno,
+    contorno: trazo(anillo),
     constelaciones: osm.constelaciones.map((c) => ({
       id: c.id,
       estrellas: c.estrellas.map((e) => punto(e.lat, e.lon)),

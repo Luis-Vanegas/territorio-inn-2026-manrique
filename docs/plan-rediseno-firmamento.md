@@ -16,10 +16,17 @@ prototipo de la asesoría (azul de noche en todo, foto a la izquierda, mucho tex
    El equipo pasa de 16 entradas a pestañas agrupadas con subpestañas.
 4. **DM Mono solo en cifras grandes.** Fuentes y fechas en DM Sans pequeña; una sola línea de
    fuente por grupo de cifras con la misma fuente y fecha.
-5. **Sin librerías nuevas.** Lo que ofrecen React Bits, Magic UI, bklit y Anime.js ya existe en
+5. **Una sola librería nueva: Anime.js** (MIT, 3-oct), solo para la «Constelación viva»
+   (portada y login): secuencia con los datos reales de Manrique (contorno → barrios →
+   estrellas → líneas de constelación → nodos). Estática con «menos movimiento». Fuera de esa
+   pieza, **sin librerías nuevas**: lo demás que ofrecen React Bits, Magic UI y bklit ya existe en
    el repo (`NumeroAnimado`, `ScrollReveal`, `CieloConstelaciones`, Leaflet). React Bits
    (MIT + Commons Clause) queda fuera por la cesión al ITM. Si se copia algún componente MIT,
    se cambia `motion/react` por `framer-motion` (no se instala `motion` 12).
+   **Enmienda (Luis, Ola 2):** Anime.js v4 (MIT) entra SOLO para la Constelación viva
+   (`components/firmamento/AnimadorConstelacion.tsx`), una coreografía de cinco fases sobre
+   cientos de elementos SVG; se carga por módulos y bajo demanda. Ver DESIGN.md ›
+   Movimiento y › Constelación viva.
 6. **Sin duplicados:** una tarjeta (`Tarjeta`, con variante plegable), una cifra (`Kpi` +
    `GrupoCifras`), unas barras (`BarrasCategoria`), un mapa + lista.
 
@@ -33,6 +40,18 @@ prototipo de la asesoría (azul de noche en todo, foto a la izquierda, mucho tex
 4. Estrellas OSM con su grupo de categoría (forma y color de `lib/categorias/grupos.ts`).
 5. «Únete como aliado» en el tablero público.
 
+## Accesos y seguridad (decisiones del 3-oct)
+
+- **Aliados existentes:** 6 cuentas y 8 negocios aprobados, pero solo 1 vinculado. El equipo
+  vincula negocio ↔ cuenta desde el panel (verificación humana) y puede «Enviar acceso» por
+  WhatsApp con el enlace personal. Nunca se vincula por el correo de la ficha (no verificado).
+- **Entidades y moderadores por invitación:** enlace de un solo uso, con vencimiento, guardado
+  como hash; la persona entra con Google y queda autorizada. Migración 035.
+- **Nodos:** cruzar las constelaciones del modelo con las centralidades del POT (Acuerdo 48 de
+  2014: Manrique Central, Campo Valdés…).
+- **Blender:** reservado para el video del concurso (ladera 3D con constelaciones), no para el
+  sitio.
+
 ## Olas
 
 | Ola | Bloque | Modelo |
@@ -41,7 +60,8 @@ prototipo de la asesoría (azul de noche en todo, foto a la izquierda, mucho tex
 | 1 | **Moderación con sugeridor** | opus |
 | 1 | **Visualización de datos**: `BarrasCategoria`, mapa + lista único, mapa de barrios, estrellas OSM por grupo, F1 y matriz, CTA | sonnet |
 | 1 | **Documento del concurso** al día con lo que está en producción | sonnet (documentador) |
-| 2 | Rediseño de los paneles negocio, equipo y entidad sobre la base | sonnet ×3 |
+| 2 | Constelación viva (Anime.js) · opus — Nodos POT · sonnet — Accesos + auditoría de seguridad (035) · opus — Paneles negocio y entidad · sonnet | |
+| 2b | Panel del equipo (después de Accesos) | sonnet |
 | 3 | QA visual y funcional | sonnet |
 
 Base de prueba: rama de Neon `prueba-rediseno`. Nada se aplica a producción sin pasar por ahí.

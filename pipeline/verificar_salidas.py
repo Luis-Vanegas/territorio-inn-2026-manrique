@@ -52,6 +52,77 @@ def inferir(modelo: dict, nombre: str) -> tuple[str, float]:
     return modelo["clases"][k], float(p[k])
 
 
+def verificar_centralidades(c: dict, n_comercios: int) -> list[str]:
+    """public/firmamento/centralidades.json: trazabilidad y que el cruce se pueda recomputar.
+
+    No se re-descarga el servicio (esto corre sin red): se recalcula la relación de cada
+    constelación contra los polígonos que el propio JSON publica, que es lo que ve la app.
+    """
+    from shapely.geometry import shape
+    from shapely.ops import transform
+    from pyproj import Transformer
+
+    ruta = PUBLICO / "firmamento" / "centralidades.json"
+    if not ruta.exists():
+        return ["falta public/firmamento/centralidades.json (corre 05_centralidades.py)"]
+    d = json.loads(ruta.read_text(encoding="utf-8"))
+    errores: list[str] = []
+    for k in ("fuente", "licencia", "fecha_corrida", "servicio"):
+        if not d.get(k):
+            errores.append(f"centralidades.json sin {k}")
+    if not d.get("descarga", {}).get("fecha"):
+        errores.append("centralidades.json sin descarga.fecha")
+
+    a_metros = Transformer.from_crs("EPSG:4326", d["metodo"]["crs_distancias"], always_xy=True).transform
+    radio = d["metodo"]["radio_borde_m"]
+    comuna_m = transform(a_metros, cargar_poligono())
+    cens = d["centralidades"]
+    ids = [x["id"] for x in cens]
+    if len(ids) != len(set(ids)):
+        errores.append("centralidades con id repetido")
+    poligonos = {}
+    for x in cens:
+        g = transform(a_metros, shape(x["geometry"]))
+        poligonos[x["id"]] = g
+        if not g.is_valid:
+            errores.append(f"{x['id']}: polígono inválido")
+        if g.intersection(comuna_m).area < d["metodo"]["umbral_area_m2"]:
+            errores.append(f"{x['id']}: casi no toca la comuna (debió excluirse)")
+        if not 0 < x["pct_dentro_comuna"] <= 100:
+            errores.append(f"{x['id']}: pct_dentro_comuna fuera de rango")
+
+    por_id = {k["id"]: k for k in c["constelaciones"]}
+    rel = {r["id"]: r for r in d["constelaciones"]}
+    if set(rel) != set(por_id):
+        errores.append("el cruce no cubre exactamente las constelaciones de constelaciones.json")
+    for i, r in rel.items():
+        if i not in por_id:
+            continue
+        cen = por_id[i]["centroide"]
+        p = Point(*a_metros(cen["lon"], cen["lat"]))
+        dist = min((g.distance(p) for g in poligonos.values()), default=float("inf"))
+        esperada = "dentro" if dist == 0 else "borde" if dist <= radio else "fuera"
+        if r["relacion"] != esperada:
+            errores.append(f"{i}: relacion {r['relacion']!r} pero recalculada {esperada!r}")
+        if (r["centralidad"] is None) != (esperada == "fuera"):
+            errores.append(f"{i}: centralidad null inconsistente con relacion")
+        if r["centralidad"] is not None and r["centralidad"] not in poligonos:
+            errores.append(f"{i}: centralidad {r['centralidad']!r} no existe")
+    for x in cens:
+        if x["constelaciones"] != [r["id"] for r in d["constelaciones"] if r["centralidad"] == x["id"]]:
+            errores.append(f"{x['id']}: lista de constelaciones no cuadra con el cruce")
+
+    s = d["resumen"]
+    if s["constelaciones_dentro"] + s["constelaciones_borde"] + s["constelaciones_fuera"] != len(rel):
+        errores.append("resumen: constelaciones dentro+borde+fuera != total")
+    if s["comercios_dentro_de_centralidad"] + s["comercios_a_borde_de_centralidad"] + s["comercios_fuera_de_centralidad"] != n_comercios:
+        errores.append("resumen: comercios dentro+borde+fuera != total de constelaciones.json")
+    if s["centralidades_que_tocan_la_comuna"] != len(cens):
+        errores.append("resumen: número de centralidades no cuadra")
+    print(f"{len(cens)} centralidades, {len(rel)} constelaciones cruzadas")
+    return errores
+
+
 def main() -> int:
     errores = []
     m = json.loads((PUBLICO / "modelo_categoria.json").read_text(encoding="utf-8"))
@@ -147,6 +218,7 @@ def main() -> int:
     codigos = [k.get("codigo") for k in c["constelaciones"]]
     if len(codigos) != len(set(codigos)):
         errores.append("códigos de constelación repetidos")
+    errores += verificar_centralidades(c, len(todos))
     print(f"{len(todos)} puntos revisados, {len(c['constelaciones'])} constelaciones")
     for e in errores:
         print("ERROR:", e, file=sys.stderr)
