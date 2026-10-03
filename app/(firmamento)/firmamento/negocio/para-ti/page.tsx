@@ -66,20 +66,20 @@ export default async function NegocioParaTiPage() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-10">
       <section aria-labelledby="convocatorias">
-        <h2 id="convocatorias" className="font-display text-2xl font-medium text-estrella">
+        <h2 id="convocatorias" className="font-display text-2xl font-medium text-tinta">
           Convocatorias abiertas para tu negocio
         </h2>
-        <p className="mt-2 max-w-2xl font-sans text-base leading-relaxed text-tenue">
+        <p className="mt-2 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
           Una persona del equipo las revisa antes de mostrártelas. Confirma siempre los requisitos y las
           fechas en la página oficial de quien convoca.
         </p>
 
         {falloConsulta ? (
-          <p role="status" className="mt-5 max-w-xl font-sans text-base leading-relaxed text-tenue">
+          <p role="status" className="mt-5 max-w-xl font-sans text-base leading-relaxed text-tinta/70">
             No pudimos consultar las convocatorias ahora. Intenta de nuevo en un momento.
           </p>
         ) : convocatorias.length === 0 ? (
-          <p className="mt-5 max-w-xl font-sans text-base leading-relaxed text-tenue">
+          <p className="mt-5 max-w-xl font-sans text-base leading-relaxed text-tinta/70">
             Por ahora no hay convocatorias abiertas para ti. Cuando aparezca una que encaje con tu
             categoría, la mostramos aquí y te avisamos con un número en el menú.
           </p>
@@ -91,18 +91,18 @@ export default async function NegocioParaTiPage() {
       </section>
 
       <section aria-labelledby="guias">
-        <h2 id="guias" className="font-display text-2xl font-medium text-estrella">
+        <h2 id="guias" className="font-display text-2xl font-medium text-tinta">
           Guías para tu negocio
         </h2>
         <ul className="mt-5 grid gap-4 sm:grid-cols-2">
           {guias.map((g) => (
-            <li key={g.href} className="flex flex-col rounded-xl border border-trazo bg-noche-2 p-5">
-              <h3 className="font-display text-xl font-medium text-estrella">{g.titulo}</h3>
-              <p className="mt-2 font-sans text-base leading-relaxed text-tenue">{g.texto}</p>
+            <li key={g.href} className="flex flex-col rounded-xl border border-tinta/12 bg-hueso p-5">
+              <h3 className="font-display text-xl font-medium text-tinta">{g.titulo}</h3>
+              <p className="mt-2 font-sans text-base leading-relaxed text-tinta/70">{g.texto}</p>
               <div className="mt-auto pt-4">
                 <Link
                   href={g.href}
-                  className="inline-flex min-h-[44px] items-center font-sans text-sm text-sodio underline underline-offset-4"
+                  className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4"
                 >
                   {g.accion}
                 </Link>

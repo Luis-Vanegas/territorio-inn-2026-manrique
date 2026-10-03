@@ -50,17 +50,17 @@ export default async function MisClientesPage() {
     <div className="mx-auto max-w-5xl">
       <SelectorNegocio negocios={negocios} actual={negocio} />
 
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
         Anota a quién le vendiste o quién te preguntó, y cuándo volver a escribirle. Así no se te pierde ninguna
         venta por falta de seguimiento.
       </p>
 
-      <section aria-labelledby="titulo-nuevo" className="mt-6 rounded-xl border border-trazo bg-noche-2 p-5 sm:p-6">
-        <h2 id="titulo-nuevo" className="font-display text-2xl font-medium text-estrella">
+      <section aria-labelledby="titulo-nuevo" className="mt-6 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
+        <h2 id="titulo-nuevo" className="font-display text-2xl font-medium text-tinta">
           Agregar un cliente
         </h2>
         {/* Ley 1581: estos datos son de otras personas. Se dice acá, donde se escriben. */}
-        <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tenue">
+        <p className="mt-2 max-w-xl font-sans text-sm leading-relaxed text-tinta/70">
           Anota solo a quien te dio su número para que lo contactes. Estos datos los ves solo tú y puedes borrarlos
           cuando quieras.
         </p>
@@ -82,19 +82,19 @@ export default async function MisClientesPage() {
         />
       ) : (
         clientes.length === 0 && (
-          <p className="mt-8 max-w-xl font-sans text-base leading-relaxed text-tenue">
+          <p className="mt-8 max-w-xl font-sans text-base leading-relaxed text-tinta/70">
             Todavía no tienes clientes anotados. Empieza por quien te escribió esta semana.
           </p>
         )
       )}
 
       {clientes.length > 0 && (
-        <p className="mt-8 font-sans text-sm text-tenue">
-          <span className="font-cifra">
+        <p className="mt-8 font-sans text-sm text-tinta/70">
+          <span className="tabular-nums">
             {clientes.length} de {MAXIMO_CLIENTES}
           </span>{' '}
           clientes · ¿Quieres escribir mejor tus mensajes?{' '}
-          <Link href="/ventas/vende-mejor" className="inline-flex min-h-[44px] items-center text-sodio underline underline-offset-4">
+          <Link href="/ventas/vende-mejor" className="inline-flex min-h-[44px] items-center text-azul-texto underline underline-offset-4">
             Mira la guía Vende mejor
           </Link>
         </p>
@@ -118,8 +118,8 @@ function ListaClientes({
 }) {
   return (
     <section className="mt-8" aria-label={titulo}>
-      <h2 className="font-display text-2xl font-medium text-estrella">
-        {titulo} <span className="font-cifra text-base text-tenue">· {clientes.length}</span>
+      <h2 className="font-display text-2xl font-medium text-tinta">
+        {titulo} <span className="font-sans text-base text-tinta/70 tabular-nums">· {clientes.length}</span>
       </h2>
       <ul className="mt-4 grid gap-4 lg:grid-cols-2">
         {clientes.map((c) => {
@@ -130,22 +130,22 @@ function ListaClientes({
           return (
             <li
               key={c.id}
-              className={`min-w-0 rounded-xl border bg-noche-2 p-5 ${destacada ? 'border-sodio' : 'border-trazo'}`}
+              className={`min-w-0 rounded-xl border bg-hueso p-5 ${destacada ? 'border-azul' : 'border-tinta/12'}`}
             >
               <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <h3 className="break-words font-display text-xl font-medium text-estrella">{c.nombre}</h3>
-                <span className="rounded border border-trazo-2 px-2 py-0.5 font-sans text-xs text-tenue">
+                <h3 className="break-words font-display text-xl font-medium text-tinta">{c.nombre}</h3>
+                <span className="rounded border border-tinta/55 px-2 py-0.5 font-sans text-xs text-tinta/70">
                   {ETIQUETA_ETAPA[c.etapa]}
                 </span>
               </div>
 
               {c.proximo_contacto && (
-                <p className={`mt-1 font-sans text-sm ${atrasado ? 'font-medium text-sodio' : 'text-tenue'}`}>
+                <p className={`mt-1 font-sans text-sm ${atrasado ? 'font-medium text-azul-texto' : 'text-tinta/70'}`}>
                   {atrasado ? 'Tocaba escribirle el ' : c.proximo_contacto === hoy ? 'Escríbele hoy' : 'Escribirle el '}
-                  {c.proximo_contacto === hoy ? '' : <span className="font-cifra">{fechaLegible(c.proximo_contacto)}</span>}
+                  {c.proximo_contacto === hoy ? '' : <span className="tabular-nums">{fechaLegible(c.proximo_contacto)}</span>}
                 </p>
               )}
-              {c.nota && <p className="mt-3 whitespace-pre-line break-words font-sans text-sm leading-relaxed text-estrella">{c.nota}</p>}
+              {c.nota && <p className="mt-3 whitespace-pre-line break-words font-sans text-sm leading-relaxed text-tinta">{c.nota}</p>}
 
               <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
                 {c.telefono && (
@@ -153,7 +153,7 @@ function ListaClientes({
                     href={`${enlaceWhatsapp(c.telefono)}?text=${encodeURIComponent(mensaje)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center rounded-lg border border-trazo-2 px-4 font-sans text-sm text-estrella hover:bg-noche-3"
+                    className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-tinta/5"
                   >
                     Escribirle por WhatsApp
                     <span className="sr-only"> a {c.nombre} (se abre en otra pestaña)</span>
@@ -162,8 +162,8 @@ function ListaClientes({
                 <BotonBorrarCliente id={c.id} nombre={c.nombre} />
               </div>
 
-              <details className="mt-3 border-t border-trazo pt-3">
-                <summary className="inline-flex min-h-[44px] cursor-pointer items-center font-sans text-sm text-tenue hover:text-estrella">
+              <details className="mt-3 border-t border-tinta/12 pt-3">
+                <summary className="inline-flex min-h-[44px] cursor-pointer items-center font-sans text-sm text-tinta/70 hover:text-tinta">
                   Editar o cambiar la fecha
                 </summary>
                 <div className="mt-4">

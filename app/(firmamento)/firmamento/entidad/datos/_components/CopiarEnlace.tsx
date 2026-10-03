@@ -29,18 +29,18 @@ export function CopiarEnlace({ url }: { url: string }) {
   return (
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-        <p className="min-w-0 flex-1 select-all break-all rounded-lg border border-trazo-2 bg-noche px-4 py-3 font-sans text-base text-estrella">
+        <p className="min-w-0 flex-1 select-all break-all rounded-lg border border-tinta/55 bg-tinta/[0.03] px-4 py-3 font-sans text-base text-tinta">
           {url}
         </p>
         <button
           type="button"
           onClick={copiar}
-          className="inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-lg bg-sodio px-5 font-sans text-base font-medium text-noche"
+          className="inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-lg bg-azul-texto px-5 font-sans text-base font-medium text-hueso"
         >
           Copiar enlace
         </button>
       </div>
-      <p role="status" className="mt-2 min-h-[1.5rem] font-sans text-sm text-tenue">
+      <p role="status" className="mt-2 min-h-[1.5rem] font-sans text-sm text-tinta/70">
         {copiado === 'si' && 'Enlace copiado.'}
         {copiado === 'fallo' && 'No se pudo copiar. Selecciona el enlace y cópialo a mano.'}
       </p>

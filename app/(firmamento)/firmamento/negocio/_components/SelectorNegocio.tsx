@@ -18,7 +18,7 @@ export function SelectorNegocio({
 
   return (
     <form action={elegirNegocio} aria-label="Elegir negocio" className="mb-6">
-      <p className="font-sans text-sm text-tenue">Tienes {negocios.length} negocios. ¿Con cuál quieres trabajar?</p>
+      <p className="font-sans text-sm text-tinta/70">Tienes {negocios.length} negocios. ¿Con cuál quieres trabajar?</p>
       <div className="mt-2 flex flex-wrap gap-2">
         {negocios.map((n) => {
           const activo = n.id === actual.id;
@@ -31,11 +31,11 @@ export function SelectorNegocio({
               aria-pressed={activo}
               className={`inline-flex min-h-[44px] items-center gap-2 rounded-lg border px-4 font-sans text-sm transition-colors ${
                 activo
-                  ? 'border-sodio bg-noche-activa font-medium text-estrella'
-                  : 'border-trazo-2 text-tenue hover:bg-noche-3 hover:text-estrella'
+                  ? 'border-azul bg-tinta/[0.06] font-medium text-tinta'
+                  : 'border-tinta/55 text-tinta/70 hover:bg-tinta/5 hover:text-tinta'
               }`}
             >
-              {activo && <span aria-hidden="true" className="text-sodio">✓</span>}
+              {activo && <span aria-hidden="true" className="text-azul-texto">✓</span>}
               {n.nombre}
             </button>
           );

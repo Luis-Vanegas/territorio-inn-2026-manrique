@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { leerFirmamento } from '@/app/(site)/firmamento/datos';
 import { Kpi } from '@/components/firmamento/Kpi';
 import { ScrollReveal } from '@/components/ScrollReveal';
+import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { exigirEntidad } from '@/lib/auth/firmamento';
 import { listarConvocatoriasVigentes } from '@/lib/db/convocatorias.repo';
 import { CAMARA_EMPRESAS, INFORMALIDAD, TERRITORIO, type CifraConFuente } from '@/lib/cifras';
@@ -77,8 +78,8 @@ export default async function EntidadObservatorioPage() {
         con menos de 5 negocios sale como «{CELDA_PEQUENA}».
       </EncabezadoEntidad>
 
-      <ScrollReveal>
-        <h2 className="sr-only">Cifras principales</h2>
+      {/* Cifras de fuentes distintas: cada una lleva la suya (no hay GrupoCifras). */}
+      <VentanaNoche titulo="La red y el territorio hoy" id="cifras-principales">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <Kpi
             valor={kpiRed.valor}
@@ -126,7 +127,7 @@ export default async function EntidadObservatorioPage() {
             fecha={`consultado el ${fechaHoyBogota()}`}
           />
         </div>
-      </ScrollReveal>
+      </VentanaNoche>
 
       <div className="mt-8">
         <ObservatorioCielo
@@ -139,10 +140,10 @@ export default async function EntidadObservatorioPage() {
 
       <section aria-labelledby="contexto-titulo" className="mt-12">
         <ScrollReveal>
-          <h2 id="contexto-titulo" className="font-display text-2xl font-medium text-estrella sm:text-3xl">
+          <h2 id="contexto-titulo" className="font-display text-2xl font-medium text-tinta sm:text-3xl">
             El territorio, con su fuente
           </h2>
-          <p className="mt-2 max-w-3xl font-sans text-base leading-relaxed text-tenue">
+          <p className="mt-2 max-w-3xl font-sans text-base leading-relaxed text-tinta/70">
             Cifras de otras entidades para leer la red en contexto. No se comparan como porcentaje: la
             Cámara de Comercio cuenta empresas con registro, OpenStreetMap los locales que alguien mapeó y
             la red solo a quienes se registraron aquí.

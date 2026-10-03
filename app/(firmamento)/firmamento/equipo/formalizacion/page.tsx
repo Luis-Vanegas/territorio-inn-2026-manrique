@@ -12,7 +12,7 @@ export default async function EquipoFormalizacionPage() {
   return (
     <div>
       <header className="max-w-3xl">
-        <p className="max-w-xl font-sans text-base leading-relaxed text-tenue">
+        <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
           Este es el catálogo tal como lo ve un negocio registrado. Como
           moderador ves siempre la lista completa: el filtro por respuesta de
           cada negocio no aplica acá.

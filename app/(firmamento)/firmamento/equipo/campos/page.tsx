@@ -24,7 +24,7 @@ export default async function CamposPage() {
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
         Los campos que agregues aquí aparecen en el formulario público de
         registro, después de los campos fijos (nombre, categoría, ubicación,
         contacto). Desactivar un campo lo saca del formulario sin borrar los
@@ -39,7 +39,7 @@ export default async function CamposPage() {
 
       <section aria-label="Campos personalizados" className="mt-8">
         {campos.length === 0 ? (
-          <p className="border-t border-tinta/12 pt-8 font-sans text-tenue">
+          <p className="border-t border-tinta/12 pt-8 font-sans text-tinta/70">
             Todavía no hay campos personalizados.
           </p>
         ) : (

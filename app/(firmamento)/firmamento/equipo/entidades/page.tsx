@@ -26,7 +26,7 @@ export default async function EntidadesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
         Las territoriales (JAL, CEDEZO…) miran el observatorio; las oferentes
         publican convocatorias. Para darle acceso a una persona, agrégala como
         miembro con el correo de su cuenta de Google: antes tiene que haber entrado
@@ -44,7 +44,7 @@ export default async function EntidadesPage() {
           titulo={e.nombre}
           id={`entidad-${e.id}`}
           accion={
-            <span className="font-sans text-sm text-tenue">
+            <span className="font-sans text-sm text-tinta/70">
               {TIPO[e.tipo]}
               {!e.activa && ' · inactiva'}
             </span>
@@ -55,24 +55,24 @@ export default async function EntidadesPage() {
               href={e.sitio}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center break-all font-sans text-sm text-sodio underline underline-offset-4"
+              className="inline-flex min-h-[44px] items-center break-all font-sans text-sm text-azul-texto underline underline-offset-4"
             >
               {e.sitio.replace(/^https?:\/\//, '')} (se abre en otra pestaña)
             </a>
           )}
           {miembros[i]!.length === 0 ? (
-            <p className="font-sans text-sm text-tenue">Nadie entra todavía por esta entidad.</p>
+            <p className="font-sans text-sm text-tinta/70">Nadie entra todavía por esta entidad.</p>
           ) : (
             <ul aria-label={`Miembros de ${e.nombre}`} className="flex flex-col">
               {miembros[i]!.map((m) => (
                 <li
                   key={m.usuario_id}
-                  className="flex flex-wrap items-center justify-between gap-3 border-t border-trazo py-2.5 first:border-t-0"
+                  className="flex flex-wrap items-center justify-between gap-3 border-t border-tinta/12 py-2.5 first:border-t-0"
                 >
                   <div className="min-w-0">
-                    <p className="font-sans text-base text-estrella">{m.nombre}</p>
-                    <p className="break-all font-sans text-sm text-tenue">{m.correo}</p>
-                    <p className="font-cifra text-xs text-tenue">
+                    <p className="font-sans text-base text-tinta">{m.nombre}</p>
+                    <p className="break-all font-sans text-sm text-tinta/70">{m.correo}</p>
+                    <p className="font-sans text-xs text-tinta/70 tabular-nums">
                       desde {m.creado_en}
                       {m.agregado_por && ` · lo agregó ${m.agregado_por}`}
                     </p>

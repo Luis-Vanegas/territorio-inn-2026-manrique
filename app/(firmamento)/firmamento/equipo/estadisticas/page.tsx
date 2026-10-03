@@ -63,7 +63,7 @@ function Barras({
         <li key={f.etiqueta}>
           <div className="flex items-baseline justify-between gap-4">
             <span className="font-sans text-sm text-tinta/75">{f.etiqueta}</span>
-            <span className="font-cifra text-xs text-tinta/65">
+            <span className="font-sans text-xs text-tinta/65 tabular-nums">
               {f.valor}
               {f.secundario !== undefined && f.secundario !== f.valor && (
                 <span className="text-tinta/60">
@@ -137,7 +137,7 @@ function SerieDiaria({
         ))}
       </div>
 
-      <div className="mt-2 flex justify-between font-cifra text-xs text-tinta/60">
+      <div className="mt-2 flex justify-between font-sans text-xs text-tinta/60 tabular-nums">
         <span>{filas[0]?.dia.slice(5)}</span>
         <span>{hayDatos ? `máx ${max}/día` : `sin ${unidad} aún`}</span>
         <span>{filas[filas.length - 1]?.dia.slice(5)}</span>
@@ -178,7 +178,7 @@ export default async function EstadisticasPage() {
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tenue">
+      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
         Datos de los registros del módulo. El tráfico del sitio —visitantes,
         páginas vistas, de dónde llegan— se mide aparte y de forma anónima.
       </p>

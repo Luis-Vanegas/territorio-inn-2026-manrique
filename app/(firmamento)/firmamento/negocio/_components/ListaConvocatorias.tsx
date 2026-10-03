@@ -29,31 +29,31 @@ export function ListaConvocatorias({
   return (
     <ul className={`grid gap-4 ${compacta ? "" : "lg:grid-cols-2"}`}>
       {lista.map((c) => (
-        <li key={c.id} className="flex min-w-0 flex-col rounded-xl border border-trazo bg-noche-3 p-4 sm:p-5">
-          <p className="font-sans text-sm text-tenue">
+        <li key={c.id} className="flex min-w-0 flex-col rounded-xl border border-tinta/12 bg-tinta/5 p-4 sm:p-5">
+          <p className="font-sans text-sm text-tinta/70">
             {c.entidad}
             {c.tema && <> · {c.tema}</>}
           </p>
-          <h3 className="mt-1 font-display text-xl font-medium leading-snug text-estrella">{c.titulo}</h3>
-          {c.resumen && <p className="mt-2 font-sans text-sm leading-relaxed text-tenue">{c.resumen}</p>}
+          <h3 className="mt-1 font-display text-xl font-medium leading-snug text-tinta">{c.titulo}</h3>
+          {c.resumen && <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">{c.resumen}</p>}
 
-          <p className="mt-3 font-sans text-sm text-estrella">
+          <p className="mt-3 font-sans text-sm text-tinta">
             {c.fecha_cierre ? (
               <>
-                Cierra el <span className="font-cifra">{fechaLarga(c.fecha_cierre)}</span>
+                Cierra el <span className="tabular-nums">{fechaLarga(c.fecha_cierre)}</span>
               </>
             ) : (
               'Sin fecha de cierre publicada'
             )}
           </p>
-          <p className="mt-1 font-cifra text-xs text-tenue">Fuente: {c.fuente}</p>
+          <p className="mt-1 font-sans text-xs text-tinta/70 tabular-nums">Fuente: {c.fuente}</p>
 
           <div className="mt-auto flex flex-wrap gap-2 pt-4">
             <a
               href={c.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center rounded-lg border border-trazo-2 px-4 font-sans text-sm text-estrella hover:bg-noche-2"
+              className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-hueso"
             >
               Fuente oficial
               <span className="sr-only"> de {c.titulo} (se abre en otra pestaña)</span>
@@ -62,7 +62,7 @@ export function ListaConvocatorias({
               href={`https://wa.me/?text=${encodeURIComponent(mensajeCompartir(c))}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center rounded-lg border border-trazo-2 px-4 font-sans text-sm text-estrella hover:bg-noche-2"
+              className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-hueso"
             >
               Compartir por WhatsApp
               <span className="sr-only">: {c.titulo} (se abre en otra pestaña)</span>

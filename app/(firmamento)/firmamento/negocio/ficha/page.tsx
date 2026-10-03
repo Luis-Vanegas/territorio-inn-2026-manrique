@@ -38,9 +38,9 @@ export default async function NegocioFichaPage() {
         <div className="min-w-0">
           <EstadoFicha estado={portafolio.estado} motivo={portafolio.motivo_rechazo} conAprobada />
 
-          <div className="mt-6 rounded-xl border border-trazo bg-noche-2 p-5 sm:p-6">
-            <h2 className="font-display text-2xl font-medium text-estrella">Datos de tu ficha</h2>
-            <p className="mt-1 font-sans text-sm text-tenue">
+          <div className="mt-6 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
+            <h2 className="font-display text-2xl font-medium text-tinta">Datos de tu ficha</h2>
+            <p className="mt-1 font-sans text-sm text-tinta/70">
               Así los ven tus vecinos en Constelaciones. Corrige lo que haga falta y guarda al final.
             </p>
             {/* `key`: al cambiar de negocio el formulario arranca de cero; sus valores iniciales son los del negocio elegido. */}
@@ -60,15 +60,15 @@ export default async function NegocioFichaPage() {
 
         <aside className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-24">
           <section aria-labelledby="vista-previa">
-            <h2 id="vista-previa" className="mb-3 font-display text-2xl font-medium text-estrella">
+            <h2 id="vista-previa" className="mb-3 font-display text-2xl font-medium text-tinta">
               Vista previa en Constelaciones
             </h2>
             <VistaPreviaFicha portafolio={portafolio} />
-            <p className="mt-2 font-sans text-sm text-tenue">Se actualiza cuando guardas.</p>
+            <p className="mt-2 font-sans text-sm text-tinta/70">Se actualiza cuando guardas.</p>
           </section>
 
-          <section aria-labelledby="lista-ficha" className="rounded-xl border border-trazo bg-noche-2 p-5">
-            <h2 id="lista-ficha" className="font-display text-2xl font-medium text-estrella">
+          <section aria-labelledby="lista-ficha" className="rounded-xl border border-tinta/12 bg-hueso p-5">
+            <h2 id="lista-ficha" className="font-display text-2xl font-medium text-tinta">
               Qué le falta a tu ficha
             </h2>
             <div className="mt-3">

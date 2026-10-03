@@ -13,8 +13,7 @@ import {
 const ESTADO_INICIAL: EstadoPropuesta = { estado: 'inicial' };
 
 const claseCampo =
-  // color-scheme oscuro: el icono del calendario y el menú del selector salen legibles sobre noche.
-  'mt-2 block min-h-[48px] w-full rounded-lg border bg-noche px-4 py-2.5 font-sans text-base text-estrella [color-scheme:dark]';
+  'mt-2 block min-h-[48px] w-full rounded-lg border bg-tinta/[0.03] px-4 py-2.5 font-sans text-base text-tinta';
 
 type Errores = Partial<Record<CampoPropuesta, string[]>>;
 
@@ -24,7 +23,7 @@ function Boton() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-6 flex min-h-[48px] w-full items-center justify-center rounded-lg bg-sodio px-6 font-sans text-base font-medium text-noche disabled:cursor-not-allowed disabled:opacity-60"
+      className="mt-6 flex min-h-[48px] w-full items-center justify-center rounded-lg bg-azul-texto px-6 font-sans text-base font-medium text-hueso disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? 'Enviando…' : 'Enviar al equipo'}
     </button>
@@ -55,11 +54,11 @@ function Campo({
   const describedBy = [ayuda ? `${id}-ayuda` : null, hayError ? `${id}-error` : null].filter(Boolean).join(' ');
   return (
     <div>
-      <label htmlFor={id} className="block font-sans text-sm font-medium text-estrella">
+      <label htmlFor={id} className="block font-sans text-sm font-medium text-tinta">
         {etiqueta}
       </label>
       {ayuda && (
-        <p id={`${id}-ayuda`} className="mt-1 font-sans text-sm leading-snug text-tenue">
+        <p id={`${id}-ayuda`} className="mt-1 font-sans text-sm leading-snug text-tinta/70">
           {ayuda}
         </p>
       )}
@@ -67,12 +66,12 @@ function Campo({
         id,
         describedBy: describedBy || undefined,
         invalido: hayError,
-        clase: `${claseCampo} ${hayError ? 'border-ladrillo' : 'border-trazo-2'}`,
+        clase: `${claseCampo} ${hayError ? 'border-amarillo' : 'border-tinta/55'}`,
       })}
       {hayError && (
         <p
           id={`${id}-error`}
-          className="mt-2 border-l-2 border-ladrillo pl-3 font-sans text-sm leading-snug text-estrella"
+          className="mt-2 border-l-2 border-amarillo pl-3 font-sans text-sm leading-snug text-tinta"
         >
           <span className="font-medium">Revisa: </span>
           {mensajes!.join(' ')}
@@ -103,9 +102,9 @@ export function FormularioPropuesta({ temas, hoy }: { temas: readonly string[]; 
   const valores = estado.estado === 'error' ? (estado.valores ?? {}) : {};
 
   return (
-    <form action={accion} className="border border-trazo bg-noche-2 p-5 sm:p-6">
-      <h2 className="font-display text-2xl font-medium text-estrella">Proponer una convocatoria</h2>
-      <p className="mt-2 font-sans text-sm leading-relaxed text-tenue">
+    <form action={accion} className="border border-tinta/12 bg-hueso p-5 sm:p-6">
+      <h2 className="font-display text-2xl font-medium text-tinta">Proponer una convocatoria</h2>
+      <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
         ¿Tu entidad abrió una convocatoria para negocios de la comuna? Cuéntanosla. El equipo la revisa
         antes de mostrarla: nada se publica solo.
       </p>
@@ -219,7 +218,7 @@ export function FormularioPropuesta({ temas, hoy }: { temas: readonly string[]; 
       {estado.estado === 'error' && (
         <p
           role="alert"
-          className="mt-5 border-l-2 border-ladrillo bg-noche px-4 py-3 font-sans text-sm leading-relaxed text-estrella"
+          className="mt-5 border-l-2 border-amarillo bg-tinta/[0.03] px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
         >
           {estado.mensaje}
         </p>
@@ -230,7 +229,7 @@ export function FormularioPropuesta({ temas, hoy }: { temas: readonly string[]; 
           initial={sinMovimiento ? false : { opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="mt-5 border-l-2 border-menta bg-noche px-4 py-3 font-sans text-sm leading-relaxed text-estrella"
+          className="mt-5 border-l-2 border-azul bg-tinta/[0.03] px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
         >
           {estado.mensaje}
         </motion.p>

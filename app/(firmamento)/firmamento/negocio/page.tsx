@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
-import { Kpi } from '@/components/firmamento/Kpi';
+import { GrupoCifras, Kpi } from '@/components/firmamento/Kpi';
+import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { exigirNegocio } from '@/lib/auth/firmamento';
 import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { comparacionCategoria, perfilesParaTi, semanasDeNegocio } from '@/lib/db/cuenta.repo';
@@ -70,27 +71,27 @@ export default async function NegocioInicioPage() {
       {/* Saludo y qué tan completa está la ficha */}
       <section
         aria-labelledby="saludo"
-        className="grid gap-6 rounded-xl border border-trazo bg-noche-2 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:items-center"
+        className="grid gap-6 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:items-center"
       >
         <div>
-          <p className="font-sans text-sm text-tenue">{portafolio.categoria_otra || portafolio.categoria_nombre} · {portafolio.barrio}</p>
-          <h2 id="saludo" className="mt-1 font-display text-3xl font-medium leading-tight text-estrella sm:text-4xl">
+          <p className="font-sans text-sm text-tinta/70">{portafolio.categoria_otra || portafolio.categoria_nombre} · {portafolio.barrio}</p>
+          <h2 id="saludo" className="mt-1 font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl">
             Hola, {primerNombre}
           </h2>
-          <p className="mt-2 max-w-xl font-sans text-base leading-relaxed text-tenue">
+          <p className="mt-2 max-w-xl font-sans text-base leading-relaxed text-tinta/70">
             {publicada
               ? `Así le fue a ${portafolio.nombre} en el mapa de Constelaciones en las últimas cuatro semanas.`
               : `Aquí sigues ${portafolio.nombre}. Los números aparecen cuando tu ficha esté publicada.`}
           </p>
         </div>
-        <div className="rounded-xl border border-trazo bg-noche p-4">
+        <div className="rounded-xl border border-tinta/12 bg-tinta/[0.03] p-4">
           <BarraFicha porcentaje={ficha.porcentaje} />
-          <p className="mt-2 font-sans text-sm text-tenue">
+          <p className="mt-2 font-sans text-sm text-tinta/70">
             {ficha.faltan.length === 0 ? 'Tu ficha tiene todo lo que ayuda.' : 'Completa lo que falta y te encuentran más fácil.'}
           </p>
           <Link
             href="/firmamento/negocio/ficha"
-            className="mt-3 inline-flex min-h-[44px] items-center rounded-lg bg-sodio px-4 font-sans text-sm font-medium text-noche"
+            className="mt-3 inline-flex min-h-[44px] items-center rounded-lg bg-azul-texto px-4 font-sans text-sm font-medium text-hueso"
           >
             Mejorar mi ficha
           </Link>
@@ -98,34 +99,26 @@ export default async function NegocioInicioPage() {
       </section>
 
       {/* Los números */}
-      <section aria-labelledby="numeros">
-        <h2 id="numeros" className="font-display text-2xl font-medium text-estrella">
-          Tus números, últimas 4 semanas
-        </h2>
-
+      <VentanaNoche titulo="Tus números, últimas 4 semanas" id="numeros">
         {!publicada || !resumen ? (
-          <p className="mt-3 max-w-xl font-sans text-base leading-relaxed text-tenue">
+          <p className="max-w-xl font-sans text-base leading-relaxed text-tenue">
             {publicada
               ? 'No pudimos consultar tus números ahora. Intenta de nuevo en un momento.'
               : 'Las cifras aparecen aquí cuando tu ficha esté publicada: no mostramos números de ejemplo.'}
           </p>
         ) : (
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <GrupoCifras fuente={`${fuenteCifras}; la última, convocatorias aprobadas por el equipo`} fecha={`4 semanas al ${hoy}`}>
             <Kpi
               valor={formatearNumero(resumen.vistas)}
               numero={resumen.vistas}
               etiqueta="Vistas de tu ficha"
               aclaracion={textoVariacion(resumen.variacionVistas)}
-              fuente={fuenteCifras}
-              fecha={`4 semanas al ${hoy}`}
             />
             <Kpi
               valor={formatearNumero(resumen.contactos)}
               numero={resumen.contactos}
               etiqueta="Toques de contacto"
               aclaracion={`WhatsApp, teléfono, correo o redes. ${textoVariacion(resumen.variacionContactos)}`}
-              fuente={fuenteCifras}
-              fecha={`4 semanas al ${hoy}`}
               tono="estrella"
             />
             <Kpi
@@ -138,8 +131,6 @@ export default async function NegocioInicioPage() {
                   ? `Tu categoría, con ${comparacion.negocios} negocios: ${formatearNumero(comparacion.contactosPor100, 1)}.`
                   : 'Comparamos con tu categoría cuando hay al menos 5 negocios en ella, para que nadie quede expuesto.'
               }
-              fuente={fuenteCifras}
-              fecha={`4 semanas al ${hoy}`}
               tono="estrella"
             />
             <Kpi
@@ -148,52 +139,50 @@ export default async function NegocioInicioPage() {
               etiqueta="Convocatorias para ti"
               aclaracion="Abiertas y revisadas por el equipo."
               enlace={paraTi.length > 0 ? { href: '/firmamento/negocio/para-ti', texto: 'Verlas' } : undefined}
-              fuente="convocatorias aprobadas por el equipo"
-              fecha={hoy}
               tono="estrella"
             />
-          </div>
+          </GrupoCifras>
         )}
-      </section>
+      </VentanaNoche>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         {/* Semana a semana */}
-        <section aria-labelledby="semana" className="min-w-0 rounded-xl border border-trazo bg-noche-2 p-5 sm:p-6">
-          <h2 id="semana" className="font-display text-2xl font-medium text-estrella">
+        <section aria-labelledby="semana" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
+          <h2 id="semana" className="font-display text-2xl font-medium text-tinta">
             Semana a semana
           </h2>
           {publicada && semanas.length >= 8 ? (
             <div className="mt-4">
               <GraficoSemanas semanas={semanas} nombre={portafolio.nombre} />
-              <p className="mt-3 font-cifra text-xs leading-relaxed text-tenue">
+              <p className="mt-3 font-sans text-xs leading-relaxed text-tinta/70 tabular-nums">
                 Fuente: {fuenteCifras} · 8 semanas al {hoy}
               </p>
             </div>
           ) : (
-            <p className="mt-3 font-sans text-base leading-relaxed text-tenue">
+            <p className="mt-3 font-sans text-base leading-relaxed text-tinta/70">
               El gráfico aparece cuando tu ficha esté publicada.
             </p>
           )}
         </section>
 
         {/* Lo que más suma */}
-        <section aria-labelledby="suma" className="min-w-0 rounded-xl border border-trazo bg-noche-2 p-5 sm:p-6">
-          <h2 id="suma" className="font-display text-2xl font-medium text-estrella">
+        <section aria-labelledby="suma" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
+          <h2 id="suma" className="font-display text-2xl font-medium text-tinta">
             Lo que más suma
           </h2>
           {ficha.faltan.length === 0 ? (
-            <p className="mt-3 font-sans text-base leading-relaxed text-tenue">
+            <p className="mt-3 font-sans text-base leading-relaxed text-tinta/70">
               Tu ficha ya tiene las ocho cosas que ayudan. Mantenla al día cuando algo cambie.
             </p>
           ) : (
-            <ul className="mt-3 divide-y divide-trazo">
+            <ul className="mt-3 divide-y divide-tinta/12">
               {ficha.faltan.slice(0, 3).map((p) => (
                 <li key={p.id} className="py-3">
-                  <p className="font-sans text-base font-medium text-estrella">
-                    <span aria-hidden="true" className="mr-2 text-sodio">+</span>
+                  <p className="font-sans text-base font-medium text-tinta">
+                    <span aria-hidden="true" className="mr-2 text-azul-texto">+</span>
                     {p.etiqueta}
                   </p>
-                  <p className="mt-0.5 font-sans text-sm leading-snug text-tenue">{p.ayuda}</p>
+                  <p className="mt-0.5 font-sans text-sm leading-snug text-tinta/70">{p.ayuda}</p>
                 </li>
               ))}
             </ul>
@@ -203,20 +192,20 @@ export default async function NegocioInicioPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Para ti esta semana */}
-        <section aria-labelledby="para-ti" className="min-w-0 rounded-xl border border-trazo bg-noche-2 p-5 sm:p-6">
+        <section aria-labelledby="para-ti" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
           <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-            <h2 id="para-ti" className="font-display text-2xl font-medium text-estrella">
+            <h2 id="para-ti" className="font-display text-2xl font-medium text-tinta">
               Para ti
             </h2>
             <Link
               href="/firmamento/negocio/para-ti"
-              className="inline-flex min-h-[44px] items-center font-sans text-sm text-sodio underline underline-offset-4"
+              className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4"
             >
               Ver todas
             </Link>
           </div>
           {paraTi.length === 0 ? (
-            <p className="mt-2 font-sans text-base leading-relaxed text-tenue">
+            <p className="mt-2 font-sans text-base leading-relaxed text-tinta/70">
               Por ahora no hay convocatorias abiertas que encajen con tu negocio. Cuando aparezca una, la ves aquí.
             </p>
           ) : (
@@ -227,8 +216,8 @@ export default async function NegocioInicioPage() {
         </section>
 
         {/* Así te ven tus vecinos */}
-        <section aria-labelledby="asi-te-ven" className="min-w-0 rounded-xl border border-trazo bg-noche-2 p-5 sm:p-6">
-          <h2 id="asi-te-ven" className="font-display text-2xl font-medium text-estrella">
+        <section aria-labelledby="asi-te-ven" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
+          <h2 id="asi-te-ven" className="font-display text-2xl font-medium text-tinta">
             Así te ven tus vecinos
           </h2>
           <div className="mt-3">

@@ -140,7 +140,7 @@ export function FichaConvocatoria({
       <div className="flex flex-wrap items-center gap-2">
         <BadgeEstado etiqueta={etiqueta.texto} tono={etiqueta.tono} />
         {c.origen === 'entidad' && (
-          <span className="inline-block border border-sodio px-2 py-0.5 font-sans text-xs text-sodio">
+          <span className="inline-block border border-azul px-2 py-0.5 font-sans text-xs text-azul-texto">
             Propuesta por la entidad
           </span>
         )}
@@ -165,7 +165,7 @@ export function FichaConvocatoria({
           <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
             Cierra
           </dt>
-          <dd className="font-cifra text-sm tabular-nums text-tinta/75">
+          <dd className="font-sans text-sm tabular-nums text-tinta/75">
             {c.fecha_cierre ? fechaCorta(c.fecha_cierre) : 'Sin fecha'}
           </dd>
         </div>
@@ -190,7 +190,7 @@ export function FichaConvocatoria({
           </dt>
           <dd className="font-sans text-sm text-tinta/75">
             {c.fuente} ·{' '}
-            <span className="font-cifra tabular-nums">detectada {fechaCorta(c.detectada_en)}</span>
+            <span className="tabular-nums">detectada {fechaCorta(c.detectada_en)}</span>
           </dd>
         </div>
         {c.revisada_por && <Fila etiqueta="Revisó">{c.revisada_por}</Fila>}
@@ -199,7 +199,7 @@ export function FichaConvocatoria({
       {llegaria !== null && c.estado !== 'descartada' && c.estado !== 'vencida' && (
         <p aria-live="polite" className="mt-4 font-sans text-sm text-tinta/80">
           {c.estado === 'pendiente' ? 'Al aprobarla con lo marcado llegaría a ' : 'Llega a '}
-          <span className="font-cifra text-sodio">{llegaria}</span>{' '}
+          <span className="font-sans text-azul-texto tabular-nums">{llegaria}</span>{' '}
           {llegaria === 1 ? 'aliado' : 'aliados'} con cuenta, que la verían en «Para ti».
         </p>
       )}

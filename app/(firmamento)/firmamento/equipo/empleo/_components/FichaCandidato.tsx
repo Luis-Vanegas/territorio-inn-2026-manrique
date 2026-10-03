@@ -241,7 +241,7 @@ export function FichaCandidato({ candidato }: { candidato: CandidatoModeracion }
                 {candidato.graduado ? 'graduado/a' : 'en curso'}
               </span>
             )}
-            <span className="text-tinta/60"> · registrado <span className="font-cifra">{candidato.creado_en}</span></span>
+            <span className="text-tinta/60"> · registrado <span className="tabular-nums">{candidato.creado_en}</span></span>
           </p>
 
           <p className="mt-3 max-w-2xl font-sans text-sm leading-relaxed text-tinta/75">
