@@ -18,7 +18,7 @@ node --experimental-strip-types scripts/verificar-marca.mjs   # los verificar-*.
 
 - **No hay tests** (ni runner ni CI: la cuenta tiene $0 en Actions). La verificación es `npm run typecheck && npm run lint && npm run verificar`, a mano.
 - `verificar-constraints`, `verificar-campos-personalizados` y `verificar-agente` **tocan la base**: leen `DATABASE_URL` de `.env.local`.
-- No existe `.env.example` (el README lo menciona, está desactualizado). Tampoco `proxy.ts`/`middleware.ts`: el control de acceso vive en cada Server Action, ruta y repo.
+- No hay `proxy.ts`/`middleware.ts`: el control de acceso vive en cada Server Action, ruta y repo (en Firmamento, la guarda del rol va en el layout Y en cada `page.tsx`).
 
 ## Arquitectura
 
