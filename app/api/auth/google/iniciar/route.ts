@@ -8,10 +8,15 @@ import {
   googleConfigurado,
   COOKIE_DESTINO,
   COOKIE_ESTADO,
+  COOKIE_INVITACION,
   COOKIE_VERIFICADOR,
+  COOKIE_VINCULAR,
 } from '@/lib/auth/google';
 import { opcionesBorrado, opcionesCookie } from '@/lib/auth/cookies';
 import { puertaDe, rutaInterna } from '@/lib/auth/destino';
+import { tokenInvitacionValido } from '@/lib/auth/invitacion';
+
+const FORMATO_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Arranca el ingreso con Google: genera el `state`, lo guarda en una cookie de
@@ -72,6 +77,18 @@ export async function GET(request: Request) {
   // mandar a esta persona a una puerta que no pidió.
   if (destino) galletas.set(COOKIE_DESTINO, destino, opciones);
   else galletas.set(COOKIE_DESTINO, '', opcionesBorrado());
+
+  // Lo mismo con el negocio a vincular y la invitación: solo con forma válida, y
+  // si no vienen se borran. Lo peor que logra un enlace armado por otro es
+  // regalarle a quien entra un negocio o una invitación ajenos, nunca quitarle nada.
+  const params = new URL(request.url).searchParams;
+  const vincular = params.get('vincular');
+  if (vincular && FORMATO_UUID.test(vincular)) galletas.set(COOKIE_VINCULAR, vincular, opciones);
+  else galletas.set(COOKIE_VINCULAR, '', opcionesBorrado());
+
+  const invitacion = tokenInvitacionValido(params.get('invitacion'));
+  if (invitacion) galletas.set(COOKIE_INVITACION, invitacion, opciones);
+  else galletas.set(COOKIE_INVITACION, '', opcionesBorrado());
 
   return NextResponse.redirect(url);
 }

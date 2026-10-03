@@ -16,4 +16,7 @@ export const MENSAJES_INGRESO: Record<string, string> = {
   // de otra persona. El detalle queda en el log del servidor, para el equipo.
   correo_tomado:
     'No pudimos entrar con esa cuenta. Escríbenos y lo resolvemos contigo.',
+  // Sin decir si venció, se usó o la revocaron: a quien tiene el enlace le basta.
+  invitacion:
+    'Entraste, pero esa invitación ya no sirve: venció, ya se usó o la revocaron. Pide una nueva al equipo de Constelaciones.',
 };
