@@ -32,7 +32,7 @@ export default async function ConvocatoriasPage({
     contarConvocatoriasPorEstado(),
     listarCategorias(),
   ]);
-  const nombreCategoria = Object.fromEntries(categorias.map((c) => [c.id, c.nombre]));
+  const opcionesCategoria = categorias.map((c) => ({ id: c.id, nombre: c.nombre }));
 
   return (
     <main className="margen-editorial py-16">
@@ -43,8 +43,8 @@ export default async function ConvocatoriasPage({
       <p className="mt-3 max-w-xl font-sans text-sm text-tinta/60">
         Oferta de entidades que detecta el vigía cada día. Todo entra pendiente:
         solo las que apruebes aparecen en «Para ti», dentro de Mi cuenta, y solo
-        a los negocios de las categorías a las que aplican. El texto viene de
-        páginas de terceros: revisa el enlace antes de aprobar.
+        a los negocios de las categorías y la formalidad que marques al aprobar.
+        El texto viene de páginas de terceros: revisa el enlace antes de aprobar.
       </p>
 
       <PestanasEstado
@@ -61,7 +61,7 @@ export default async function ConvocatoriasPage({
           </p>
         ) : (
           convocatorias.map((c) => (
-            <FichaConvocatoria key={c.id} convocatoria={c} nombreCategoria={nombreCategoria} />
+            <FichaConvocatoria key={c.id} convocatoria={c} categorias={opcionesCategoria} />
           ))
         )}
       </section>

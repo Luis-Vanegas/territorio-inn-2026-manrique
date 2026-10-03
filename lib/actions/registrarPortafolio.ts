@@ -18,6 +18,7 @@ import {
   listarCategorias,
 } from '@/lib/db/portafolios.repo';
 import { guardarSugerenciaCategoria } from '@/lib/db/sugerencias.repo';
+import { registrarEnBitacora } from '@/lib/db/bitacora.repo';
 import {
   sugerenciaDesdeFormData,
   respuestaASugerencia,
@@ -192,12 +193,11 @@ export async function registrarPortafolio(
   }
 
   // Sugeridor de categoría: SOLO la categoría que infirió el modelo, con su
-  // confianza, y si la persona quedó con ella. Jamás el nombre que escribió (el
-  // formulario ni lo manda en estos campos). Sin FK al negocio y con la fecha
-  // truncada al día (no la hora), para que no se cruce con el registro por el
-  // instante de creación; con muy poco volumen, categoría + día aún podrían
-  // coincidir con un solo registro. Es telemetría: si falla, el registro ya está
-  // guardado.
+  // confianza, y si la persona quedó con ella. Jamás el texto que escribió (el
+  // formulario ni lo manda en estos campos). Desde la 033 lleva `portafolio_id`:
+  // para reentrenar hace falta cruzar la sugerencia con la categoría FINAL de la
+  // ficha (después de las correcciones del equipo). La tabla sigue siendo privada.
+  // Es telemetría: si falla, el registro ya está guardado.
   try {
     const sugerencia = sugerenciaDesdeFormData(formData);
     if (sugerencia) {
@@ -205,6 +205,7 @@ export async function registrarPortafolio(
       const vigentes = await listarCategorias();
       if (vigentes.some((c) => c.id === sugerencia.categoria_inferida)) {
         await guardarSugerenciaCategoria({
+          portafolio_id: id,
           categoria_inferida: sugerencia.categoria_inferida,
           confianza: sugerencia.confianza,
           aceptada: respuestaASugerencia(
@@ -217,6 +218,9 @@ export async function registrarPortafolio(
   } catch (error) {
     console.error('[registrarPortafolio] guardado de la sugerencia falló', error);
   }
+
+  // Formulario público, sin sesión: no hay actor que anotar.
+  await registrarEnBitacora({ actor_tipo: 'negocio', actor: null, accion: 'registrado', portafolio_id: id });
 
   // 5 · Foto y menú
   // Si algo falla acá, el registro YA está guardado y no se pierde. Perder el

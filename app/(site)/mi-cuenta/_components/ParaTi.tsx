@@ -5,7 +5,7 @@ import { fechaLarga } from '@/lib/geo/constelaciones';
 
 /**
  * «Para ti»: convocatorias que un moderador aprobó, que siguen abiertas y que
- * aplican a la categoría de tus negocios. Cada una dice quién la publica y dónde
+ * aplican a la categoría y la formalidad de alguno de tus negocios. Cada una dice quién la publica y dónde
  * se encontró (fuente): el sitio no las inventa ni las garantiza, las reúne.
  */
 export function ParaTi({
@@ -53,7 +53,10 @@ export function ParaTi({
               <h3 className="font-display text-lg font-medium leading-snug text-tinta">
                 {c.titulo}
               </h3>
-              <p className="mt-1 font-sans text-sm text-tinta/70">{c.entidad}</p>
+              <p className="mt-1 font-sans text-sm text-tinta/70">
+                {c.entidad}
+                {c.tema && <> · {c.tema}</>}
+              </p>
 
               {c.resumen && (
                 <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">{c.resumen}</p>

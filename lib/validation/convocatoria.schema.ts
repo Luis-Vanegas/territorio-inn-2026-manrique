@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { OPCIONES_FORMALIDAD } from '@/lib/validation/portafolio.schema';
 
 /**
  * Lo que el vigía (`pipeline/04_vigia_convocatorias.py`) manda a
@@ -11,7 +12,10 @@ const texto = (min: number, max: number) => z.string().trim().min(min).max(max);
 
 export const convocatoriaEntradaSchema = z.object({
   titulo: texto(3, 200),
+  // Nombre de la entidad (igual al de `entidades.nombre`): la ingesta lo resuelve
+  // a `entidad_id`, y si no existe crea la entidad oferente (convocatorias.repo.ts).
   entidad: texto(2, 120),
+  tema: texto(2, 80).nullish(),
   // Solo http(s): el enlace se muestra como <a href>, y `javascript:` no es un enlace.
   url: z
     .string()
@@ -31,8 +35,6 @@ export const convocatoriaEntradaSchema = z.object({
       return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === f;
     }, 'Fecha inexistente')
     .nullish(),
-  // Ids de categorías a las que aplica; vacío = a todos los negocios.
-  aplica_a: z.array(texto(1, 60)).max(20).default([]),
 });
 
 export const ingestaConvocatoriasSchema = z.object({
@@ -42,8 +44,15 @@ export const ingestaConvocatoriasSchema = z.object({
 
 export type ConvocatoriaEntrada = z.infer<typeof convocatoriaEntradaSchema>;
 
-/** Lo que manda el panel al moderar una convocatoria: a cuál y qué decide. */
+/**
+ * Lo que manda el panel al moderar una convocatoria: a cuál, qué decide y, al
+ * aprobar, a quién aplica. Vacío = a todos (todas las categorías / cualquier
+ * formalidad). Las categorías que no existan se ignoran en el repo (join contra
+ * `categorias`), no acá: la lista vigente vive en la base.
+ */
 export const decisionConvocatoriaSchema = z.object({
   id: z.uuid('Identificador inválido'),
   decision: z.enum(['aprobar', 'descartar', 'vencida']),
+  categorias: z.array(texto(1, 60)).max(60).default([]),
+  formalidades: z.array(z.enum(OPCIONES_FORMALIDAD)).max(OPCIONES_FORMALIDAD.length).default([]),
 });

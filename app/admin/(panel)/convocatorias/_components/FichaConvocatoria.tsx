@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
 
 import {
@@ -55,15 +55,43 @@ function fechaCorta(iso: string): string {
   return `${d}/${m}/${a}`;
 }
 
+// Los valores de aliados_investigacion.formalidad, en tercera persona: las
+// etiquetas del registro («No tengo») hablan como el negocio. Sin
+// «prefiero_no_decir»: no es un perfil al que se le apunte una convocatoria
+// (convocatoriasParaTi lo trata como formalidad desconocida).
+const FORMALIDAD: Record<string, string> = {
+  rut_camara: 'Con RUT o Cámara de Comercio',
+  en_tramite: 'En trámite',
+  no_tengo: 'Sin formalizar',
+};
+
+const ORIGEN: Record<Convocatoria['origen'], string> = {
+  vigia: 'Vigía (automático)',
+  entidad: 'Propuesta por la entidad',
+  equipo: 'Equipo',
+};
+
+function Fila({ etiqueta, children }: { etiqueta: string; children: ReactNode }) {
+  return (
+    <div className="flex gap-3">
+      <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
+        {etiqueta}
+      </dt>
+      <dd className="font-sans text-sm text-tinta/75">{children}</dd>
+    </div>
+  );
+}
+
 export function FichaConvocatoria({
   convocatoria: c,
-  nombreCategoria,
+  categorias,
 }: {
   convocatoria: Convocatoria;
-  nombreCategoria: Record<string, string>;
+  categorias: { id: string; nombre: string }[];
 }) {
   const [estado, accion] = useActionState(moderarConvocatoria, ESTADO_INICIAL);
   const etiqueta = ETIQUETA[c.estado];
+  const nombreCategoria = Object.fromEntries(categorias.map((x) => [x.id, x.nombre]));
 
   // Mismo criterio que FichaPeticion: cubre el instante entre la respuesta y el refresco.
   if (estado.estado === 'ok') {
@@ -83,7 +111,10 @@ export function FichaConvocatoria({
       <h3 className="mt-2 font-display text-2xl font-medium leading-tight text-tinta">
         {c.titulo}
       </h3>
-      <p className="mt-1 font-sans text-sm text-tinta/70">{c.entidad}</p>
+      <p className="mt-1 font-sans text-sm text-tinta/70">
+        {c.entidad}
+        {c.tema && <> · {c.tema}</>}
+      </p>
 
       {c.resumen && (
         <p className="mt-4 max-w-prose whitespace-pre-wrap font-sans text-sm leading-relaxed text-tinta/80">
@@ -100,16 +131,21 @@ export function FichaConvocatoria({
             {c.fecha_cierre ? fechaCorta(c.fecha_cierre) : 'Sin fecha'}
           </dd>
         </div>
-        <div className="flex gap-3">
-          <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
-            Aplica a
-          </dt>
-          <dd className="font-sans text-sm text-tinta/75">
-            {c.aplica_a.length === 0
-              ? 'Todos los negocios'
-              : c.aplica_a.map((id) => nombreCategoria[id] ?? 'categoría retirada').join(' · ')}
-          </dd>
-        </div>
+        {c.estado !== 'pendiente' && (
+          <>
+            <Fila etiqueta="Categorías">
+              {c.categorias.length === 0
+                ? 'Todas'
+                : c.categorias.map((id) => nombreCategoria[id] ?? 'categoría retirada').join(' · ')}
+            </Fila>
+            <Fila etiqueta="Formalidad">
+              {c.aplica_formalidad.length === 0
+                ? 'Cualquiera'
+                : c.aplica_formalidad.map((f) => FORMALIDAD[f] ?? f).join(' · ')}
+            </Fila>
+          </>
+        )}
+        <Fila etiqueta="Origen">{ORIGEN[c.origen]}</Fila>
         <div className="flex gap-3">
           <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
             Fuente
@@ -119,14 +155,7 @@ export function FichaConvocatoria({
             <span className="font-cifra tabular-nums">detectada {fechaCorta(c.detectada_en)}</span>
           </dd>
         </div>
-        {c.revisada_por && (
-          <div className="flex gap-3">
-            <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
-              Revisó
-            </dt>
-            <dd className="font-sans text-sm text-tinta/75">{c.revisada_por}</dd>
-          </div>
-        )}
+        {c.revisada_por && <Fila etiqueta="Revisó">{c.revisada_por}</Fila>}
       </dl>
 
       {/* El enlace es texto de un tercero (validado como http/https al entrar). */}
@@ -144,6 +173,38 @@ export function FichaConvocatoria({
       {(c.estado === 'pendiente' || c.estado === 'aprobada') && (
         <form action={accion} className="mt-6">
           <input type="hidden" name="id" value={c.id} />
+          {/* A quién aplica se decide al aprobar. Sin marcar nada = para todos:
+              el moderador lo ve escrito en la leyenda, no lo adivina. */}
+          {c.estado === 'pendiente' && (
+            <div className="mb-6 flex flex-col gap-5">
+              <fieldset>
+                <legend className="font-sans text-xs uppercase tracking-wider text-tinta/65">
+                  Categorías a las que aplica (sin marcar = todas)
+                </legend>
+                <div className="mt-2 grid gap-x-5 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+                  {categorias.map((cat) => (
+                    <label key={cat.id} className="flex min-h-11 items-center gap-2 font-sans text-sm text-tinta/80">
+                      <input type="checkbox" name="categorias" value={cat.id} className="h-4 w-4 accent-azul" />
+                      {cat.nombre}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset>
+                <legend className="font-sans text-xs uppercase tracking-wider text-tinta/65">
+                  Formalidad a la que aplica (sin marcar = cualquiera)
+                </legend>
+                <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
+                  {Object.entries(FORMALIDAD).map(([f, texto]) => (
+                    <label key={f} className="flex min-h-11 items-center gap-2 font-sans text-sm text-tinta/80">
+                      <input type="checkbox" name="formalidades" value={f} className="h-4 w-4 accent-azul" />
+                      {texto}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </div>
+          )}
           {estado.estado === 'error' && (
             <p role="alert" className="mb-3 font-sans text-xs text-azul-texto">
               {estado.mensaje}

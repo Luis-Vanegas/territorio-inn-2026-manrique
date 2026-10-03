@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { invalidarVitrina } from '@/lib/db/cache';
 import { verificarSesion } from '@/lib/auth/admin';
 import { moderar } from '@/lib/db/portafolios.repo';
+import { registrarEnBitacora } from '@/lib/db/bitacora.repo';
 import { borrarFoto } from '@/lib/blob/fotos';
 
 export type EstadoModeracion =
@@ -90,6 +91,14 @@ export async function moderarPortafolio(
     console.error('[moderarPortafolio] falló', error);
     return { estado: 'error', mensaje: 'No se pudo aplicar el cambio. Intenta de nuevo.' };
   }
+
+  await registrarEnBitacora({
+    actor_tipo: 'equipo',
+    actor: sesion.email,
+    accion: nuevoEstado,
+    portafolio_id: id,
+    campos: ['estado'],
+  });
 
   revalidatePath('/admin/aliados');
   revalidatePath('/aliados');
