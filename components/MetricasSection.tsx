@@ -22,6 +22,7 @@ import { fechaHoyBogota, formatearNumero } from "@/lib/formato";
 import { fechaLarga, type DatosConstelaciones } from "@/lib/geo/constelaciones";
 import datosOsmJson from "@/public/firmamento/constelaciones.json";
 import { Estrella } from "./firmamento/Estrella";
+import { ConstelacionViva, fuenteConstelacionViva } from "./firmamento/ConstelacionViva";
 import { ScrollReveal } from "./ScrollReveal";
 import { NumeroAnimado } from "./NumeroAnimado";
 
@@ -73,11 +74,46 @@ export async function MetricasSection() {
   ];
 
   return (
-    <section aria-labelledby="titulo-numeros" className="bg-noche text-estrella">
+    <div className="bg-noche text-estrella">
       {/* Día → noche: sin saltos de layout y sin JS. */}
       <div aria-hidden="true" className="h-16 bg-gradient-to-b from-hueso to-noche sm:h-24" />
 
-      <div className="margen-editorial pb-16 sm:pb-24">
+      {/* La Constelación viva abre la noche (DESIGN.md › Firmamento ›
+          Constelación viva): el texto y el botón van primero en el HTML y no
+          esperan a la animación. */}
+      <section
+        aria-labelledby="titulo-constelacion-viva"
+        className="margen-editorial grid items-center gap-x-12 gap-y-8 pb-16 sm:pb-24 lg:grid-cols-12"
+      >
+        <div className="lg:col-span-5">
+          <p className="font-sans text-xs tracking-[0.2em] text-sodio">COMUNA 3 · MANRIQUE</p>
+          <h2
+            id="titulo-constelacion-viva"
+            className="mt-4 font-display text-4xl font-medium leading-[1.02] text-estrella sm:text-6xl"
+          >
+            Los negocios de tu barrio forman constelaciones
+          </h2>
+          <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tenue">
+            Cada punto es un comercio del mapa abierto del barrio, con la forma de lo que hace. Los que
+            quedan cerca se unen en una constelación. Únete a la tuya: registra tu negocio y aparece en el
+            mapa.
+          </p>
+          <Link
+            href="/aliados/registro"
+            className="mt-8 inline-flex min-h-[44px] items-center border border-sodio bg-sodio px-6 py-3 font-sans text-base font-medium text-noche transition-colors hover:bg-transparent hover:text-sodio focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-estrella"
+          >
+            Únete a tu constelación →
+          </Link>
+        </div>
+        <figure className="min-w-0 lg:col-span-7">
+          <ConstelacionViva className="mx-auto max-w-[640px]" />
+          <figcaption className="mx-auto mt-4 max-w-[640px] font-sans text-xs leading-relaxed text-tenue">
+            {fuenteConstelacionViva()} No todos los comercios del mapa son aliados.
+          </figcaption>
+        </figure>
+      </section>
+
+      <section aria-labelledby="titulo-numeros" className="margen-editorial pb-16 sm:pb-24">
         <ScrollReveal>
           <h2
             id="titulo-numeros"
@@ -124,7 +160,7 @@ export async function MetricasSection() {
             Ver el firmamento →
           </Link>
         </ScrollReveal>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

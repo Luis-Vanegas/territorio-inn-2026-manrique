@@ -639,3 +639,58 @@ html.js:not(.js-listo) .linea-cielo {
     stroke-dashoffset: 0;
   }
 }
+
+/* Constelación viva (DESIGN.md › Firmamento › Constelación viva). El HTML trae
+   el SVG final; solo con `js` arranca oculto para que Anime.js lo coreografíe
+   (los estilos inline de Anime.js le ganan a esta regla). Mismas tres capas que
+   [data-reveal]: sin `js` se ve, con `js` sin `js-listo` se revela a los 4 s, y
+   con menos movimiento se ve directo. `--listo` es el respaldo si Anime.js no carga. */
+html.js .cielo-vivo [data-fase] {
+  opacity: 0;
+}
+
+html.js:not(.js-listo) .cielo-vivo [data-fase] {
+  animation: revelar-respaldo 1ms linear 4s forwards;
+}
+
+.cielo-vivo--listo [data-fase] {
+  opacity: 1 !important;
+  transform: none !important;
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+}
+
+.cielo-vivo use,
+.cielo-vivo [data-fase='halo'] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Brillo en reposo: CSS barato, pausado fuera de pantalla. */
+.cielo-vivo--reposo .cielo-vivo__halo {
+  animation: titilar 2.4s ease-in-out infinite alternate;
+  animation-play-state: paused;
+}
+
+.cielo-vivo--reposo.cielo-vivo--visible .cielo-vivo__halo {
+  animation-play-state: running;
+}
+
+@keyframes titilar {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cielo-vivo [data-fase] {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .cielo-vivo__halo {
+    animation: none !important;
+  }
+}

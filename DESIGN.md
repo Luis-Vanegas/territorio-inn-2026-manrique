@@ -122,6 +122,13 @@ Todo movimiento va con `framer-motion` y respeta `prefers-reduced-motion`: quien
 lo pidió ve el contenido aparecer directo. Solo se animan `transform` y
 `opacity`; nada dura más de 900 ms.
 
+**Una excepción, acotada**: la Constelación viva (ver «Firmamento › Constelación
+viva») usa **Anime.js** porque es una coreografía de cinco fases sobre cientos de
+elementos SVG, con trazo de líneas (`stroke-dashoffset`), que framer-motion
+resolvería con un componente por estrella. Ahí cada tramo dura ≤ 900 ms pero la
+secuencia entera llega a ~4,3 s; corre una sola vez, al entrar en pantalla, y
+ningún texto ni botón la espera. Fuera de ese componente, framer-motion.
+
 `components/ScrollReveal.tsx` hace fade + slide de 16 px al entrar en viewport,
 una sola vez.
 
@@ -418,6 +425,54 @@ en la base, ninguna pieza simulada).
 - **Celdas «<5»**: se muestran tal cual, con la nota de por qué (menos de 5
   negocios podrían señalar a una persona; Ley 1581).
 
+### Constelación viva
+
+La pieza que dice qué es el sitio sin leer nada: «los negocios de tu barrio forman
+constelaciones; únete a la tuya». Es el mismo dato de «Motivos», hecho secuencia.
+Componente `components/firmamento/ConstelacionViva.tsx` (servidor) con variantes
+`completa` (portada, primera pieza de la banda de noche, antes de «El proyecto, en
+números») y `compacta` (puerta `/firmamento/entrar`: franja baja arriba del título en
+el celular, columna a la derecha en escritorio; nunca empuja el menú de roles).
+
+- **Datos reales, proyectados en el servidor** (`lib/firmamento/cieloVivo.ts`, una vez
+  por proceso): contorno de `manrique.json`, los 15 barrios de
+  `barrios-manrique.json`, los 320 comercios de `constelaciones.json` con la forma y el
+  color de su grupo (`<use>` de seis símbolos, no 320 trazos distintos) y el MST de
+  cada constelación. Proyección equirectangular local con corrección por coseno, la
+  misma de `/firmamento` (`lib/firmamento/proyeccion.ts`). Al navegador no viaja ni un
+  lat/lon: solo el SVG final.
+- **Secuencia** (variante completa; la compacta comprime los tiempos y no lleva
+  nombres): 1) se traza el contorno de la comuna (900 ms); 2) aparecen los barrios,
+  trazo fino `trazo-2` (700 ms, escalonados 40 ms); 3) se encienden los comercios
+  desde el centro hacia afuera, forma y color de su grupo (500 ms cada uno, 3 ms de
+  escalón); 4) se trazan las líneas de cada constelación, `noche-azul` (700 ms,
+  escalonadas); 5) brillan hasta 5 constelaciones grandes con un halo `sodio` (radio p90
+  acotado a 14–30 unidades) y su nombre corto («Carrera 31», «María Cano -
+  Carambolas»), en DM Sans sobre una pastilla `noche` (en el celular solo 3). Se
+  eligen de mayor a menor pero **separadas entre sí** (120 unidades de 600): las cinco
+  mayores caen en el mismo núcleo y sus nombres se encimaban. Total ~4,3 s (compacta
+  ~2,5 s). Solo `opacity`, `transform` y el trazo.
+- **Reposo**: los halos titilan con una animación CSS (`opacity` 0,55 ↔ 1, 2,4 s) que
+  se pausa fuera de pantalla (IntersectionObserver) y no existe con menos movimiento.
+  Nada de bucles en JS.
+- **Sin JS / menos movimiento / fallo**: el HTML del servidor trae el SVG final. Con
+  la clase `js` arranca oculto (`[data-fase]`) y lo revela la animación; sin `js` se ve
+  entero, con `js` sin `js-listo` se revela a los 4 s (las tres capas de
+  «Movimiento»), con `prefers-reduced-motion` se ve directo sin cargar Anime.js, y si
+  Anime.js no carga se revela todo de una.
+- **Peso**: Anime.js se importa con `import()` dentro del efecto, por módulos
+  (`animejs/timeline`, `animejs/svg`, `animejs/utils`), solo cuando la pieza entra en
+  pantalla y sin menos movimiento: no está en el bundle inicial ni compite con el LCP
+  (el titular del Hero). Esos tres módulos pesan 37 KB minificados, 14,5 KB con gzip
+  (Anime.js completo: 118 KB minificado).
+- **Puerta en el celular**: la franja mide 64 px de alto y la frase se acorta («Los
+  negocios de Manrique forman constelaciones.»); a 320 × 700 la última fila del menú
+  de roles sigue en la primera pantalla.
+- **Accesible**: la variante completa es `role="img"` con una descripción con los
+  conteos y los nombres; las etiquetas superpuestas son `aria-hidden`. La compacta es
+  decorativa (`aria-hidden`) y lleva al lado una frase equivalente. Toda cifra visible
+  lleva su línea de fuente (OSM, Alcaldía de Medellín, fecha).
+
 ### Firmamento con sesión (puerta y paneles)
 
 Rutas `app/(firmamento)/firmamento/` (`entrar`, `negocio`, `equipo`, `entidad`).
@@ -511,7 +566,8 @@ móvil, que tiene espacio); el buzón no se pierde.
 
 ## Portada
 
-Orden: Hero → banda Firmamento (noche) → Aliados con mapa → Qué ofrecemos → Galería.
+Orden: Hero → banda Firmamento (noche: Constelación viva y luego las cifras) → Aliados
+con mapa → Qué ofrecemos → Galería.
 La banda es «El proyecto, en números»: las visitas se quitaron (las infla el propio
 equipo; siguen en el panel de administración). Muestra datos del **territorio**, cada
 uno con su fuente y su fecha en `font-cifra` debajo: comercios mapeados en OpenStreetMap

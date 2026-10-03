@@ -17,6 +17,15 @@ ambos agentes repliquen un patrón que ya no existe.
 - Tailwind CSS. Tipografía con rol cerrado (ver `DESIGN.md`): Fraunces títulos, DM Sans
   todo lo demás, DM Mono (`font-cifra`) SOLO la cifra grande de un indicador (fuentes y fechas van en DM Sans pequeña). Tokens de noche
   (`noche`, `sodio`, `estrella`…) solo para Firmamento y la banda nocturna.
+- Movimiento con `framer-motion`. **Excepción única: `animejs` (v4, MIT)**, permitido
+  SOLO en `components/firmamento/AnimadorConstelacion.tsx` (la Constelación viva de la
+  portada y de `/firmamento/entrar`; DESIGN.md › Firmamento › Constelación viva). Se
+  importa con `import()` dentro del efecto y por subrutas (`animejs/timeline`,
+  `animejs/svg`, `animejs/utils`), nunca `import ... from 'animejs'` en el nivel
+  superior: así queda fuera del bundle inicial (~14,5 KB gzip, solo al ver la pieza y
+  sin `prefers-reduced-motion`). El SVG lo arma el servidor (`lib/firmamento/cieloVivo.ts`,
+  proyección compartida en `lib/firmamento/proyeccion.ts`) y llega en su estado final;
+  Anime.js solo lo coreografía. Otra animación nueva va con framer-motion.
 - Zod para validación de datos
 - Neon (Postgres serverless) como base de datos
 - Vercel Blob para almacenamiento de archivos (fotos)

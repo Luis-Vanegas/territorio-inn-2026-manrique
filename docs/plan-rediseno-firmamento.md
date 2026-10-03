@@ -23,6 +23,10 @@ prototipo de la asesoría (azul de noche en todo, foto a la izquierda, mucho tex
    el repo (`NumeroAnimado`, `ScrollReveal`, `CieloConstelaciones`, Leaflet). React Bits
    (MIT + Commons Clause) queda fuera por la cesión al ITM. Si se copia algún componente MIT,
    se cambia `motion/react` por `framer-motion` (no se instala `motion` 12).
+   **Enmienda (Luis, Ola 2):** Anime.js v4 (MIT) entra SOLO para la Constelación viva
+   (`components/firmamento/AnimadorConstelacion.tsx`), una coreografía de cinco fases sobre
+   cientos de elementos SVG; se carga por módulos y bajo demanda. Ver DESIGN.md ›
+   Movimiento y › Constelación viva.
 6. **Sin duplicados:** una tarjeta (`Tarjeta`, con variante plegable), una cifra (`Kpi` +
    `GrupoCifras`), unas barras (`BarrasCategoria`), un mapa + lista.
 
