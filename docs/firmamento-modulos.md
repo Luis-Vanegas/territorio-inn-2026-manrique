@@ -19,9 +19,10 @@ Una sola app de Next, un deploy, una base (Neon).
    2 tablas y 3 columnas; las fotos están en Vercel Blob y el ML en `public/`. Supabase no
    agrega capacidad (su plan gratis es más chico) y su Auth/RLS chocan con las sesiones a mano
    y el control de acceso en el `where`. Se revisa en el piloto 2027, no antes.
-2. **La edición del dueño publica directo** (como hoy), y el equipo corrige desde su panel
-   guiado por las alertas de calidad. Esto se aparta del prototipo a propósito
-   (`app.js:333` encolaba los cambios). Por eso no existe la tabla `cambios_ficha`.
+2. **La edición del dueño publica directo**, y el equipo corrige desde su panel guiado por la
+   bitácora y las alertas de calidad. Es un CAMBIO de comportamiento: hasta la 033,
+   `actualizarPorToken` devolvía la ficha a `pendiente` en cada edición. También se aparta del
+   prototipo (`app.js:333` encolaba los cambios). Por eso no existe la tabla `cambios_ficha`.
 3. **Las alertas de calidad no se guardan:** se calculan al vuelo con `dentroDeManrique`,
    `barrioDe` y la categoría «Otros». Guardarlas duplicaría un dato derivable.
 4. **No hay cookie nueva.** La entidad entra con Google (`sesion_usuario`) y la autoriza su fila
