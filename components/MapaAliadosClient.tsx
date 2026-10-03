@@ -7,6 +7,7 @@ import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
 
 import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, TESELAS, ZOOM } from '@/lib/geo/constantes';
+import BARRIOS from '@/lib/geo/barrios-manrique.json';
 import type { Coordenada } from '@/lib/geo/constantes';
 import type { DatosConstelaciones } from '@/lib/geo/constelaciones';
 import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
@@ -82,6 +83,29 @@ const MASCARA: [number, number][][] = (() => {
     CONTORNO_COMUNA,
   ];
 })();
+
+/**
+ * Por debajo de este zoom los nombres de barrio se pisan entre sí (a 14, el
+ * encuadre de toda la comuna, se montan La Salle y San José de la Cima), así que
+ * se ven al acercarse. El contorno queda siempre.
+ */
+const ZOOM_ETIQUETAS_BARRIO = 15;
+
+function EtiquetasBarrioSegunZoom() {
+  const mapa = useMap();
+  useEffect(() => {
+    const marcar = () =>
+      mapa
+        .getContainer()
+        .classList.toggle('etiquetas-barrio-ocultas', mapa.getZoom() < ZOOM_ETIQUETAS_BARRIO);
+    marcar();
+    mapa.on('zoomend', marcar);
+    return () => {
+      mapa.off('zoomend', marcar);
+    };
+  }, [mapa]);
+  return null;
+}
 
 type Props = {
   portafolios: Portafolio[];
@@ -219,6 +243,24 @@ export default function MapaAliadosClient({
         pathOptions={{ stroke: false }}
       />
 
+      {/* Los 15 barrios oficiales: solo contorno y nombre, sin clics, para que
+          no le roben el toque a las estrellas ni a los marcadores.
+          ponytail: la etiqueta va al centro del recuadro del barrio; en uno muy
+          cóncavo puede caer cerca del borde. Si molesta, guardar un punto de
+          etiqueta por barrio en extraer-barrios.mjs. */}
+      <GeoJSON
+        data={BARRIOS as unknown as GeoJsonObject}
+        interactive={false}
+        style={{ className: 'limite-barrio', weight: 0.75, opacity: 0.45, dashArray: '3 4', fill: false }}
+        onEachFeature={(f, capa) =>
+          capa.bindTooltip(f.properties.nombre, {
+            permanent: true,
+            direction: 'center',
+            className: 'etiqueta-barrio',
+          })
+        }
+      />
+
       <GeoJSON
         data={capaLimite}
         style={{
@@ -231,6 +273,7 @@ export default function MapaAliadosClient({
         }}
       />
 
+      <EtiquetasBarrioSegunZoom />
       <Encuadre foco={foco} />
       <IrASeleccionado seleccionado={seleccionado} portafolios={portafolios} />
 

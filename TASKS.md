@@ -68,6 +68,18 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.
 - [ ] Fase 2 · Integrador — lista para lanzar (A1 confirmado por el geocatálogo).
 
+## ✨ Firmamento: login por rol y paneles (asesoría v2, 2-oct)
+
+Diseño en `docs/firmamento-modulos.md`. Neon se queda; la edición del dueño publica directo.
+
+- [ ] Migración 033 según `docs/base-de-datos.md` (entidades, barrios, convocatorias rehecha,
+      bitácora, sugerencias con portafolio) + el código que la acompaña, en rama de Neon.
+- [ ] Rellenar `barrio_oficial` (hoy 10/10 en null: nadie la escribe) con `barrioDe`.
+- [ ] Restaurante sazón al carbón declara «Campo Valdés No. 1» (Comuna 4): corregir.
+- [ ] `/firmamento/entrar` con 3 pestañas + layout del panel.
+- [ ] Panel negocio (mover `/mi-cuenta`), panel equipo (mover `/admin`), panel entidad.
+- [ ] Redirecciones `/admin/*` y `/mi-cuenta`, sitemap, menú y AGENTS.md.
+
 ## 🔎 Análisis de SonarCloud — 2026-08-31
 
 Primer análisis sobre `main` (commit `d120aa7`). Marcó Security C (1 issue),
