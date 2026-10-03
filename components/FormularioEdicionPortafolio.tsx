@@ -13,6 +13,7 @@ import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
 import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
 import { SugeridorCategoria } from '@/app/(site)/aliados/registro/_components/SugeridorCategoria';
 import { CampoFormulario } from '@/components/CampoFormulario';
+import { barrioDe } from '@/lib/geo/barrioOficial';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
 
 // Misma lista que FormularioRegistro.tsx — copiada, no importada, para no
@@ -162,6 +163,12 @@ export function FormularioEdicionPortafolio({
     setBarrioEsOtro(esOtro);
   }, []);
 
+  // Mismo aviso que el registro (FormularioRegistro): avisa, no bloquea, y con
+  // «Otro» no hay nombre oficial que comparar.
+  const barrioDelPunto = coords ? barrioDe(coords.lat, coords.lng) : null;
+  const avisoBarrio =
+    barrioDelPunto && barrio && !barrioEsOtro && barrio !== barrioDelPunto ? barrioDelPunto : null;
+
   const errores = estado.estado === 'error' ? (estado.errores ?? {}) : {};
   const err = (campo: string): string[] | undefined => errores[campo];
 
@@ -222,6 +229,14 @@ export function FormularioEdicionPortafolio({
               />
             )}
           </CampoFormulario>
+        </div>
+
+        <div role="status">
+          {avisoBarrio && (
+            <p className="max-w-xl border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-sans text-sm text-tinta">
+              El punto que marcaste queda en {avisoBarrio}; revisa el barrio o el punto.
+            </p>
+          )}
         </div>
       </Seccion>
 
