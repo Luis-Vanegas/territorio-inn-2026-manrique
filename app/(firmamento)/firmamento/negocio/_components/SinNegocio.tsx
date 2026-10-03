@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { Estrella } from '@/components/firmamento/Estrella';
+import { Tarjeta, CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
 
 /**
  * Estado vacío de una cuenta sin negocio vivo (nunca registró uno, o borró el
@@ -8,18 +8,11 @@ import { Estrella } from '@/components/firmamento/Estrella';
  */
 export function SinNegocio({ aviso }: { aviso: string }) {
   return (
-    <section aria-labelledby="sin-negocio" className="max-w-xl rounded-xl border border-tinta/12 bg-hueso p-6 sm:p-8">
-      <Estrella tamano={22} />
-      <h2 id="sin-negocio" className="mt-4 font-display text-3xl font-medium text-tinta">
-        Aún no tienes un negocio en la red
-      </h2>
-      <p className="mt-3 font-sans text-base leading-relaxed text-tinta/70">{aviso}</p>
-      <Link
-        href="/aliados/registro"
-        className="mt-6 inline-flex min-h-[44px] items-center rounded-lg bg-azul-texto px-5 py-2 font-sans text-sm font-medium text-hueso"
-      >
+    <Tarjeta titulo="Aún no tienes un negocio en la red" id="sin-negocio" className="max-w-xl">
+      <p className="font-sans text-base leading-relaxed text-tinta/70">{aviso}</p>
+      <Link href="/aliados/registro" className={`${CLASE_BOTON_PRIMARIO} mt-5`}>
         Registrar mi negocio
       </Link>
-    </section>
+    </Tarjeta>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { exigirNegocio } from '@/lib/auth/firmamento';
 import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { perfilesParaTi } from '@/lib/db/cuenta.repo';
@@ -64,53 +65,49 @@ export default async function NegocioParaTiPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-10">
-      <section aria-labelledby="convocatorias">
-        <h2 id="convocatorias" className="font-display text-2xl font-medium text-tinta">
-          Convocatorias abiertas para tu negocio
-        </h2>
-        <p className="mt-2 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-          Una persona del equipo las revisa antes de mostrártelas. Confirma siempre los requisitos y las
-          fechas en la página oficial de quien convoca.
+    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+      <Tarjeta
+        titulo="Convocatorias abiertas para tu negocio"
+        id="convocatorias"
+        resumen={falloConsulta ? undefined : `${convocatorias.length} ahora`}
+      >
+        <p className="max-w-2xl font-sans text-sm leading-relaxed text-tinta/70">
+          Una persona del equipo las revisa antes de mostrártelas. Confirma siempre los requisitos y las fechas en la
+          página oficial de quien convoca.
         </p>
 
-        {falloConsulta ? (
-          <p role="status" className="mt-5 max-w-xl font-sans text-base leading-relaxed text-tinta/70">
-            No pudimos consultar las convocatorias ahora. Intenta de nuevo en un momento.
-          </p>
-        ) : convocatorias.length === 0 ? (
-          <p className="mt-5 max-w-xl font-sans text-base leading-relaxed text-tinta/70">
-            Por ahora no hay convocatorias abiertas para ti. Cuando aparezca una que encaje con tu
-            categoría, la mostramos aquí y te avisamos con un número en el menú.
-          </p>
-        ) : (
-          <div className="mt-5">
+        <div className="mt-5">
+          {falloConsulta ? (
+            <p role="status" className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
+              No pudimos consultar las convocatorias ahora. Intenta de nuevo en un momento.
+            </p>
+          ) : convocatorias.length === 0 ? (
+            <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
+              Por ahora no hay convocatorias abiertas para ti. Cuando aparezca una que encaje con tu categoría, la
+              mostramos aquí y te avisamos con un número en el menú.
+            </p>
+          ) : (
             <ListaConvocatorias convocatorias={convocatorias} />
-          </div>
-        )}
-      </section>
+          )}
+        </div>
+      </Tarjeta>
 
-      <section aria-labelledby="guias">
-        <h2 id="guias" className="font-display text-2xl font-medium text-tinta">
-          Guías para tu negocio
-        </h2>
-        <ul className="mt-5 grid gap-4 sm:grid-cols-2">
+      <Tarjeta titulo="Guías para tu negocio" id="guias" plegable abierta resumen={`${guias.length} guías`}>
+        <ul className="grid gap-x-8 sm:grid-cols-2">
           {guias.map((g) => (
-            <li key={g.href} className="flex flex-col rounded-xl border border-tinta/12 bg-hueso p-5">
-              <h3 className="font-display text-xl font-medium text-tinta">{g.titulo}</h3>
-              <p className="mt-2 font-sans text-base leading-relaxed text-tinta/70">{g.texto}</p>
-              <div className="mt-auto pt-4">
-                <Link
-                  href={g.href}
-                  className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4"
-                >
-                  {g.accion}
-                </Link>
-              </div>
+            <li key={g.href} className="flex flex-col border-t border-tinta/12 py-4 first:border-t-0 sm:[&:nth-child(2)]:border-t-0">
+              <h3 className="font-display text-lg font-medium text-tinta">{g.titulo}</h3>
+              <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">{g.texto}</p>
+              <Link
+                href={g.href}
+                className="mt-1 inline-flex min-h-[44px] w-fit items-center font-sans text-sm text-azul-texto underline underline-offset-4"
+              >
+                {g.accion}
+              </Link>
             </li>
           ))}
         </ul>
-      </section>
+      </Tarjeta>
     </div>
   );
 }

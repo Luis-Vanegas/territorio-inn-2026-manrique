@@ -476,9 +476,8 @@ la misma regla de «Metáfora», aplicada adentro de una página.
   como el resto del sitio sin remapeo. Botones de 44 px. Las tablas largas esconden
   columnas secundarias bajo `sm` en vez de desbordar a 320 px.
 - **Panel del negocio** (`negocio/`): Inicio (saludo, «Tu ficha está al N %», cuatro
-  cifras en una ventana de noche con una línea de fuente, gráfico de 8 semanas en SVG
-  propio con tabla `sr-only`), Mi ficha (formulario del sitio, vista previa y lista de lo
-  que falta con ✓ / + y texto), Para ti (convocatorias con «Fuente oficial» y
+  cifras en una ventana de noche con una línea de fuente; «Semana a semana» plegada dentro de esa ventana, gráfico de 8 semanas en SVG propio con tabla `sr-only`, y con ocho semanas de ceros una sola línea honesta en vez del gráfico), Mi ficha (formulario del sitio, vista previa, lista de lo
+  que falta con ✓ / + y texto, y «Cambios en tu ficha»: la bitácora de ese negocio con fecha y nombres de campo, sin valores), Para ti (convocatorias con «Fuente oficial» y
   «Compartir»), Mi constelación (el mapa en una ventana de noche; vecinos de OSM con
   «OpenStreetMap · no es aliado»), Mis clientes. Sin datos: estado vacío honesto, nunca
   cifras de ejemplo. La comparación con la categoría solo con 5 o más negocios.

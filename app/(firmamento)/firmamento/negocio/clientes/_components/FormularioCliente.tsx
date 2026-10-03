@@ -4,6 +4,7 @@ import { useActionState, useId } from 'react';
 import { useFormStatus } from 'react-dom';
 
 import { CampoFormulario } from '@/components/CampoFormulario';
+import { CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
 import { borrarClienteAction, guardarCliente } from '@/lib/actions/clientesNegocio';
 import type { ClienteNegocio } from '@/lib/db/clientes.repo';
 import { ETAPAS, ETIQUETA_ETAPA, type EstadoCliente } from '@/lib/validation/cliente.schema';
@@ -11,7 +12,7 @@ import { ETAPAS, ETIQUETA_ETAPA, type EstadoCliente } from '@/lib/validation/cli
 const ESTADO_INICIAL: EstadoCliente = { estado: 'inicial' };
 
 const claseInput =
-  'w-full border border-tinta/55 bg-transparent px-3 py-2.5 font-sans text-base text-tinta ' +
+  'w-full rounded-lg border border-tinta/55 bg-transparent px-3 py-2.5 font-sans text-base text-tinta ' +
   'placeholder:text-tinta/65 focus:border-azul focus:outline-none aria-[invalid=true]:border-azul';
 
 function BotonGuardar({ nuevo }: { nuevo: boolean }) {
@@ -20,7 +21,7 @@ function BotonGuardar({ nuevo }: { nuevo: boolean }) {
     <button
       type="submit"
       disabled={pending}
-      className="min-h-[44px] border border-azul-texto bg-azul-texto px-6 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto disabled:cursor-not-allowed disabled:opacity-50"
+      className={CLASE_BOTON_PRIMARIO}
     >
       {pending ? 'Guardando…' : nuevo ? 'Agregar cliente' : 'Guardar cambios'}
     </button>
@@ -118,7 +119,7 @@ export function BotonBorrarCliente({ id, nombre }: { id: string; nombre: string 
       <input type="hidden" name="id" value={id} />
       <button
         type="submit"
-        className="min-h-[44px] font-sans text-sm text-tinta/60 underline decoration-tinta/30 underline-offset-4 hover:text-azul-texto"
+        className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/70 underline decoration-tinta/30 underline-offset-4 hover:text-azul-texto"
       >
         Borrar
       </button>

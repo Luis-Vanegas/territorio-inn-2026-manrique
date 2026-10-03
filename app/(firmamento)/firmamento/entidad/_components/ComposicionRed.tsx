@@ -1,4 +1,5 @@
 import { BarrasCategoria } from '@/components/firmamento/BarrasCategoria';
+import { LineaFuente, Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { grupoDeCategoria } from '@/lib/categorias/grupos';
 import type { DatosAbiertos } from '@/lib/db/datos.repo';
 import { fechaLarga } from '@/lib/geo/constelaciones';
@@ -18,12 +19,11 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
 
   if (!datos) {
     return (
-      <div className="border border-tinta/12 bg-hueso p-5">
-        <h2 className="font-sans text-lg font-medium text-tinta">Composición de la red</h2>
-        <p role="status" className="mt-3 font-sans text-base leading-relaxed text-tinta/70">
+      <Tarjeta titulo="Composición de la red" id="composicion-red">
+        <p role="status" className="font-sans text-base leading-relaxed text-tinta/70">
           No pudimos consultar la red en este momento. Vuelve a intentarlo en unos minutos.
         </p>
-      </div>
+      </Tarjeta>
     );
   }
 
@@ -31,12 +31,16 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
   const ocultas = filas.filter((f) => f.negocios === CELDA_PEQUENA).length;
 
   return (
-    <div className="border border-tinta/12 bg-hueso p-5">
-      <h2 className="font-sans text-lg font-medium text-tinta">Composición de la red</h2>
-      <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
-        {filas.length} categorías activas
-        {ocultas > 0 ? `; ${ocultas} salen como «${CELDA_PEQUENA}»` : ''}. Una celda con menos de 5 negocios
-        no muestra su número, para que nadie pueda reconocer a una persona (Ley 1581 de 2012).
+    <Tarjeta
+      titulo="Composición de la red"
+      id="composicion-red"
+      plegable
+      abierta={ocultas < filas.length}
+      resumen={`${filas.length} categorías`}
+    >
+      <p className="font-sans text-sm leading-relaxed text-tinta/70">
+        {ocultas > 0 ? `${ocultas} salen como «${CELDA_PEQUENA}». ` : ''}Una celda con menos de 5 negocios no muestra
+        su número, para que nadie pueda reconocer a una persona (Ley 1581 de 2012).
       </p>
 
       <BarrasCategoria
@@ -51,9 +55,9 @@ export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
         }))}
       />
 
-      <p className="mt-4 font-sans text-xs leading-relaxed text-tinta/70 tabular-nums">
+      <LineaFuente>
         Fuente: {fuente} · consultado el {fechaLarga(datos.generado_en)}
-      </p>
-    </div>
+      </LineaFuente>
+    </Tarjeta>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
+
 /**
  * El enlace de los datos abiertos, a la vista y con un botón para copiarlo. El
  * texto se puede seleccionar a mano si el navegador no deja usar el portapapeles
@@ -35,7 +37,7 @@ export function CopiarEnlace({ url }: { url: string }) {
         <button
           type="button"
           onClick={copiar}
-          className="inline-flex min-h-[48px] shrink-0 items-center justify-center rounded-lg bg-azul-texto px-5 font-sans text-base font-medium text-hueso"
+          className={`${CLASE_BOTON_PRIMARIO} shrink-0`}
         >
           Copiar enlace
         </button>

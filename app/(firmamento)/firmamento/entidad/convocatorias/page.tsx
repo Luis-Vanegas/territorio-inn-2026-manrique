@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 
+import { CLASE_BOTON_PANEL, hoyBogota, Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { exigirEntidad } from '@/lib/auth/firmamento';
 import { entidadDeSesion } from '@/lib/auth/entidad';
 import {
@@ -10,18 +11,12 @@ import {
 } from '@/lib/db/convocatorias.repo';
 import { fechaLarga } from '@/lib/geo/constelaciones';
 import { TEMAS_CONVOCATORIA } from '@/lib/validation/convocatoria.schema';
-import { EncabezadoEntidad } from '../_components/EncabezadoEntidad';
 import { FormularioPropuesta } from './_components/FormularioPropuesta';
 
 export const metadata: Metadata = { title: 'Convocatorias' };
 
 // La sesión y la base se leen en cada carga.
 export const dynamic = 'force-dynamic';
-
-/** AAAA-MM-DD de hoy en Bogotá (a las 8 p. m. de Colombia en UTC ya es mañana). */
-function hoyBogota(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
-}
 
 /** Días de calendario entre dos fechas AAAA-MM-DD (sin zonas horarias de por medio). */
 function diasEntre(desde: string, hasta: string): number {
@@ -36,26 +31,9 @@ function Cierre({ fecha, hoy }: { fecha: string | null; hoy: string }) {
   const aviso = dias === 0 ? 'Cierra hoy' : dias === 1 ? 'Cierra mañana' : dias <= 7 ? `Cierra en ${dias} días` : null;
   return (
     <p className="font-sans text-sm text-tinta/70">
-      Cierra el <span className="font-sans text-tinta tabular-nums">{fechaLarga(fecha)}</span>
+      Cierra el <span className="text-tinta tabular-nums">{fechaLarga(fecha)}</span>
       {aviso && <span className="ml-2 font-medium text-azul-texto">· {aviso}</span>}
     </p>
-  );
-}
-
-function EnlaceOficial({ url }: { url: string }) {
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:border-azul hover:text-azul-texto"
-    >
-      Fuente oficial
-      <span className="sr-only"> (se abre en otra pestaña)</span>
-      <span aria-hidden="true" className="ml-1.5">
-        ↗
-      </span>
-    </a>
   );
 }
 
@@ -67,23 +45,25 @@ function Chip({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TarjetaVigente({ c, hoy }: { c: ConvocatoriaParaTi; hoy: string }) {
+function FilaVigente({ c, hoy }: { c: ConvocatoriaParaTi; hoy: string }) {
   return (
-    <li className="border border-tinta/12 bg-hueso p-5">
+    <li className="py-5 first:pt-0 last:pb-0">
       <div className="flex flex-wrap gap-2">
         <Chip>{c.entidad}</Chip>
         {c.tema && <Chip>{c.tema}</Chip>}
       </div>
       <h3 className="mt-3 break-words font-sans text-lg font-medium leading-snug text-tinta">{c.titulo}</h3>
-      {c.resumen && (
-        <p className="mt-2 break-words font-sans text-sm leading-relaxed text-tinta/70">{c.resumen}</p>
-      )}
+      {c.resumen && <p className="mt-2 break-words font-sans text-sm leading-relaxed text-tinta/70">{c.resumen}</p>}
       <div className="mt-3">
         <Cierre fecha={c.fecha_cierre} hoy={hoy} />
       </div>
-      <div className="mt-3">
-        <EnlaceOficial url={c.url} />
-      </div>
+      <a href={c.url} target="_blank" rel="noopener noreferrer" className={`${CLASE_BOTON_PANEL} mt-3`}>
+        Fuente oficial
+        <span className="sr-only"> (se abre en otra pestaña)</span>
+        <span aria-hidden="true" className="ml-1.5">
+          ↗
+        </span>
+      </a>
     </li>
   );
 }
@@ -121,7 +101,7 @@ function describirEstado(p: PropuestaDeEntidad, hoy: string): { rotulo: string; 
 function FilaPropuesta({ p, hoy }: { p: PropuestaDeEntidad; hoy: string }) {
   const e = describirEstado(p, hoy);
   return (
-    <li className="border-b border-tinta/12 py-4 last:border-b-0">
+    <li className="border-b border-tinta/12 py-4 first:pt-0 last:border-b-0 last:pb-0">
       <div className="flex flex-wrap items-center gap-2">
         <span
           className={`inline-flex items-center rounded-full border px-2.5 py-0.5 font-sans text-xs font-medium ${e.clase}`}
@@ -146,7 +126,7 @@ function FilaPropuesta({ p, hoy }: { p: PropuestaDeEntidad; hoy: string }) {
  * formulario (lib/actions/proponerConvocatoria.ts).
  */
 export default async function EntidadConvocatoriasPage() {
-  const contexto = await exigirEntidad();
+  await exigirEntidad();
   // `exigirEntidad` ya la resolvió; `entidadDeSesion` está en caché por petición.
   const entidad = await entidadDeSesion();
 
@@ -165,67 +145,73 @@ export default async function EntidadConvocatoriasPage() {
   const hoy = hoyBogota();
 
   return (
-    <div className="mx-auto max-w-[1280px]">
-      <EncabezadoEntidad entidad={contexto.nombre}>
-        Las convocatorias que el equipo ya aprobó para los negocios de la comuna, y un lugar para proponer
-        las de tu entidad.
-      </EncabezadoEntidad>
+    <div className="mx-auto flex max-w-[1280px] flex-col gap-5">
+      <p className="max-w-3xl font-sans text-base leading-relaxed text-tinta/70">
+        Las convocatorias que el equipo ya aprobó para los negocios de la comuna, y un lugar para proponer las de tu
+        entidad.
+      </p>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
-        <section aria-labelledby="vigentes-titulo" className="min-w-0">
-          <h2 id="vigentes-titulo" className="font-display text-2xl font-medium text-tinta sm:text-3xl">
-            Abiertas ahora
-          </h2>
-          <a
-            href="#proponer"
-            className="mt-2 inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4 lg:hidden"
-          >
-            Ir a proponer una convocatoria
-          </a>
-
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-start">
+        <Tarjeta
+          titulo="Abiertas ahora"
+          id="vigentes-titulo"
+          resumen={vigentes ? `${vigentes.length}` : undefined}
+          accion={
+            <a
+              href="#proponer"
+              className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4 lg:hidden"
+            >
+              Ir a proponer una convocatoria
+            </a>
+          }
+        >
           {vigentes === null ? (
-            <p role="status" className="mt-4 font-sans text-base leading-relaxed text-tinta/70">
+            <p role="status" className="font-sans text-base leading-relaxed text-tinta/70">
               No pudimos consultar las convocatorias en este momento. Vuelve a intentarlo en unos minutos.
             </p>
           ) : vigentes.length === 0 ? (
-            <p className="mt-4 max-w-xl border border-tinta/12 bg-hueso p-5 font-sans text-base leading-relaxed text-tinta/70">
-              Todavía no hay convocatorias abiertas aprobadas. Cuando el equipo apruebe una, aparece aquí
-              con su fecha de cierre y su fuente oficial.
+            <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
+              Todavía no hay convocatorias abiertas aprobadas. Cuando el equipo apruebe una, aparece aquí con su fecha
+              de cierre y su fuente oficial.
             </p>
           ) : (
-            <ul className="mt-4 flex flex-col gap-4">
+            <ul className="divide-y divide-tinta/12">
               {vigentes.map((c) => (
-                <TarjetaVigente key={c.id} c={c} hoy={hoy} />
+                <FilaVigente key={c.id} c={c} hoy={hoy} />
               ))}
             </ul>
           )}
-        </section>
+        </Tarjeta>
 
-        <div className="flex min-w-0 flex-col gap-8">
-          <section id="proponer" aria-label="Proponer una convocatoria" className="scroll-mt-20">
+        <div className="flex min-w-0 flex-col gap-5">
+          {/* Plegada: con el `#proponer` del enlace de arriba (y del Observatorio) se abre sola. Un error al enviar la deja abierta. */}
+          <Tarjeta titulo="Proponer una convocatoria" id="titulo-proponer" plegable ancla="proponer" className="scroll-mt-20">
             <FormularioPropuesta temas={TEMAS_CONVOCATORIA} hoy={hoy} />
-          </section>
+          </Tarjeta>
 
-          <section aria-labelledby="propuestas-titulo" className="border border-tinta/12 bg-hueso p-5 sm:p-6">
-            <h2 id="propuestas-titulo" className="font-display text-2xl font-medium text-tinta">
-              Tus propuestas
-            </h2>
+          <Tarjeta
+            titulo="Tus propuestas"
+            id="propuestas-titulo"
+            plegable
+            abierta={propuestas !== null && propuestas.length > 0}
+            resumen={propuestas ? `${propuestas.length}` : undefined}
+          >
             {propuestas === null ? (
-              <p role="status" className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
+              <p role="status" className="font-sans text-sm leading-relaxed text-tinta/70">
                 No pudimos consultar tus propuestas ahora. Vuelve a intentarlo en unos minutos.
               </p>
             ) : propuestas.length === 0 ? (
-              <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
+              <p className="font-sans text-sm leading-relaxed text-tinta/70">
                 Aún no has enviado ninguna. Cuando envíes una, aquí ves si el equipo la aprobó.
               </p>
             ) : (
-              <ul className="mt-2">
+              <ul>
                 {propuestas.map((p) => (
                   <FilaPropuesta key={p.id} p={p} hoy={hoy} />
                 ))}
               </ul>
             )}
-          </section>
+          </Tarjeta>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { GrupoCifras, Kpi } from '@/components/firmamento/Kpi';
+import { CLASE_BOTON_PANEL, CLASE_BOTON_PRIMARIO, Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { exigirNegocio } from '@/lib/auth/firmamento';
 import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
@@ -57,173 +58,169 @@ export default async function NegocioInicioPage() {
 
   const publicada = portafolio.estado === 'aprobado';
   const resumen = semanas.length >= 8 ? resumenSemanas(semanas) : null;
+  // Ocho semanas de ceros: una línea honesta vale más que ocho filas de «0 / 0».
+  const sinMovimiento = semanas.every((s) => s.vistas === 0 && s.contactos === 0);
   const ficha = completitudFicha(portafolio);
   const hoy = fechaHoyBogota();
   const fuenteCifras = 'conteos anónimos de tu ficha';
   const primerNombre = nombre.trim().split(/\s+/)[0] ?? nombre;
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6">
+    <div className="mx-auto flex max-w-6xl flex-col gap-5">
       <SelectorNegocio negocios={negocios} actual={actual} />
 
       <EstadoFicha estado={portafolio.estado} motivo={portafolio.motivo_rechazo} enlaceFicha />
 
-      {/* Saludo y qué tan completa está la ficha */}
-      <section
-        aria-labelledby="saludo"
-        className="grid gap-6 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:items-center"
+      <Tarjeta
+        titulo={`Hola, ${primerNombre}`}
+        id="saludo"
+        resumen={`${portafolio.categoria_otra || portafolio.categoria_nombre} · ${portafolio.barrio}`}
       >
-        <div>
-          <p className="font-sans text-sm text-tinta/70">{portafolio.categoria_otra || portafolio.categoria_nombre} · {portafolio.barrio}</p>
-          <h2 id="saludo" className="mt-1 font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl">
-            Hola, {primerNombre}
-          </h2>
-          <p className="mt-2 max-w-xl font-sans text-base leading-relaxed text-tinta/70">
-            {publicada
-              ? `Así le fue a ${portafolio.nombre} en el mapa de Constelaciones en las últimas cuatro semanas.`
-              : `Aquí sigues ${portafolio.nombre}. Los números aparecen cuando tu ficha esté publicada.`}
-          </p>
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:items-end">
+          <div>
+            <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
+              {publicada
+                ? `Así le fue a ${portafolio.nombre} en el mapa de Constelaciones en las últimas cuatro semanas.`
+                : `Aquí sigues ${portafolio.nombre}. Los números aparecen cuando tu ficha esté publicada.`}
+            </p>
+            <p className="mt-2 font-sans text-sm text-tinta/70">
+              {ficha.faltan.length === 0
+                ? 'Tu ficha tiene todo lo que ayuda.'
+                : 'Completa lo que falta y te encuentran más fácil.'}
+            </p>
+          </div>
+          <div>
+            <BarraFicha porcentaje={ficha.porcentaje} />
+            <Link href="/firmamento/negocio/ficha" className={`${CLASE_BOTON_PRIMARIO} mt-3`}>
+              Mejorar mi ficha
+            </Link>
+          </div>
         </div>
-        <div className="rounded-xl border border-tinta/12 bg-tinta/[0.03] p-4">
-          <BarraFicha porcentaje={ficha.porcentaje} />
-          <p className="mt-2 font-sans text-sm text-tinta/70">
-            {ficha.faltan.length === 0 ? 'Tu ficha tiene todo lo que ayuda.' : 'Completa lo que falta y te encuentran más fácil.'}
-          </p>
-          <Link
-            href="/firmamento/negocio/ficha"
-            className="mt-3 inline-flex min-h-[44px] items-center rounded-lg bg-azul-texto px-4 font-sans text-sm font-medium text-hueso"
-          >
-            Mejorar mi ficha
-          </Link>
-        </div>
-      </section>
+      </Tarjeta>
 
-      {/* Los números */}
+      {/* Los números: la banda de noche, con «Semana a semana» plegada adentro */}
       <VentanaNoche titulo="Tus números, últimas 4 semanas" id="numeros">
         {!publicada || !resumen ? (
-          <p className="max-w-xl font-sans text-base leading-relaxed text-tenue">
+          <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
             {publicada
               ? 'No pudimos consultar tus números ahora. Intenta de nuevo en un momento.'
               : 'Las cifras aparecen aquí cuando tu ficha esté publicada: no mostramos números de ejemplo.'}
           </p>
         ) : (
-          <GrupoCifras fuente={`${fuenteCifras}; la última, convocatorias aprobadas por el equipo`} fecha={`4 semanas al ${hoy}`}>
-            <Kpi
-              valor={formatearNumero(resumen.vistas)}
-              numero={resumen.vistas}
-              etiqueta="Vistas de tu ficha"
-              aclaracion={textoVariacion(resumen.variacionVistas)}
-            />
-            <Kpi
-              valor={formatearNumero(resumen.contactos)}
-              numero={resumen.contactos}
-              etiqueta="Toques de contacto"
-              aclaracion={`WhatsApp, teléfono, correo o redes. ${textoVariacion(resumen.variacionContactos)}`}
-              tono="estrella"
-            />
-            <Kpi
-              valor={resumen.contactosPor100 === null ? '—' : formatearNumero(resumen.contactosPor100, 1)}
-              numero={resumen.contactosPor100 ?? undefined}
-              decimales={1}
-              etiqueta="Contactos por cada 100 vistas"
-              aclaracion={
-                comparacion
-                  ? `Tu categoría, con ${comparacion.negocios} negocios: ${formatearNumero(comparacion.contactosPor100, 1)}.`
-                  : 'Comparamos con tu categoría cuando hay al menos 5 negocios en ella, para que nadie quede expuesto.'
-              }
-              tono="estrella"
-            />
-            <Kpi
-              valor={formatearNumero(paraTi.length)}
-              numero={paraTi.length}
-              etiqueta="Convocatorias para ti"
-              aclaracion="Abiertas y revisadas por el equipo."
-              enlace={paraTi.length > 0 ? { href: '/firmamento/negocio/para-ti', texto: 'Verlas' } : undefined}
-              tono="estrella"
-            />
-          </GrupoCifras>
+          <>
+            <GrupoCifras
+              fuente={`${fuenteCifras}; la última, convocatorias aprobadas por el equipo`}
+              fecha={`4 semanas al ${hoy}`}
+            >
+              <Kpi
+                valor={formatearNumero(resumen.vistas)}
+                numero={resumen.vistas}
+                etiqueta="Vistas de tu ficha"
+                aclaracion={textoVariacion(resumen.variacionVistas)}
+              />
+              <Kpi
+                valor={formatearNumero(resumen.contactos)}
+                numero={resumen.contactos}
+                etiqueta="Toques de contacto"
+                aclaracion={`WhatsApp, teléfono, correo o redes. ${textoVariacion(resumen.variacionContactos)}`}
+                tono="estrella"
+              />
+              <Kpi
+                valor={resumen.contactosPor100 === null ? '—' : formatearNumero(resumen.contactosPor100, 1)}
+                numero={resumen.contactosPor100 ?? undefined}
+                decimales={1}
+                etiqueta="Contactos por cada 100 vistas"
+                aclaracion={
+                  comparacion
+                    ? `Tu categoría, con ${comparacion.negocios} negocios: ${formatearNumero(comparacion.contactosPor100, 1)}.`
+                    : 'Lo comparamos con tu categoría cuando hay 5 o más negocios en ella.'
+                }
+                tono="estrella"
+              />
+              <Kpi
+                valor={formatearNumero(paraTi.length)}
+                numero={paraTi.length}
+                etiqueta="Convocatorias para ti"
+                aclaracion="Abiertas y revisadas por el equipo."
+                enlace={paraTi.length > 0 ? { href: '/firmamento/negocio/para-ti', texto: 'Verlas' } : undefined}
+                tono="estrella"
+              />
+            </GrupoCifras>
+
+            <div className="mt-4">
+              {sinMovimiento ? (
+                <p className="font-sans text-sm leading-relaxed text-tinta/70">
+                  En las últimas 8 semanas nadie ha visto tu ficha todavía. Comparte su enlace con tus clientes y
+                  aquí vas a ver cómo llegan.
+                </p>
+              ) : (
+                <Tarjeta titulo="Semana a semana" id="semana" plegable resumen="8 semanas, vistas y contactos">
+                  <GraficoSemanas semanas={semanas} nombre={portafolio.nombre} />
+                  <p className="mt-3 font-sans text-xs leading-relaxed text-tinta/70">
+                    Fuente: {fuenteCifras} · 8 semanas al {hoy}
+                  </p>
+                </Tarjeta>
+              )}
+            </div>
+          </>
         )}
       </VentanaNoche>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        {/* Semana a semana */}
-        <section aria-labelledby="semana" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
-          <h2 id="semana" className="font-display text-2xl font-medium text-tinta">
-            Semana a semana
-          </h2>
-          {publicada && semanas.length >= 8 ? (
-            <div className="mt-4">
-              <GraficoSemanas semanas={semanas} nombre={portafolio.nombre} />
-              <p className="mt-3 font-sans text-xs leading-relaxed text-tinta/70 tabular-nums">
-                Fuente: {fuenteCifras} · 8 semanas al {hoy}
-              </p>
-            </div>
-          ) : (
-            <p className="mt-3 font-sans text-base leading-relaxed text-tinta/70">
-              El gráfico aparece cuando tu ficha esté publicada.
-            </p>
+      <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
+        <div className="flex min-w-0 flex-col gap-5">
+          {/* Solo si queda algo por hacer: con la ficha completa no hay nada que decir */}
+          {ficha.faltan.length > 0 && (
+            <Tarjeta titulo="Lo que más suma" id="suma" plegable abierta resumen={`${ficha.faltan.length} por completar`}>
+              <ul className="divide-y divide-tinta/12">
+                {ficha.faltan.slice(0, 3).map((p) => (
+                  <li key={p.id} className="py-3 first:pt-0">
+                    <p className="font-sans text-base font-medium text-tinta">
+                      <span aria-hidden="true" className="mr-2 text-azul-texto">+</span>
+                      {p.etiqueta}
+                    </p>
+                    <p className="mt-0.5 font-sans text-sm leading-snug text-tinta/70">{p.ayuda}</p>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/firmamento/negocio/ficha" className={`${CLASE_BOTON_PANEL} mt-3`}>
+                Completarlo en mi ficha
+              </Link>
+            </Tarjeta>
           )}
-        </section>
 
-        {/* Lo que más suma */}
-        <section aria-labelledby="suma" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
-          <h2 id="suma" className="font-display text-2xl font-medium text-tinta">
-            Lo que más suma
-          </h2>
-          {ficha.faltan.length === 0 ? (
-            <p className="mt-3 font-sans text-base leading-relaxed text-tinta/70">
-              Tu ficha ya tiene las ocho cosas que ayudan. Mantenla al día cuando algo cambie.
-            </p>
-          ) : (
-            <ul className="mt-3 divide-y divide-tinta/12">
-              {ficha.faltan.slice(0, 3).map((p) => (
-                <li key={p.id} className="py-3">
-                  <p className="font-sans text-base font-medium text-tinta">
-                    <span aria-hidden="true" className="mr-2 text-azul-texto">+</span>
-                    {p.etiqueta}
-                  </p>
-                  <p className="mt-0.5 font-sans text-sm leading-snug text-tinta/70">{p.ayuda}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Para ti esta semana */}
-        <section aria-labelledby="para-ti" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4">
-            <h2 id="para-ti" className="font-display text-2xl font-medium text-tinta">
-              Para ti
-            </h2>
-            <Link
-              href="/firmamento/negocio/para-ti"
-              className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4"
-            >
-              Ver todas
-            </Link>
-          </div>
-          {paraTi.length === 0 ? (
-            <p className="mt-2 font-sans text-base leading-relaxed text-tinta/70">
-              Por ahora no hay convocatorias abiertas que encajen con tu negocio. Cuando aparezca una, la ves aquí.
-            </p>
-          ) : (
-            <div className="mt-3">
-              <ListaConvocatorias convocatorias={paraTi} max={2} compacta />
-            </div>
-          )}
-        </section>
-
-        {/* Así te ven tus vecinos */}
-        <section aria-labelledby="asi-te-ven" className="min-w-0 rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6">
-          <h2 id="asi-te-ven" className="font-display text-2xl font-medium text-tinta">
-            Así te ven tus vecinos
-          </h2>
-          <div className="mt-3">
+          <Tarjeta titulo="Así te ven tus vecinos" id="asi-te-ven" plegable resumen="Vista previa de tu ficha">
             <VistaPreviaFicha portafolio={portafolio} />
-          </div>
-        </section>
+          </Tarjeta>
+        </div>
+
+        <div className="flex min-w-0 flex-col gap-5">
+          {paraTi.length > 0 && (
+            <Tarjeta
+              titulo="Para ti"
+              id="para-ti"
+              resumen={`${paraTi.length} abiertas`}
+              accion={
+                <Link
+                  href="/firmamento/negocio/para-ti"
+                  className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto underline underline-offset-4"
+                >
+                  Ver todas
+                </Link>
+              }
+            >
+              <ListaConvocatorias convocatorias={paraTi} max={2} />
+            </Tarjeta>
+          )}
+
+          <Tarjeta titulo="Tu cuadra" id="cuadra">
+            <p className="font-sans text-base leading-relaxed text-tinta/70">
+              Mira qué negocios tienes cerca, con quién podrías aliarte y cómo invitar a tus vecinos.
+            </p>
+            <Link href="/firmamento/negocio/constelacion" className={`${CLASE_BOTON_PANEL} mt-3`}>
+              Ver mi constelación
+            </Link>
+          </Tarjeta>
+        </div>
       </div>
     </div>
   );

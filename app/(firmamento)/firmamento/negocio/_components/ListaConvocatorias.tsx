@@ -1,3 +1,4 @@
+import { CLASE_BOTON_PANEL } from '@/components/firmamento/panel/Tarjeta';
 import type { ConvocatoriaParaTi } from '@/lib/db/convocatorias.repo';
 import { fechaLarga } from '@/lib/geo/constelaciones';
 
@@ -7,7 +8,10 @@ import { fechaLarga } from '@/lib/geo/constelaciones';
  * cuándo cierra y dónde se encontró; el sitio las reúne, no las garantiza. Dos
  * acciones de 44 px: «Fuente oficial» (la página de quien convoca) y
  * «Compartir» por WhatsApp (el título, la entidad y el enlace oficial).
- * `max` recorta para la tarjeta del inicio.
+ * `max` recorta para el inicio.
+ *
+ * Es una lista de filas dentro de una `Tarjeta` (la página la pone), no una
+ * tarjeta por convocatoria: así no hay marcos dentro de marcos.
  */
 function mensajeCompartir(c: ConvocatoriaParaTi): string {
   const cierre = c.fecha_cierre ? ` Cierra el ${fechaLarga(c.fecha_cierre)}.` : '';
@@ -17,44 +21,38 @@ function mensajeCompartir(c: ConvocatoriaParaTi): string {
 export function ListaConvocatorias({
   convocatorias,
   max,
-  compacta = false,
 }: {
   convocatorias: ConvocatoriaParaTi[];
   max?: number;
-  /** Una sola columna, para cuando la lista va en media pantalla. */
-  compacta?: boolean;
 }) {
   const lista = max ? convocatorias.slice(0, max) : convocatorias;
 
   return (
-    <ul className={`grid gap-4 ${compacta ? "" : "lg:grid-cols-2"}`}>
+    <ul className="divide-y divide-tinta/12">
       {lista.map((c) => (
-        <li key={c.id} className="flex min-w-0 flex-col rounded-xl border border-tinta/12 bg-tinta/5 p-4 sm:p-5">
-          <p className="font-sans text-sm text-tinta/70">
-            {c.entidad}
-            {c.tema && <> · {c.tema}</>}
-          </p>
-          <h3 className="mt-1 font-display text-xl font-medium leading-snug text-tinta">{c.titulo}</h3>
-          {c.resumen && <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">{c.resumen}</p>}
+        <li key={c.id} className="flex min-w-0 flex-col gap-4 py-5 first:pt-0 last:pb-0 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0 md:max-w-2xl">
+            <p className="font-sans text-sm text-tinta/70">
+              {c.entidad}
+              {c.tema && <> · {c.tema}</>}
+            </p>
+            <h3 className="mt-1 break-words font-display text-xl font-medium leading-snug text-tinta">{c.titulo}</h3>
+            {c.resumen && <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">{c.resumen}</p>}
 
-          <p className="mt-3 font-sans text-sm text-tinta">
-            {c.fecha_cierre ? (
-              <>
-                Cierra el <span className="tabular-nums">{fechaLarga(c.fecha_cierre)}</span>
-              </>
-            ) : (
-              'Sin fecha de cierre publicada'
-            )}
-          </p>
-          <p className="mt-1 font-sans text-xs text-tinta/70 tabular-nums">Fuente: {c.fuente}</p>
+            <p className="mt-3 font-sans text-sm text-tinta">
+              {c.fecha_cierre ? (
+                <>
+                  Cierra el <span className="tabular-nums">{fechaLarga(c.fecha_cierre)}</span>
+                </>
+              ) : (
+                'Sin fecha de cierre publicada'
+              )}
+            </p>
+            <p className="mt-1 font-sans text-xs text-tinta/70">Fuente: {c.fuente}</p>
+          </div>
 
-          <div className="mt-auto flex flex-wrap gap-2 pt-4">
-            <a
-              href={c.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-hueso"
-            >
+          <div className="flex shrink-0 flex-wrap gap-2 md:flex-col">
+            <a href={c.url} target="_blank" rel="noopener noreferrer" className={CLASE_BOTON_PANEL}>
               Fuente oficial
               <span className="sr-only"> de {c.titulo} (se abre en otra pestaña)</span>
             </a>
@@ -62,7 +60,7 @@ export function ListaConvocatorias({
               href={`https://wa.me/?text=${encodeURIComponent(mensajeCompartir(c))}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-hueso"
+              className={CLASE_BOTON_PANEL}
             >
               Compartir por WhatsApp
               <span className="sr-only">: {c.titulo} (se abre en otra pestaña)</span>
