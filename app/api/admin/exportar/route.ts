@@ -4,12 +4,15 @@ import { verificarSesion } from '@/lib/auth/admin';
 import { exportarAliados } from '@/lib/db/estadisticas.repo';
 import { interaccionesCrudas } from '@/lib/db/interacciones.repo';
 import { aCsv, BOM_UTF8 } from '@/lib/csv';
+import { obtenerDatosAbiertos } from '@/lib/db/datos.repo';
+import { fichasParaCalidad } from '@/lib/db/equipo.repo';
+import { planDeBrigada } from '@/lib/firmamento/territorio';
 
 /**
  * Descarga de los datos del módulo en CSV, para analizarlos fuera del panel.
  *
  * Verifica la sesión ACÁ y no confía en ningún layout: un route handler no
- * pasa por `app/admin/(panel)/layout.tsx`. Sin esta línea, la ruta sería una
+ * pasa por el layout del panel del equipo (`/firmamento/equipo`). Sin esta línea, la ruta sería una
  * exportación pública de toda la base — el mismo razonamiento por el que cada
  * server action revalida por su cuenta.
  */
@@ -17,7 +20,9 @@ import { aCsv, BOM_UTF8 } from '@/lib/csv';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const CONJUNTOS = ['aliados', 'interacciones'] as const;
+// brigada: comercios de OSM en orden de prioridad (Territorio). datos: lo mismo
+// que publica /api/datos (k = 5), en filas, para quien no abre JSON.
+const CONJUNTOS = ['aliados', 'interacciones', 'brigada', 'datos'] as const;
 type Conjunto = (typeof CONJUNTOS)[number];
 
 export async function GET(request: Request) {
@@ -33,31 +38,7 @@ export async function GET(request: Request) {
   }
 
   const conjunto = pedido as Conjunto;
-  const csv =
-    conjunto === 'aliados'
-      ? aCsv(await exportarAliados(), [
-          { clave: 'id', encabezado: 'id' },
-          { clave: 'nombre', encabezado: 'nombre' },
-          { clave: 'categoria', encabezado: 'categoria' },
-          { clave: 'barrio', encabezado: 'barrio' },
-          { clave: 'direccion', encabezado: 'direccion' },
-          { clave: 'latitud', encabezado: 'latitud' },
-          { clave: 'longitud', encabezado: 'longitud' },
-          { clave: 'estado', encabezado: 'estado' },
-          { clave: 'tiene_foto', encabezado: 'tiene_foto' },
-          { clave: 'creado_en', encabezado: 'creado_en' },
-          { clave: 'moderado_en', encabezado: 'moderado_en' },
-          { clave: 'horas_hasta_moderacion', encabezado: 'horas_hasta_moderacion' },
-          { clave: 'vistas', encabezado: 'vistas' },
-          { clave: 'contactos', encabezado: 'contactos' },
-        ])
-      : aCsv(await interaccionesCrudas(), [
-          { clave: 'dia', encabezado: 'dia' },
-          { clave: 'portafolio_id', encabezado: 'portafolio_id' },
-          { clave: 'negocio', encabezado: 'negocio' },
-          { clave: 'tipo', encabezado: 'tipo' },
-          { clave: 'conteo', encabezado: 'conteo' },
-        ]);
+  const csv = await generar(conjunto);
 
   // La fecha va en el nombre: dos exportaciones distintas no pueden terminar
   // como "aliados (1).csv" en la carpeta de Descargas sin saber cuál es cuál.
@@ -72,4 +53,62 @@ export async function GET(request: Request) {
       'cache-control': 'no-store',
     },
   });
+}
+
+async function generar(conjunto: Conjunto): Promise<string> {
+  if (conjunto === 'aliados') {
+    return aCsv(await exportarAliados(), [
+      { clave: 'id', encabezado: 'id' },
+      { clave: 'nombre', encabezado: 'nombre' },
+      { clave: 'categoria', encabezado: 'categoria' },
+      { clave: 'barrio', encabezado: 'barrio' },
+      { clave: 'direccion', encabezado: 'direccion' },
+      { clave: 'latitud', encabezado: 'latitud' },
+      { clave: 'longitud', encabezado: 'longitud' },
+      { clave: 'estado', encabezado: 'estado' },
+      { clave: 'tiene_foto', encabezado: 'tiene_foto' },
+      { clave: 'creado_en', encabezado: 'creado_en' },
+      { clave: 'moderado_en', encabezado: 'moderado_en' },
+      { clave: 'horas_hasta_moderacion', encabezado: 'horas_hasta_moderacion' },
+      { clave: 'vistas', encabezado: 'vistas' },
+      { clave: 'contactos', encabezado: 'contactos' },
+    ]);
+  }
+  if (conjunto === 'interacciones') {
+    return aCsv(await interaccionesCrudas(), [
+      { clave: 'dia', encabezado: 'dia' },
+      { clave: 'portafolio_id', encabezado: 'portafolio_id' },
+      { clave: 'negocio', encabezado: 'negocio' },
+      { clave: 'tipo', encabezado: 'tipo' },
+      { clave: 'conteo', encabezado: 'conteo' },
+    ]);
+  }
+  if (conjunto === 'brigada') {
+    const aprobados = (await fichasParaCalidad()).filter((f) => f.estado === 'aprobado');
+    return aCsv(planDeBrigada(aprobados), [
+      { clave: 'prioridad', encabezado: 'prioridad' },
+      { clave: 'constelacion', encabezado: 'constelacion' },
+      { clave: 'comercio', encabezado: 'comercio' },
+      { clave: 'categoria', encabezado: 'categoria' },
+      { clave: 'direccion', encabezado: 'direccion' },
+      { clave: 'barrio', encabezado: 'barrio' },
+      { clave: 'latitud', encabezado: 'latitud' },
+      { clave: 'longitud', encabezado: 'longitud' },
+      { clave: 'posible_aliado', encabezado: 'posible_aliado' },
+    ]);
+  }
+  const d = await obtenerDatosAbiertos();
+  const filas = [
+    { dimension: 'total', clave: 'negocios_aprobados', nombre: 'Negocios aprobados', negocios: d.negocios_aprobados },
+    ...d.por_categoria.map((c) => ({ dimension: 'categoria', clave: c.id, nombre: c.nombre, negocios: c.negocios })),
+    ...d.por_barrio.map((b) => ({ dimension: 'barrio', clave: b.nombre, nombre: b.nombre, negocios: b.negocios })),
+    ...d.por_formalidad.map((f) => ({ dimension: 'formalidad', clave: f.id, nombre: f.id, negocios: f.negocios })),
+    ...d.por_mayor_dolor.map((f) => ({ dimension: 'mayor_dolor', clave: f.id, nombre: f.id, negocios: f.negocios })),
+  ];
+  return aCsv(filas, [
+    { clave: 'dimension', encabezado: 'dimension' },
+    { clave: 'clave', encabezado: 'clave' },
+    { clave: 'nombre', encabezado: 'nombre' },
+    { clave: 'negocios', encabezado: 'negocios' },
+  ]);
 }

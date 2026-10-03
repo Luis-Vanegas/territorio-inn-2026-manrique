@@ -10,6 +10,7 @@ import {
   type EstadoPortafolio,
 } from '@/lib/db/portafolios.repo';
 import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
+import { estadoDeFicha } from '@/lib/db/equipo.repo';
 import { FichaModeracion } from './_components/FichaModeracion';
 
 export const metadata: Metadata = { title: 'Fichas de aliados' };
@@ -39,9 +40,10 @@ export default async function AliadosEquipoPage({
   await exigirEquipo();
 
   const { estado: solicitado, ficha } = await searchParams;
+  // Con `?ficha=` y sin estado, se abre en la pestaña donde está la ficha hoy.
   const estadoActivo: EstadoPortafolio = ESTADOS.some((e) => e.id === solicitado)
     ? (solicitado as EstadoPortafolio)
-    : 'pendiente';
+    : ((ficha ? await estadoDeFicha(ficha) : null) ?? 'pendiente');
 
   const [todos, conteos, definicionesCampos, categorias] = await Promise.all([
     listarParaModerar(estadoActivo),

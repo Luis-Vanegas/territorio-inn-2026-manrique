@@ -105,7 +105,7 @@ function Dato({ etiqueta, valor, cifra = false }: { etiqueta: string; valor: str
       <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
         {etiqueta}
       </dt>
-      <dd className={`${cifra ? 'font-cifra' : 'font-sans'} text-sm text-tinta/75`}>{valor}</dd>
+      <dd className={`${cifra ? 'font-cifra' : 'font-sans'} min-w-0 text-sm text-tinta/75 [overflow-wrap:anywhere]`}>{valor}</dd>
     </div>
   );
 }
@@ -216,7 +216,7 @@ export function FichaModeracion({
                   <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
                     Producto
                   </dt>
-                  <dd className="font-sans text-sm text-tinta/75">
+                  <dd className="min-w-0 font-sans text-sm text-tinta/75 [overflow-wrap:anywhere]">
                     {prod.nombre}
                     {prod.precio && <span className="text-tinta/60"> — {prod.precio}</span>}
                   </dd>

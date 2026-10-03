@@ -165,3 +165,11 @@ export async function matrizAlcance(): Promise<CeldaAlcance[]> {
   `;
   return rows as CeldaAlcance[];
 }
+
+/** Estado actual de una ficha, para abrirla en su pestaña desde un enlace. */
+export async function estadoDeFicha(id: string): Promise<EstadoPortafolio | null> {
+  // Un id que no es uuid haría fallar el cast en Postgres: no existe y listo.
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const rows = (await sql`select estado from portafolios where id = ${id}`) as { estado: EstadoPortafolio }[];
+  return rows[0]?.estado ?? null;
+}
