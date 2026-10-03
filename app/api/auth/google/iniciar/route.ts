@@ -6,10 +6,12 @@ import {
   generarEstado,
   generarVerificador,
   googleConfigurado,
+  COOKIE_DESTINO,
   COOKIE_ESTADO,
   COOKIE_VERIFICADOR,
 } from '@/lib/auth/google';
-import { opcionesCookie } from '@/lib/auth/cookies';
+import { opcionesBorrado, opcionesCookie } from '@/lib/auth/cookies';
+import { puertaDe, rutaInterna } from '@/lib/auth/destino';
 
 /**
  * Arranca el ingreso con Google: genera el `state`, lo guarda en una cookie de
@@ -25,8 +27,13 @@ import { opcionesCookie } from '@/lib/auth/cookies';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
+  // `?destino=/firmamento/negocio`: adónde volver. Solo rutas internas; lo demás
+  // se descarta (open redirect) y se vuelve al /mi-cuenta de siempre.
+  const destino = rutaInterna(new URL(request.url).searchParams.get('destino'));
+  const puerta = puertaDe(destino);
+
   if (!googleConfigurado()) {
-    return NextResponse.redirect(new URL('/entrar?error=sin_google', request.url));
+    return NextResponse.redirect(new URL(`${puerta}?error=sin_google`, request.url));
   }
 
   // El origen sale del request y no de una variable: el sitio corre en local,
@@ -42,7 +49,7 @@ export async function GET(request: Request) {
   const url = urlDeIngreso(origen, estado, verificador);
 
   if (!url) {
-    return NextResponse.redirect(new URL('/entrar?error=sin_google', request.url));
+    return NextResponse.redirect(new URL(`${puerta}?error=sin_google`, request.url));
   }
 
   const galletas = await cookies();
@@ -60,6 +67,11 @@ export async function GET(request: Request) {
   // JavaScript de la página ni viaja en ninguna URL. Es lo que hace que un
   // código de autorización robado no sirva para nada.
   galletas.set(COOKIE_VERIFICADOR, verificador, opciones);
+
+  // Sin destino se borra la cookie: un intento abandonado antes no puede
+  // mandar a esta persona a una puerta que no pidió.
+  if (destino) galletas.set(COOKIE_DESTINO, destino, opciones);
+  else galletas.set(COOKIE_DESTINO, '', opcionesBorrado());
 
   return NextResponse.redirect(url);
 }
