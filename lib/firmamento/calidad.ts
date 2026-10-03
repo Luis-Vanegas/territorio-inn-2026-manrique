@@ -81,7 +81,7 @@ export function alertasDeCalidad(fichas: readonly FichaCalidad[]): AlertaCalidad
         texto: f.categoria_otra
           ? `Categoría «Otros» con el texto «${f.categoria_otra}».`
           : 'Categoría «Otros», sin texto que diga qué es.',
-        textoParaSugerir: [f.nombre, f.categoria_otra].filter(Boolean).join(' '),
+        textoParaSugerir: [f.nombre, f.descripcion, f.categoria_otra].filter(Boolean).join(' '),
       });
     }
 

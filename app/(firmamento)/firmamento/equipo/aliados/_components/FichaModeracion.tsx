@@ -15,6 +15,7 @@ import { formatearCamposExtra } from '@/lib/camposExtra';
 import { FormularioEdicionPortafolio } from '@/components/FormularioEdicionPortafolio';
 import { BadgeEstado, type TonoBadge } from '@/components/admin/BadgeEstado';
 import { FotoAmpliable } from '@/components/FotoAmpliable';
+import { SugeridorModeracion } from '../../moderacion/_components/SugeridorModeracion';
 
 const ESTADO_INICIAL: EstadoModeracion = { estado: 'inicial' };
 
@@ -115,12 +116,15 @@ export function FichaModeracion({
   definicionesCampos,
   categorias,
   editarAlAbrir = false,
+  categoriaRevisada = false,
 }: {
   portafolio: PortafolioAdmin;
   definicionesCampos: DefinicionCampo[];
   categorias: Categoria[];
   /** Abre la edición de entrada (llegando desde «Cambios recientes» o una alerta). */
   editarAlAbrir?: boolean;
+  /** Ya hay una decisión del equipo sobre la categoría (esconde «Usar» y «Mantener»). */
+  categoriaRevisada?: boolean;
 }) {
   const [estado, accion] = useActionState(moderarPortafolio, ESTADO_INICIAL);
   const [mostrarRechazo, setMostrarRechazo] = useState(false);
@@ -255,6 +259,16 @@ export function FichaModeracion({
           )}
         </div>
       </div>
+
+      {portafolio.estado === 'pendiente' && (
+        <SugeridorModeracion
+          portafolioId={portafolio.id}
+          texto={[portafolio.nombre, portafolio.descripcion, portafolio.categoria_otra].filter(Boolean).join(' ')}
+          actual={{ id: portafolio.categoria_id, nombre: portafolio.categoria_nombre }}
+          categorias={categorias}
+          revisada={categoriaRevisada}
+        />
+      )}
 
       {portafolio.estado !== 'archivado' && (
         <form action={accion} className="mt-6">

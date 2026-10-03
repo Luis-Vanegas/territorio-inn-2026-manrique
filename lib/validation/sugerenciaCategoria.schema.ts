@@ -43,3 +43,29 @@ export function respuestaASugerencia(
   if (typeof elegida !== 'string' || elegida === '') return null;
   return elegida === inferida;
 }
+
+const idCategoria = z.string().regex(/^[a-z_]{1,60}$/, 'Categoría inválida');
+
+/**
+ * Decisión del equipo sobre la categoría que propone el sugeridor en la
+ * moderación (`decidirCategoria`). Igual que en el registro: ids y confianza,
+ * NUNCA el texto con el que se infirió. `categoria_actual` es la que vio la
+ * pantalla: si alguien la cambió mientras tanto, la decisión no se aplica.
+ */
+export const decisionCategoriaSchema = z
+  .object({
+    portafolio_id: z.uuid('Identificador inválido'),
+    decision: z.enum(['usar', 'mantener', 'corregir']),
+    categoria_actual: idCategoria,
+    /** La que queda; no aplica a «mantener». */
+    categoria_elegida: idCategoria.optional(),
+    /** La primera del modelo, la misma que guarda el registro. */
+    categoria_inferida: idCategoria,
+    confianza: z.number().min(0).max(1),
+  })
+  .refine((d) => d.decision === 'mantener' || d.categoria_elegida !== undefined, {
+    message: 'Falta la categoría elegida',
+    path: ['categoria_elegida'],
+  });
+
+export type DecisionCategoria = z.infer<typeof decisionCategoriaSchema>;

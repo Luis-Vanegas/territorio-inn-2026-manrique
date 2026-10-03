@@ -17,7 +17,7 @@ Cada tabla pertenece a UN dominio. Si una tabla nueva no cabe en ninguno, se dis
 | **B. Catálogos** | `categorias`, `barrios`*, `definiciones_campo` | Equipo |
 | **C. Negocio** (núcleo) | `portafolios` + `aliados_investigacion`, `aliados_consentimiento`, `interacciones_portafolio`, `clientes_negocio` | Dueño, equipo, sistema |
 | **D. Oportunidades** | `convocatorias`, `convocatoria_categorias`* | Vigía, entidad (propone), equipo (decide) |
-| **E. Modelos y datos** | `sugerencias_categoria` | Sistema (registro) |
+| **E. Modelos y datos** | `sugerencias_categoria` | Sistema (registro), equipo (moderación, 034) |
 | **F. Bitácora** | `bitacora`* | Todas las acciones que cambian algo |
 | **G. Operación** | `intentos_registro`, `visitas_sitio`, `peticiones`, `candidatos`, `_migraciones` | Sistema |
 
@@ -197,3 +197,40 @@ El control sigue en el `where` de cada repo (sin RLS, AGENTS.md).
 - `registrarPortafolio`: pasar `portafolio_id` a la sugerencia.
 - La 033 y este código van **en el mismo cambio**: la migración borra columnas que el código actual lee.
 - Se prueba en una rama de Neon antes de producción (la `dev` está archivada).
+
+## 8. Migración 034: el sugeridor en la moderación
+
+El equipo decide la categoría que propone el sugeridor en cada registro pendiente y en las fichas en
+«Otros» (`decidirCategoria` → `decidirCategoriaFicha`). Cada decisión es un ejemplo para reentrenar y va
+a la misma tabla que las del registro. Solo aditiva:
+
+```sql
+-- origen 'moderacion' (se recrea el CHECK, mismo patrón que la 032 con intentos_registro)
+alter table sugerencias_categoria drop constraint sugerencias_categoria_origen_check;
+alter table sugerencias_categoria add constraint sugerencias_categoria_origen_check
+  check (origen in ('registro', 'busqueda', 'moderacion'));
+-- qué hizo el equipo: `aceptada` sola no separa «mantener» de «corregir» (las dos son false)
+alter table sugerencias_categoria add column decision_equipo text
+  check (decision_equipo in ('usada', 'corregida', 'mantenida'));
+alter table sugerencias_categoria add constraint chk_sugerencia_decision_equipo
+  check ((origen = 'moderacion') = (decision_equipo is not null));
+```
+
+Una fila de moderación: `portafolio_id`, `categoria_inferida` (la primera del modelo), `confianza`,
+`aceptada` (la categoría final es la inferida), `decision_equipo`, fecha truncada al día. **Nunca texto.**
+El cambio de categoría y la fila se escriben en una sola sentencia (CTE): o las dos o ninguna.
+
+**Dataset de reentrenamiento** (lo arma el pipeline, nunca se publica):
+
+```sql
+select p.nombre as texto, p.categoria_id as etiqueta
+from sugerencias_categoria s
+join portafolios p on p.id = s.portafolio_id
+where p.estado in ('pendiente', 'aprobado')
+group by p.id, p.nombre, p.categoria_id;   -- un ejemplo por ficha, con su categoría de HOY
+```
+
+El texto sale de la ficha (su nombre) y la etiqueta es la categoría final, después de todas las
+correcciones; por eso no hace falta guardar ni el texto ni la etiqueta en `sugerencias_categoria`. Las
+etiquetas que el modelo no conoce (`otros`, y hoy `modisteria`, `lavanderia`…: el modelo tiene 12
+clases) se descartan o esperan a juntar ejemplos suficientes para ser una clase nueva.
