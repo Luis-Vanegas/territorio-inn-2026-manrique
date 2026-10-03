@@ -116,3 +116,25 @@ Ninguna se resolvió a favor de la asesoría; el documento usa la cifra del repo
 - **Presupuesto:** $108.184.164 del equipo frente a $126,5 millones de referencia de la asesoría (punto 8).
 - **Numeración de la asesoría:** la v2 trae las preguntas guía en su sección 5 y las cifras en la 6 (la sección 4 es la auditoría del resultado previo); algunas indicaciones internas las citan como 4 y 6.
 - **`TASKS.md` desactualizado:** conserva ítems abiertos ya resueltos (por ejemplo, «Documento: cifras nuevas con fuente», y la Fase 1 con 192 comercios). No se tocó (fuera de `docs/concurso/`).
+
+## Constelaciones vs centralidades del POT (3-oct)
+
+Fuente: «Centralidades urbanas», mapa protocolizado del POT (Acuerdo 48 de 2014), servicio
+`medellin.gov.co/servidormapas/rest/services/ordenamiento_ter/VM_20_Subs_Centralidades/MapServer/1`,
+descargado el 2026-10-03. Salida: `public/firmamento/centralidades.json` (`pipeline/05_centralidades.py`).
+**Licencia de los datos de la Alcaldía: `[PENDIENTE]`** (el servicio solo declara el copyright);
+hasta confirmarla, los polígonos no se publican en el sitio, solo el hallazgo agregado.
+
+- Tocan la comuna 4 centralidades: Gaitán, Santa Inés y San Blas (barriales, 100 % dentro) y
+  Campo Valdés - Manrique (zonal, 6,9 % de su área dentro). **No existe una centralidad
+  «Manrique Central»** en la capa.
+- Ocupan el 4,4 % del área de la comuna y contienen 13 de los 320 comercios de OSM (4,1 %).
+- De las 20 constelaciones, 1 cae dentro (C17, Gaitán), 1 en el borde (C18, Campo Valdés, a 4,7 m)
+  y **18 fuera**; la más cercana de esas 18 está a 329 m, así que el resultado no depende del radio.
+  201 comercios agrupados están fuera de toda centralidad.
+
+**Lectura:** el comercio agrupado de Manrique se concentra donde la planeación de 2014 no marca
+nodos (carreras 28 a 31, El Raizal, María Cano, Versalles). Es un argumento a favor de medir desde el
+territorio. Límites: OSM no es un censo, el POT es de 2014, y de Campo Valdés solo cuenta lo que cae
+dentro de la comuna.
+

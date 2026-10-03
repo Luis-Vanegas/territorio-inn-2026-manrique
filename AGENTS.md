@@ -360,6 +360,11 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   así que quien quita los headers se saltaría el cupo. `/api/ingesta/convocatorias`
   suma un contador en memoria compartido para esas peticiones
   (`lib/limiteMemoria.ts`), y si `verificarLimite` falla responde 503, no 500.
+- **Centralidades del POT** (`public/firmamento/centralidades.json`, `pipeline/05_centralidades.py`):
+  las centralidades urbanas del Acuerdo 48 de 2014 cruzadas con las constelaciones. Se regenera con
+  `python pipeline/05_centralidades.py --descargar` (el servicio de la Alcaldía responde vacío sin un
+  User-Agent de navegador) y la valida `pipeline/verificar_salidas.py`. La licencia de los
+  polígonos está pendiente: no se dibujan en páginas públicas hasta confirmarla.
 - **Barrios oficiales** (`lib/geo/barrios-manrique.json`, `lib/geo/barrioOficial.ts`):
   los 15 polígonos de barrio de la Comuna 3, recortados por `scripts/extraer-barrios.mjs`
   del GeoJSON de barrios de Medellín. Fuente: Alcaldía de Medellín (archivo entregado
