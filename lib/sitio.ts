@@ -29,3 +29,16 @@ export function urlSitio(): string {
 
   return 'http://localhost:3000';
 }
+
+/**
+ * El origen de ESTA petición (`https://host`), para enlaces de acceso que se
+ * comparten (invitaciones, «Enviar acceso»). No `urlSitio()`: en preproducción
+ * esa apunta al dominio de producción, y un enlace con un token de la base de
+ * preproducción no existe allá. Mismo cálculo que el inicio de Google.
+ */
+export function origenDe(cabeceras: Pick<Headers, 'get'>): string {
+  const host = cabeceras.get('x-forwarded-host') ?? cabeceras.get('host');
+  if (!host) return urlSitio();
+  const protocolo = cabeceras.get('x-forwarded-proto') ?? 'http';
+  return `${protocolo}://${host}`;
+}

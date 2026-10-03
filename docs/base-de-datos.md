@@ -13,7 +13,7 @@ Cada tabla pertenece a UN dominio. Si una tabla nueva no cabe en ninguno, se dis
 
 | Dominio | Tablas | Quién escribe |
 |---|---|---|
-| **A. Identidad y acceso** | `usuarios`, `admins` (equipo), `entidades`*, `miembros_entidad`* | Google OAuth, equipo |
+| **A. Identidad y acceso** | `usuarios`, `admins` (equipo), `entidades`*, `miembros_entidad`*, `invitaciones` (035) | Google OAuth, equipo |
 | **B. Catálogos** | `categorias`, `barrios`*, `definiciones_campo` | Equipo |
 | **C. Negocio** (núcleo) | `portafolios` + `aliados_investigacion`, `aliados_consentimiento`, `interacciones_portafolio`, `clientes_negocio` | Dueño, equipo, sistema |
 | **D. Oportunidades** | `convocatorias`, `convocatoria_categorias`* | Vigía, entidad (propone), equipo (decide) |
@@ -234,3 +234,52 @@ El texto sale de la ficha (su nombre) y la etiqueta es la categoría final, desp
 correcciones; por eso no hace falta guardar ni el texto ni la etiqueta en `sugerencias_categoria`. Las
 etiquetas que el modelo no conoce (`otros`, y hoy `modisteria`, `lavanderia`…: el modelo tiene 12
 clases) se descartan o esperan a juntar ejemplos suficientes para ser una clase nueva.
+
+## 9. Migración 035: accesos (invitaciones y moderadores por base)
+
+Dominio A (identidad y acceso). Solo aditiva; razones y flujo en `docs/seguridad.md` › Accesos.
+
+```sql
+alter table admins
+  add column google_sub text unique,                         -- lo llena una invitación de moderador
+  add column desactivado_en timestamptz,                     -- «Quitar acceso» del panel
+  add column desactivado_por text references admins(email) on update cascade on delete set null;
+
+create table invitaciones (
+  id          uuid primary key default gen_random_uuid(),
+  token_hash  text not null unique check (token_hash ~ '^[0-9a-f]{64}$'),  -- sha256; el token nunca
+  tipo        text not null check (tipo in ('entidad', 'moderador')),
+  entidad_id  uuid references entidades(id) on delete cascade,
+  nota        text check (nota is null or char_length(nota) between 1 and 80),  -- «para quién»
+  creada_por  text not null references admins(email) on update cascade,
+  creada_en   timestamptz not null default now(),
+  expira_en   timestamptz not null,
+  usada_por   uuid references usuarios(id) on delete set null,
+  usada_en    timestamptz,
+  revocada_en timestamptz,
+  constraint chk_invitacion_entidad check ((tipo = 'entidad') = (entidad_id is not null)),
+  constraint chk_invitacion_vence check (expira_en > creada_en and expira_en <= creada_en + interval '30 days'),
+  constraint chk_invitacion_usada check (usada_por is null or usada_en is not null),
+  constraint chk_invitacion_usada_o_revocada check (usada_en is null or revocada_en is null)
+);
+
+-- origen 'invitacion' en intentos_registro (se recrea el CHECK, como en la 032 y la 034)
+```
+
+```mermaid
+erDiagram
+  admins ||--o{ invitaciones : "crea"
+  entidades ||--o{ invitaciones : "invita a"
+  usuarios ||--o{ invitaciones : "usa"
+  admins ||--o{ admins : "desactiva"
+```
+
+- **Quién escribe**: el equipo crea y revoca (`gestionarInvitaciones.ts`); el retorno de Google
+  consume (`consumirInvitacion`, una sentencia con CTE). Nadie más.
+- **Quién lee**: el equipo (pendientes en Entidades y Moderadores) y la página pública del enlace,
+  que solo ve tipo, nombre de la entidad y si sigue vigente (por hash).
+- **Sin backfill**: las filas viejas de `ADMIN_GOOGLE_SUBS` (`activo = false`, `sin-acceso`) se
+  activan en su siguiente ingreso con Google (`accesoModeradorGoogle`). Una migración no puede
+  distinguirlas de la fila del seed de demostración, que tiene la misma forma.
+- ponytail: las invitaciones vencidas no se purgan; son pocas filas sin datos personales (el token
+  es un hash). Si crecen, una línea en `/api/cron/purgar`.

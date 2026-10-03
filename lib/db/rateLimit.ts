@@ -22,7 +22,8 @@ export type OrigenIntento =
   | 'agente'
   | 'geocodificar'
   | 'datos'
-  | 'ingesta';
+  | 'ingesta'
+  | 'invitacion';
 
 /**
  * Cupos por origen. Son distintos a propósito:
@@ -53,6 +54,11 @@ export type OrigenIntento =
  * - `ingesta`: secretos EQUIVOCADOS contra `/api/ingesta/convocatorias` (solo los
  *   fallidos gastan cupo, como `login`). Frena el barrido de secretos sin afectar
  *   al vigía legítimo, que manda un pedido por día.
+ * - `invitacion` (migración 035): enlaces de invitación que NO sirven (inexistente,
+ *   vencido, usado, revocado), al abrir /firmamento/invitacion/<token> y al
+ *   consumirlo en el retorno de Google. Solo los fallidos gastan cupo: quien abre
+ *   su invitación buena varias veces no se bloquea. El token tiene 256 bits, así
+ *   que esto no protege el secreto: corta a quien martille la base con basura.
  */
 const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> = {
   registro: { maximo: 3, ventanaMinutos: 10 },
@@ -62,6 +68,7 @@ const CUPOS: Record<OrigenIntento, { maximo: number; ventanaMinutos: number }> =
   geocodificar: { maximo: 8, ventanaMinutos: 5 },
   datos: { maximo: 30, ventanaMinutos: 10 },
   ingesta: { maximo: 8, ventanaMinutos: 15 },
+  invitacion: { maximo: 10, ventanaMinutos: 15 },
 };
 
 export type ResultadoLimite =

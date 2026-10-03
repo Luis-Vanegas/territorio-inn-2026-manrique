@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 
 import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { exigirEquipo } from '@/lib/auth/firmamento';
+import { FormularioInvitacion, InvitacionesPendientes } from '@/components/firmamento/Invitaciones';
 import { listarEntidades, listarMiembros } from '@/lib/db/entidades.repo';
+import { listarInvitacionesPendientes } from '@/lib/db/invitaciones.repo';
 import { BotonQuitarMiembro, FormularioMiembro, FormularioNuevaEntidad } from './_components/FormulariosEntidad';
 
 export const metadata: Metadata = { title: 'Entidades' };
@@ -22,7 +24,10 @@ export default async function EntidadesPage() {
   const entidades = await listarEntidades();
   // ponytail: una consulta de miembros por entidad; son decenas, no miles.
   // Si crecen, una sola consulta agrupada en entidades.repo.ts.
-  const miembros = await Promise.all(entidades.map((e) => listarMiembros(e.id)));
+  const [miembros, invitaciones] = await Promise.all([
+    Promise.all(entidades.map((e) => listarMiembros(e.id))),
+    listarInvitacionesPendientes('entidad'),
+  ]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -83,6 +88,18 @@ export default async function EntidadesPage() {
             </ul>
           )}
           <FormularioMiembro entidadId={e.id} entidadNombre={e.nombre} />
+          {e.activa && (
+            <div className="mt-6 border-t border-tinta/12 pt-4">
+              <h3 className="font-sans text-sm font-medium text-tinta">Invitar a alguien de esta entidad</h3>
+              <p className="mt-1 font-sans text-sm text-tinta/70">
+                Para quien todavía no ha entrado a Constelaciones: le llega un enlace y entra con Google.
+              </p>
+              <div className="mt-3">
+                <FormularioInvitacion tipo="entidad" entidadId={e.id} destino={`el panel de ${e.nombre}`} />
+              </div>
+              <InvitacionesPendientes invitaciones={invitaciones.filter((inv) => inv.entidad_id === e.id)} />
+            </div>
+          )}
         </Tarjeta>
       ))}
     </div>

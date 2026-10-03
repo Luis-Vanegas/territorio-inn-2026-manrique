@@ -55,6 +55,18 @@ export const COOKIE_VERIFICADOR = CON_PREFIJO ? '__Host-oauth_verif' : 'oauth_ve
  * Siempre pasa por `rutaInterna` (lib/auth/destino.ts) al guardarse y al leerse.
  */
 export const COOKIE_DESTINO = CON_PREFIJO ? '__Host-oauth_destino' : 'oauth_destino';
+/**
+ * Lo que hay que hacer al volver, además de abrir la sesión. Google devuelve a la
+ * URI registrada SOLO con `code` y `state`: cualquier `?vincular=` que se le
+ * pegue al retorno se pierde. Por eso viajan en cookies de un solo uso, igual
+ * que el destino:
+ *   - vincular: `token_publico` del negocio (/aliados/estado/<token>), para
+ *     atarlo a la cuenta con `vincularNegocio`.
+ *   - invitación: el token de /firmamento/invitacion/<token>, que se consume al
+ *     volver (lib/db/invitaciones.repo.ts).
+ */
+export const COOKIE_VINCULAR = CON_PREFIJO ? '__Host-oauth_vincular' : 'oauth_vincular';
+export const COOKIE_INVITACION = CON_PREFIJO ? '__Host-oauth_invitacion' : 'oauth_invitacion';
 
 export interface PerfilGoogle {
   /** Identificador estable de Google. La llave real — el correo puede cambiar. */

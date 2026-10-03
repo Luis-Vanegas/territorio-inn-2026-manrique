@@ -7,13 +7,16 @@ import {
   perfilDesdeCodigo,
   COOKIE_DESTINO,
   COOKIE_ESTADO,
+  COOKIE_INVITACION,
   COOKIE_VERIFICADOR,
+  COOKIE_VINCULAR,
 } from '@/lib/auth/google';
 import { ingresarConGoogle, vincularNegocio } from '@/lib/db/usuarios.repo';
-import { iniciarSesionAdmin, registrarModeradorGoogle } from '@/lib/auth/admin';
+import { consumirInvitacion } from '@/lib/db/invitaciones.repo';
+import { accesoModeradorGoogle, iniciarSesionAdmin } from '@/lib/auth/admin';
 import { opcionesBorrado } from '@/lib/auth/cookies';
 import { puertaDe, rutaInterna } from '@/lib/auth/destino';
-import { esModeradorGoogle } from '@/lib/auth/moderadoresGoogle';
+import { tokenInvitacionValido } from '@/lib/auth/invitacion';
 import { iniciarSesion } from '@/lib/auth/usuario';
 import { verificarLimite, registrarIntento, ipDesdeHeaders } from '@/lib/db/rateLimit';
 
@@ -46,6 +49,14 @@ export async function GET(request: Request) {
   const destino = rutaInterna(galletas.get(COOKIE_DESTINO)?.value);
   const puerta = puertaDe(destino);
   galletas.set(COOKIE_DESTINO, '', opcionesBorrado());
+
+  // Negocio a vincular e invitación (ver lib/auth/google.ts): de un solo uso y
+  // revalidados igual que el destino, porque la cookie llega como entrada.
+  const vincularCrudo = galletas.get(COOKIE_VINCULAR)?.value;
+  const vincular = vincularCrudo && FORMATO_UUID.test(vincularCrudo) ? vincularCrudo : null;
+  const invitacion = tokenInvitacionValido(galletas.get(COOKIE_INVITACION)?.value);
+  galletas.set(COOKIE_VINCULAR, '', opcionesBorrado());
+  galletas.set(COOKIE_INVITACION, '', opcionesBorrado());
 
   // La persona apretó "cancelar" en la pantalla de Google. No es un error que
   // valga la pena reportarle: se la devuelve a su puerta como si nada.
@@ -115,24 +126,39 @@ export async function GET(request: Request) {
       foto: usuario.foto_url,
     });
 
+    const cuenta = { sub: perfil.sub, correo: perfil.correo, nombre: usuario.nombre };
+
+    // Invitación (migración 035): se consume ahora, ya con la cuenta creada, en
+    // una sola sentencia. Su resultado manda el destino: a eso vino la persona.
+    let destinoFinal = destino ?? '/firmamento/negocio';
+    if (invitacion) {
+      const limiteInv = await verificarLimite(ip, 'invitacion');
+      const consumo = limiteInv.permitido
+        ? await consumirInvitacion(invitacion, { usuarioId: usuario.id, ...cuenta })
+        : null;
+      if (!consumo) {
+        // Solo los fallidos gastan cupo, como el login con contraseña.
+        if (limiteInv.permitido) await registrarIntento(ip, 'invitacion');
+        destinoFinal = '/firmamento/entrar?error=invitacion';
+      } else {
+        destinoFinal = consumo.tipo === 'moderador' ? '/firmamento/equipo' : '/firmamento/entidad';
+      }
+    }
+
     // Moderador por Google: además de la sesión de vecino, se emite la cookie
-    // de moderación — otra cookie, no un permiso dentro de esta. La lista de
-    // `sub` permitidos vive en el entorno (ver lib/auth/moderadoresGoogle.ts).
-    if (esModeradorGoogle(perfil.sub)) {
-      await registrarModeradorGoogle(perfil.correo, usuario.nombre);
-      await iniciarSesionAdmin(perfil.correo);
-    }
+    // de moderación — otra cookie, no un permiso dentro de esta. Lo decide
+    // `admins.google_sub` (invitación) o ADMIN_GOOGLE_SUBS (respaldo); ver
+    // `accesoModeradorGoogle` en lib/auth/admin.ts. Va DESPUÉS de la invitación:
+    // la de moderador es la que crea la fila que esto lee.
+    const emailModerador = await accesoModeradorGoogle(cuenta);
+    if (emailModerador) await iniciarSesionAdmin(emailModerador);
 
-    // Quien venía de su enlace de negocio y entra con Google queda con ese
-    // negocio vinculado a su cuenta: es el puente entre las dos puertas, y
-    // convierte un registro asistido en una cuenta propia sin volver a cargar
-    // nada. `vincularNegocio` ignora los que ya tienen dueño.
-    const token = url.searchParams.get('vincular');
-    if (token && FORMATO_UUID.test(token)) {
-      await vincularNegocio(token, usuario.id);
-    }
+    // Quien venía de su enlace de negocio (/aliados/estado/<token>) y entra con
+    // Google queda con ese negocio vinculado a su cuenta: es el puente entre las
+    // dos puertas. `vincularNegocio` ignora los que ya tienen dueño.
+    if (vincular) await vincularNegocio(vincular, usuario.id);
 
-    return NextResponse.redirect(new URL(destino ?? '/firmamento/negocio', request.url));
+    return NextResponse.redirect(new URL(destinoFinal, request.url));
   } catch (error) {
     console.error('[google] fallo al crear la sesión:', error);
     return alError(request, 'sesion', puerta);

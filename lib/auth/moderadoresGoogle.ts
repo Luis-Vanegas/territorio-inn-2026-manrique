@@ -12,16 +12,18 @@
  * correo puede cambiar de manos, el `sub` es inmutable. Y acá el premio es el
  * panel de moderación, así que la regla importa el doble.
  *
- * ── Por qué una variable de entorno y no una columna ──
+ * ── La variable es el RESPALDO, no la única vía (migración 035) ──
  *
  * `ADMIN_GOOGLE_SUBS` (lista separada por comas) solo la edita quien tiene
- * acceso al despliegue. Una columna `es_moderador` en `usuarios` la podría
- * tocar cualquier bug de SQL o de Server Action que escriba en esa tabla, y
- * el resultado sería un vecino con el panel. Con la variable no hay camino
- * desde la aplicación hasta ese permiso.
+ * acceso al despliegue: sirve para el primer moderador y para recuperar el
+ * panel si la base queda sin ninguno. La vía de todos los días es
+ * `admins.google_sub`, que llena una invitación de moderador
+ * (`accesoModeradorGoogle` en admin.ts consulta las dos). No es una columna
+ * de `usuarios` a propósito: un bug que escriba en la tabla de vecinos no
+ * puede dar el panel; el permiso vive en `admins`, que solo tocan el consumo
+ * de una invitación (en una sentencia) y el panel del equipo.
  *
- * Sin la variable, nadie entra por acá: el comportamiento por defecto es no
- * tener moderadores por Google.
+ * Sin la variable, nadie entra por esta vía.
  */
 export function esModeradorGoogle(
   sub: string,

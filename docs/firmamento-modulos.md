@@ -73,7 +73,7 @@ Diseño completo, hallazgos de producción y SQL en [`docs/base-de-datos.md`](ba
 | Rol | Lee | Escribe |
 |---|---|---|
 | Negocio | Su ficha, sus interacciones, «Para ti», su constelación (OSM) | Su ficha (directo), sus clientes |
-| Equipo | Todo | Moderación, correcciones, convocatorias, entidades y miembros |
+| Equipo | Todo | Moderación, correcciones, convocatorias, entidades y miembros, dueño de cada negocio, invitaciones y moderadores (035) |
 | Entidad | **Solo agregados k = 5** (`obtenerDatosAbiertos`) y convocatorias aprobadas | Proponer una convocatoria → entra `pendiente`, `origen = 'entidad'` |
 
 Una entidad nunca lee `portafolios` fila por fila: lo mismo que `/firmamento` público, más sus
