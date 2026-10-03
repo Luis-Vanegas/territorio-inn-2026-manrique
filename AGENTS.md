@@ -86,12 +86,13 @@ agregar código nuevo — seguí el patrón existente.
 ```
 app/
   (site)/           route group del sitio público (aliados, servicios, contacto, legal)
-  admin/(panel)/    route group del panel de administración
   (firmamento)/firmamento/   Firmamento con sesión: `entrar` (puerta de 3 pestañas) y los
                     paneles `negocio/`, `equipo/`, `entidad/`, cada uno con su `layout.tsx`
                     (guarda + `PanelShell`). Convive con `(site)/firmamento/page.tsx` (el
                     tablero público): los route groups no entran en la URL y ninguno define
-                    `page.tsx` en `/firmamento`; no crees uno en este grupo.
+                    `page.tsx` en `/firmamento`; no crees uno en este grupo. El panel de
+                    moderación vive en `equipo/` (ya no hay `app/admin`: `/admin/*`
+                    redirige desde `next.config.mjs`).
   api/              route handlers (cron, exportar, interacciones)
   <ruta>/_components/  componentes usados solo por esa ruta
 components/         componentes compartidos entre rutas
@@ -181,7 +182,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
   vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
   componente: el dueño y el panel leen `COLUMNAS_PROPIAS` (todo). El
-  moderador lo prende en `/admin/campos` (interruptor por fila →
+  moderador lo prende en `/firmamento/equipo/campos` (interruptor por fila →
   `cambiarPublicoCampoAction`, con Zod e `invalidarVitrina()`); `publico` es
   una decisión de privacidad y por eso NO viaja en `editarCampo`.
 - **Endpoints de máquina** (`/api/cron/purgar`, `/api/ingesta/convocatorias`):
@@ -213,7 +214,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   propio archivo (`lib/ventas.ts`), con sus láminas en `public/<modulo>/laminas/`.
   `IndiceMarca`, `GuiaMarca` y `PuertaRegistro` (`components/marca/`) reciben la
   colección por prop. Un módulo nuevo = archivo de datos + `app/(site)/<modulo>/`
-  y `app/admin/(panel)/<modulo>/` (copiar los de ventas) + entrada en
+  y `app/(firmamento)/firmamento/equipo/<modulo>/` (copiar los de ventas, con `incrustado`) + entrada en
   `lib/content.ts`, `app/sitemap.ts`, el menú del panel y la lista de
   `scripts/verificar-marca.mjs`. Ojo: el archivo de datos importa de `./marca`
   SOLO tipos (`import type`); ver «Imports con extensión `.ts`» más abajo.
@@ -248,6 +249,20 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `lib/auth/destino.ts` al guardar y al leer; la comprueba `scripts/verificar-destino.mjs`).
   El login del equipo reutiliza `iniciarSesion` de `sesionAdmin.ts` con un campo
   oculto `destino`.
+- **Panel del equipo** (`/firmamento/equipo`, antes `/admin`): las lecturas propias del
+  panel (insignias, insumo de alertas y territorio, cambios de los dueños, aprendizaje del
+  sugeridor, alcance de una convocatoria) van en `lib/db/equipo.repo.ts`. Las alertas de
+  calidad NO se guardan: `alertasDeCalidad` (`lib/firmamento/calidad.ts`) las calcula al
+  vuelo con `dentroDeManrique`/`metrosAlBorde`, `barrio_oficial ?? barrioDe` y la categoría
+  `otros` (la propuesta del sugeridor corre en el navegador). `?ficha=<id>` en
+  `equipo/aliados` abre una ficha en su pestaña con la edición abierta: es el destino de
+  «Cambios recientes» y de las alertas. Los CSV del panel (aliados, interacciones, plan de
+  brigada, datos abiertos) salen de `/api/admin/exportar?conjunto=` (guarda propia).
+  Entidades y miembros: `lib/actions/gestionarEntidades.ts`; un miembro se agrega por el
+  correo de una cuenta que ya entró con Google (no se crean usuarios). Las actions que
+  cambian algo del panel revalidan `revalidatePath('/firmamento/equipo', 'layout')` para
+  que las insignias se actualicen. Ítems del menú con `grupo` van bajo su encabezado en el
+  lateral y detrás de «Más» en la barra del celular.
 - **Panel del negocio** (`/firmamento/negocio/{,ficha,para-ti,constelacion,clientes}`, antes
   `/mi-cuenta`, que redirige en `next.config.mjs`): cada page llama `exigirNegocio()` (devuelve
   `usuarioId`) y lee con `negocioActivo(usuarioId)` (`lib/firmamento/negocio.ts`): el negocio activo
@@ -276,7 +291,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   saben quién es el usuario por su sesión. El control de acceso va en el
   `where` del repo, no en políticas de fila.
 - **Convocatorias** (`lib/db/convocatorias.repo.ts`, migraciones 032 y 033): el
-  vigía las ingesta `pendiente`; el moderador decide en `/admin/convocatorias`
+  vigía las ingesta `pendiente`; el moderador decide en `/firmamento/equipo/convocatorias`
   (`moderarConvocatoria`: aprobar, descartar/retirar, marcar vencida, con quién y
   cuándo). Las transiciones válidas viven en el `where` de `decidirConvocatoria`
   (una descartada no se reabre; una ya cerrada no se aprueba), no en la
@@ -351,7 +366,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   importan en el servidor: `app/(site)/aliados/page.tsx` (conteos del filtro de
   categorías con `unirCategorias`: aliados + comercios de OSM, así se puede filtrar
   por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
-  (cifras de la banda de la portada) y `app/(site)/firmamento/datos.ts`.
+  (cifras de la banda de la portada), `app/(site)/firmamento/datos.ts` y
+  `lib/firmamento/territorio.ts` (panel del equipo; `server-only`).
 - **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
 - **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
   datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`
