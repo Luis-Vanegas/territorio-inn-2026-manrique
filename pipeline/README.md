@@ -23,6 +23,7 @@ python 01_osm_overpass.py --solo-comuna3   # solo la consulta de la comuna (con 
 python 02_constelaciones.py   # -> public/firmamento/constelaciones.json
 python 03_clasificador.py     # -> public/modelo_categoria.json + reporte_modelo.md
 # luego, desde la raíz: node scripts/exportar-evaluacion-modelo.mjs  -> public/firmamento/modelo_evaluacion.json (F1 por categoría y matriz que dibuja el sitio)
+python 05_centralidades.py    # -> public/firmamento/centralidades.json (cruce con el POT; --descargar consulta el servicio de la Alcaldía)
 python verificar_salidas.py   # revisa los JSON públicos (sale con código != 0 si algo falla)
 ```
 
@@ -108,6 +109,22 @@ grafía de `BARRIOS_COMUNA_3`. **Fuente: Alcaldía de Medellín** (archivo entre
 La unión de los 15 cubre el 99,9 % del polígono de la comuna (el 0,1 % restante son ~5000 m² de sliver en el borde).
 El paso 2 lo usa para el barrio de cada comercio y para nombrar las constelaciones sin calle; la app calcula lo
 mismo con `barrioDe` (`lib/geo/barrioOficial.ts`).
+
+## Centralidades del POT (paso 5)
+
+`05_centralidades.py` cruza las constelaciones con el subsistema de centralidades del POT de Medellín
+(Acuerdo 48 de 2014). **Fuente:** servicio ArcGIS REST de la Alcaldía de Medellín,
+`https://www.medellin.gov.co/servidormapas/rest/services/ordenamiento_ter/VM_20_Subs_Centralidades/MapServer/1`
+(«Centralidades urbanas», 78 polígonos en la ciudad; la capa 9 trae las mismas). Se consulta con
+`f=geojson`, `outSR=4326` y la caja de la comuna; el crudo queda en `pipeline/datos/centralidades_pot_<fecha>.geojson`
+(corrida de referencia: 2026-10-03, 7 polígonos en la caja). Campos: `nombre`, `jerarquia` (Metropolitana,
+Ciudad, Zonal, Barrial), `orden`, `caracter`, `estado`, `accion`, `fecha_adopcion`, `fecha_actualizacion`.
+El servidor responde vacío si el pedido no lleva un User-Agent de navegador.
+**Licencia: no la declara el servicio** (solo `copyrightText` de Planeación); no se afirmó ninguna. Pendiente de
+confirmar los términos de datos abiertos de la Alcaldía antes de redistribuir el polígono.
+Solo cuatro tocan la comuna: Gaitán, Santa Inés y San Blas (barriales, adentro) y «Campo Valdés - Manrique»
+(zonal, 6,9 % de su área adentro, el resto en la comuna vecina). No existe una capa llamada «Manrique Central».
+Límite: el comercio de OSM solo cubre la comuna; de lo que una centralidad tenga afuera no se midió.
 
 ## Licencia y atribución (ODbL)
 
