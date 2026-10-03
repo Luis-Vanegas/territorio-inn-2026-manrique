@@ -248,7 +248,37 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo
-  único entre un vecino y el panel de moderación. No las unifiques.
+  único entre un vecino y el panel de moderación. No las unifiques. OJO: las dos
+  se firman con el MISMO secreto y formato, así que cada verificador exige los
+  campos de SU payload (`verificarSesion`: `email` string; `sesionActual`: `id`
+  string). Sin eso, la cookie de un vecino pegada como `admin_session` abría el
+  panel (corregido en la 035; lo vigila `scripts/verificar-accesos.mjs`).
+  `verificarSesion` además lee `admins.activo` (con `cache`): desactivar a un
+  moderador le quita el panel en su siguiente petición, aunque su cookie siga viva.
+- **Accesos** (migración 035, `docs/seguridad.md` › Accesos): nadie gana acceso
+  por coincidir un correo. Tres caminos, todos desde el panel del equipo:
+  (1) **dueño de un negocio**: «Cuenta y acceso» en cada ficha de `equipo/aliados`
+  (`vincularCuenta.ts` → `accesos.repo.ts`): el moderador elige una cuenta EXISTENTE
+  (`<datalist>` de `usuarios`), reasignar exige confirmación y el candado está en el
+  `where`; bitácora `negocio_vinculado`/`negocio_desvinculado`. «Enviar acceso» manda
+  por WhatsApp `/aliados/estado/<token>`, que ofrece «Continuar con Google» y vincula
+  al volver. (2) **invitaciones** (`invitaciones.repo.ts`, `components/firmamento/
+  Invitaciones.tsx`): enlace `/firmamento/invitacion/<token>` de un solo uso, 7 días,
+  revocable; en la base solo el sha256 (`lib/auth/invitacion.ts`); el enlace se
+  muestra UNA vez y nunca va a un log. Se consume en el retorno de Google en UNA
+  sentencia (CTE: marcar usada + `miembros_entidad` o `admins`). (3) **moderadores**
+  (`equipo/moderadores`): por invitación (`admins.google_sub`); `ADMIN_GOOGLE_SUBS`
+  queda de respaldo (`accesoModeradorGoogle` en `lib/auth/admin.ts` consulta las dos);
+  «Quitar acceso» = `activo = false`, nunca a uno mismo ni al último (serializable).
+  Lo que viaja a través de Google (destino, negocio a vincular, invitación) va en
+  cookies `oauth_*` de un solo uso: Google devuelve SOLO `code` y `state`, un
+  `?vincular=` en la URI de retorno se pierde.
+- **Guardas verificadas**: `scripts/verificar-accesos.mjs` falla si una
+  `page.tsx`/`layout.tsx`/`route.ts` de `firmamento/{negocio,equipo,entidad}` no llama
+  la guarda de su rol, si una Server Action exportada no revalida la sesión en su
+  cuerpo, o si una ruta de `app/api/admin` no llama `verificarSesion`. Una página o
+  action pública a propósito va en su lista (`PUBLICAS` / `ACCIONES_PUBLICAS`) con
+  la razón.
 - **Firmamento con sesión** (`app/(firmamento)/firmamento/`, plan en
   `docs/firmamento-modulos.md`): tres roles, dos cookies. Guardas en
   `lib/auth/firmamento.ts` (`exigirNegocio` = `sesion_usuario`; `exigirEquipo` =
@@ -440,7 +470,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 npm run dev          # servidor de desarrollo
 npm run lint          # eslint .
 npm run typecheck     # tsc --noEmit
-npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales, entidades (no leen negocios) y datos abiertos (k = 5)
+npm run verificar     # verifica voseo, geo, constraints, campos personalizados, guías de marca, entorno, sugeridor (ML), constelación de un punto, barrios oficiales, entidades (no leen negocios), accesos (guardas de Firmamento y Server Actions) y datos abiertos (k = 5)
 npm run db:migrar     # corre migraciones
 npm run db:admin      # crea usuario admin
 npm run db:google-sub # muestra el google_sub de una cuenta (para ADMIN_GOOGLE_SUBS)

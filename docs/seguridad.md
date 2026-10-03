@@ -14,6 +14,7 @@ El sitio tiene exactamente cuatro puertas al mundo:
 | `/contacto` | cualquiera, sin cuenta | dejar un mensaje en el buzón |
 | `POST /api/interacciones` | cualquiera, sin cuenta | sumar 1 a un contador |
 | `/firmamento/entrar?rol=equipo` (antes `/admin/login`) | moderadores | obtener una sesión de 8 h |
+| `/firmamento/invitacion/<token>` | quien recibió el enlace | ver a qué invita; el acceso se da al volver de Google (ver Accesos) |
 
 Todo lo demás es lectura pública o está detrás de la sesión de moderación.
 
@@ -81,35 +82,91 @@ moderación. El panel solo lee la suya, así que no existe un camino donde una
 sesión de vecino se convierta en acceso de administrador — ni falsificándola,
 porque el panel nunca la mira.
 
-**Moderador por Google (`ADMIN_GOOGLE_SUBS`).** Un moderador puede entrar por
-«Entrar con Google» en vez de por la contraseña de la pestaña Equipo de `/firmamento/entrar`. Cómo se mantiene la
-separación de arriba:
+**Las dos cookies se firman igual, y por eso cada una valida su payload.**
+`admin_session` y `sesion_usuario` usan el mismo `ADMIN_SESSION_SECRET` y el mismo
+formato (base64url + HMAC, con `exp`). Hasta la 035, `verificarSesion()` solo
+miraba la firma y el `exp`: **el valor de la cookie de un vecino, pegado a mano como
+`admin_session`, pasaba la verificación y abría el panel del equipo** (y la
+exportación completa de `/api/admin/exportar`) con `email: undefined`. Hoy exige
+`email` de tipo string y que ese correo sea un moderador **activo** en `admins`; al
+revés, `sesionActual()` ya exigía `id` string. `scripts/verificar-accesos.mjs`
+falla si alguna de esas comprobaciones desaparece. ponytail: separar los secretos
+(o firmar con un prefijo de dominio) cerraría la clase entera; se deja así porque
+cambiarlo cierra todas las sesiones abiertas y las dos comprobaciones ya bastan.
 
-- La concesión es una lista de `google_sub` en la variable de entorno
-  `ADMIN_GOOGLE_SUBS` (separados por coma). **Es el `sub`, no el correo**, por
-  la misma razón de la sección de Google: el correo cambia de manos.
-- Es una variable y no una columna de `usuarios` a propósito: ningún bug de
-  SQL ni de Server Action de la aplicación puede otorgar ese permiso, porque no
-  hay camino desde la aplicación hasta la lista. Agregar o quitar un moderador
-  exige acceso al despliegue.
-- En el retorno de Google, si el `sub` está en la lista, el servidor emite
-  **además** la cookie `admin_session`. La cookie de vecino no cambia ni lleva
-  ningún rol: sigue sin haber un camino donde falsificarla dé acceso al panel.
-- En ese mismo retorno se asegura una fila en `admins` con su correo
-  (`registrarModeradorGoogle`, `activo = false`, `password_hash = 'sin-acceso'`).
-  Es para la auditoría, no para el acceso: `moderado_por`, `atendido_por` y
-  `creado_por` son FK a `admins(email)`, y sin la fila todo lo que modera un
-  moderador por Google falla con `portafolios_moderado_por_fkey`. La fila no
-  concede nada: `verificarSesion()` no lee `admins`, y `autenticar()` descarta
-  las filas inactivas, así que no se puede entrar por contraseña con ella. Si el
-  correo ya era un admin con contraseña, no se toca (`on conflict do nothing`).
-- «Cerrar sesión» del vecino cierra también `admin_session`.
-- Sin `ADMIN_GOOGLE_SUBS`, nadie entra por este camino.
-- El `sub` se obtiene con `npm run db:google-sub -- --correo <correo>`.
+**Moderador desactivado = sin panel en su siguiente petición.** `verificarSesion()`
+lee `admins.activo` (una consulta por petición, deduplicada con `cache`; si la base
+no responde, falla cerrado). La cookie de 8 h ya no sobrevive a una baja.
+
+**Moderador por Google: por invitación o por `ADMIN_GOOGLE_SUBS`.** Un moderador
+puede entrar por «Continuar con Google» en vez de por la contraseña de la pestaña
+Equipo de `/firmamento/entrar`. `accesoModeradorGoogle` (`lib/auth/admin.ts`) decide,
+en el retorno de Google:
+
+1. **Por base** (la vía de todos los días, migración 035): una fila de `admins` con
+   ese `google_sub`. La llena una **invitación de moderador** (ver Accesos). Manda su
+   `activo`.
+2. **Respaldo del despliegue**: el `sub` está en `ADMIN_GOOGLE_SUBS`. Sirve para el
+   primer moderador y para recuperar el panel si la base queda sin ninguno. Se
+   asegura la fila (la auditoría la necesita: `moderado_por` y compañía son FK a
+   `admins(email)`) y se le ata el `sub`. **Una fila que el equipo desactivó
+   (`desactivado_en`) no se reactiva por estar en la variable**: hay que invitarla de
+   nuevo. Las filas viejas de esta vía (`activo = false`, sin `sub`, de antes de la
+   035) se activan en su siguiente ingreso con Google; hasta entonces su cookie
+   vigente no vale (se vuelve a entrar y listo).
+
+En los dos casos es el `sub`, nunca el correo. El permiso vive en `admins`, no en
+`usuarios`: un bug que escriba en la tabla de vecinos no puede dar el panel. La
+cookie de vecino no cambia ni lleva ningún rol: el retorno emite **además**
+`admin_session`. La fila `sin-acceso` no entra por contraseña (el hash no es un
+hash). «Cerrar sesión» del vecino cierra también `admin_session`. El `sub` se
+obtiene con `npm run db:google-sub -- --correo <correo>`.
 
 Riesgo asumido: quien controle esa cuenta de Google controla el panel. Por eso
-la cuenta debe tener verificación en dos pasos. Para revocar: quitar el `sub` de
-la variable y redesplegar; una `admin_session` ya emitida vale hasta 8 h.
+la cuenta debe tener verificación en dos pasos. Para revocar: «Quitar acceso» en
+`/firmamento/equipo/moderadores` (vale de inmediato); si además está en
+`ADMIN_GOOGLE_SUBS`, sacarlo de la variable.
+
+## Accesos (migración 035)
+
+**Regla: nadie gana acceso por coincidir un correo.** El correo de una ficha lo
+escribió quien la registró y nadie lo verificó; vincular por él sería entregarle el
+negocio a quien lo puso. En producción (3-oct) 7 de 8 negocios aprobados no tienen
+cuenta y solo 1 coincide por correo: se resuelve a mano, por una de estas vías.
+
+- **Dueño de un negocio, desde el panel** («Cuenta y acceso» en cada ficha de
+  `/firmamento/equipo/aliados`). El moderador elige una cuenta que YA existe (entró
+  con Google); el correo solo ubica la fila. Si el negocio tiene dueño, reasignar
+  exige marcar la confirmación, y el candado está en el `where` del repo
+  (`vincularPorEquipo`), no en la pantalla. Desvincular también. Todo deja
+  bitácora (`negocio_vinculado` / `negocio_desvinculado`, solo nombres de campo).
+- **Enviar acceso por WhatsApp**: el enlace personal `/aliados/estado/<token>` (el
+  mismo de siempre) ofrece «Continuar con Google» si el negocio no tiene dueño; al
+  volver, `vincularNegocio` lo ata a esa cuenta (`where usuario_id is null`: no pisa
+  a nadie). **Antes no funcionaba**: el retorno leía `?vincular=` de su propia URL,
+  pero Google vuelve solo con `code` y `state`, así que ese parámetro nunca llegó.
+  Hoy viaja en la cookie `oauth_vincular` (httpOnly, 10 min, un solo uso).
+- **Invitaciones** (entidad o moderador): el moderador crea un enlace
+  `/firmamento/invitacion/<token>` y lo comparte. Token de 32 bytes aleatorios
+  (256 bits); en la base **solo su sha256** (CHECK de 64 hex): una copia de la tabla
+  no rearma enlaces. Se muestra una sola vez y no se escribe en ningún log. Vence a
+  los 7 días (tope de 30 por CHECK), un solo uso, revocable. La página no da acceso:
+  manda a Google con el token en la cookie `oauth_invitacion`, y el retorno lo
+  consume en **una sentencia** (CTE: `update ... where usada_en is null and
+  revocada_en is null and expira_en > now()` + la fila en `miembros_entidad` o en
+  `admins`). Dos consumos a la vez: el segundo reevalúa el `where` y no hace nada
+  (probado con 6 consumos concurrentes: gana uno). Los enlaces que no sirven gastan
+  cupo de `invitacion` (10 cada 15 min por IP), al abrir la página y al consumir.
+  La página lleva `referrer: no-referrer` y `noindex`.
+- **Quitar acceso a un moderador**: `activo = false` + `desactivado_en/por`. Nunca a
+  uno mismo ni al último activo; en transacción `Serializable`, para que dos
+  moderadores dándose de baja el uno al otro no dejen el panel vacío.
+
+Riesgo asumido: quien reciba el enlace de una invitación (o lo vea en el chat de
+otro) puede usarlo antes que el destinatario. Por eso es de un solo uso, vence en 7
+días, se revoca desde el panel y la lista de pendientes dice para quién era (`nota`).
+Si alguien usó una invitación ajena, se le quita el acceso (Entidades › Quitar,
+Moderadores › Quitar acceso) y se manda otra.
 
 El guard es `exigirEquipo` (`lib/auth/firmamento.ts`) y se llama en el layout de `app/(firmamento)/firmamento/equipo/` Y en cada `page.tsx` (un layout no se re-ejecuta al navegar entre hermanas), no en `middleware.ts`. Se
 decidió así cuando el middleware era Edge-only (Next 14), donde no existen
@@ -145,6 +202,10 @@ Tabla `intentos_registro` en Postgres, con cupos separados por `origen`:
 |---|---|---|
 | `registro` | 3 | 10 min |
 | `login` | 8 | 15 min |
+| `invitacion` | 10 fallidos | 15 min |
+
+(La tabla completa de cupos, con `estado`, `agente`, `geocodificar`, `datos` e
+`ingesta`, está en `lib/db/rateLimit.ts`.)
 
 Están separados a propósito: compartir cupo permitiría quemar el de login con
 intentos fallidos para dejar a esa IP sin poder registrar un negocio.
