@@ -85,10 +85,12 @@ Diseño en `docs/firmamento-modulos.md` y `docs/base-de-datos.md`; plan en `docs
 - [ ] `constelaciones.json` no trae la referencia («UVA de los Sueños»): agregarla en el pipeline.
 
 ### 🟢 Para Antigravity (Firmamento)
-- [ ] Reemplazar `/admin` por `/firmamento/equipo` (y `/admin/login` por `/firmamento/entrar?rol=equipo`)
+- [x] Reemplazar `/admin` por `/firmamento/equipo` (y `/admin/login` por `/firmamento/entrar?rol=equipo`)
       en `docs/analitica.md`, `docs/arquitectura-y-costos.md`, `docs/seguridad.md` y
       `docs/sistema-diseno-a11y.md`. NO tocar `docs/auditoria-2026-08-16.md` (es histórico).
       Las rutas `/api/admin/*` NO cambian.
+      Hecho por Claude Code (3-oct): la verificación de CSP en `seguridad.md` se dejó como
+      histórica, aclarando que la puerta nueva no se re-verificó.
 
 ## 🔎 Análisis de SonarCloud — 2026-08-31
 
@@ -251,10 +253,12 @@ Lo que NO se pudo probar:
 
 ## 🟢 Para Antigravity (rápidas, mecánicas, acotadas)
 
-- [ ] **Aviso de barrio en la edición del negocio.** `FormularioEdicionPortafolio.tsx` tiene
+- [x] **Aviso de barrio en la edición del negocio.** `FormularioEdicionPortafolio.tsx` tiene
       el mismo selector de barrio que el registro y no avisa cuando el barrio elegido no
       coincide con el punto. Copia el patrón de `FormularioRegistro.tsx` (busca `barrioDe` y
       el `<div role="status">`): mismo texto, no bloquea el envío, no avisa con «Otro».
+      Hecho por Claude Code (3-oct) en `components/FormularioEdicionPortafolio.tsx`: cubre las
+      tres pantallas que lo usan (enlace con token, panel del negocio y moderación del equipo).
 
 ### Voseo en los mensajes de las server actions
 
