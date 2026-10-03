@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Link from 'next/link';
+import { Fragment } from 'react';
 
 import { PestanasEstado } from '@/components/admin/PestanasEstado';
 import { exigirEquipo } from '@/lib/auth/firmamento';
@@ -11,6 +13,9 @@ import {
 } from '@/lib/db/portafolios.repo';
 import { listarTodosLosCampos } from '@/lib/db/camposPersonalizados.repo';
 import { estadoDeFicha } from '@/lib/db/equipo.repo';
+import { accesosDeNegocios, listarCuentas } from '@/lib/db/accesos.repo';
+import { origenDe } from '@/lib/sitio';
+import { AccesoNegocio, ListaCuentas } from './_components/AccesoNegocio';
 import { FichaModeracion } from './_components/FichaModeracion';
 
 export const metadata: Metadata = { title: 'Fichas de aliados' };
@@ -53,6 +58,14 @@ export default async function AliadosEquipoPage({
   ]);
   const registros = ficha ? todos.filter((r) => r.id === ficha) : todos;
 
+  // Cuenta y acceso de cada ficha (no de las archivadas: ya no se manejan).
+  const conAcceso = registros.filter((r) => r.estado !== 'archivado');
+  const [accesos, cuentas] = conAcceso.length
+    ? await Promise.all([accesosDeNegocios(conAcceso.map((r) => r.id)), listarCuentas()])
+    : [[], []];
+  const accesoDe = new Map(accesos.map((a) => [a.id, a]));
+  const origen = origenDe(await headers());
+
   return (
     <div>
       <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
@@ -84,17 +97,35 @@ export default async function AliadosEquipoPage({
                 : 'No hay registros en este estado.'}
           </p>
         ) : (
-          registros.map((r) => (
-            <FichaModeracion
-              key={r.id}
-              portafolio={r}
-              definicionesCampos={definicionesCampos}
-              categorias={categorias}
-              editarAlAbrir={r.id === ficha}
-            />
-          ))
+          registros.map((r) => {
+            const acceso = accesoDe.get(r.id);
+            return (
+              <Fragment key={r.id}>
+                <FichaModeracion
+                  portafolio={r}
+                  definicionesCampos={definicionesCampos}
+                  categorias={categorias}
+                  editarAlAbrir={r.id === ficha}
+                />
+                {acceso && (
+                  <AccesoNegocio
+                    portafolioId={r.id}
+                    negocio={r.nombre}
+                    dueno={
+                      acceso.dueno_nombre && acceso.dueno_correo
+                        ? { nombre: acceso.dueno_nombre, correo: acceso.dueno_correo }
+                        : null
+                    }
+                    enlace={`${origen}/aliados/estado/${acceso.token_publico}`}
+                    whatsapp={r.whatsapp}
+                  />
+                )}
+              </Fragment>
+            );
+          })
         )}
       </section>
+      {cuentas.length > 0 && <ListaCuentas cuentas={cuentas} />}
     </div>
   );
 }

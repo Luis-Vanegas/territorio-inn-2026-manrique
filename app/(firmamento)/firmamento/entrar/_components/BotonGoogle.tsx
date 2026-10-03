@@ -10,9 +10,12 @@
 export function BotonGoogle({
   destino,
   disponible,
+  invitacion,
 }: {
   destino: string;
   disponible: boolean;
+  /** Token de /firmamento/invitacion/<token>: el inicio lo guarda en una cookie de un solo uso. */
+  invitacion?: string;
 }) {
   if (!disponible) {
     return (
@@ -24,7 +27,7 @@ export function BotonGoogle({
 
   return (
     <a
-      href={`/api/auth/google/iniciar?destino=${destino}`}
+      href={`/api/auth/google/iniciar?${new URLSearchParams(invitacion ? { destino, invitacion } : { destino })}`}
       className="flex min-h-[48px] w-full items-center justify-center gap-3 rounded-lg border border-tinta/55 bg-hueso px-6 font-sans text-base font-medium text-tinta transition-colors hover:bg-tinta/5"
     >
       {/* aria-hidden: el texto del enlace ya dice qué hace. */}
