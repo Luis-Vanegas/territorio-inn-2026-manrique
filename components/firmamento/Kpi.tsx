@@ -32,7 +32,8 @@ export function Kpi({
   etiqueta: string;
   fuente: string;
   fecha: string;
-  aclaracion?: string;
+  /** Texto, o un enlace corto (p. ej. «Ver y proponer») cuando la cifra lleva a otra pantalla. */
+  aclaracion?: React.ReactNode;
   /** Acción propia de la cifra (p. ej. «Verlas»), de 44 px. */
   enlace?: { href: string; texto: string };
   tono?: 'sodio' | 'estrella' | 'ladrillo';
@@ -57,7 +58,7 @@ export function Kpi({
         )}
       </p>
       <p className="mt-3 font-sans text-base font-medium leading-snug text-estrella">{etiqueta}</p>
-      {aclaracion && <p className="mt-1 font-sans text-sm leading-snug text-tenue">{aclaracion}</p>}
+      {aclaracion && <div className="mt-1 font-sans text-sm leading-snug text-tenue">{aclaracion}</div>}
       {enlace && (
         <Link
           href={enlace.href}

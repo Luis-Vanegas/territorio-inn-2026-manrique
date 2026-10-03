@@ -353,6 +353,22 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
   (cifras de la banda de la portada) y `app/(site)/firmamento/datos.ts`.
 - **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
+- **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
+  datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`
+  (`app/(site)/firmamento/datos.ts`, que en la base solo usa `obtenerDatosAbiertos`), por
+  `obtenerDatosAbiertos` y por las funciones de entidad de `convocatorias.repo.ts`
+  (`listarConvocatoriasVigentes`, `listarPropuestasDeEntidad`, `proponerConvocatoria`); el
+  mapa es `MapaAliados` con `portafolios` vacío. Ninguna pantalla importa repos de negocios:
+  `scripts/verificar-entidades.mjs` lo comprueba por lista permitida (`datos.repo`,
+  `convocatorias.repo`, `entidades.repo`) y corre con `--experimental-strip-types`. Un cruce
+  nuevo con datos de la red va en `datos.repo.ts` y pasa por `suprimir()`. «Proponer una
+  convocatoria» (`lib/actions/proponerConvocatoria.ts`): revalida sesión + membresía, la
+  entidad sale de `entidadDeSesion()` (jamás del formulario), entra `pendiente` con
+  `origen = 'entidad'` y `propuesta_por`, URL repetida = mensaje claro, deja fila en
+  `bitacora` (`actor_tipo = 'entidad'`) y usa el cupo `estado` de `rateLimit.ts` (un origen
+  nuevo exigiría migrar el CHECK de `intentos_registro`). La descarga CSV
+  (`entidad/datos/csv/route.ts`, con guarda) sale de `lib/firmamento/datosAbiertos.ts`, que
+  solo reordena `DatosAbiertos`: una celda «<5» sigue «<5».
 - **Imports con extensión `.ts`**: los verificadores (`scripts/verificar-*.mjs`)
   corren con `--experimental-strip-types`, que no resuelve imports sin extensión.
   Para que compartan código con la app (y no copiarlo), un archivo que ellos
