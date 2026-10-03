@@ -26,10 +26,13 @@ export function MenuUsuarioPanel({
   rol,
   nombre,
   foto,
+  sitio,
 }: {
   rol: RolFirmamento;
   nombre: string;
   foto: string | null;
+  /** El enlace al sitio del encabezado, que en el celular no cabe y vive aquí. */
+  sitio: { etiqueta: string; href: string };
 }) {
   const [abierto, setAbierto] = useState(false);
   const contenedor = useRef<HTMLDivElement>(null);
@@ -73,7 +76,7 @@ export function MenuUsuarioPanel({
         aria-controls={idPanel}
         aria-label={`Menú de ${nombre}`}
         onClick={() => setAbierto((v) => !v)}
-        className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-sodio font-sans text-sm font-medium text-noche"
+        className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-amarillo font-sans text-sm font-medium text-noche"
       >
         {foto ? (
           // <img> y no next/image: es el avatar de Google (dominio externo, 44 px);
@@ -88,16 +91,23 @@ export function MenuUsuarioPanel({
       {abierto && (
         <div
           id={idPanel}
-          className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-trazo-2 bg-noche-2 p-2"
+          className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
         >
           <div className="px-3 pb-2 pt-1">
-            <p className="break-words font-sans text-sm font-medium text-estrella">{nombre}</p>
-            <p className="font-sans text-sm text-tenue">{ROL_TEXTO[rol]}</p>
+            <p className="break-words font-sans text-sm font-medium text-tinta">{nombre}</p>
+            <p className="font-sans text-sm text-tinta/70">{ROL_TEXTO[rol]}</p>
           </div>
 
           <Link
+            href={sitio.href}
+            className="flex min-h-[44px] items-center rounded-lg px-3 font-sans text-sm text-tinta hover:bg-tinta/5 sm:hidden"
+          >
+            {sitio.etiqueta}
+          </Link>
+
+          <Link
             href="/firmamento"
-            className="flex min-h-[44px] items-center rounded-lg px-3 font-sans text-sm text-estrella hover:bg-noche-3"
+            className="flex min-h-[44px] items-center rounded-lg px-3 font-sans text-sm text-tinta hover:bg-tinta/5"
           >
             Firmamento público
           </Link>
@@ -106,7 +116,7 @@ export function MenuUsuarioPanel({
             <input type="hidden" name="rol" value={rol} />
             <button
               type="submit"
-              className="flex min-h-[44px] w-full items-center rounded-lg px-3 text-left font-sans text-sm text-estrella hover:bg-noche-3"
+              className="flex min-h-[44px] w-full items-center rounded-lg px-3 text-left font-sans text-sm text-tinta hover:bg-tinta/5"
             >
               Salir
             </button>

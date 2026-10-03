@@ -16,13 +16,13 @@ export function PaginaEnConstruccion({ titulo, rol }: { titulo: string; rol: Rol
   return (
     <section
       aria-labelledby="titulo-construccion"
-      className="max-w-xl rounded-xl border border-trazo bg-noche-2 p-6 sm:p-8"
+      className="max-w-xl rounded-xl border border-tinta/12 bg-hueso p-6 sm:p-8"
     >
       <Estrella tamano={22} />
-      <h2 id="titulo-construccion" className="mt-4 font-display text-3xl font-medium text-estrella">
+      <h2 id="titulo-construccion" className="mt-4 font-display text-3xl font-medium text-tinta">
         En construcción
       </h2>
-      <p className="mt-3 font-sans text-base leading-relaxed text-tenue">
+      <p className="mt-3 font-sans text-base leading-relaxed text-tinta/70">
         «{titulo}» todavía no está lista. Cuando lo esté, la encontrarás aquí con
         datos reales; mientras tanto no mostramos cifras de ejemplo.
       </p>
@@ -30,7 +30,7 @@ export function PaginaEnConstruccion({ titulo, rol }: { titulo: string; rol: Rol
       {titulo !== inicio.etiqueta && (
         <Link
           href={inicio.href}
-          className="mt-6 inline-flex min-h-[44px] items-center rounded-lg border border-trazo-2 px-4 font-sans text-sm text-estrella hover:bg-noche-3"
+          className="mt-6 inline-flex min-h-[44px] items-center rounded-lg border border-tinta/55 px-4 font-sans text-sm text-tinta hover:bg-tinta/5"
         >
           Volver al inicio del panel
         </Link>

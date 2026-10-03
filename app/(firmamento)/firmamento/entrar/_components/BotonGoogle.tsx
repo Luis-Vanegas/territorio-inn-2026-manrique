@@ -16,7 +16,7 @@ export function BotonGoogle({
 }) {
   if (!disponible) {
     return (
-      <p className="border-l-2 border-trazo-2 bg-noche px-4 py-3 font-sans text-sm leading-relaxed text-tenue">
+      <p className="border-l-2 border-tinta/30 bg-tinta/[0.03] px-4 py-3 font-sans text-sm leading-relaxed text-tinta/70">
         El ingreso con Google no está disponible por ahora.
       </p>
     );
@@ -25,7 +25,7 @@ export function BotonGoogle({
   return (
     <a
       href={`/api/auth/google/iniciar?destino=${destino}`}
-      className="flex min-h-[48px] w-full items-center justify-center gap-3 rounded-lg bg-estrella px-6 font-sans text-base font-medium text-noche"
+      className="flex min-h-[48px] w-full items-center justify-center gap-3 rounded-lg border border-tinta/55 bg-hueso px-6 font-sans text-base font-medium text-tinta transition-colors hover:bg-tinta/5"
     >
       {/* aria-hidden: el texto del enlace ya dice qué hace. */}
       <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">

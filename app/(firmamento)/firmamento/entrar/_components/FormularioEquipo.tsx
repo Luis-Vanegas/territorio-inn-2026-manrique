@@ -8,7 +8,7 @@ import { iniciarSesion, type EstadoSesion } from '@/lib/actions/sesionAdmin';
 const ESTADO_INICIAL: EstadoSesion = { estado: 'inicial' };
 
 const claseInput =
-  'mt-2 block min-h-[48px] w-full rounded-lg border border-trazo-2 bg-noche px-4 font-sans text-base text-estrella';
+  'mt-2 block min-h-[48px] w-full rounded-lg border border-tinta/55 bg-hueso px-4 font-sans text-base text-tinta';
 
 function Boton() {
   const { pending } = useFormStatus();
@@ -16,7 +16,7 @@ function Boton() {
     <button
       type="submit"
       disabled={pending}
-      className="mt-6 flex min-h-[48px] w-full items-center justify-center rounded-lg bg-sodio px-6 font-sans text-base font-medium text-noche disabled:cursor-not-allowed disabled:opacity-60"
+      className="mt-6 flex min-h-[48px] w-full items-center justify-center rounded-lg bg-azul-texto px-6 font-sans text-base font-medium text-hueso transition-colors hover:bg-azul-texto/90 disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? 'Verificando…' : 'Entrar al panel del equipo'}
     </button>
@@ -38,7 +38,7 @@ export function FormularioEquipo() {
 
       <div className="flex flex-col gap-5">
         <div>
-          <label htmlFor="equipo-correo" className="block font-sans text-sm font-medium text-estrella">
+          <label htmlFor="equipo-correo" className="block font-sans text-sm font-medium text-tinta">
             Correo
           </label>
           <input
@@ -52,7 +52,7 @@ export function FormularioEquipo() {
         </div>
 
         <div>
-          <label htmlFor="equipo-clave" className="block font-sans text-sm font-medium text-estrella">
+          <label htmlFor="equipo-clave" className="block font-sans text-sm font-medium text-tinta">
             Contraseña
           </label>
           <input
@@ -69,7 +69,7 @@ export function FormularioEquipo() {
       {estado.estado === 'error' && (
         <p
           role="alert"
-          className="mt-5 border-l-2 border-ladrillo bg-noche px-4 py-3 font-sans text-sm leading-relaxed text-estrella"
+          className="mt-5 border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
         >
           {estado.mensaje}
         </p>

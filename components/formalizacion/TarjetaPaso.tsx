@@ -32,7 +32,7 @@ export function TarjetaPaso({ paso }: { paso: PasoFormalizacion }) {
 
       <div className="mt-3">
         {requisitosLargos ? (
-          // Nativo, sin JS: mismo patrón que ModuloDesplegable pero a escala
+          // Nativo, sin JS: mismo patrón que Tarjeta plegable pero a escala
           // de tarjeta — acá no hace falta el +/− ni el conteo aparte.
           <details className="group">
             <summary className="flex cursor-pointer list-none items-center gap-1.5 font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 [&::-webkit-details-marker]:hidden">
