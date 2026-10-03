@@ -19,7 +19,7 @@ prototipo de la asesoría (azul de noche en todo, foto a la izquierda, mucho tex
 5. **Una sola librería nueva: Anime.js** (MIT, 3-oct), solo para la «Constelación viva»
    (portada y login): secuencia con los datos reales de Manrique (contorno → barrios →
    estrellas → líneas de constelación → nodos). Estática con «menos movimiento». Fuera de esa
-   pieza, **sin librerías nuevas**. Lo que ofrecen React Bits, Magic UI, bklit y Anime.js ya existe en
+   pieza, **sin librerías nuevas**: lo demás que ofrecen React Bits, Magic UI y bklit ya existe en
    el repo (`NumeroAnimado`, `ScrollReveal`, `CieloConstelaciones`, Leaflet). React Bits
    (MIT + Commons Clause) queda fuera por la cesión al ITM. Si se copia algún componente MIT,
    se cambia `motion/react` por `framer-motion` (no se instala `motion` 12).
