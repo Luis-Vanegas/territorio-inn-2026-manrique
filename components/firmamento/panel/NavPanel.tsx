@@ -17,11 +17,11 @@ import { IconoPanel } from './IconoPanel';
  */
 type Insignias = Record<string, number>;
 
-function Insignia({ n }: { n: number }) {
+function Insignia({ n, unidad = 'pendientes' }: { n: number; unidad?: string }) {
   return (
     <span className="ml-auto min-w-[22px] rounded-full bg-sodio px-1.5 py-0.5 text-center font-cifra text-xs font-medium leading-none text-noche">
       {n}
-      <span className="sr-only"> pendientes</span>
+      <span className="sr-only"> {unidad}</span>
     </span>
   );
 }
@@ -47,7 +47,7 @@ export function NavLateral({ items, insignias = {} }: { items: readonly ItemNav[
               >
                 <IconoPanel nombre={it.icono} />
                 <span>{it.etiqueta}</span>
-                {insignias[it.href] ? <Insignia n={insignias[it.href]!} /> : null}
+                {insignias[it.href] ? <Insignia n={insignias[it.href]!} unidad={it.unidad} /> : null}
               </Link>
             </li>
           );
@@ -75,7 +75,7 @@ export function NavInferior({ items, insignias = {} }: { items: readonly ItemNav
               <Link
                 href={it.href}
                 aria-current={activo ? 'page' : undefined}
-                aria-label={n ? `${it.etiqueta}, ${n} pendientes` : it.etiqueta}
+                aria-label={n ? `${it.etiqueta}, ${n} ${it.unidad ?? 'pendientes'}` : it.etiqueta}
                 className={`relative flex min-h-[56px] flex-col items-center justify-center gap-0.5 px-1 font-sans text-xs ${
                   activo
                     ? 'font-medium text-estrella before:absolute before:inset-x-3 before:top-0 before:h-[3px] before:rounded-b-full before:bg-sodio'
