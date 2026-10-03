@@ -636,6 +636,71 @@ export async function moderar(
   };
 }
 
+export type DecisionEquipo = 'usada' | 'corregida' | 'mantenida';
+
+/**
+ * Decisión del equipo sobre la categoría que propuso el sugeridor
+ * (`decidirCategoria`): cambia la categoría si corresponde Y guarda el ejemplo
+ * de reentrenamiento en `sugerencias_categoria` (origen `moderacion`, 034), en
+ * UNA sentencia: o quedan las dos cosas o ninguna. Acá y no en
+ * sugerencias.repo.ts porque lo que manda es la ficha.
+ *
+ * - Solo fichas vivas (pendiente o aprobada) y solo si su categoría sigue siendo
+ *   `actual` (la que vio la pantalla): dos moderadores no se pisan.
+ * - Al salir de «Otros» se borra `categoria_otra`: la vitrina muestra ese texto
+ *   antes que la categoría, y seguiría diciendo lo viejo.
+ * - «Mantener» se guarda una sola vez por ficha: la alerta de «Otros» sigue a
+ *   la vista y otro clic no es otro ejemplo.
+ * - La fila de la sugerencia no lleva texto; la fecha va truncada al día.
+ *
+ * `null` = la ficha no existe, ya no está viva o cambió de categoría.
+ */
+export async function decidirCategoriaFicha(datos: {
+  id: string;
+  actual: string;
+  final: string;
+  inferida: string;
+  confianza: number;
+  decision: DecisionEquipo;
+}): Promise<{ cambio: boolean; borroOtra: boolean; guardada: boolean } | null> {
+  const cambia = datos.final !== datos.actual;
+  const rows = await sql`
+    with previo as (
+      select id, categoria_otra from portafolios
+      where id = ${datos.id} and categoria_id = ${datos.actual}
+        and estado in ('pendiente', 'aprobado')
+    ),
+    cambio as (
+      update portafolios p
+      set categoria_id = ${datos.final},
+          categoria_otra = case when ${datos.final === 'otros'}::boolean then p.categoria_otra else null end
+      from previo
+      where ${cambia}::boolean and p.id = previo.id and p.categoria_id = ${datos.actual}
+      returning p.id
+    ),
+    nueva as (
+      insert into sugerencias_categoria
+        (portafolio_id, categoria_inferida, confianza, origen, aceptada, decision_equipo, creado_en)
+      select previo.id, ${datos.inferida}, ${Math.round(datos.confianza * 1000) / 1000}, 'moderacion',
+        ${datos.final === datos.inferida}, ${datos.decision}, date_trunc('day', now())
+      from previo
+      where exists (select 1 from cambio)
+         or (not ${cambia}::boolean and not exists (
+              select 1 from sugerencias_categoria s
+              where s.portafolio_id = previo.id and s.origen = 'moderacion'
+                and s.decision_equipo = 'mantenida'))
+      returning id
+    )
+    select
+      exists (select 1 from cambio) as cambio,
+      (exists (select 1 from cambio) and previo.categoria_otra is not null
+        and not ${datos.final === 'otros'}::boolean) as "borroOtra",
+      exists (select 1 from nueva) as guardada
+    from previo
+  `;
+  return (rows[0] as { cambio: boolean; borroOtra: boolean; guardada: boolean } | undefined) ?? null;
+}
+
 /**
  * Edición desde el panel de moderación: mismos campos de contenido que
  * `actualizarPorToken`, pero a propósito NO toca `estado`, `motivo_rechazo`

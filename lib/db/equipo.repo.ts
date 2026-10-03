@@ -30,6 +30,8 @@ export async function conteosPanel(): Promise<ConteosPanel> {
 export type FichaCalidad = {
   id: string;
   nombre: string;
+  /** Solo para el sugeridor de las fichas en «Otros». */
+  descripcion: string | null;
   estado: Extract<EstadoPortafolio, 'pendiente' | 'aprobado'>;
   latitud: number;
   longitud: number;
@@ -48,7 +50,7 @@ export type FichaCalidad = {
  */
 export async function fichasParaCalidad(): Promise<FichaCalidad[]> {
   const rows = await sql`
-    select p.id, p.nombre, p.estado,
+    select p.id, p.nombre, p.descripcion, p.estado,
       p.latitud::float8 as latitud, p.longitud::float8 as longitud,
       p.barrio, p.barrio_oficial, p.categoria_id, c.nombre as categoria_nombre, p.categoria_otra,
       (p.foto_url is not null) as tiene_foto,
@@ -95,8 +97,12 @@ export type AprendizajeSugeridor = {
   total: number;
   /** La persona eligió la categoría que propuso el modelo. */
   aceptadas: number;
-  /** Eligió otra. */
+  /** Eligió otra (en la moderación incluye «Mantener»: el modelo se equivocó igual). */
   corregidas: number;
+  /** De las corregidas, las que el equipo dejó con su categoría (034). */
+  mantenidas: number;
+  /** Decididas por el equipo en la moderación (origen `moderacion`, 034). */
+  deModeracion: number;
   /** Sin dato de si la aceptó (sugerencias viejas o del buscador). */
   sinDato: number;
   /** Con negocio enlazado (033): las únicas que sirven para reentrenar. */
@@ -114,6 +120,8 @@ export async function aprendizajeSugeridor(): Promise<AprendizajeSugeridor> {
         count(*) filter (where s.aceptada)::int as aceptadas,
         count(*) filter (where s.aceptada = false)::int as corregidas,
         count(*) filter (where s.aceptada is null)::int as sin_dato,
+        count(*) filter (where s.decision_equipo = 'mantenida')::int as mantenidas,
+        count(*) filter (where s.origen = 'moderacion')::int as de_moderacion,
         count(p.id)::int as con_ficha,
         count(*) filter (where p.categoria_id = s.categoria_inferida)::int as coinciden
       from sugerencias_categoria s
@@ -132,6 +140,8 @@ export async function aprendizajeSugeridor(): Promise<AprendizajeSugeridor> {
     aceptadas: number;
     corregidas: number;
     sin_dato: number;
+    mantenidas: number;
+    de_moderacion: number;
     con_ficha: number;
     coinciden: number;
   };
@@ -140,6 +150,8 @@ export async function aprendizajeSugeridor(): Promise<AprendizajeSugeridor> {
     aceptadas: t.aceptadas,
     corregidas: t.corregidas,
     sinDato: t.sin_dato,
+    mantenidas: t.mantenidas,
+    deModeracion: t.de_moderacion,
     conFicha: t.con_ficha,
     coincidenConFicha: t.coinciden,
     porCategoria: categorias as AprendizajeSugeridor['porCategoria'],

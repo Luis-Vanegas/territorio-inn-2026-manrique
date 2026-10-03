@@ -30,3 +30,19 @@ export async function guardarSugerenciaCategoria(datos: {
     )
   `;
 }
+
+/**
+ * De estas fichas, cuáles ya tienen una decisión del equipo sobre la categoría
+ * (origen `moderacion`, 034; la escribe `decidirCategoriaFicha` de
+ * portafolios.repo.ts junto con el cambio de categoría). La moderación esconde
+ * «Usar» y «Mantener» en esas: otro clic no es otro ejemplo.
+ */
+export async function fichasConCategoriaRevisada(ids: readonly string[]): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  const rows = (await sql`
+    select distinct portafolio_id::text as id
+    from sugerencias_categoria
+    where origen = 'moderacion' and portafolio_id = any(${[...ids]}::uuid[])
+  `) as { id: string }[];
+  return new Set(rows.map((r) => r.id));
+}
