@@ -20,7 +20,7 @@ import {
   esComercioOsm,
   type ComercioBuscable,
 } from '@/lib/geo/comerciosOsm';
-import { TarjetaEmprendimiento } from './TarjetaEmprendimiento';
+import { TarjetaEmprendimiento } from '@/components/vitrina/TarjetaEmprendimiento';
 import { OtrosComercios, type ComercioListado } from './OtrosComercios';
 
 /**

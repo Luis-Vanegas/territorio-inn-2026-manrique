@@ -10,7 +10,7 @@ export function SinNegocio({ aviso }: { aviso: string }) {
   return (
     <Tarjeta titulo="Aún no tienes un negocio en la red" id="sin-negocio" className="max-w-xl">
       <p className="font-sans text-base leading-relaxed text-tinta/70">{aviso}</p>
-      <Link href="/aliados/registro" className={`${CLASE_BOTON_PRIMARIO} mt-5`}>
+      <Link href="/firmamento/negocio/registro" className={`${CLASE_BOTON_PRIMARIO} mt-5`}>
         Registrar mi negocio
       </Link>
     </Tarjeta>

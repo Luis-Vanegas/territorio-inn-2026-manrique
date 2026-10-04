@@ -1,4 +1,5 @@
 import { exigirNegocio } from '@/lib/auth/firmamento';
+import { sesionActual } from '@/lib/auth/usuario';
 import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { perfilesParaTi } from '@/lib/db/cuenta.repo';
 import { hrefFichaPublica, negocioActivo } from '@/lib/firmamento/negocio';
@@ -17,6 +18,10 @@ import { PanelShell } from '@/components/firmamento/panel/PanelShell';
  * y cada página de «Para ti» muestra su lista al día.
  */
 export default async function PanelNegocioLayout({ children }: { children: React.ReactNode }) {
+  // Sin sesión, el armazón no se pinta y manda la guarda de la página: el layout
+  // no conoce la ruta, y el registro necesita volver a sí mismo tras Google
+  // (`exigirNegocio('/firmamento/negocio/registro')`). Toda página del rol llama su guarda.
+  if (!(await sesionActual())) return children;
   const contexto = await exigirNegocio();
 
   // Ambos son un extra del armazón: si fallan, el panel sigue sin insignia.

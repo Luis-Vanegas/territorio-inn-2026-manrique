@@ -8,10 +8,10 @@ import type { EstadoEdicion } from '@/lib/actions/gestionarEstado';
 import { manejarSeleccionFoto } from '@/lib/imagen/comprimir';
 import { serializarProductos } from '@/lib/validation/portafolio.schema';
 import type { Categoria, PortafolioAdmin } from '@/lib/db/portafolios.repo';
-import type { Posicion } from '@/app/(site)/aliados/registro/_components/SelectorUbicacionClient';
-import { ChipsMultiple } from '@/app/(site)/aliados/registro/_components/Chips';
-import { SelectConOtro } from '@/app/(site)/aliados/registro/_components/SelectConOtro';
-import { SugeridorCategoria } from '@/app/(site)/aliados/registro/_components/SugeridorCategoria';
+import type { Posicion } from '@/components/registro/SelectorUbicacionClient';
+import { ChipsMultiple } from '@/components/registro/Chips';
+import { SelectConOtro } from '@/components/registro/SelectConOtro';
+import { SugeridorCategoria } from '@/components/registro/SugeridorCategoria';
 import { CampoFormulario } from '@/components/CampoFormulario';
 import { barrioDe } from '@/lib/geo/barrioOficial';
 import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
@@ -36,7 +36,7 @@ const OPCIONES_MEDIOS_PAGO_UI = [
 ];
 
 const SelectorUbicacion = dynamic(
-  () => import('@/app/(site)/aliados/registro/_components/SelectorUbicacionClient'),
+  () => import('@/components/registro/SelectorUbicacionClient'),
   {
     ssr: false,
     loading: () => (

@@ -26,6 +26,8 @@ export type ItemNav = {
   pestana?: string;
   /** Qué cuenta la insignia de conteo, para el lector de pantalla («2 convocatorias»). Por defecto, «pendientes». */
   unidad?: string;
+  /** Página del rol sin pestaña propia (el registro): da el título, pero no sale en el menú. */
+  oculta?: boolean;
 };
 
 export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
@@ -35,6 +37,7 @@ export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
     { href: '/firmamento/negocio/para-ti', etiqueta: 'Para ti', unidad: 'convocatorias' },
     { href: '/firmamento/negocio/constelacion', etiqueta: 'Mi constelación', corta: 'Constelación' },
     { href: '/firmamento/negocio/clientes', etiqueta: 'Mis clientes', corta: 'Clientes' },
+    { href: '/firmamento/negocio/registro', etiqueta: 'Registrar un negocio', oculta: true },
   ],
   // Equipo: 16 secciones en cuatro pestañas, por lo que se hace con ellas: lo de
   // todos los días (Hoy), la red de aliados y entidades, los datos y lo que ve un
@@ -45,6 +48,7 @@ export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
     { href: '/firmamento/equipo/convocatorias', etiqueta: 'Convocatorias', pestana: 'Hoy' },
     { href: '/firmamento/equipo/peticiones', etiqueta: 'Peticiones', pestana: 'Hoy' },
     { href: '/firmamento/equipo/aliados', etiqueta: 'Fichas de aliados', pestana: 'Red' },
+    { href: '/firmamento/equipo/registro', etiqueta: 'Registrar en campo', pestana: 'Red' },
     { href: '/firmamento/equipo/entidades', etiqueta: 'Entidades', pestana: 'Red' },
     { href: '/firmamento/equipo/moderadores', etiqueta: 'Moderadores', pestana: 'Red' },
     { href: '/firmamento/equipo/empleo', etiqueta: 'Empleo', pestana: 'Red' },
@@ -72,6 +76,7 @@ export type Pestana = { etiqueta: string; corta?: string; href: string; items: r
 export function pestanasDe(rol: RolFirmamento): Pestana[] {
   const pestanas: Pestana[] = [];
   for (const it of NAV[rol]) {
+    if (it.oculta) continue;
     const nombre = it.pestana;
     const previa = nombre ? pestanas.find((p) => p.etiqueta === nombre) : undefined;
     if (previa) previa.items = [...previa.items, it];

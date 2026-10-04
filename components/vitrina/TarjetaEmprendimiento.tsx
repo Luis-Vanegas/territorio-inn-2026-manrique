@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { DefinicionCampo } from '@/lib/db/camposPersonalizados.repo';
@@ -40,7 +42,7 @@ function enlaceRedSocial(
   }
 }
 
-function Contacto({ portafolio }: { portafolio: Portafolio }) {
+function Contacto({ portafolio, contarToques }: { portafolio: Portafolio; contarToques: boolean }) {
   const enlaces: EnlaceContacto[] = [];
 
   if (portafolio.whatsapp) {
@@ -75,7 +77,7 @@ function Contacto({ portafolio }: { portafolio: Portafolio }) {
             rel="noopener noreferrer"
             // Tocar un contacto es la señal que le importa al negocio: es
             // alguien que dejó de mirar y decidió escribir.
-            onClick={() => contar(portafolio.id, 'contacto')}
+            onClick={contarToques ? () => contar(portafolio.id, 'contacto') : undefined}
             className="inline-flex items-center gap-1.5 font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
           >
             <IconoContacto tipo={e.tipo} className="h-3.5 w-3.5 shrink-0" />
@@ -94,6 +96,7 @@ export function TarjetaEmprendimiento({
   distancia,
   activo,
   datosOsm,
+  vistaPrevia = false,
 }: {
   portafolio: Portafolio;
   indice: number;
@@ -104,12 +107,14 @@ export function TarjetaEmprendimiento({
   activo?: boolean;
   /** Constelaciones de OSM, SIN filtrar por categoría; null mientras cargan. */
   datosOsm?: Pick<DatosConstelaciones, 'constelaciones'> | null;
+  /** La misma tarjeta en «Así te verán en Constelaciones» (Firmamento): sin ancla ni conteo de toques. */
+  vistaPrevia?: boolean;
 }) {
   const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
 
   return (
     <article
-      id={portafolio.id}
+      id={vistaPrevia ? undefined : portafolio.id}
       // scroll-mt evita que el header fijo tape el título al saltar desde el mapa.
       className={[
         'grid scroll-mt-24 grid-cols-1 gap-5 border-t py-8 transition-colors duration-500 sm:grid-cols-[auto_1fr] sm:gap-7',
@@ -164,7 +169,7 @@ export function TarjetaEmprendimiento({
             <span className="text-tinta/65">{portafolio.barrio}</span>
           </p>
 
-          <Contacto portafolio={portafolio} />
+          <Contacto portafolio={portafolio} contarToques={!vistaPrevia} />
 
           {portafolio.productos.length > 0 && (
             <ul className="mt-4 flex flex-col gap-1">

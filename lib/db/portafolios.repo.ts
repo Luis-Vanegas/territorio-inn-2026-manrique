@@ -230,6 +230,12 @@ export type NuevoPortafolio = {
   horario: string[];
   medios_pago: string[];
   productos: ProductoInput[];
+  /** La cuenta dueña sale SIEMPRE de la sesión (`sesionActual`), nunca del formulario. null en el asistido. */
+  usuario_id: string | null;
+  origen_registro: 'propio' | 'asistido';
+  /** Solo asistido (027): correo del moderador de `admin_session` y cómo autorizó el titular. */
+  capturado_por: string | null;
+  consentimiento_asistido: 'verbal_presencial' | 'firma_papel' | null;
 };
 
 /**
@@ -248,7 +254,8 @@ export async function crearPortafolio(
       whatsapp, correo, instagram, facebook,
       acepto_terminos, acepto_habeas_data, version_terminos, ip_registro,
       campos_extra,
-      punto_referencia, horario, medios_pago, productos
+      punto_referencia, horario, medios_pago, productos,
+      usuario_id, origen_registro, capturado_por, consentimiento_asistido
     ) values (
       ${datos.nombre}, ${datos.descripcion}, ${datos.categoria_id}, ${datos.categoria_otra},
       ${datos.direccion}, ${datos.barrio}, ${barrioDe(datos.latitud, datos.longitud)},
@@ -258,7 +265,8 @@ export async function crearPortafolio(
       true, true, ${datos.version_terminos}, ${datos.ip_registro},
       ${JSON.stringify(datos.campos_extra)}::jsonb,
       ${datos.punto_referencia}, ${datos.horario}::text[], ${datos.medios_pago}::text[],
-      ${JSON.stringify(datos.productos)}::jsonb
+      ${JSON.stringify(datos.productos)}::jsonb,
+      ${datos.usuario_id}, ${datos.origen_registro}, ${datos.capturado_por}, ${datos.consentimiento_asistido}
     )
     returning id, token_publico
   `;
