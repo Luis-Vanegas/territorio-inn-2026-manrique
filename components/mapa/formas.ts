@@ -52,10 +52,16 @@ export const ESTRELLA_VIEWBOX = '-1 -1 26 26';
 /**
  * Un negocio en el mapa (Luis, 4-oct-2026, como el tablero de la asesoría): una
  * estrella del color de su grupo; el TAMAÑO dice si es aliado (grande) o comercio
- * de OSM (chica). Contorno `noche` por lo mismo que `svgForma`: el amarillo y la
- * menta se pierden sobre las teselas claras sin él.
+ * de OSM (chica).
+ *
+ * El aliado es opaco y lleva un borde fino del color de la tinta del tema (oscuro
+ * sobre teselas claras, claro sobre las oscuras): resalta sin pelear con el
+ * color. El comercio de OSM (`tenue`) va a ~55 % de opacidad y con un borde casi
+ * invisible: es contexto, no el protagonista (equipo, 4-oct: «se ve recargado»).
  */
-export function svgEstrella(color: string, tamano: number): string {
-  const trazo = tamano >= 20 ? 1.2 : 1.6; // unidades del viewBox: la chica, un poco más para que el amarillo se vea
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="${ESTRELLA_VIEWBOX}" aria-hidden="true" focusable="false"><path d="${ESTRELLA_PATH}" fill="${color}" stroke="${CONTORNO}" stroke-width="${trazo}" stroke-linejoin="round"/></svg>`;
+export function svgEstrella(color: string, tamano: number, { tenue = false }: { tenue?: boolean } = {}): string {
+  const atributos = tenue
+    ? `fill="${color}" fill-opacity="0.55" stroke="${CONTORNO}" stroke-opacity="0.35" stroke-width="0.8"`
+    : `fill="${color}" stroke="${CONTORNO}" stroke-width="1.2" style="stroke:rgb(var(--tinta-rgb))"`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="${ESTRELLA_VIEWBOX}" aria-hidden="true" focusable="false"><path d="${ESTRELLA_PATH}" ${atributos} stroke-linejoin="round"/></svg>`;
 }

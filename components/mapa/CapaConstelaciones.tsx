@@ -16,18 +16,20 @@ import { svgEstrella } from './formas';
  * Capa de constelaciones: estrellas de OSM + líneas del árbol de expansión mínima + nombre.
  *
  * Son comercios de OpenStreetMap, no aliados. Cada uno es una ESTRELLA del color
- * de su grupo (`grupos.ts`): 16 px las que están en una constelación, 11 px las
- * sueltas, contra 28 px de un aliado (Luis, 4-oct-2026, como el tablero de la
- * asesoría: el tamaño dice aliado/comercio, el color la categoría; ya no hay una
- * forma por grupo en el mapa). Se dibujan DEBAJO de los aliados (`zIndexOffset`
- * negativo). Cada una es un marcador tocable y enfocable: abre un popup con lo
- * que OSM sabe del comercio (FichaComercioOsm). La caja táctil mide 44.
+ * de su grupo (`grupos.ts`), tenue (~55 % de opacidad, sin borde grueso): 12 px las
+ * que están en una constelación, 9 px las sueltas, contra 28 px opacos de un
+ * aliado (Luis, 4-oct-2026: el tamaño dice aliado/comercio, el color la
+ * categoría; el equipo pidió un mapa menos recargado). Se dibujan DEBAJO de los
+ * aliados (`zIndexOffset` negativo). Cada una es un marcador tocable y enfocable:
+ * abre un popup con lo que OSM sabe del comercio (FichaComercioOsm). La caja
+ * táctil mide 44.
  *
  * Las estrellas se dibujan siempre; el interruptor «Líneas de constelación»
- * (`lineas`) solo prende o apaga las líneas y los nombres.
+ * (`lineas`) solo prende o apaga las líneas. El NOMBRE de una constelación solo
+ * se escribe cuando hay una elegida (`filtroId`), no por zoom.
  *
- * Con ~300 comercios el rendimiento importa: los íconos se crean una vez, cada
- * marcador es `memo` y el popup solo monta su contenido mientras está abierto.
+ * Con ~300 comercios el rendimiento importa: los íconos se comparten por grupo,
+ * cada marcador es `memo` y el popup solo monta su contenido mientras está abierto.
  *
  * El trazo de las líneas es CSS (`stroke-dashoffset`, ver `.arista-trazo` en
  * globals.css) y no framer-motion: el SVG de Leaflet lo crea Leaflet, no React.
@@ -37,33 +39,21 @@ import { svgEstrella } from './formas';
 const TEXTO_ATRIBUCION =
   '&copy; colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL)';
 
-/** Un icono por estrella: el desfase del parpadeo va en variables CSS. */
-function iconoEstrella(grupo: Grupo, indice: number) {
-  const duracion = 3 + (indice % 4); // 3–6 s
-  const desfase = -((indice * 0.7) % duracion);
-  return L.divIcon({
-    className: '',
-    html: `<span class="caja-estrella"><span class="estrella-osm" style="animation-duration:${duracion}s;animation-delay:${desfase.toFixed(2)}s">${svgEstrella(grupo.color, 16)}</span></span>`,
-    iconSize: [44, 44],
-    iconAnchor: [22, 22],
-    popupAnchor: [0, -10],
-  });
-}
+/** Un icono por grupo y tamaño: 12 px en una constelación, 9 px suelto. */
+const ICONOS = new Map<string, L.DivIcon>();
 
-/** Los sueltos no parpadean (son los más tenues) y comparten un icono por grupo. */
-const ICONOS_SUELTOS = new Map<string, L.DivIcon>();
-
-function iconoSuelto(grupo: Grupo) {
-  let icono = ICONOS_SUELTOS.get(grupo.id);
+function iconoComercio(grupo: Grupo, suelto: boolean) {
+  const clave = `${grupo.id}:${suelto}`;
+  let icono = ICONOS.get(clave);
   if (!icono) {
     icono = L.divIcon({
       className: '',
-      html: `<span class="caja-estrella">${svgEstrella(grupo.color, 11)}</span>`,
+      html: `<span class="caja-estrella">${svgEstrella(grupo.color, suelto ? 9 : 12, { tenue: true })}</span>`,
       iconSize: [44, 44],
       iconAnchor: [22, 22],
       popupAnchor: [0, -8],
     });
-    ICONOS_SUELTOS.set(grupo.id, icono);
+    ICONOS.set(clave, icono);
   }
   return icono;
 }
@@ -89,17 +79,21 @@ function PopupComercio({ e, ubicacion }: { e: EstrellaOsm; ubicacion?: Coordenad
   return <FichaComercioOsm comercio={e} distancia={distancia} conAclaracion />;
 }
 
-const MarcadorComercio = memo(function MarcadorComercio({
+export const MarcadorComercio = memo(function MarcadorComercio({
   e,
   icono,
   ubicacion,
+  registrar,
 }: {
   e: EstrellaOsm;
   icono: L.DivIcon;
   ubicacion?: Coordenada | null;
+  /** Para abrir su popup desde la lista de resultados (clave `osm:<id>`). */
+  registrar?: (id: string, marcador: L.Marker | null) => void;
 }) {
   return (
     <Marker
+      ref={registrar ? (m) => registrar(`osm:${e.osm}`, m) : undefined}
       position={[e.lat, e.lon]}
       icon={icono}
       title={nombreVisible(e)}
@@ -124,7 +118,7 @@ export function Atribucion() {
   return null;
 }
 
-/** Nombre de la constelación sobre el mapa: el código siempre, el nombre al acercarse (CSS). */
+/** Nombre de la constelación elegida: código y nombre, sin caja. */
 function iconoNombre(c: Constelacion) {
   const codigo = escaparHtml(c.codigo ?? c.id.toUpperCase());
   const nombre = c.nombre ? `<span class="nombre"> · ${escaparHtml(c.nombre)}</span>` : '';
@@ -144,11 +138,13 @@ function Constelacion({
   c,
   orden,
   lineasVisibles,
+  conNombre,
   ubicacion,
 }: {
   c: Constelacion;
   orden: number;
   lineasVisibles: boolean;
+  conNombre: boolean;
   ubicacion?: Coordenada | null;
 }) {
   const lineas = useMemo(
@@ -163,12 +159,6 @@ function Constelacion({
     [c],
   );
 
-  // Los iconos se crean una vez: un icono nuevo por render obligaría a Leaflet
-  // a reemplazar el nodo de cada estrella.
-  const iconos = useMemo(
-    () => c.estrellas.map((e, i) => iconoEstrella(grupoDeCategoria(e.categoria), orden * 17 + i)),
-    [c, orden],
-  );
   const nombre = useMemo(() => iconoNombre(c), [c]);
 
   // Escalonado corto: 25 ms por constelación y tope de 250 ms, para que todo
@@ -177,7 +167,7 @@ function Constelacion({
 
   return (
     <>
-      {lineasVisibles && (
+      {lineasVisibles && conNombre && (
         <Marker
           position={[c.centroide.lat, c.centroide.lon]}
           icon={nombre}
@@ -205,12 +195,9 @@ function Constelacion({
         }}
       />
       )}
-      {c.estrellas.map((e, i) => {
-        const icono = iconos[i];
-        return icono ? (
-          <MarcadorComercio key={e.osm} e={e} icono={icono} ubicacion={ubicacion} />
-        ) : null;
-      })}
+      {c.estrellas.map((e) => (
+        <MarcadorComercio key={e.osm} e={e} icono={iconoComercio(grupoDeCategoria(e.categoria), false)} ubicacion={ubicacion} />
+      ))}
     </>
   );
 }
@@ -241,12 +228,42 @@ export function CapaConstelaciones({
           <MarcadorComercio
             key={p.osm}
             e={p}
-            icono={iconoSuelto(grupoDeCategoria(p.categoria))}
+            icono={iconoComercio(grupoDeCategoria(p.categoria), true)}
             ubicacion={ubicacion}
           />
         ))}
       {visibles.map((c, i) => (
-        <Constelacion key={c.id} c={c} orden={i} lineasVisibles={lineas} ubicacion={ubicacion} />
+        <Constelacion key={c.id} c={c} orden={i} lineasVisibles={lineas} conNombre={Boolean(filtroId)} ubicacion={ubicacion} />
+      ))}
+    </>
+  );
+}
+
+/**
+ * Resultado de una búsqueda: SOLO los comercios de OSM que devolvió
+ * `buscarNegocios`, sin líneas, sin nombres de constelación y sin sueltos
+ * ajenos. Los aliados que coinciden los dibuja el mapa aparte.
+ */
+export function CapaResultados({
+  comercios,
+  ubicacion,
+  registrar,
+}: {
+  comercios: EstrellaOsm[];
+  ubicacion?: Coordenada | null;
+  registrar: (id: string, marcador: L.Marker | null) => void;
+}) {
+  return (
+    <>
+      <Atribucion />
+      {comercios.map((e) => (
+        <MarcadorComercio
+          key={e.osm}
+          e={e}
+          icono={iconoComercio(grupoDeCategoria(e.categoria), false)}
+          ubicacion={ubicacion}
+          registrar={registrar}
+        />
       ))}
     </>
   );

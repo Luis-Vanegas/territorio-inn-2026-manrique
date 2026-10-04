@@ -5,14 +5,9 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import type { Coordenada } from '@/lib/geo/constantes';
-import { GRUPOS, grupoDeCategoria, type IdGrupo } from '@/lib/categorias/grupos';
-import { fechaLarga } from '@/lib/geo/constelaciones';
-import {
-  aplanarComercios,
-  etiquetaConstelacion,
-  filtrarPorCategoria,
-  lineaMezcla,
-} from '@/lib/geo/comerciosOsm';
+import { GRUPOS } from '@/lib/categorias/grupos';
+import type { EstrellaOsm } from '@/lib/geo/constelaciones';
+import { etiquetaConstelacion, filtrarPorCategoria, lineaMezcla } from '@/lib/geo/comerciosOsm';
 import { svgEstrella } from './mapa/formas';
 import { useConstelaciones } from './mapa/useConstelaciones';
 
@@ -41,6 +36,13 @@ export type CentralidadMapa = {
   jerarquia: string;
   geometry: { type: 'Polygon' | 'MultiPolygon'; coordinates: unknown };
 };
+
+/**
+ * Lo que devuelve una búsqueda: si se pasa, el mapa muestra SOLO esto (los
+ * aliados de `portafolios` que coinciden y estos comercios de OSM), sin líneas
+ * ni nombres de constelación, y se encuadra en ellos.
+ */
+export type ResultadosMapa = { comercios: EstrellaOsm[] };
 
 const ALTURAS = {
   portada: 'h-[380px] sm:h-[460px] lg:h-[520px]',
@@ -72,6 +74,8 @@ export function MapaAliados({
   alElegirConstelacion,
   centralidades,
   alto,
+  resultados,
+  seleccionadoEnLista,
 }: {
   portafolios: Portafolio[];
   alSeleccionar?: (id: string) => void;
@@ -94,6 +98,10 @@ export function MapaAliados({
   centralidades?: CentralidadMapa[];
   /** Clases de alto del mapa; pisa las de `variante`. */
   alto?: string;
+  /** Búsqueda activa: `portafolios` ya viene filtrado y acá van los comercios de OSM que coinciden. */
+  resultados?: ResultadosMapa | null;
+  /** Negocio de la lista de resultados a donde vuela el mapa y abre su popup (`id` de aliado u `osm:<id>`). */
+  seleccionadoEnLista?: string | null;
 }) {
   const [verPot, setVerPot] = useState(false);
   const [activaInterna, setActivaInterna] = useState(true);
@@ -114,26 +122,6 @@ export function MapaAliados({
   // Con una categoría activa la constelación elegida puede haber desaparecido.
   const elegida = datos?.constelaciones.find((c) => c.id === filtro) ?? null;
   const filtroValido = elegida ? filtro : '';
-
-  // Conteo por grupo de lo que el mapa muestra ahora: aliados y estrellas de
-  // OSM (las de la constelación elegida, o todas).
-  const conteos = useMemo(() => {
-    const total: Record<IdGrupo, number> = { comida: 0, tienda: 0, belleza: 0, oficios: 0, salud: 0, otros: 0 };
-    for (const p of portafolios) total[grupoDeCategoria(p.categoria_id).id]++;
-    if (datos) {
-      const estrellas = elegida ? elegida.estrellas : aplanarComercios(datos);
-      for (const e of estrellas) total[grupoDeCategoria(e.categoria).id]++;
-    }
-    return total;
-  }, [portafolios, datos, elegida]);
-
-  const fuente = useMemo(
-    () =>
-      datos
-        ? `Fuente: aliados aprobados de Constelaciones y comercios de OpenStreetMap, © colaboradores (ODbL) · OSM al ${fechaLarga(datos.osm_base)}; constelaciones agrupadas el ${fechaLarga(datos.fecha_corrida)}.`
-        : null,
-    [datos],
-  );
 
   return (
     <div>
@@ -213,8 +201,9 @@ export function MapaAliados({
           portafolios={portafolios}
           alSeleccionar={alSeleccionar}
           ubicacionUsuario={ubicacionUsuario}
-          seleccionado={seleccionado}
+          seleccionado={seleccionadoEnLista ?? seleccionado}
           constelaciones={datos}
+          resultados={resultados}
           lineas={activa}
           filtroConstelacion={activa ? filtroValido : ''}
           noche={noche}
@@ -235,47 +224,26 @@ export function MapaAliados({
         </p>
       )}
 
-      {/* Leyenda en tres renglones (Luis, 4-oct-2026): tamaño, color y línea. */}
-      <dl className="mt-3 space-y-1.5 font-sans text-xs text-tinta/75">
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <dt className="font-medium text-tinta">Tamaño</dt>
-          <dd className="inline-flex items-center gap-1.5">
-            <span aria-hidden="true" className="inline-flex" dangerouslySetInnerHTML={{ __html: svgEstrella(GRUPOS[1]!.color, 18) }} />
-            grande: aliado de Constelaciones
-          </dd>
-          <dd className="inline-flex items-center gap-1.5">
-            <span aria-hidden="true" className="inline-flex" dangerouslySetInnerHTML={{ __html: svgEstrella(GRUPOS[1]!.color, 11) }} />
-            pequeña: comercio en OpenStreetMap
-          </dd>
-        </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <dt className="font-medium text-tinta">Color = categoría</dt>
-          {GRUPOS.map((g) => (
-            <dd key={g.id} className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="inline-flex" dangerouslySetInnerHTML={{ __html: svgEstrella(g.color, 12) }} />
-              {g.nombre} · <span className="tabular-nums">{conteos[g.id]}</span>
-            </dd>
-          ))}
-        </div>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-          <dt className="font-medium text-tinta">Línea = constelación</dt>
-          <dd className="inline-flex items-center gap-1.5">
-            <span aria-hidden="true" className="inline-block h-px w-6 bg-tinta/70" />
-            negocios cercanos unidos
-          </dd>
-        </div>
-      </dl>
+      {/* Leyenda mínima (equipo, 4-oct-2026: «solo las categorías»): una fila con los
+          6 grupos y una línea para el tamaño. La atribución de OpenStreetMap (ODbL)
+          la pone Leaflet en la esquina del mapa; no se quita. */}
+      <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-sans text-xs text-tinta/75">
+        {GRUPOS.map((g) => (
+          <li key={g.id} className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="inline-flex" dangerouslySetInnerHTML={{ __html: svgEstrella(g.color, 14) }} />
+            {g.nombre}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-1.5 font-sans text-xs text-tinta/65">Estrella grande: aliado de Constelaciones.</p>
 
-      {activa && elegida && (
+      {activa && elegida && !resultados && (
         <p aria-live="polite" className="mt-2 break-words font-sans text-xs leading-relaxed text-tinta/75">
           Qué hay aquí, en {[elegida.codigo, elegida.nombre].filter(Boolean).join(' · ') || elegida.id}:{' '}
           {lineaMezcla(elegida)}
         </p>
       )}
 
-      {fuente && (
-        <p className="mt-2 font-sans tabular-nums text-xs leading-relaxed text-tinta/70">{fuente}</p>
-      )}
     </div>
   );
 }

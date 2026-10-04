@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Polygon, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
@@ -9,13 +9,13 @@ import 'leaflet/dist/leaflet.css';
 import { POLIGONO_MANRIQUE, CENTRO_MANRIQUE, TESELAS, ZOOM } from '@/lib/geo/constantes';
 import BARRIOS from '@/lib/geo/barrios-manrique.json';
 import type { Coordenada } from '@/lib/geo/constantes';
-import type { DatosConstelaciones } from '@/lib/geo/constelaciones';
+import type { DatosConstelaciones, EstrellaOsm } from '@/lib/geo/constelaciones';
 import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
 import { contar } from '@/lib/interacciones';
-import type { CentralidadMapa } from './MapaAliados';
-import { CapaConstelaciones } from './mapa/CapaConstelaciones';
+import type { CentralidadMapa, ResultadosMapa } from './MapaAliados';
+import { CapaConstelaciones, CapaResultados } from './mapa/CapaConstelaciones';
 import { svgEstrella } from './mapa/formas';
 import { PALETA_NOCHE } from '@/lib/paleta';
 import { useTemaOscuro } from '@/lib/tema';
@@ -126,7 +126,18 @@ type Props = {
   noche?: boolean;
   /** Capa interna del POT (solo el panel del equipo): contorno discontinuo y nombre, sin clics. */
   centralidades?: CentralidadMapa[];
+  /**
+   * Búsqueda activa: se dibujan solo `portafolios` (ya filtrados) y estos
+   * comercios de OSM; no hay líneas, nombres ni sueltos, y el encuadre va a ellos.
+   */
+  resultados?: ResultadosMapa | null;
 };
+
+/** Hasta aquí el encuadre de resultados se anima; con más puntos se salta directo. */
+const MAX_RESULTADOS_ANIMADOS = 12;
+
+type Registro = Map<string, L.Marker>;
+const SIN_COMERCIOS: EstrellaOsm[] = [];
 
 /**
  * Encuadre en la comuna (D2 del plan de diseño).
@@ -141,7 +152,7 @@ type Props = {
  * Con `foco` (una constelación elegida en el filtro) se acerca a ella; al
  * quitarlo vuelve a la comuna.
  */
-function Encuadre({ foco }: { foco: L.LatLngBounds | null }) {
+function Encuadre({ foco, animar }: { foco: L.LatLngBounds | null; animar: boolean }) {
   const mapa = useMap();
 
   useEffect(() => {
@@ -159,39 +170,51 @@ function Encuadre({ foco }: { foco: L.LatLngBounds | null }) {
   // sobre un panel ya borrado (`_leaflet_pos` de undefined en `_onZoomTransitionEnd`).
   const primero = useRef(true);
   useEffect(() => {
-    mapa.fitBounds(foco ?? LIMITES_COMUNA, { padding: [16, 16], maxZoom: ZOOM.seleccion, animate: !primero.current });
+    mapa.fitBounds(foco ?? LIMITES_COMUNA, { padding: [16, 16], maxZoom: ZOOM.seleccion, animate: !primero.current && animar });
     primero.current = false;
     return () => {
       mapa.stop();
     };
-  }, [mapa, foco]);
+  }, [mapa, foco, animar]);
 
   return null;
 }
 
-/** Vuela al negocio que se tocó en el listado. */
+/**
+ * Vuela al negocio que se tocó en el listado y abre su popup. `seleccionado` es
+ * el id de un aliado o `osm:<id>` (un comercio de los resultados de búsqueda).
+ */
 function IrASeleccionado({
   seleccionado,
   portafolios,
+  comercios,
+  registro,
 }: {
   seleccionado?: string | null;
   portafolios: Portafolio[];
+  comercios: EstrellaOsm[];
+  registro: React.MutableRefObject<Registro>;
 }) {
   const mapa = useMap();
 
   useEffect(() => {
     if (!seleccionado) return;
     const p = portafolios.find((x) => x.id === seleccionado);
-    if (!p) return;
+    const c = p ? null : comercios.find((x) => `osm:${x.osm}` === seleccionado);
+    const destino: L.LatLngExpression | null = p ? [p.latitud, p.longitud] : c ? [c.lat, c.lon] : null;
+    if (!destino) return;
 
-    const destino: L.LatLngExpression = [p.latitud, p.longitud];
     const zoom = Math.max(mapa.getZoom(), ZOOM.seleccion);
+    const abrir = () => registro.current.get(seleccionado)?.openPopup();
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       mapa.setView(destino, zoom, { animate: false });
+      abrir();
     } else {
+      mapa.once('moveend', abrir);
       mapa.flyTo(destino, zoom, { duration: 0.7 });
     }
     return () => {
+      mapa.off('moveend', abrir);
       mapa.stop(); // un vuelo en curso no debe seguir sobre un mapa desmontado
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -210,7 +233,15 @@ export default function MapaAliadosClient({
   lineas = true,
   noche = false,
   centralidades,
+  resultados,
 }: Props) {
+  const registro = useRef<Registro>(new Map());
+  const registrar = useCallback((id: string, marcador: L.Marker | null) => {
+    if (marcador) registro.current.set(id, marcador);
+    else registro.current.delete(id);
+  }, []);
+  const comerciosResultado = resultados?.comercios ?? SIN_COMERCIOS;
+
   // El polígono no cambia nunca; sin memo, react-leaflet vuelve a montar la
   // capa GeoJSON en cada render y el mapa parpadea al filtrar por categoría.
   const capaLimite = useMemo(
@@ -218,11 +249,23 @@ export default function MapaAliadosClient({
     [],
   );
 
-  const foco = useMemo(() => {
+  // Con búsqueda se encuadran los resultados (los que caen dentro del margen de
+  // paneo: un aliado en otro país no debe alejar el mapa); sin ellos, la comuna.
+  const { foco, animar } = useMemo(() => {
+    if (resultados) {
+      const puntos = [
+        ...portafolios.map((p) => L.latLng(p.latitud, p.longitud)),
+        ...resultados.comercios.map((e) => L.latLng(e.lat, e.lon)),
+      ].filter((pt) => LIMITES_PANEO.contains(pt));
+      return {
+        foco: puntos.length > 0 ? L.latLngBounds(puntos) : null,
+        animar: puntos.length <= MAX_RESULTADOS_ANIMADOS,
+      };
+    }
     const c = constelaciones?.constelaciones.find((x) => x.id === filtroConstelacion);
-    if (!c) return null;
-    return L.latLngBounds(c.estrellas.map((e) => L.latLng(e.lat, e.lon))).pad(0.5);
-  }, [constelaciones, filtroConstelacion]);
+    if (!c) return { foco: null, animar: true };
+    return { foco: L.latLngBounds(c.estrellas.map((e) => L.latLng(e.lat, e.lon))).pad(0.5), animar: true };
+  }, [resultados, portafolios, constelaciones, filtroConstelacion]);
 
   // Con "menos movimiento" se apagan también las animaciones de zoom y de
   // desplazamiento de Leaflet (el CSS global solo alcanza a las de CSS). Este
@@ -331,16 +374,25 @@ export default function MapaAliadosClient({
       )}
 
       <EtiquetasBarrioSegunZoom />
-      <Encuadre foco={foco} />
-      <IrASeleccionado seleccionado={seleccionado} portafolios={portafolios} />
+      <Encuadre foco={foco} animar={animar} />
+      <IrASeleccionado
+        seleccionado={seleccionado}
+        portafolios={portafolios}
+        comercios={comerciosResultado}
+        registro={registro}
+      />
 
-      {constelaciones && (
+      {resultados ? (
+        <CapaResultados comercios={resultados.comercios} ubicacion={ubicacionUsuario} registrar={registrar} />
+      ) : (
+        constelaciones && (
         <CapaConstelaciones
           datos={constelaciones}
           filtroId={filtroConstelacion}
           lineas={lineas}
           ubicacion={ubicacionUsuario}
         />
+        )
       )}
 
       {ubicacionUsuario && (
@@ -365,6 +417,7 @@ export default function MapaAliadosClient({
         return (
           <Marker
             key={p.id}
+            ref={(m) => registrar(p.id, m)}
             position={[p.latitud, p.longitud]}
             icon={iconoGrupo(grupo, p.id === seleccionado)}
             title={`${p.nombre} · ${grupo.nombre}`}

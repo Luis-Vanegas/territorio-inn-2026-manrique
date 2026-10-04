@@ -196,3 +196,22 @@ export function relacionados<T extends NegocioBuscable>(negocios: T[], resultado
   const vistos = new Set(resultados.map((r) => r.id));
   return negocios.filter((n) => categorias.has(n.categoria_id) && !vistos.has(n.id)).slice(0, maximo);
 }
+
+/**
+ * Las categorías con más negocios, para sugerir búsquedas («Prueba con:»):
+ * sugerir algo que no existe en el barrio sería invitar a una búsqueda vacía.
+ */
+export function sugerenciasDeCategorias(
+  negocios: Pick<NegocioBuscable, 'categoria_id' | 'categoria_nombre'>[],
+  maximo = 3,
+): string[] {
+  const porCategoria = new Map<string, number>();
+  for (const n of negocios) {
+    if (n.categoria_id === 'otros') continue;
+    porCategoria.set(n.categoria_nombre, (porCategoria.get(n.categoria_nombre) ?? 0) + 1);
+  }
+  return [...porCategoria.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, maximo)
+    .map(([nombre]) => nombre.split(' y ')[0]!);
+}

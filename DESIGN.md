@@ -354,20 +354,21 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   margen sigue en la lista pero el mapa no lo muestra.
 - **Cada negocio es una estrella** de cuatro puntas del color de su grupo, con
   contorno `noche` (`svgEstrella`, `components/mapa/formas.ts`). **Aliado**: grande,
-  28 px. **Comercio de OpenStreetMap**: chica, 16 px si está en una constelación y
-  11 px si está suelto, debajo de los aliados. Caja táctil de 44 en todas. El mapeo
+  28 px, opaco y con borde fino del color de la tinta. **Comercio de OpenStreetMap**:
+  tenue (~55 % de opacidad, sin borde grueso), 12 px si está en una constelación y
+  9 px si está suelto, debajo de los aliados. Caja táctil de 44 en todas. El mapeo
   categoría → grupo vive en un solo lugar, `lib/categorias/grupos.ts`. Los comercios
-  de OSM **no son aliados**: la leyenda lo dice y el texto habla de «comercios en
-  OpenStreetMap», nunca de «negocios que hay».
+  de OSM **no son aliados**: se distinguen por el tamaño y la opacidad, y el texto habla de «comercios»,
+  nunca de «negocios que hay».
 - **Líneas de constelación** (interruptor «Líneas de constelación», `aria-pressed`,
-  encendido de entrada): líneas finas del MST (`noche-3` sobre teselas claras,
-  `noche-azul` sobre oscuras) y el nombre de cada constelación en Fraunces itálica,
-  sin caja: el código («C04») siempre y el nombre desde zoom 15. Apagarlo deja las
-  estrellas. Sin halos.
-- **Leyenda**: tres renglones y una sola línea de fuente debajo. (1) **Tamaño**:
-  grande = aliado de Constelaciones, pequeña = comercio en OpenStreetMap. (2) **Color =
-  categoría**: los 6 grupos con su conteo (aliados + estrellas que el mapa muestra).
-  (3) **Línea = constelación**: negocios cercanos unidos.
+  encendido de entrada): líneas finas y tenues del MST (`noche-3` sobre teselas
+  claras, `noche-azul` sobre oscuras, opacidad ~0,35). El nombre en Fraunces itálica,
+  sin caja, SOLO se escribe cuando hay una constelación elegida (no por zoom: el
+  equipo lo vio recargado). Apagarlo deja las estrellas. Sin halos.
+- **Leyenda** (equipo, 4-oct: «solo las categorías»): UNA fila con los 6 grupos (estrella
+  de su color + nombre, sin conteos) y una línea: «Estrella grande: aliado de
+  Constelaciones.» Nada de fuentes largas ni de explicar OpenStreetMap: la atribución
+  corta (ODbL) la pone Leaflet en la esquina del mapa y no se quita.
 - **Filtros del mapa** (sin controles nuevos): el desplegable «Ver una sola» lista
   cada constelación como «C04 · Carrera 31 · Tienda y víveres — 13 comercios»;
   si el JSON no trae `codigo` o un nombre descriptivo se usa lo que haya
@@ -540,7 +541,7 @@ La parte pública de datos (Luis, 4-oct-2026; reemplaza a la página `/firmament
 día/oscuro según el selector, sin bandas de noche. Orden y nada más:
 
 1. **Título corto** («Los negocios de la Comuna 3, Manrique, en un mapa.») y el
-   **buscador** de negocios (`BuscadorInicio`). Sin hero grande, sin foto, sin botón de
+   **buscador** de negocios (`BuscadorNegocios`, que filtra el mapa de abajo). Sin hero grande, sin foto, sin botón de
    registro.
 2. **El mapa** (uno solo en toda la página; ver «Mapa»): aliados + comercios de OSM,
    interruptor «Líneas de constelación», leyenda de tres renglones y, al lado (debajo en
