@@ -59,7 +59,7 @@ Revisá cada uno con `git log reto/alineacion..<rama>`. Si el agente no terminó
 
 | Prioridad | Rama | Qué es |
 |---|---|---|
-| **1** | `worktree-agent-ae10328fa06ce247c` | **Registro dentro de Firmamento** (lo crítico) |
+| **1** | ~~`worktree-agent-ae10328fa06ce247c`~~ | **Registro dentro de Firmamento: INTEGRADO** (4-oct). Recorrido punta a punta OK en prueba. Pendiente: probar el retorno real de Google al registro en producción; la pestaña «Inicio» se marca activa en `/firmamento/negocio/registro` (`NavPanel.tsx:23`). |
 | 2 | ~~`worktree-agent-ac5f06e841345bdf3`~~ | **Paleta C + portada sin duplicados: INTEGRADO** (merge + `d13e7c3`: un solo botón de registro, el del Hero). Falta ver los paneles con sesión con la paleta nueva. |
 | 3 | `worktree-agent-ae10f813816819b8a` | **Vigía vivo** (opcional para la entrega) |
 
