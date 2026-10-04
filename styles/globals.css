@@ -312,27 +312,31 @@ html.js:not(.js-listo) [data-reveal] {
   fill-opacity: 0.55;
 }
 
-/* Constelaciones de OpenStreetMap: noche-3 sobre teselas claras, tenues, para
-   que no se confundan con los aliados (formas grandes y de color). */
-.halo-constelacion {
-  fill: theme('colors.noche-3');
-  fill-opacity: 0.07;
-  stroke: theme('colors.noche-3');
-  stroke-opacity: 0.4;
-  stroke-width: 1;
-  stroke-dasharray: 4 4;
-}
-
-.halo-constelacion--activa {
-  fill-opacity: 0.14;
-  stroke-opacity: 0.8;
-}
-
+/* Líneas de constelación: noche-3 sobre teselas claras, finas, debajo de las estrellas. */
 .arista-constelacion {
   stroke: theme('colors.noche-3');
   stroke-opacity: 0.7;
   stroke-width: 1.25;
   fill: none;
+}
+
+/* Nombre de una constelación: Fraunces itálica, sin caja, con halo del fondo
+   para despegarlo de las teselas. El nombre largo aparece desde zoom 15 (la
+   misma clase que oculta los nombres de barrio); el código, siempre. */
+.etiqueta-constelacion {
+  display: block;
+  width: max-content;
+  max-width: 16rem;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.15;
+  color: rgb(var(--tinta-rgb));
+  text-shadow: 0 0 3px rgb(var(--hueso-rgb)), 0 0 3px rgb(var(--hueso-rgb)), 0 0 2px rgb(var(--hueso-rgb));
+  pointer-events: none;
+}
+.etiquetas-barrio-ocultas .etiqueta-constelacion .nombre {
+  display: none;
 }
 
 /* Contorno de la comuna: tinta del tema (oscuro sobre teselas claras, claro
@@ -414,27 +418,11 @@ html.js:not(.js-listo) [data-reveal] {
 
 /* Constelaciones sobre teselas oscuras: el noche-3 se perdía (1,2:1). Pasan a
    noche-azul (#7FB0FF), la misma familia de color. */
-:root[data-theme='dark'] .halo-constelacion,
+/* Líneas sobre teselas oscuras: el noche-3 se perdía (1,2:1). Pasan a
+   noche-azul (#7FB0FF), la misma familia de color. */
 :root[data-theme='dark'] .arista-constelacion,
-.modo-noche .halo-constelacion,
 .modo-noche .arista-constelacion {
-  fill: theme('colors.noche-azul');
   stroke: theme('colors.noche-azul');
-}
-
-:root[data-theme='dark'] .halo-constelacion,
-.modo-noche .halo-constelacion {
-  fill-opacity: 0.1;
-}
-
-:root[data-theme='dark'] .halo-constelacion--activa,
-.modo-noche .halo-constelacion--activa {
-  fill-opacity: 0.2;
-}
-
-:root[data-theme='dark'] .arista-constelacion,
-.modo-noche .arista-constelacion {
-  fill: none;
 }
 
 /* Anillo del marcador activo: noche sobre teselas oscuras no se ve. */

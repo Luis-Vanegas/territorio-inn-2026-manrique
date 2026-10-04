@@ -48,3 +48,14 @@ export function pathEstrella(cx: number, cy: number, r: number): string {
 /** La estrella de 24 × 24 con 1 unidad de margen en el viewBox para que el trazo no se corte en las puntas. */
 export const ESTRELLA_PATH = pathEstrella(12, 12, 12);
 export const ESTRELLA_VIEWBOX = '-1 -1 26 26';
+
+/**
+ * Un negocio en el mapa (Luis, 4-oct-2026, como el tablero de la asesoría): una
+ * estrella del color de su grupo; el TAMAÑO dice si es aliado (grande) o comercio
+ * de OSM (chica). Contorno `noche` por lo mismo que `svgForma`: el amarillo y la
+ * menta se pierden sobre las teselas claras sin él.
+ */
+export function svgEstrella(color: string, tamano: number): string {
+  const trazo = tamano >= 20 ? 1.5 : 2.2; // en unidades del viewBox: la chica necesita más para verse
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="${ESTRELLA_VIEWBOX}" aria-hidden="true" focusable="false"><path d="${ESTRELLA_PATH}" fill="${color}" stroke="${CONTORNO}" stroke-width="${trazo}" stroke-linejoin="round"/></svg>`;
+}
