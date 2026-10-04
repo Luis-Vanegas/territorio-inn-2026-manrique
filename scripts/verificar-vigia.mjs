@@ -16,7 +16,8 @@
  */
 
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { informeVigiaSchema } from '../lib/validation/vigia.schema.ts';
@@ -114,8 +115,16 @@ for (const m of consultas.matchAll(/\b(?:from|join|into|update)\s+([a-z_]+)/gi))
 if (/google_sub|whatsapp|telefono|correo|ip_registro|campos_extra/i.test(consultas)) problemas.push('vigia.repo.ts: una consulta nombra una columna personal');
 
 // Ninguna página pública lee el vigía (Luis no quiere método ni secciones técnicas en lo público).
-for (const ruta of ['app/(site)/firmamento/page.tsx', 'app/(site)/page.tsx']) {
-  if (/vigia/i.test(leer(ruta))) problemas.push(`${ruta}: el vigía no va en lo público`);
+const sitio = join(RAIZ, 'app', '(site)');
+const recorrer = (dir) =>
+  readdirSync(dir).flatMap((n) => {
+    const ruta = join(dir, n);
+    return statSync(ruta).isDirectory() ? recorrer(ruta) : /\.tsx?$/.test(n) ? [ruta] : [];
+  });
+for (const ruta of recorrer(sitio)) {
+  if (/vigia\.repo|lib\/firmamento\/vigia|TablaFuentesVigia/.test(readFileSync(ruta, 'utf8'))) {
+    problemas.push(`${ruta.slice(RAIZ.length)}: el vigía no va en lo público`);
+  }
 }
 
 // La page del panel va con guarda: lo comprueba verificar-accesos.mjs; aquí solo que la tarjeta esté.
