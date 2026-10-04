@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
 
+import type { CentralidadMapa } from '@/components/MapaAliados';
 import { MapaBarrios } from '@/components/firmamento/MapaBarrios';
+import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { CLASE_BOTON_PANEL, hoyBogota, LineaFuente, Tarjeta } from '@/components/firmamento/panel/Tarjeta';
+import POT from '@/public/firmamento/centralidades.json';
 import { exigirEquipo } from '@/lib/auth/firmamento';
 import { fichasParaCalidad } from '@/lib/db/equipo.repo';
 import { cobertura, OSM, territorio } from '@/lib/firmamento/territorio';
+import { MapaTerritorio } from './_components/MapaTerritorio';
 
 export const metadata: Metadata = { title: 'Territorio' };
 
@@ -14,33 +18,22 @@ const numero = (n: number) => n.toLocaleString('es-CO');
 const pct = (aliados: number, comercios: number) =>
   comercios > 0 ? `${Math.round((aliados / comercios) * 100)} %` : '—';
 
-/**
- * Bloque plegable nativo (`<details>`): las tablas largas quedan cerradas bajo el
- * mapa y se abren con un toque de 44 px. Sin animación de altura a propósito (el
- * giro de la flecha es una transición CSS que apaga `prefers-reduced-motion`).
- * ponytail: cuando la `Tarjeta` del panel traiga variante plegable, esto se va.
- */
-function Plegable({ resumen, children }: { resumen: string; children: React.ReactNode }) {
-  return (
-    <details className="group">
-      <summary className="flex min-h-[44px] cursor-pointer list-none items-center justify-between gap-3 font-sans text-sm font-medium text-sodio [&::-webkit-details-marker]:hidden">
-        <span className="underline underline-offset-4">{resumen}</span>
-        <span aria-hidden="true" className="transition-transform group-open:rotate-180">
-          ▾
-        </span>
-      </summary>
-      <div className="mt-2">{children}</div>
-    </details>
-  );
-}
+const CLASE_TH = 'px-2 py-2 sm:px-3 text-left font-sans text-xs font-medium text-tinta/70';
+const CLASE_TD = 'border-t border-tinta/12 px-2 sm:px-3 py-2.5 font-sans text-sm tabular-nums text-tinta';
 
-const CLASE_TH = 'px-2 py-2 sm:px-3 text-left font-sans text-xs font-medium text-tenue';
-const CLASE_TD = 'border-t border-trazo px-2 sm:px-3 py-2.5 font-sans text-sm text-estrella';
+// Solo lo que dibuja el mapa: el resto del JSON (mezcla de categorías, áreas) no viaja al navegador.
+const CENTRALIDADES: CentralidadMapa[] = POT.centralidades.map((c) => ({
+  id: c.id,
+  nombre: c.nombre,
+  jerarquia: c.jerarquia,
+  geometry: c.geometry as CentralidadMapa['geometry'],
+}));
 
 /**
  * Dónde está la red de aliados y dónde no, contra los comercios mapeados en
  * OpenStreetMap. Los comercios de OSM no son aliados ni un censo: la cobertura
- * es una aproximación y el texto lo dice.
+ * es una aproximación y el texto lo dice. Las centralidades del POT son una
+ * capa de uso interno (licencia de los polígonos pendiente): solo existe acá.
  */
 export default async function TerritorioPage() {
   await exigirEquipo();
@@ -55,7 +48,7 @@ export default async function TerritorioPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Tarjeta titulo="Comercios mapeados, barrio por barrio" id="titulo-mapa-barrios">
+      <VentanaNoche titulo="Comercios mapeados, barrio por barrio" id="titulo-mapa-barrios">
         <MapaBarrios
           marco={false}
           filas={barrios.map((b) => ({ barrio: b.barrio, valor: b.comercios }))}
@@ -63,23 +56,29 @@ export default async function TerritorioPage() {
           descripcion="Comercios mapeados en OpenStreetMap por barrio oficial de la Comuna 3, de más a menos"
           fuente={`Fuente: OpenStreetMap (ODbL), descarga ${fechaOsm} · barrios: Alcaldía de Medellín`}
         />
-      </Tarjeta>
+      </VentanaNoche>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Tarjeta titulo="Dónde está la red y dónde no" id="titulo-red">
-          <p className="max-w-prose font-sans text-base leading-relaxed text-tenue">
-            OpenStreetMap tiene <span className="font-cifra text-estrella">{numero(OSM.resumen.total_comercios)}</span>{' '}
-            comercios mapeados en la Comuna 3, agrupados en{' '}
-            <span className="font-cifra text-estrella">{numero(OSM.resumen.constelaciones)}</span> constelaciones y{' '}
-            <span className="font-cifra text-estrella">{numero(OSM.resumen.puntos_sueltos)}</span> sueltos. Hay{' '}
-            <span className="font-cifra text-estrella">{numero(cob.dentro)}</span> aliados publicados dentro de la comuna;{' '}
-            <span className="font-cifra text-estrella">{numero(fueraDeConstelacion)}</span> de los publicados no caen en
-            ninguna constelación.
+      <VentanaNoche
+        titulo="Constelaciones y centralidades"
+        id="titulo-mapa-constelaciones"
+        descripcion="Cada estrella es un comercio de OpenStreetMap. Enciende las centralidades del POT para ver dónde coinciden."
+      >
+        <MapaTerritorio centralidades={CENTRALIDADES} />
+      </VentanaNoche>
+
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <Tarjeta titulo="Dónde está la red y dónde no" id="titulo-red" plegable abierta>
+          <p className="max-w-prose font-sans text-base leading-relaxed text-tinta/70">
+            OpenStreetMap tiene <span className="tabular-nums text-tinta">{numero(OSM.resumen.total_comercios)}</span>{' '}
+            comercios mapeados, en <span className="tabular-nums text-tinta">{numero(OSM.resumen.constelaciones)}</span>{' '}
+            constelaciones y <span className="tabular-nums text-tinta">{numero(OSM.resumen.puntos_sueltos)}</span> sueltos.
+            Hay <span className="tabular-nums text-tinta">{numero(cob.dentro)}</span> aliados publicados dentro de la
+            comuna; <span className="tabular-nums text-tinta">{numero(fueraDeConstelacion)}</span> no caen en ninguna
+            constelación.
           </p>
-          <p className="mt-3 max-w-prose font-sans text-sm leading-relaxed text-tenue">
-            Los comercios de OpenStreetMap no son aliados ni un censo: los mapeó
-            alguien. Sirven para ver dónde falta llegar, no para medir el comercio
-            de la comuna.
+          <p className="mt-3 max-w-prose font-sans text-sm leading-relaxed text-tinta/70">
+            Los comercios de OpenStreetMap no son aliados ni un censo: sirven para ver dónde falta llegar, no para
+            medir el comercio de la comuna.
           </p>
           <LineaFuente>{fuente}</LineaFuente>
         </Tarjeta>
@@ -87,31 +86,30 @@ export default async function TerritorioPage() {
         <Tarjeta
           titulo="Plan de brigada"
           id="titulo-brigada"
+          plegable
+          abierta
           accion={
             <a href="/api/admin/exportar?conjunto=brigada" download className={CLASE_BOTON_PANEL}>
               Descargar CSV
             </a>
           }
         >
-          <p className="font-sans text-sm leading-relaxed text-tenue">
-            Constelaciones con más comercios sin registrar: por aquí empieza el
-            registro asistido. El CSV trae cada comercio de OpenStreetMap con su
-            dirección, en este orden, y marca los que quedan a pocos metros de un
-            aliado (probablemente ya están en la red).
+          <p className="font-sans text-sm leading-relaxed text-tinta/70">
+            Constelaciones con más comercios sin registrar: por aquí empieza el registro asistido. El CSV marca los
+            comercios que quedan a pocos metros de un aliado.
           </p>
           <ol className="mt-4 flex flex-col">
             {constelaciones.slice(0, 5).map((c, i) => (
-              <li key={c.id} className="flex gap-3 border-t border-trazo py-3 first:border-t-0 first:pt-0">
-                <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-sodio font-cifra text-xs text-sodio">
+              <li key={c.id} className="flex gap-3 border-t border-tinta/12 py-3 first:border-t-0 first:pt-0">
+                <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-morado-texto font-sans text-xs tabular-nums text-morado-texto">
                   {i + 1}
                 </span>
                 <div className="min-w-0">
-                  <p className="font-sans text-base font-medium text-estrella">
+                  <p className="font-sans text-base font-medium text-tinta">
                     {c.codigo} · {c.nombre}
                   </p>
-                  <p className="font-sans text-sm text-tenue">
-                    <span className="font-cifra">{c.comercios}</span> comercios ·{' '}
-                    <span className="font-cifra">{c.aliados}</span> {c.aliados === 1 ? 'aliado' : 'aliados'}
+                  <p className="font-sans text-sm tabular-nums text-tinta/70">
+                    {c.comercios} comercios · {c.aliados} {c.aliados === 1 ? 'aliado' : 'aliados'}
                     {c.barrio && <> · {c.barrio}</>}
                   </p>
                 </div>
@@ -121,71 +119,107 @@ export default async function TerritorioPage() {
         </Tarjeta>
       </div>
 
-      <Tarjeta titulo="Cobertura por constelación" id="titulo-constelaciones">
-        <Plegable resumen={`Ver la tabla de las ${constelaciones.length} constelaciones`}>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <caption className="sr-only">
-                Comercios de OpenStreetMap y aliados por constelación, de más a menos comercios sin registrar
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col" className={CLASE_TH}>Constelación</th>
-                  <th scope="col" className={`${CLASE_TH} text-right`}>Comercios OSM</th>
-                  <th scope="col" className={`${CLASE_TH} text-right`}>Aliados</th>
-                  <th scope="col" className={`${CLASE_TH} text-right`}>Cobertura</th>
-                  <th scope="col" className={`${CLASE_TH} hidden sm:table-cell`}>Barrio</th>
+      <Tarjeta
+        titulo="Centralidades del POT"
+        id="titulo-centralidades"
+        plegable
+        resumen={`${POT.centralidades.length} en la comuna`}
+      >
+        <p className="font-sans text-sm leading-relaxed text-tinta/70">
+          Uso interno: licencia de los polígonos pendiente, por eso no se dibujan en páginas públicas. Del comercio de
+          OpenStreetMap, {POT.resumen.pct_comercios_dentro_de_centralidad.toLocaleString('es-CO')} % cae dentro de una
+          centralidad.
+        </p>
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full border-collapse">
+            <caption className="sr-only">Centralidades urbanas del POT y comercios de OpenStreetMap dentro de cada una</caption>
+            <thead>
+              <tr>
+                <th scope="col" className={CLASE_TH}>Centralidad</th>
+                <th scope="col" className={CLASE_TH}>Jerarquía</th>
+                <th scope="col" className={`${CLASE_TH} text-right`}>Comercios OSM</th>
+                <th scope="col" className={`${CLASE_TH} hidden sm:table-cell`}>Barrios</th>
+              </tr>
+            </thead>
+            <tbody>
+              {POT.centralidades.map((c) => (
+                <tr key={c.id}>
+                  <th scope="row" className={`${CLASE_TD} text-left font-normal`}>{c.nombre}</th>
+                  <td className={CLASE_TD}>{c.jerarquia}</td>
+                  <td className={`${CLASE_TD} text-right`}>{c.comercios_dentro}</td>
+                  <td className={`${CLASE_TD} hidden sm:table-cell`}>{c.barrios.join(', ')}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {constelaciones.map((c) => (
-                  <tr key={c.id}>
-                    <th scope="row" className={`${CLASE_TD} text-left font-normal`}>
-                      <span className="font-display italic text-sodio">{c.codigo}</span> {c.nombre}
-                    </th>
-                    <td className={`${CLASE_TD} text-right font-cifra`}>{c.comercios}</td>
-                    <td className={`${CLASE_TD} text-right font-cifra`}>{c.aliados}</td>
-                    <td className={`${CLASE_TD} text-right font-cifra`}>{pct(c.aliados, c.comercios)}</td>
-                    <td className={`${CLASE_TD} hidden text-tenue sm:table-cell`}>{c.barrio ?? '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Plegable>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <LineaFuente>
+          Fuente: Alcaldía de Medellín, POT (Acuerdo 48 de 2014), centralidades urbanas; comercio: OpenStreetMap (ODbL) ·
+          corrida {POT.fecha_corrida.slice(0, 10)}
+        </LineaFuente>
+      </Tarjeta>
+
+      <Tarjeta titulo="Cobertura por constelación" id="titulo-constelaciones" plegable resumen={`${constelaciones.length} constelaciones`}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <caption className="sr-only">
+              Comercios de OpenStreetMap y aliados por constelación, de más a menos comercios sin registrar
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col" className={CLASE_TH}>Constelación</th>
+                <th scope="col" className={`${CLASE_TH} text-right`}>Comercios OSM</th>
+                <th scope="col" className={`${CLASE_TH} text-right`}>Aliados</th>
+                <th scope="col" className={`${CLASE_TH} text-right`}>Cobertura</th>
+                <th scope="col" className={`${CLASE_TH} hidden sm:table-cell`}>Barrio</th>
+              </tr>
+            </thead>
+            <tbody>
+              {constelaciones.map((c) => (
+                <tr key={c.id}>
+                  <th scope="row" className={`${CLASE_TD} text-left font-normal`}>
+                    <span className="font-display italic text-morado-texto">{c.codigo}</span> {c.nombre}
+                  </th>
+                  <td className={`${CLASE_TD} text-right`}>{c.comercios}</td>
+                  <td className={`${CLASE_TD} text-right`}>{c.aliados}</td>
+                  <td className={`${CLASE_TD} text-right`}>{pct(c.aliados, c.comercios)}</td>
+                  <td className={`${CLASE_TD} hidden text-tinta/70 sm:table-cell`}>{c.barrio ?? '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <LineaFuente>
           {fuente}. Un aliado está en una constelación si cae dentro del radio que contiene al 90 % de sus comercios.
         </LineaFuente>
       </Tarjeta>
 
-      <Tarjeta titulo="Cobertura por barrio oficial" id="titulo-barrios">
-        <Plegable resumen={`Ver la tabla de los ${barrios.length} barrios`}>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <caption className="sr-only">
-                Comercios de OpenStreetMap y aliados por barrio oficial, de más a menos comercios sin registrar
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col" className={CLASE_TH}>Barrio</th>
-                  <th scope="col" className={`${CLASE_TH} text-right`}>Comercios OSM</th>
-                  <th scope="col" className={`${CLASE_TH} text-right`}>Aliados</th>
-                  <th scope="col" className={`${CLASE_TH} text-right`}>Cobertura</th>
+      <Tarjeta titulo="Cobertura por barrio oficial" id="titulo-barrios" plegable resumen={`${barrios.length} barrios`}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <caption className="sr-only">
+              Comercios de OpenStreetMap y aliados por barrio oficial, de más a menos comercios sin registrar
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col" className={CLASE_TH}>Barrio</th>
+                <th scope="col" className={`${CLASE_TH} text-right`}>Comercios OSM</th>
+                <th scope="col" className={`${CLASE_TH} text-right`}>Aliados</th>
+                <th scope="col" className={`${CLASE_TH} text-right`}>Cobertura</th>
+              </tr>
+            </thead>
+            <tbody>
+              {barrios.map((b) => (
+                <tr key={b.barrio}>
+                  <th scope="row" className={`${CLASE_TD} text-left font-normal`}>{b.barrio}</th>
+                  <td className={`${CLASE_TD} text-right`}>{b.comercios}</td>
+                  <td className={`${CLASE_TD} text-right`}>{b.aliados}</td>
+                  <td className={`${CLASE_TD} text-right`}>{pct(b.aliados, b.comercios)}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {barrios.map((b) => (
-                  <tr key={b.barrio}>
-                    <th scope="row" className={`${CLASE_TD} text-left font-normal`}>{b.barrio}</th>
-                    <td className={`${CLASE_TD} text-right font-cifra`}>{b.comercios}</td>
-                    <td className={`${CLASE_TD} text-right font-cifra`}>{b.aliados}</td>
-                    <td className={`${CLASE_TD} text-right font-cifra`}>{pct(b.aliados, b.comercios)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Plegable>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <LineaFuente>
           {fuente}. El barrio sale del punto (polígonos de la Alcaldía de Medellín), no del que escribió cada negocio.
         </LineaFuente>

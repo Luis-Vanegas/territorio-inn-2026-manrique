@@ -30,6 +30,19 @@ import { useConstelaciones } from './mapa/useConstelaciones';
  * de constelaciones se pide aquí para que el filtro pueda listar sus opciones.
  */
 
+/**
+ * Una centralidad urbana del POT (Acuerdo 48 de 2014) para la capa interna del
+ * panel del equipo. Solo la pasa Territorio: la licencia de los polígonos está
+ * pendiente y no se dibujan en páginas públicas. El JSON NO se importa acá, así
+ * que ningún bundle público lo carga.
+ */
+export type CentralidadMapa = {
+  id: string;
+  nombre: string;
+  jerarquia: string;
+  geometry: { type: 'Polygon' | 'MultiPolygon'; coordinates: unknown };
+};
+
 const ALTURAS = {
   portada: 'h-[380px] sm:h-[460px] lg:h-[520px]',
   vitrina: 'h-[460px] sm:h-[600px] lg:h-[680px]',
@@ -58,6 +71,8 @@ export function MapaAliados({
   noche = false,
   constelacionElegida,
   alElegirConstelacion,
+  centralidades,
+  alto,
 }: {
   portafolios: Portafolio[];
   alSeleccionar?: (id: string) => void;
@@ -76,7 +91,12 @@ export function MapaAliados({
   constelacionElegida?: string;
   /** Avisa cuando la persona elige otra con el selector del propio mapa. */
   alElegirConstelacion?: (id: string) => void;
+  /** Capa interna de centralidades del POT: si se pasa, aparece el interruptor (apagado de entrada). */
+  centralidades?: CentralidadMapa[];
+  /** Clases de alto del mapa; pisa las de `variante`. */
+  alto?: string;
 }) {
+  const [verPot, setVerPot] = useState(false);
   const [activaInterna, setActivaInterna] = useState(true);
   const [filtroInterno, setFiltroInterno] = useState('');
   const filtro = constelacionElegida ?? filtroInterno;
@@ -142,6 +162,26 @@ export function MapaAliados({
           Constelaciones
         </button>
 
+        {centralidades && (
+          <button
+            type="button"
+            aria-pressed={verPot}
+            onClick={() => setVerPot(!verPot)}
+            className={`inline-flex min-h-[44px] items-center gap-2 border px-4 font-sans text-sm transition-colors ${
+              noche
+                ? verPot
+                  ? 'border-sodio bg-sodio text-noche'
+                  : 'border-trazo-2 text-estrella hover:border-sodio hover:text-sodio'
+                : verPot
+                  ? 'border-noche bg-noche text-estrella dark:border-trazo-2'
+                  : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto'
+            }`}
+          >
+            <span aria-hidden="true">{verPot ? '▣' : '▢'}</span>
+            Centralidades del POT
+          </button>
+        )}
+
         {conFiltro && datos && (
           <label className="inline-flex max-w-full flex-wrap items-center gap-2 font-sans text-sm text-tinta/80">
             Ver una sola
@@ -171,7 +211,7 @@ export function MapaAliados({
         </Link>
       </div>
 
-      <div className={`${ALTURAS[variante]} w-full overflow-hidden border border-tinta/12`}>
+      <div className={`${alto ?? ALTURAS[variante]} w-full overflow-hidden border border-tinta/12`}>
         <MapaClient
           portafolios={portafolios}
           alSeleccionar={alSeleccionar}
@@ -180,8 +220,16 @@ export function MapaAliados({
           constelaciones={activa ? datos : null}
           filtroConstelacion={activa ? filtroValido : ''}
           noche={noche}
+          centralidades={verPot ? centralidades : undefined}
         />
       </div>
+
+      {centralidades && (
+        <p className="mt-2 font-sans text-xs leading-relaxed text-tinta/70">
+          Uso interno: licencia de los polígonos pendiente.
+          {verPot && ' Contorno discontinuo con el nombre: centralidad urbana del POT 2014, Alcaldía de Medellín.'}
+        </p>
+      )}
 
       {estado === 'error' && (
         <p role="status" className="mt-3 font-sans text-xs text-tinta/65">
@@ -244,7 +292,7 @@ export function MapaAliados({
       )}
 
       {activa && fuente && (
-        <p className="mt-2 font-cifra text-xs leading-relaxed text-tinta/70">{fuente}</p>
+        <p className="mt-2 font-sans tabular-nums text-xs leading-relaxed text-tinta/70">{fuente}</p>
       )}
     </div>
   );

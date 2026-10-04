@@ -319,6 +319,15 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   cambian algo del panel revalidan `revalidatePath('/firmamento/equipo', 'layout')` para
   que las insignias se actualicen. Ítems del menú con `grupo` van bajo su encabezado en el
   lateral y detrás de «Más» en la barra del celular.
+  Estilo (Ola 2b): el panel es de día; la noche solo entra en `VentanaNoche` (cifras, mapas, F1 y
+  matriz), nunca con tokens `estrella`/`tenue`/`sodio` sueltos en una página. Resumen = cifras
+  (por revisar, alertas, convocatorias, invitaciones) + cambios de los dueños + bloques plegables;
+  `AprendizajeSugeridor` (`components/firmamento/panel/`) es la única vista de las decisiones del
+  sugeridor (registro y moderación: usó/corrigió/mantuvo). **Centralidades del POT**: capa interna
+  solo de `equipo/territorio` (`MapaTerritorio` → `MapaEstelar` → `MapaAliados` prop `centralidades`,
+  interruptor apagado de entrada, contorno discontinuo con nombre); el JSON se importa solo en esa
+  página y ninguna ruta pública la pasa (licencia pendiente). Las cifras de un `Kpi` pintan el cero
+  en DM Sans (`CifraLimpia`: el cero de DM Mono lee «Ø»).
 - **Panel del negocio** (`/firmamento/negocio/{,ficha,para-ti,constelacion,clientes}`, antes
   `/mi-cuenta`, que redirige en `next.config.mjs`): cada page llama `exigirNegocio()` (devuelve
   `usuarioId`) y lee con `negocioActivo(usuarioId)` (`lib/firmamento/negocio.ts`): el negocio activo

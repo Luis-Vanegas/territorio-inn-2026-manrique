@@ -103,6 +103,10 @@ export type AprendizajeSugeridor = {
   mantenidas: number;
   /** Decididas por el equipo en la moderación (origen `moderacion`, 034). */
   deModeracion: number;
+  /** De las de moderación: el equipo usó la propuesta del modelo. */
+  usadasEquipo: number;
+  /** De las de moderación: el equipo puso otra categoría distinta de la propuesta. */
+  corregidasEquipo: number;
   /** Sin dato de si la aceptó (sugerencias viejas o del buscador). */
   sinDato: number;
   /** Con negocio enlazado (033): las únicas que sirven para reentrenar. */
@@ -122,6 +126,8 @@ export async function aprendizajeSugeridor(): Promise<AprendizajeSugeridor> {
         count(*) filter (where s.aceptada is null)::int as sin_dato,
         count(*) filter (where s.decision_equipo = 'mantenida')::int as mantenidas,
         count(*) filter (where s.origen = 'moderacion')::int as de_moderacion,
+        count(*) filter (where s.decision_equipo = 'usada')::int as usadas_equipo,
+        count(*) filter (where s.decision_equipo = 'corregida')::int as corregidas_equipo,
         count(p.id)::int as con_ficha,
         count(*) filter (where p.categoria_id = s.categoria_inferida)::int as coinciden
       from sugerencias_categoria s
@@ -142,6 +148,8 @@ export async function aprendizajeSugeridor(): Promise<AprendizajeSugeridor> {
     sin_dato: number;
     mantenidas: number;
     de_moderacion: number;
+    usadas_equipo: number;
+    corregidas_equipo: number;
     con_ficha: number;
     coinciden: number;
   };
@@ -152,6 +160,8 @@ export async function aprendizajeSugeridor(): Promise<AprendizajeSugeridor> {
     sinDato: t.sin_dato,
     mantenidas: t.mantenidas,
     deModeracion: t.de_moderacion,
+    usadasEquipo: t.usadas_equipo,
+    corregidasEquipo: t.corregidas_equipo,
     conFicha: t.con_ficha,
     coincidenConFicha: t.coinciden,
     porCategoria: categorias as AprendizajeSugeridor['porCategoria'],

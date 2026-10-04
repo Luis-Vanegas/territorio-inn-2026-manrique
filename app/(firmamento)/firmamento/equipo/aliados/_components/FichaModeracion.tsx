@@ -106,7 +106,7 @@ function Dato({ etiqueta, valor, cifra = false }: { etiqueta: string; valor: str
       <dt className="w-24 shrink-0 font-sans text-xs uppercase tracking-wide text-tinta/60">
         {etiqueta}
       </dt>
-      <dd className={`${cifra ? 'font-cifra' : 'font-sans'} min-w-0 text-sm text-tinta/75 [overflow-wrap:anywhere]`}>{valor}</dd>
+      <dd className={`${cifra ? 'font-sans tabular-nums' : 'font-sans'} min-w-0 text-sm text-tinta/75 [overflow-wrap:anywhere]`}>{valor}</dd>
     </div>
   );
 }
@@ -161,7 +161,7 @@ export function FichaModeracion({
           {portafolio.moderado_por && portafolio.moderado_en && (
             <p className="mt-1 font-sans text-xs text-tinta/60">
               {ETIQUETA_ESTADO[portafolio.estado]} por {portafolio.moderado_por} ·{' '}
-              <span className="font-cifra">{formatFechaCo(portafolio.moderado_en)}</span>
+              <span className="font-sans tabular-nums">{formatFechaCo(portafolio.moderado_en)}</span>
             </p>
           )}
 

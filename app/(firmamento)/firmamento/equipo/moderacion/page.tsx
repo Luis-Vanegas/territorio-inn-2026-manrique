@@ -40,8 +40,8 @@ function Paginacion({ vista, pagina, hayMas }: { vista: Vista; pagina: number; h
           ← Más recientes
         </Link>
       )}
-      <span className="font-sans text-sm text-tenue">
-        Página <span className="font-cifra">{pagina}</span>
+      <span className="font-sans text-sm text-tinta/70">
+        Página <span className="font-sans tabular-nums">{pagina}</span>
       </span>
       {hayMas && (
         <Link href={`${RUTA}?vista=${vista}&pagina=${pagina + 1}`} className={CLASE_BOTON_PANEL}>
@@ -97,13 +97,13 @@ export default async function ModeracionPage({
     return (
       <div>
         {pestanas}
-        <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tenue">
+        <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
           Registros nuevos que esperan una decisión. Al aprobar, la ficha sale en el
           mapa de Aliados de inmediato; al rechazar, el negocio lee tu motivo.
         </p>
         <section aria-label="Registros por revisar" className="mt-6">
           {pendientes.length === 0 ? (
-            <p className="border-t border-tinta/12 pt-8 font-sans text-tenue">No hay nada esperando revisión.</p>
+            <p className="border-t border-tinta/12 pt-8 font-sans text-tinta/70">No hay nada esperando revisión.</p>
           ) : (
             pendientes.map((r) => (
               <FichaModeracion
@@ -125,27 +125,27 @@ export default async function ModeracionPage({
     return (
       <div>
         {pestanas}
-        <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tenue">
+        <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
           Lo que los dueños cambiaron en su ficha. Se publica sin esperar: si algo
           quedó mal, corrígelo desde la ficha. La bitácora guarda qué campos
           cambiaron, nunca los valores anteriores.
         </p>
         <Tarjeta titulo="Ediciones de los dueños" id="titulo-cambios" className="mt-6">
           {filas.length === 0 ? (
-            <p className="font-sans text-sm text-tenue">Ningún dueño ha editado su ficha todavía.</p>
+            <p className="font-sans text-sm text-tinta/70">Ningún dueño ha editado su ficha todavía.</p>
           ) : (
             <ul className="flex flex-col">
               {filas.map((f) => (
                 <li
                   key={f.id}
-                  className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-trazo py-3 first:border-t-0 first:pt-0"
+                  className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-tinta/12 py-3 first:border-t-0 first:pt-0"
                 >
                   <div className="min-w-0">
-                    <p className="font-sans text-base font-medium text-estrella">{f.portafolio_nombre}</p>
-                    <p className="mt-0.5 font-sans text-sm text-tenue">
+                    <p className="font-sans text-base font-medium text-tinta">{f.portafolio_nombre}</p>
+                    <p className="mt-0.5 font-sans text-sm text-tinta/70">
                       Cambió: {f.campos.length > 0 ? textoCampos(f.campos) : 'nada que se pueda nombrar'}
                     </p>
-                    <p className="mt-0.5 font-cifra text-xs text-tenue">{f.creado_en}</p>
+                    <p className="mt-0.5 font-sans tabular-nums text-xs text-tinta/70">{f.creado_en}</p>
                   </div>
                   <Link href={enlaceFicha(f.portafolio_id)} className={CLASE_BOTON_PANEL}>
                     {f.estado === 'aprobado' ? 'Revisar y corregir' : 'Ver la ficha'}
@@ -170,7 +170,7 @@ export default async function ModeracionPage({
     return (
       <div>
         {pestanas}
-        <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tenue">
+        <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
           Se calculan cada vez que abres esta página sobre las fichas publicadas y
           por revisar: un punto fuera de la Comuna 3, un barrio que no coincide con
           el del punto, la categoría «Otros» y fichas sin foto o sin WhatsApp. Al
@@ -178,27 +178,27 @@ export default async function ModeracionPage({
         </p>
         <Tarjeta titulo="Alertas de calidad" id="titulo-alertas" className="mt-6">
           {alertas.length === 0 ? (
-            <p className="font-sans text-sm text-tenue">Ninguna ficha tiene alertas.</p>
+            <p className="font-sans text-sm text-tinta/70">Ninguna ficha tiene alertas.</p>
           ) : (
             <ul className="flex flex-col">
               {alertas.map((a) => (
                 <li
                   key={`${a.ficha.id}-${a.tipo}`}
-                  className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 border-t border-trazo py-3 first:border-t-0 first:pt-0"
+                  className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 border-t border-tinta/12 py-3 first:border-t-0 first:pt-0"
                 >
                   <div className="min-w-0 flex-1 basis-72">
-                    <p className="font-sans text-base font-medium text-estrella">
+                    <p className="font-sans text-base font-medium text-tinta">
                       {a.ficha.nombre}{' '}
-                      <span className="ml-1 inline-block border border-trazo-2 px-2 py-0.5 align-middle font-sans text-xs font-normal text-tenue">
+                      <span className="ml-1 inline-block border border-tinta/30 px-2 py-0.5 align-middle font-sans text-xs font-normal text-tinta/70">
                         {TITULO_ALERTA[a.tipo]}
                       </span>
                       {a.ficha.estado === 'pendiente' && (
-                        <span className="ml-1 inline-block border border-trazo-2 px-2 py-0.5 align-middle font-sans text-xs font-normal text-tenue">
+                        <span className="ml-1 inline-block border border-tinta/30 px-2 py-0.5 align-middle font-sans text-xs font-normal text-tinta/70">
                           Por revisar
                         </span>
                       )}
                     </p>
-                    <p className="mt-1 font-sans text-sm leading-relaxed text-tenue">{a.texto}</p>
+                    <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">{a.texto}</p>
                     {a.textoParaSugerir && (
                       <SugeridorModeracion
                         portafolioId={a.ficha.id}
@@ -228,7 +228,7 @@ export default async function ModeracionPage({
       {pestanas}
       <Tarjeta titulo="Historial" id="titulo-historial" className="mt-6">
         {filas.length === 0 ? (
-          <p className="font-sans text-sm text-tenue">Todavía no hay nada en la bitácora.</p>
+          <p className="font-sans text-sm text-tinta/70">Todavía no hay nada en la bitácora.</p>
         ) : (
           <ListaBitacora filas={filas} />
         )}
