@@ -45,10 +45,10 @@ export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
   equipo: [
     { href: '/firmamento/equipo', etiqueta: 'Resumen', pestana: 'Hoy' },
     { href: '/firmamento/equipo/moderacion', etiqueta: 'Moderación', pestana: 'Hoy' },
+    { href: '/firmamento/equipo/registro', etiqueta: 'Agregar negocio', pestana: 'Hoy' },
     { href: '/firmamento/equipo/convocatorias', etiqueta: 'Convocatorias', pestana: 'Hoy' },
     { href: '/firmamento/equipo/peticiones', etiqueta: 'Peticiones', pestana: 'Hoy' },
     { href: '/firmamento/equipo/aliados', etiqueta: 'Fichas de aliados', pestana: 'Red' },
-    { href: '/firmamento/equipo/registro', etiqueta: 'Registrar en campo', pestana: 'Red' },
     { href: '/firmamento/equipo/entidades', etiqueta: 'Entidades', pestana: 'Red' },
     { href: '/firmamento/equipo/moderadores', etiqueta: 'Moderadores', pestana: 'Red' },
     { href: '/firmamento/equipo/empleo', etiqueta: 'Empleo', pestana: 'Red' },

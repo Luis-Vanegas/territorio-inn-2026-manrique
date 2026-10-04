@@ -27,6 +27,8 @@ const MENSAJES: Record<string, string> = {
   ...MENSAJES_INGRESO,
   sin_entidad:
     'Tu cuenta todavía no está asociada a una entidad. Escríbenos y el equipo de Constelaciones te da el acceso.',
+  sin_equipo:
+    'Esa cuenta de Google no tiene acceso al panel del equipo. Pide una invitación a un moderador o entra con tu correo y contraseña.',
 };
 
 const ROLES: { rol: RolFirmamento; titulo: string; descripcion: string }[] = [

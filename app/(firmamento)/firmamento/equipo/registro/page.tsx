@@ -7,7 +7,7 @@ import { exigirEquipo } from '@/lib/auth/firmamento';
 import { listarCamposActivos } from '@/lib/db/camposPersonalizados.repo';
 import { listarCategorias } from '@/lib/db/portafolios.repo';
 
-export const metadata: Metadata = { title: 'Registrar en campo' };
+export const metadata: Metadata = { title: 'Agregar negocio' };
 
 export const dynamic = 'force-dynamic';
 
