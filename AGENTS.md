@@ -87,7 +87,7 @@ equipo, no los vecinos. El script los ignora.
 Todo el código de dominio va en **español**: nombres de funciones, tipos,
 variables, rutas de `app/`, mensajes de error al usuario. Ejemplos reales:
 `registrarPeticion`, `crearPeticion`, `marcarAtendida`, `EstadoPeticion`,
-rutas como `app/(site)/aliados/registro`. No traducir esto al inglés al
+rutas como `app/(firmamento)/firmamento/negocio/registro`. No traducir esto al inglés al
 agregar código nuevo — seguí el patrón existente.
 
 ## Estructura de carpetas
@@ -104,9 +104,11 @@ app/
                     redirige desde `next.config.mjs`).
   api/              route handlers (cron, exportar, interacciones)
   <ruta>/_components/  componentes usados solo por esa ruta
-components/         componentes compartidos entre rutas
+components/         componentes compartidos entre rutas; `registro/` (formulario de registro
+                    de las dos puertas + `VistaPreviaEnVivo`), `vitrina/` (tarjeta pública)
 lib/
   actions/          Server Actions ('use server'), un archivo por acción
+  registro/          `guardar.ts`: el registro compartido por las dos puertas (server-only, no es action)
   db/                repositorios de acceso a datos (*.repo.ts), uno por tabla/dominio
   validation/        schemas de Zod (*.schema.ts)
   geo/                utilidades geoespaciales (comuna, barrios oficiales, punto en polígono)
@@ -351,6 +353,25 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   directo** (sigue `aprobado`, invalida la vitrina y deja fila en `bitacora`), por las dos puertas: la
   cuenta (`actualizarFichaDeCuenta`) resuelve el token con `tokenPropio` y usa el mismo
   `actualizarPorToken`. Pendiente sigue pendiente; rechazada vuelve a pendiente; archivada no se edita.
+  **El registro vive en Firmamento, no en el sitio público** (`/aliados/registro` redirige en
+  `next.config.mjs`). Un solo formulario (`components/registro/FormularioRegistro.tsx`, prop `modo`) y un
+  solo núcleo (`guardarRegistro` de `lib/registro/guardar.ts`: Zod, `ubicacionEnManrique`, fotos,
+  consentimiento, investigación, sugeridor, bitácora, campos personalizados). Dos actions finas:
+  `registrarPortafolio` (`/firmamento/negocio/registro`, `sesionActual()` obligatoria; `usuario_id` sale
+  de la sesión, NUNCA del formulario; `propio`, con cupo de `rateLimit.ts`; redirige a
+  `/firmamento/negocio?registrado=1` con ese negocio activo) y `registrarAsistido`
+  (`/firmamento/equipo/registro`, `verificarSesion()`; `capturado_por` = correo de `admin_session`,
+  `consentimiento_asistido` de Zod; sin cupo por IP: el equipo registra varios seguidos; devuelve el
+  enlace personal para «Enviar acceso» con `CompartirEnlace`). Sin sesión, la guarda de la página manda a
+  `/firmamento/entrar?rol=negocio&destino=…`: por eso el layout del negocio NO redirige sin sesión (no
+  conoce la ruta) y deja que mande la guarda de cada `page.tsx`. La puerta pasa `destino` (solo
+  `/firmamento/negocio…`, validado con `rutaInterna`) al botón de Google.
+  **Conexión con Constelaciones**: `hrefFichaPublica` (`/aliados?q=<nombre>#<id>`: no hay ruta por
+  negocio; la búsqueda la deja primera y pintada) alimenta «Mi ficha pública ↗» de `PanelShell`
+  (`hrefSitio = null` → «Aún no se ve en Constelaciones», sin enlace). La vista previa «Así te verán en
+  Constelaciones» es la tarjeta REAL de la vitrina (`components/vitrina/TarjetaEmprendimiento.tsx`,
+  prop `vistaPrevia`: sin ancla ni conteo) dentro de `VistaPreviaEnVivo`, que envuelve el formulario sin
+  volverlo controlado (relee el `<form>` en cada evento). No escribas otra tarjeta de vista previa.
 - **RLS no se usa acá y no hace falta**: el navegador nunca habla con Postgres.
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el

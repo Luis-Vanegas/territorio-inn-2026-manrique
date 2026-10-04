@@ -78,6 +78,12 @@ Diseño en `docs/firmamento-modulos.md` y `docs/base-de-datos.md`; plan en `docs
 - [x] `/firmamento/entrar` + paneles de negocio, equipo (ex `/admin`) y entidad. Desplegado en
       `main` (`38f2c58`). Redirects `/admin/*` y `/mi-cuenta` verificados en producción.
 - [x] La edición del dueño de una ficha aprobada publica directo (decisión de Luis) con bitácora.
+- [x] El registro sale del sitio público (decisión de Luis, 3-oct): `/firmamento/negocio/registro`
+      con sesión (el negocio nace con `usuario_id`), registro asistido en Equipo › Red › Registrar en
+      campo con enlace personal, «Mi ficha pública ↗» y vista previa en vivo con la tarjeta real.
+      Recorrido de punta a punta en la rama de prueba (rama `reto/alineacion`, worktree del agente).
+- [ ] Probar en producción el regreso al registro tras Google real (en local se verificó hasta la
+      cookie `oauth_destino`; el retorno la lee con `rutaInterna`).
 - [ ] Probar el ingreso real con Google en producción (negocio y entidad); dar de alta a la
       primera entidad y su miembro desde Equipo › Entidades.
 - [ ] Territorio sin mapa (hoy tablas). Insignias del menú no se refrescan al navegar.
