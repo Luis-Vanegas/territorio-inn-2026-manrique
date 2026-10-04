@@ -10,7 +10,6 @@ import { GRUPOS, type IdGrupo } from '@/lib/categorias/grupos';
 import { CAMARA_EMPRESAS } from '@/lib/cifras';
 import { formatearNumero as fmt } from '@/lib/formato';
 import { fechaLarga } from '@/lib/geo/constelaciones';
-import { CELDA_PEQUENA } from '@/lib/privacidad/kAnonimato';
 
 const FUENTE_OSM = 'OpenStreetMap, © colaboradores (ODbL)';
 
@@ -37,11 +36,10 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
     id: g.id,
     nombre: g.nombre,
     valor: porGrupo[g.id],
-    grupo: g,
+    color: g.color,
     nota: `${fmt((porGrupo[g.id] / osm.totalComercios) * 100, 0)} %`,
   })).sort((a, b) => b.valor - a.valor);
 
-  const aliadosPorBarrio = new Map(red?.por_barrio.map((b) => [b.nombre, b.negocios]) ?? []);
   const principales = d.filas.slice().sort((a, b) => b.tamano - a.tamano).slice(0, 5);
 
   return (
@@ -80,23 +78,17 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
           />
         </Bloque>
 
-        <Bloque titulo="Comercios por barrio" fuente={`${FUENTE_OSM} · ${fechaOsm}. Aliados: datos abiertos (k = 5) · ${fechaRed}`}>
+        <Bloque titulo="Comercios por barrio" fuente={`${FUENTE_OSM} · ${fechaOsm}`}>
           <BarrasCategoria
             filas={[...d.barrios].sort((a, b) => b.valor - a.valor).map((b) => ({
               id: b.barrio,
               nombre: b.barrio,
               valor: b.valor,
-              nota: red ? `${aliadosPorBarrio.get(b.barrio) ?? CELDA_PEQUENA} aliados` : undefined,
             }))}
             encabezado="Barrio"
             columna="Comercios"
-            descripcion="Comercios de OpenStreetMap y aliados de Constelaciones por barrio oficial de la Comuna 3"
+            descripcion="Comercios de OpenStreetMap por barrio oficial de la Comuna 3"
           />
-          {red && (
-            <p className="mt-3 font-sans text-xs leading-relaxed text-tinta/70">
-              «{CELDA_PEQUENA}»: menos de 5; no publicamos la cifra exacta para proteger a los vecinos.
-            </p>
-          )}
         </Bloque>
 
         <Bloque titulo={`Las ${osm.constelaciones} constelaciones`} fuente={`${FUENTE_OSM}, agrupación HDBSCAN · ${fechaOsm}`}>

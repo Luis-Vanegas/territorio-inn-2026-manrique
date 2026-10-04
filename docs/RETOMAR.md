@@ -110,6 +110,8 @@ Lo que tiene que quedar:
 
 **4-oct:** paneles enteros con los colores del tema (`2183d44`; `VentanaNoche` ya no es de noche). El vigía queda para DESPUÉS de la entrega (decisión de Luis). Siguiente: QA final (en curso) → OK de Luis → producción con 034 + 035.
 
+**4-oct (tarde):** integrado el Inicio con los datos (un mapa de estrellas y líneas de constelación, «El barrio en cifras»), `/firmamento` público y `/entrar` redirigen, menú con un solo «Entrar», puerta con foto, sin registro en lo público, Constelación viva y animejs borrados. QA final hecha y corregida. Siguiente: OK de Luis → producción con 034 + 035.
+
 ## Pasos para cerrar (en este orden)
 
 1. Integrar las ramas a `reto/alineacion` (`git merge --no-ff`) en el orden 1 → 2 → 3 y resolver conflictos.

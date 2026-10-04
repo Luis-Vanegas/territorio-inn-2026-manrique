@@ -321,8 +321,9 @@ html.js:not(.js-listo) [data-reveal] {
 }
 
 /* Nombre de una constelación: Fraunces itálica, sin caja, con halo del fondo
-   para despegarlo de las teselas. El nombre largo aparece desde zoom 15 (la
-   misma clase que oculta los nombres de barrio); el código, siempre. */
+   para despegarlo de las teselas. Toda la etiqueta aparece desde zoom 15 (la
+   misma clase que oculta los nombres de barrio): más lejos, los códigos del sur
+   se encimaban; la lista junto al mapa ya identifica cada constelación. */
 .etiqueta-constelacion {
   display: block;
   width: max-content;
@@ -335,7 +336,7 @@ html.js:not(.js-listo) [data-reveal] {
   text-shadow: 0 0 3px rgb(var(--hueso-rgb)), 0 0 3px rgb(var(--hueso-rgb)), 0 0 2px rgb(var(--hueso-rgb));
   pointer-events: none;
 }
-.etiquetas-barrio-ocultas .etiqueta-constelacion .nombre {
+.etiquetas-barrio-ocultas .etiqueta-constelacion {
   display: none;
 }
 
