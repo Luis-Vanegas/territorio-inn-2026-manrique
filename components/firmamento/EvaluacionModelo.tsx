@@ -15,7 +15,7 @@ import { MatrizConfusion } from './MatrizConfusion';
 
 function Fuente({ evaluacion }: { evaluacion: EvaluacionModelo }) {
   return (
-    <p className="mt-4 break-words font-sans tabular-nums text-xs leading-relaxed text-tenue">
+    <p className="mt-4 break-words font-sans tabular-nums text-xs leading-relaxed text-tinta/70">
       Fuente: validación con {formatearNumero(evaluacion.n_holdout)} comercios apartados, OpenStreetMap, ©
       colaboradores (ODbL) · modelo entrenado el {fechaLarga(evaluacion.fecha_corrida)}
     </p>
@@ -36,7 +36,7 @@ export function F1PorCategoria({ evaluacion }: { evaluacion: EvaluacionModelo })
 
   return (
     <div>
-      <p className="font-sans text-base leading-relaxed text-estrella">
+      <p className="font-sans text-base leading-relaxed text-tinta">
         El F1 de una categoría mezcla dos preguntas: cuando el modelo la sugiere, ¿acierta?, y de los
         locales que sí son de esa categoría, ¿cuántos encuentra? Va de 0 a 1; más largo es mejor.
       </p>
@@ -54,7 +54,7 @@ export function F1PorCategoria({ evaluacion }: { evaluacion: EvaluacionModelo })
         filas={filas}
       />
       {pocos.length > 0 && (
-        <p className="mt-4 font-sans text-sm leading-relaxed text-tenue">
+        <p className="mt-4 font-sans text-sm leading-relaxed text-tinta/70">
           Con tan pocos locales ({pocos.map((c) => `${c.nombre}: ${c.soporte}`).join('; ')}) el F1 casi no
           dice nada: un acierto más o menos lo mueve mucho.
         </p>

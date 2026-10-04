@@ -117,7 +117,7 @@ export default async function NegocioConstelacionPage() {
     { ...propioPublico, whatsapp: null },
   ];
 
-  const mensajeInvitar = `Hola, soy ${primerNombre}, de ${portafolio.nombre}. Estamos en Constelaciones, el mapa de los negocios de Manrique, y me encantaría verte ahí. Registra el tuyo gratis aquí: ${urlSitio()}/aliados/registro`;
+  const mensajeInvitar = `Hola, soy ${primerNombre}, de ${portafolio.nombre}. Estamos en Constelaciones, el mapa de los negocios de Manrique, y me encantaría verte ahí. Registra el tuyo gratis aquí: ${urlSitio()}/firmamento/negocio/registro`;
 
   const hoy = fechaHoyBogota();
   const masDeOsm = comerciosCerca.length - 6;

@@ -6,8 +6,9 @@
 // para abrir/cerrar. Solo «Aprende» necesita estado (MenuAprende), y por eso
 // es un botón con aria-expanded.
 //
-// Ítems (DESIGN.md › Navegación): Inicio · Aliados · Aprende ▾ · Firmamento ·
-// Nosotros, y Empleo/Inventario solo con su flag prendido.
+// Ítems (DESIGN.md › Navegación): Inicio · Aliados · Aprende ▾ · Nosotros, y
+// Empleo/Inventario solo con su flag prendido. Sin sesión, a la derecha, el
+// único botón: «Entrar» (la puerta de Firmamento; el registro va después de Google).
 //
 // Es 'use client' por una sola razón: usePathname, para marcar en qué página
 // está la persona. No hay forma de saber la ruta en un Server Component sin
@@ -54,11 +55,10 @@ const ENTRADAS: Entrada[] = [
   { tipo: 'enlace', href: '/aliados', etiqueta: 'Aliados' },
   ...MODULOS_SUELTOS.map((e) => ({ tipo: 'enlace' as const, ...e })),
   { tipo: 'aprende' },
-  { tipo: 'enlace', href: '/firmamento', etiqueta: 'Firmamento' },
   { tipo: 'enlace', href: '/nosotros', etiqueta: 'Nosotros' },
 ];
 
-// Las subrutas cuentan como la sección: estando en /aliados/registro, el ítem
+// Las subrutas cuentan como la sección: estando en /aliados/estado/<token>, el ítem
 // "Aliados" sigue siendo dónde estás. Lo contrario deja el menú entero apagado
 // justo en las páginas de formulario, que es donde más falta hace saber
 // de dónde veniste.
@@ -159,10 +159,10 @@ export function SiteHeader({
             <MenuUsuario key={pathname} nombre={sesion.nombre} foto={sesion.foto} enlaces={enlacesPrivados} />
           ) : (
             <Link
-              href="/entrar"
+              href="/firmamento/entrar"
               className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto px-4 font-sans text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
             >
-              Registrarme →
+              Entrar
             </Link>
           )}
         </div>
@@ -187,7 +187,7 @@ export function SiteHeader({
 
           <nav
             aria-label="Navegación principal"
-            className="absolute right-[var(--margen-editorial)] top-full mt-1 flex max-h-[calc(100dvh-5.5rem)] w-[min(20rem,calc(100vw_-_2*var(--margen-editorial)))] flex-col gap-1 overflow-y-auto border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
+            className="absolute right-[var(--margen-editorial)] top-full mt-1 flex max-h-[calc(100dvh-5.5rem)] w-[min(20rem,calc(100vw_-_2*var(--margen-editorial)))] flex-col gap-1 overflow-y-auto border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(11_16_38/0.08)]"
           >
             {ENTRADAS.map((e) =>
               e.tipo === 'aprende' ? (
@@ -246,10 +246,10 @@ export function SiteHeader({
               </>
             ) : (
               <Link
-                href="/entrar"
+                href="/firmamento/entrar"
                 className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-azul-texto bg-azul-texto px-3 text-center font-sans text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
               >
-                Registrarme →
+                Entrar
               </Link>
             )}
           </nav>

@@ -8,7 +8,7 @@ y el prototipo `firmamento-app/`). Fuente de verdad para Claude Code y Antigravi
 | | Constelaciones | Firmamento |
 |---|---|---|
 | Para quién | Vecinos y visitantes, sin cuenta | Quien tiene sesión: negocio, equipo, entidad |
-| Qué hay | Vitrina, mapa, registro, guías, asesor, `/firmamento` público | Paneles por rol |
+| Qué hay | Vitrina, mapa, fichas, guías, asesor, `/firmamento` público | Paneles por rol y el registro de negocios |
 | Entrada | Pública | `/firmamento/entrar`, una pantalla con 3 pestañas |
 
 Una sola app de Next, un deploy, una base (Neon).
@@ -34,9 +34,10 @@ Una sola app de Next, un deploy, una base (Neon).
 ```
 /firmamento                  público (ya existe): tablero agregado k = 5
 /firmamento/entrar           login: Mi negocio (Google) · Equipo · Entidad (Google)
-/firmamento/negocio          inicio · ficha · para-ti · constelacion   ← hoy /mi-cuenta
+/firmamento/negocio          inicio · ficha · para-ti · constelacion · registro   ← hoy /mi-cuenta
+                             registro ← /aliados/registro (3-oct: el registro sale del sitio público)
 /firmamento/equipo           resumen · moderacion · convocatorias · territorio · datos · modelos
-                             + aliados, campos, guías, asesor, empleo  ← hoy /admin
+                             + aliados, registro (en campo, asistido), campos, guías, asesor, empleo  ← hoy /admin
 /firmamento/entidad          observatorio · convocatorias · datos
 ```
 

@@ -78,19 +78,6 @@ export default async function AliadosPage({
           Manrique produce, repara, cocina y enseña. Este es el mapa de quienes
           lo hacen — con nombre, dirección exacta y forma de contacto directo.
         </p>
-
-        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-          <Link
-            href="/aliados/registro"
-            className="border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
-          >
-            Poner mi negocio en el mapa →
-          </Link>
-
-          <span className="font-sans text-xs text-tinta/60">
-            Gratis · menos de 3 minutos · lo revisamos antes de publicarlo
-          </span>
-        </div>
       </header>
 
       {/* El mapa es lo primero y lo más grande de la página: es el elemento

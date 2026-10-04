@@ -1,7 +1,6 @@
 import { svgForma } from '@/components/mapa/formas';
 import { grupoDeCategoria } from '@/lib/categorias/grupos';
 import { CLASES_PROPORCION, claseDeProporcion } from '@/lib/escalaSecuencial';
-import { PALETA_NOCHE } from '@/lib/paleta';
 
 /**
  * Matriz de confusión 12 × 12 del sugeridor de categoría, como mapa de calor SVG.
@@ -51,7 +50,7 @@ export function MatrizConfusion({
 
   return (
     <div>
-      <p className="font-sans text-sm leading-relaxed text-tenue">
+      <p className="font-sans text-sm leading-relaxed text-tinta/70">
         Cada fila es la categoría real de un local y cada columna lo que sugirió el modelo. La diagonal
         (con borde) son los aciertos.
       </p>
@@ -60,10 +59,10 @@ export function MatrizConfusion({
         viewBox={`0 0 ${LADO} ${LADO}`}
         aria-hidden="true"
         focusable="false"
-        className="mx-auto mt-3 block h-auto w-full max-w-[34rem]"
+        className="mx-auto mt-3 block h-auto w-full max-w-[34rem] text-tinta"
       >
         {clases.map((_, i) => (
-          <g key={`eje-${i}`} className="font-sans tabular-nums" fontSize="12" fill={PALETA_NOCHE.tenue}>
+          <g key={`eje-${i}`} className="font-sans tabular-nums fill-tinta/70" fontSize="12">
             <text x={MARGEN + CELDA * i + CELDA / 2} y={MARGEN / 2 + 4} textAnchor="middle">
               {i + 1}
             </text>
@@ -89,7 +88,7 @@ export function MatrizConfusion({
                   width={CELDA - 1}
                   height={CELDA - 1}
                   fill={clase.relleno}
-                  stroke={r === c ? PALETA_NOCHE.estrella : 'none'}
+                  stroke={r === c ? 'currentColor' : 'none'}
                   strokeWidth={r === c ? 1.5 : 0}
                 />
                 {n > 0 && (
@@ -110,13 +109,13 @@ export function MatrizConfusion({
         )}
       </svg>
 
-      <p className="mt-3 font-sans text-sm font-medium text-estrella">Parte de los locales de esa fila</p>
-      <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 font-sans text-sm text-estrella">
+      <p className="mt-3 font-sans text-sm font-medium text-tinta">Parte de los locales de esa fila</p>
+      <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 font-sans text-sm text-tinta">
         {CLASES_PROPORCION.map((c) => (
           <li key={c.etiqueta} className="inline-flex items-center gap-2">
             <span
               aria-hidden="true"
-              className="inline-block h-4 w-6 border border-trazo-2"
+              className="inline-block h-4 w-6 border border-tinta/40"
               style={{ backgroundColor: c.relleno }}
             />
             {c.etiqueta}
@@ -124,10 +123,10 @@ export function MatrizConfusion({
         ))}
       </ul>
 
-      <ol className="mt-4 grid gap-x-6 gap-y-1 font-sans text-sm text-estrella sm:grid-cols-2" aria-label="Clave de los números">
+      <ol className="mt-4 grid gap-x-6 gap-y-1 font-sans text-sm text-tinta sm:grid-cols-2" aria-label="Clave de los números">
         {clases.map((c, i) => (
           <li key={c.id} className="flex items-center gap-2">
-            <span className="w-5 shrink-0 text-right font-sans tabular-nums text-tenue">{i + 1}</span>
+            <span className="w-5 shrink-0 text-right font-sans tabular-nums text-tinta/70">{i + 1}</span>
             <span
               aria-hidden="true"
               className="inline-flex shrink-0"
@@ -140,8 +139,8 @@ export function MatrizConfusion({
 
       {mayores.length > 0 && (
         <>
-          <h4 className="mt-5 font-sans text-base font-medium text-estrella">Dónde más se equivoca</h4>
-          <ul className="mt-2 list-disc space-y-1.5 pl-5 font-sans text-base leading-relaxed text-estrella marker:text-sodio">
+          <h4 className="mt-5 font-sans text-base font-medium text-tinta">Dónde más se equivoca</h4>
+          <ul className="mt-2 list-disc space-y-1.5 pl-5 font-sans text-base leading-relaxed text-tinta marker:text-morado">
             {mayores.map((m) => (
               <li key={`${m.r}-${m.c}`}>
                 Puso <span className="font-sans tabular-nums">{m.n}</span> de los{' '}

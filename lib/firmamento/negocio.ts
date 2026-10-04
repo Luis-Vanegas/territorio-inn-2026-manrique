@@ -30,7 +30,11 @@ export async function negocioActivo(
   return { negocios, actual };
 }
 
-/** Enlace a la ficha del negocio en la vitrina: solo existe ahí si está publicada. */
-export function hrefFichaPublica(n: Pick<NegocioCuenta, 'id' | 'estado'> | null): string {
-  return n?.estado === 'aprobado' ? `/aliados#${n.id}` : '/aliados';
+/**
+ * Enlace a la ficha del negocio en la vitrina, o null si no está publicada (no
+ * existe ahí todavía). No hay ruta por negocio: la búsqueda `?q=` con el nombre
+ * la deja primera en el listado (y pintada en el HTML) y el ancla `#id` salta a ella.
+ */
+export function hrefFichaPublica(n: Pick<NegocioCuenta, 'id' | 'estado' | 'nombre'> | null): string | null {
+  return n?.estado === 'aprobado' ? `/aliados?q=${encodeURIComponent(n.nombre)}#${n.id}` : null;
 }

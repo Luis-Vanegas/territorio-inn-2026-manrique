@@ -63,7 +63,7 @@ export function EstadoFicha({
     <div role="status" className="rounded-xl border border-azul/60 bg-hueso p-4">
       <p className="font-sans text-base font-medium text-tinta">
         <span aria-hidden="true" className="mr-2 text-azul-texto">◔</span>
-        Estamos revisando tu ficha
+        Estamos revisando tu ficha: aún no se ve en Constelaciones
       </p>
       <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">
         Apenas la aprobemos aparece en el mapa y empiezas a ver aquí tus números. Mientras tanto

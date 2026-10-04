@@ -25,7 +25,7 @@ export function Invitar({ mensaje }: { mensaje: string }) {
 
   return (
     <div>
-      <p className="rounded-lg border border-tinta/12 bg-tinta/[0.03] p-3 font-sans text-sm leading-relaxed text-tinta">
+      <p className="rounded-lg border border-tinta/12 bg-tinta/[0.03] p-3 font-sans text-sm leading-relaxed text-tinta [overflow-wrap:anywhere]">
         {mensaje}
       </p>
       <div className="mt-3 flex flex-wrap gap-2">

@@ -21,48 +21,9 @@ export interface ModuloFuturo {
 }
 
 // Arranca apagado y se prende primero en preproducción para revisarlo. Con el
-// flag apagado la ruta devuelve 404 real, así que el Hero tampoco puede
-// ofrecer ese camino — el mismo flag alimenta el Hero y el menú (SiteHeader,
-// vía enfoque.modulos). Si lo apagás, apagá los dos lugares desde acá: son dos
-// consumidores del mismo valor.
+// flag apagado la ruta devuelve 404 real y el menú (SiteHeader, vía
+// enfoque.modulos) no la ofrece.
 const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
-
-export const hero = {
-  etiqueta: "MEDELLÍN · 2026",
-  // v3 (2026-09-23, texto entregado por el cliente). El titular deja de ser una
-  // pregunta y pasa a decir qué ES esto: antes el Hero preguntaba qué venías a
-  // buscar, ahora se presenta. El subtítulo cuenta las dos mitades del proyecto
-  // —acompañar negocios y construir datos— que antes solo se leían bajando
-  // hasta RetoSection.
-  //
-  // Se escribe en caja normal y no en mayúsculas como vino en el pedido: las
-  // mayúsculas son presentación, no contenido, y el titular ya pesa por su
-  // cuerpo de display. Si se lo quiere en versalitas de verdad, va una clase
-  // `uppercase` en el h1 de components/Hero.tsx y el texto queda legible en el
-  // resto de lugares donde se reusa.
-  titular: "La red social de emprendimientos y negocios de la Comuna 3, Manrique.",
-  subtitulo:
-    "Identificamos, visibilizamos y acompañamos a quienes hacen parte del tejido productivo de Manrique, mientras construimos datos que nos permiten entender sus necesidades y diseñar soluciones.",
-  // v2 (2026-09-17, pedido del cliente): el Hero baja de 4 caminos a uno solo
-  // — "busco negocio", "busco a quién contratar" y "estoy buscando trabajo"
-  // se sacan de acá. No es que esos caminos dejen de existir: siguen a un
-  // clic en el menú (ALIADOS y EMPLEO en SiteHeader). Lo que se decidió es
-  // que el Hero, que es lo primero que ve cualquiera, empuje una sola acción
-  // — registrar el negocio — en vez de ofrecer cuatro puertas a la vez.
-  ctas: [
-    { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/aliados/registro" },
-  ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
-  // Los cuatro caminos se agrupaban solo por color, y el color era el único
-  // portador del significado "buscar" vs "ofrecer" — falla WCAG 1.4.1: quien
-  // no distingue los dos tonos ve cuatro botones sueltos sin relación. El
-  // encabezado de cada grupo pone esa lógica en texto; el color pasa a ser
-  // refuerzo. Orden a propósito: buscar primero, que es lo que hace la
-  // mayoría de quien llega.
-  gruposCta: [
-    { tipo: "buscar" as const, titulo: "Estoy buscando" },
-    { tipo: "ofrecer" as const, titulo: "Tengo algo para ofrecer" },
-  ],
-};
 
 export const reto = {
   titulo: "El reto",

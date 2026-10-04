@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useEffect, useMemo } from 'react';
-import { Circle, Marker, Polyline, Popup, useMap } from 'react-leaflet';
+import { Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 import type { Coordenada } from '@/lib/geo/constantes';
@@ -10,28 +10,27 @@ import { nombreVisible } from '@/lib/geo/comerciosOsm';
 import { distanciaMetros } from '@/lib/geo/distancia';
 import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import { FichaComercioOsm } from './FichaComercioOsm';
-import { svgForma } from './formas';
+import { svgEstrella } from './formas';
 
 /**
- * Capa de constelaciones: halo + líneas del árbol de expansión mínima + estrellas.
+ * Capa de constelaciones: estrellas de OSM + líneas del árbol de expansión mínima + nombre.
  *
- * Son comercios de OpenStreetMap, no aliados. Cada uno lleva la forma y el color
- * de su grupo de categoría (`grupos.ts`, igual que un aliado) pero más chica y
- * más tenue: 14 px y relleno a 80 % las que están en una constelación, 10 px y
- * a 60 % los sueltos, contra 26 px y color pleno de un aliado. Así se ve de qué
- * es cada comercio sin que le quiten protagonismo a la red. Se dibujan DEBAJO de
- * los marcadores de aliados (`zIndexOffset` negativo). Cada uno es un marcador
- * tocable y enfocable: abre un popup con lo que OSM sabe del comercio
- * (FichaComercioOsm). La caja táctil mide 44.
+ * Son comercios de OpenStreetMap, no aliados. Cada uno es una ESTRELLA del color
+ * de su grupo (`grupos.ts`): 16 px las que están en una constelación, 11 px las
+ * sueltas, contra 28 px de un aliado (Luis, 4-oct-2026, como el tablero de la
+ * asesoría: el tamaño dice aliado/comercio, el color la categoría; ya no hay una
+ * forma por grupo en el mapa). Se dibujan DEBAJO de los aliados (`zIndexOffset`
+ * negativo). Cada una es un marcador tocable y enfocable: abre un popup con lo
+ * que OSM sabe del comercio (FichaComercioOsm). La caja táctil mide 44.
  *
- * Con ~200 comercios el rendimiento importa: los íconos se crean una vez, cada
- * marcador es `memo` y el popup solo monta su contenido mientras está abierto
- * (react-leaflet lo hace así), así que filtrar o mover el mapa no re-renderiza
- * 200 fichas.
+ * Las estrellas se dibujan siempre; el interruptor «Líneas de constelación»
+ * (`lineas`) solo prende o apaga las líneas y los nombres.
+ *
+ * Con ~300 comercios el rendimiento importa: los íconos se crean una vez, cada
+ * marcador es `memo` y el popup solo monta su contenido mientras está abierto.
  *
  * El trazo de las líneas es CSS (`stroke-dashoffset`, ver `.arista-trazo` en
- * globals.css) y no framer-motion: el SVG de Leaflet lo crea Leaflet, no React,
- * y animar `pathLength` desde React obligaría a re-renderizar cada polilínea.
+ * globals.css) y no framer-motion: el SVG de Leaflet lo crea Leaflet, no React.
  * La regla global de `prefers-reduced-motion` lo apaga.
  */
 
@@ -44,7 +43,7 @@ function iconoEstrella(grupo: Grupo, indice: number) {
   const desfase = -((indice * 0.7) % duracion);
   return L.divIcon({
     className: '',
-    html: `<span class="caja-estrella"><span class="estrella-osm" style="animation-duration:${duracion}s;animation-delay:${desfase.toFixed(2)}s">${svgForma(grupo, 14, { tenue: true })}</span></span>`,
+    html: `<span class="caja-estrella"><span class="estrella-osm" style="animation-duration:${duracion}s;animation-delay:${desfase.toFixed(2)}s">${svgEstrella(grupo.color, 16)}</span></span>`,
     iconSize: [44, 44],
     iconAnchor: [22, 22],
     popupAnchor: [0, -10],
@@ -59,7 +58,7 @@ function iconoSuelto(grupo: Grupo) {
   if (!icono) {
     icono = L.divIcon({
       className: '',
-      html: `<span class="caja-estrella" style="opacity:0.7">${svgForma(grupo, 10, { tenue: true })}</span>`,
+      html: `<span class="caja-estrella">${svgEstrella(grupo.color, 11)}</span>`,
       iconSize: [44, 44],
       iconAnchor: [22, 22],
       popupAnchor: [0, -8],
@@ -125,15 +124,31 @@ export function Atribucion() {
   return null;
 }
 
+/** Nombre de la constelación sobre el mapa: el código siempre, el nombre al acercarse (CSS). */
+function iconoNombre(c: Constelacion) {
+  const codigo = escaparHtml(c.codigo ?? c.id.toUpperCase());
+  const nombre = c.nombre ? `<span class="nombre"> · ${escaparHtml(c.nombre)}</span>` : '';
+  return L.divIcon({
+    className: '',
+    html: `<span class="etiqueta-constelacion">${codigo}${nombre}</span>`,
+    iconSize: [0, 0],
+    iconAnchor: [-8, 18],
+  });
+}
+
+function escaparHtml(t: string) {
+  return t.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]!);
+}
+
 function Constelacion({
   c,
   orden,
-  activa,
+  lineasVisibles,
   ubicacion,
 }: {
   c: Constelacion;
   orden: number;
-  activa: boolean;
+  lineasVisibles: boolean;
   ubicacion?: Coordenada | null;
 }) {
   const lineas = useMemo(
@@ -154,6 +169,7 @@ function Constelacion({
     () => c.estrellas.map((e, i) => iconoEstrella(grupoDeCategoria(e.categoria), orden * 17 + i)),
     [c, orden],
   );
+  const nombre = useMemo(() => iconoNombre(c), [c]);
 
   // Escalonado corto: 25 ms por constelación y tope de 250 ms, para que todo
   // el trazo termine dentro de los 900 ms de DESIGN.md › Movimiento.
@@ -161,12 +177,16 @@ function Constelacion({
 
   return (
     <>
-      <Circle
-        center={[c.centroide.lat, c.centroide.lon]}
-        radius={c.radio_p90_m}
-        interactive={false}
-        className={activa ? 'halo-constelacion halo-constelacion--activa' : 'halo-constelacion'}
-      />
+      {lineasVisibles && (
+        <Marker
+          position={[c.centroide.lat, c.centroide.lon]}
+          icon={nombre}
+          interactive={false}
+          keyboard={false}
+          zIndexOffset={-20_000}
+        />
+      )}
+      {lineasVisibles && (
       <Polyline
         positions={lineas}
         interactive={false}
@@ -184,6 +204,7 @@ function Constelacion({
           },
         }}
       />
+      )}
       {c.estrellas.map((e, i) => {
         const icono = iconos[i];
         return icono ? (
@@ -197,9 +218,12 @@ function Constelacion({
 export function CapaConstelaciones({
   datos,
   filtroId,
+  lineas,
   ubicacion,
 }: {
   datos: DatosConstelaciones;
+  /** Interruptor «Líneas de constelación»: las estrellas se ven igual. */
+  lineas: boolean;
   /** Si viene, se dibuja solo esa constelación y no los puntos sueltos. */
   filtroId: string;
   /** Posición del visitante: el popup dice a qué distancia queda cada comercio. */
@@ -222,7 +246,7 @@ export function CapaConstelaciones({
           />
         ))}
       {visibles.map((c, i) => (
-        <Constelacion key={c.id} c={c} orden={i} activa={Boolean(filtroId)} ubicacion={ubicacion} />
+        <Constelacion key={c.id} c={c} orden={i} lineasVisibles={lineas} ubicacion={ubicacion} />
       ))}
     </>
   );

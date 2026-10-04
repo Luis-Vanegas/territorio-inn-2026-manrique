@@ -51,7 +51,7 @@ export const ETIQUETA_ENTORNO: Record<Entorno, string> = {
  * Azul apagado para local: nadie confunde su propia máquina con el sitio real.
  */
 export const COLOR_ENTORNO: Record<Entorno, string> = {
-  produccion: '#1A1A1A',
+  produccion: '#0B1026',
   preproduccion: '#B45309',
   local: '#3F5C86',
 };

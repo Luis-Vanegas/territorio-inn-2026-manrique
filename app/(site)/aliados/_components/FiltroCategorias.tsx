@@ -47,7 +47,7 @@ export function FiltroCategorias({
         aria-current={!activa ? 'page' : undefined}
       >
         Todos
-        <span className="opacity-60">{total}</span>
+        <span className="tabular-nums">{total}</span>
       </Link>
 
       {conResultados.map((c) => (
@@ -58,7 +58,7 @@ export function FiltroCategorias({
           aria-current={activa === c.id ? 'page' : undefined}
         >
           {c.nombre}
-          <span className="opacity-60">{conteos[c.id]}</span>
+          <span className="tabular-nums">{conteos[c.id]}</span>
         </Link>
       ))}
     </nav>

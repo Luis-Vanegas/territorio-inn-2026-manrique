@@ -16,16 +16,10 @@ ambos agentes repliquen un patrón que ya no existe.
 - Next.js 16 (App Router), React 18, TypeScript
 - Tailwind CSS. Tipografía con rol cerrado (ver `DESIGN.md`): Fraunces títulos, DM Sans
   todo lo demás, DM Mono (`font-cifra`) SOLO la cifra grande de un indicador (fuentes y fechas van en DM Sans pequeña). Tokens de noche
-  (`noche`, `sodio`, `estrella`…) solo para Firmamento y la banda nocturna.
-- Movimiento con `framer-motion`. **Excepción única: `animejs` (v4, MIT)**, permitido
-  SOLO en `components/firmamento/AnimadorConstelacion.tsx` (la Constelación viva de la
-  portada y de `/firmamento/entrar`; DESIGN.md › Firmamento › Constelación viva). Se
-  importa con `import()` dentro del efecto y por subrutas (`animejs/timeline`,
-  `animejs/svg`, `animejs/utils`), nunca `import ... from 'animejs'` en el nivel
-  superior: así queda fuera del bundle inicial (~14,5 KB gzip, solo al ver la pieza y
-  sin `prefers-reduced-motion`). El SVG lo arma el servidor (`lib/firmamento/cieloVivo.ts`,
-  proyección compartida en `lib/firmamento/proyeccion.ts`) y llega en su estado final;
-  Anime.js solo lo coreografía. Otra animación nueva va con framer-motion.
+  (`noche`, `sodio`, `estrella`…) solo para Firmamento y sus ventanas de noche. Una sola paleta, dos luces: `hueso`/`tinta` valen crema/azul noche en claro y azul noche/crema en oscuro (DESIGN.md › Color); ni blanco puro ni grises sueltos.
+- Movimiento con `framer-motion`, sin excepciones. (`animejs` se usó solo para la
+  Constelación viva de la puerta; se quitó el 4-oct-2026 junto con esa pieza: la puerta
+  lleva una foto. No lo vuelvas a instalar.)
 - Zod para validación de datos
 - Neon (Postgres serverless) como base de datos
 - Vercel Blob para almacenamiento de archivos (fotos)
@@ -87,7 +81,7 @@ equipo, no los vecinos. El script los ignora.
 Todo el código de dominio va en **español**: nombres de funciones, tipos,
 variables, rutas de `app/`, mensajes de error al usuario. Ejemplos reales:
 `registrarPeticion`, `crearPeticion`, `marcarAtendida`, `EstadoPeticion`,
-rutas como `app/(site)/aliados/registro`. No traducir esto al inglés al
+rutas como `app/(firmamento)/firmamento/negocio/registro`. No traducir esto al inglés al
 agregar código nuevo — seguí el patrón existente.
 
 ## Estructura de carpetas
@@ -97,16 +91,18 @@ app/
   (site)/           route group del sitio público (aliados, servicios, contacto, legal)
   (firmamento)/firmamento/   Firmamento con sesión: `entrar` (puerta de 3 pestañas) y los
                     paneles `negocio/`, `equipo/`, `entidad/`, cada uno con su `layout.tsx`
-                    (guarda + `PanelShell`). Convive con `(site)/firmamento/page.tsx` (el
-                    tablero público): los route groups no entran en la URL y ninguno define
-                    `page.tsx` en `/firmamento`; no crees uno en este grupo. El panel de
+                    (guarda + `PanelShell`). `/firmamento` a secas NO es una página:
+                    redirige a `/` (los datos públicos viven en el inicio) desde
+                    `next.config.mjs`; no crees un `page.tsx` ahí. El panel de
                     moderación vive en `equipo/` (ya no hay `app/admin`: `/admin/*`
                     redirige desde `next.config.mjs`).
   api/              route handlers (cron, exportar, interacciones)
   <ruta>/_components/  componentes usados solo por esa ruta
-components/         componentes compartidos entre rutas
+components/         componentes compartidos entre rutas; `registro/` (formulario de registro
+                    de las dos puertas + `VistaPreviaEnVivo`), `vitrina/` (tarjeta pública)
 lib/
   actions/          Server Actions ('use server'), un archivo por acción
+  registro/          `guardar.ts`: el registro compartido por las dos puertas (server-only, no es action)
   db/                repositorios de acceso a datos (*.repo.ts), uno por tabla/dominio
   validation/        schemas de Zod (*.schema.ts)
   geo/                utilidades geoespaciales (comuna, barrios oficiales, punto en polígono)
@@ -338,8 +334,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   (`comparacionCategoria`) devuelve null con menos de 5 negocios (k = 5) y en «Otros». Posibles
   alianzas: `lib/firmamento/alianzas.ts`, una tabla simétrica de rubros complementarios (ropa↔modistería,
   comidas↔panadería…); mismo rubro nunca es alianza; se amplía agregando una pareja. `/mi-cuenta` ya no
-  existe: el destino tras Google es `/firmamento/negocio`. `/entrar` sigue como puerta de día (trae el
-  acceso por enlace). `constelaciones.json` también se importa en el servidor en
+  existe: el destino tras Google es `/firmamento/negocio`. `/entrar` ya no existe: redirige a
+  `/firmamento/entrar` (una sola puerta; el enlace personal `/aliados/estado/<token>` sigue
+  funcionando solo). `constelaciones.json` también se importa en el servidor en
   `negocio/constelacion/page.tsx`.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
@@ -351,6 +348,25 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   directo** (sigue `aprobado`, invalida la vitrina y deja fila en `bitacora`), por las dos puertas: la
   cuenta (`actualizarFichaDeCuenta`) resuelve el token con `tokenPropio` y usa el mismo
   `actualizarPorToken`. Pendiente sigue pendiente; rechazada vuelve a pendiente; archivada no se edita.
+  **El registro vive en Firmamento, no en el sitio público** (`/aliados/registro` redirige en
+  `next.config.mjs`). Un solo formulario (`components/registro/FormularioRegistro.tsx`, prop `modo`) y un
+  solo núcleo (`guardarRegistro` de `lib/registro/guardar.ts`: Zod, `ubicacionEnManrique`, fotos,
+  consentimiento, investigación, sugeridor, bitácora, campos personalizados). Dos actions finas:
+  `registrarPortafolio` (`/firmamento/negocio/registro`, `sesionActual()` obligatoria; `usuario_id` sale
+  de la sesión, NUNCA del formulario; `propio`, con cupo de `rateLimit.ts`; redirige a
+  `/firmamento/negocio?registrado=1` con ese negocio activo) y `registrarAsistido`
+  (`/firmamento/equipo/registro`, `verificarSesion()`; `capturado_por` = correo de `admin_session`,
+  `consentimiento_asistido` de Zod; sin cupo por IP: el equipo registra varios seguidos; devuelve el
+  enlace personal para «Enviar acceso» con `CompartirEnlace`). Sin sesión, la guarda de la página manda a
+  `/firmamento/entrar?rol=negocio&destino=…`: por eso el layout del negocio NO redirige sin sesión (no
+  conoce la ruta) y deja que mande la guarda de cada `page.tsx`. La puerta pasa `destino` (solo
+  `/firmamento/negocio…`, validado con `rutaInterna`) al botón de Google.
+  **Conexión con Constelaciones**: `hrefFichaPublica` (`/aliados?q=<nombre>#<id>`: no hay ruta por
+  negocio; la búsqueda la deja primera y pintada) alimenta «Mi ficha pública ↗» de `PanelShell`
+  (`hrefSitio = null` → «Aún no se ve en Constelaciones», sin enlace). La vista previa «Así te verán en
+  Constelaciones» es la tarjeta REAL de la vitrina (`components/vitrina/TarjetaEmprendimiento.tsx`,
+  prop `vistaPrevia`: sin ancla ni conteo) dentro de `VistaPreviaEnVivo`, que envuelve el formulario sin
+  volverlo controlado (relee el `<form>` en cada evento). No escribas otra tarjeta de vista previa.
 - **RLS no se usa acá y no hace falta**: el navegador nunca habla con Postgres.
   Toda consulta sale de una Server Action o de un Server Component, que ya
   saben quién es el usuario por su sesión. El control de acceso va en el
@@ -429,22 +445,26 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   se llama «Barrio <X> · <categoría>». Si cambia el dataset: re-correr el script, luego
   `pipeline/02_constelaciones.py` y `verificar_salidas.py`.
 - **Grupos de categoría del mapa**: `lib/categorias/grupos.ts` es el único lugar
-  que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md).
+  que dice qué categoría cae en cuál de los 6 grupos (color + forma, DESIGN.md; en el
+  MAPA solo el color: cada negocio es una estrella, `svgEstrella` de `components/mapa/formas.ts`,
+  grande el aliado y chica el comercio de OSM — más chica aún si está suelto; la forma
+  sigue en barras, popups y listas).
   Categoría nueva en la base = su id en ese archivo; si no, cae en «Otros». Las
   constelaciones de OSM (`public/firmamento/constelaciones.json`) se piden por
   `fetch` (`lib/geo/constelaciones.ts`), no se importan en el cliente. Solo se
   importan en el servidor: `app/(site)/aliados/page.tsx` (conteos del filtro de
   categorías con `unirCategorias`: aliados + comercios de OSM, así se puede filtrar
-  por cualquier negocio del mapa aunque no tenga aliados), `components/MetricasSection.tsx`
-  (cifras de la banda de la portada), `app/(site)/firmamento/datos.ts` y
+  por cualquier negocio del mapa aunque no tenga aliados), `app/(site)/firmamento/datos.ts` (inicio y
+  panel de entidad) y
   `lib/firmamento/territorio.ts` (panel del equipo; `server-only`).
-- **Firmamento con sesión (puerta y paneles, de día)**: `app/(firmamento)/firmamento/layout.tsx` monta el `SiteHeader`; `PanelShell` arma encabezado del panel + pestañas (`lib/firmamento/navegacion.ts`: `NAV` por rol, el equipo agrupa en `pestana` Hoy/Red/Datos/Guías y `pestanasDe` las deriva). Piezas únicas, no escribas otras: `Tarjeta` (`components/firmamento/panel/Tarjeta.tsx`, variantes `tarjeta`/`seccion`, `plegable`; reemplazó a `ModuloDesplegable`), `Plegable` (`<details>` + framer, funciona sin JS), `Kpi` + `GrupoCifras` (una línea de fuente por grupo), `VentanaNoche` (`.modo-noche` para cifras y mapas dentro de una página de día), `BarraPestanas`/`SubPestanas` (`panel/Pestanas.tsx`). Estas piezas escriben `hueso`/`tinta` y usan variantes `[.modo-noche_&]:` para la noche: dentro de una `VentanaNoche` cambian solas. Nada de tokens de noche (`estrella`, `tenue`, `noche-2`…) sueltos en una página de panel fuera de una ventana. Paneles de negocio y entidad: cada pantalla es una pila de `Tarjeta` (plegables lo que no se mira a diario); `ListaConvocatorias` es una lista de filas dentro de una `Tarjeta`, no una tarjeta por convocatoria. «Cambios en tu ficha» (`negocio/_components/CambiosFicha.tsx`) lee `listarBitacora({ portafolioId })` solo con un id que ya pasó por `obtenerPropio`, muestra "El equipo" (nunca el correo de quien moderó) y nombres de campos, nunca valores; al formulario de edición no viaja `moderado_por`.
+- **Firmamento con sesión (puerta y paneles, de día)**: `app/(firmamento)/firmamento/layout.tsx` monta el `SiteHeader`; `PanelShell` arma encabezado del panel + pestañas (`lib/firmamento/navegacion.ts`: `NAV` por rol, el equipo agrupa en `pestana` Hoy/Red/Datos/Guías y `pestanasDe` las deriva). Piezas únicas, no escribas otras: `Tarjeta` (`components/firmamento/panel/Tarjeta.tsx`, variantes `tarjeta`/`seccion`, `plegable`; reemplazó a `ModuloDesplegable`), `Plegable` (`<details>` + framer, funciona sin JS), `Kpi` + `GrupoCifras` (una línea de fuente por grupo), `VentanaNoche` (marco para cifras y mapas; desde el 4-oct NO es de noche: los paneles van enteros con los colores del tema), `BarraPestanas`/`SubPestanas` (`panel/Pestanas.tsx`). Estas piezas escriben `hueso`/`tinta` y usan variantes `[.modo-noche_&]:` para la noche: dentro de una `VentanaNoche` cambian solas. Nada de tokens de noche (`estrella`, `tenue`, `noche-2`…) fijos en piezas que se usan en paneles: escribí `tinta`/`tinta/70`, que `.modo-noche` redefine. Paneles de negocio y entidad: cada pantalla es una pila de `Tarjeta` (plegables lo que no se mira a diario); `ListaConvocatorias` es una lista de filas dentro de una `Tarjeta`, no una tarjeta por convocatoria. «Cambios en tu ficha» (`negocio/_components/CambiosFicha.tsx`) lee `listarBitacora({ portafolioId })` solo con un id que ya pasó por `obtenerPropio`, muestra "El equipo" (nunca el correo de quien moderó) y nombres de campos, nunca valores; al formulario de edición no viaja `moderado_por`.
 - **Visualizaciones de Firmamento** (`components/firmamento/`): una sola pieza por cosa,
   no se copian. `BarrasCategoria` es la ÚNICA barra horizontal (forma del grupo, celda
   «<5» con barra vacía, tabla `sr-only` dentro de un `<div className="sr-only">`; `PistaBarra`
   es su pista sin texto, la usa también «Tu ficha está al N %»). `MapaEstelar`
   (`useConstelacionElegida` + `MapaEstelar` + `BotonConstelacion`) es el «mapa + lista que
-  enciende una constelación» de `MapaYTabla` y `ObservatorioCielo`; el hook se desestructura
+  enciende una constelación» de `MapaTerritorio` y `ObservatorioCielo`; el inicio usa el hook y
+  `BotonConstelacion` con su propio mapa (`MapaAliadosDestacado`, con aliados); el hook se desestructura
   (pasar el objeto entero a un componente rompe la regla `react-hooks/refs`). `MapaBarrios`
   pinta los 15 barrios por una cifra con la escala de `lib/escalaSecuencial.ts` (5 clases
   para conteos, 6 para la matriz; el número del barrio va escrito, el color solo agrupa).
@@ -454,9 +474,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `node scripts/exportar-evaluacion-modelo.mjs` desde `pipeline/reporte_modelo.md` (correrlo
   después de cada `03_clasificador.py`; `verificar-evaluacion-modelo.mjs` falla si quedó
   viejo). Cifra del modelo: F1 macro del holdout agrupado por nombre, nunca la del split
-  ingenuo ni la de la asesoría. Los comercios de OSM en el mapa llevan la forma y el color de
-  su grupo, más chicos y tenues que los aliados (`svgForma(grupo, tam, { tenue: true })`).
-- **`/firmamento` (página de datos, siempre de noche)**: `app/(site)/firmamento/` lee todo en el servidor desde `datos.ts` (`constelaciones.json` y la ficha del modelo por import estático, aliados SOLO por `obtenerDatosAbiertos` (agregados k = 5; jamás `listarAprobados`: nombres, direcciones y contactos no viajan en el payload de esa ruta) y nunca con un fetch a nuestra propia API; si la base falla la página sigue y dice que no pudo consultar). Las cifras de otras entidades (Cámara, DANE, DAP) viven en `lib/cifras.ts`, compartidas con la banda de la portada, con fuente y año: ninguna cifra sin fuente y fecha debajo. El mapa es el de siempre (`MapaAliados` con `noche`); el contenedor `.modo-noche` redefine `hueso`/`tinta` en `globals.css`. La Fraunces itálica solo se carga en el layout de esa ruta. Detalle en DESIGN.md › La página /firmamento.
+  ingenuo ni la de la asesoría. En el mapa cada negocio es una estrella del color de su grupo
+  (`svgEstrella(color, tam)`): 28 px aliado, 16 px comercio de OSM en constelación, 11 px suelto.
+- **Inicio = datos públicos** (`app/(site)/page.tsx`, 4-oct-2026; reemplaza a la página pública `/firmamento`, que redirige a `/`): título corto + `BuscadorInicio` → UN mapa (`MapaAliadosDestacado`: `MapaAliados` con aliados + comercios de OSM, interruptor «Líneas de constelación», leyenda de 3 renglones y la lista de constelaciones que enciende una) → `CifrasBarrio` («El barrio en cifras»: `GrupoCifras`/`Kpi`, `BarrasCategoria` por grupo con %, barrios como barras, las constelaciones principales) → `EnfoqueSection` → `GaleriaAliados`. Lee con `leerFirmamento` (`app/(site)/firmamento/datos.ts`): OSM del JSON y aliados SOLO por `obtenerDatosAbiertos` (k = 5) para las cifras; el mapa y el buscador sí usan `listarAprobados` (la vitrina ya es pública). Sin hero, sin sugeridor y sin botones de registro: en todo lo público el registro no se ofrece; se llega por «Entrar» → `/firmamento/entrar` → Google → registro. Las cifras de otras entidades (Cámara…) viven en `lib/cifras.ts`, con fuente y año.
 - **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
   datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`
   (`app/(site)/firmamento/datos.ts`, que en la base solo usa `obtenerDatosAbiertos`), por

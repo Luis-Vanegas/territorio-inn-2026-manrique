@@ -25,14 +25,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const rutas: { ruta: string; prioridad: number }[] = [
     { ruta: '', prioridad: 1 },
     { ruta: '/aliados', prioridad: 0.9 },
-    { ruta: '/aliados/registro', prioridad: 0.8 },
     // Pública aunque su contenido completo pida sesión: sin sesión sirve una
     // vista previa real, y es la página por la que la gente llega a registrarse.
     // /entrar y el panel (/firmamento/negocio) NO van — son privadas y noindex.
     { ruta: '/formalizacion', prioridad: 0.7 },
-    // Datos del territorio: OSM, constelaciones y cifras con fuente. Sin flag,
-    // lee archivos del repo y los datos abiertos agregados (regla k = 5).
-    { ruta: '/firmamento', prioridad: 0.8 },
     // Igual que /formalizacion: la vista previa sin sesión es real. Las guías
     // individuales no van: sin sesión solo muestran la puerta.
     { ruta: '/marca', prioridad: 0.6 },

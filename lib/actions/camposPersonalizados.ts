@@ -85,7 +85,7 @@ export async function crearCampoAction(
   }
 
   revalidatePath('/firmamento/equipo/campos');
-  revalidatePath('/aliados/registro');
+  revalidatePath('/firmamento/negocio/registro');
   invalidarVitrina();
   return { estado: 'ok', mensaje: `Campo "${parsed.data.etiqueta}" creado.` };
 }
@@ -126,7 +126,7 @@ export async function editarCampoAction(
   }
 
   revalidatePath('/firmamento/equipo/campos');
-  revalidatePath('/aliados/registro');
+  revalidatePath('/firmamento/negocio/registro');
   invalidarVitrina();
   return { estado: 'ok', mensaje: 'Campo actualizado.' };
 }
@@ -142,7 +142,7 @@ export async function cambiarActivoCampoAction(formData: FormData): Promise<void
 
   await cambiarActivo(id, activo);
   revalidatePath('/firmamento/equipo/campos');
-  revalidatePath('/aliados/registro');
+  revalidatePath('/firmamento/negocio/registro');
   invalidarVitrina();
 }
 

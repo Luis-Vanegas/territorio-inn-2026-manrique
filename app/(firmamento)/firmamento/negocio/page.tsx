@@ -9,7 +9,6 @@ import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { comparacionCategoria, perfilesParaTi, semanasDeNegocio } from '@/lib/db/cuenta.repo';
 import { obtenerPropio } from '@/lib/db/portafolios.repo';
 import { completitudFicha, resumenSemanas } from '@/lib/firmamento/ficha';
-import { negocioActivo } from '@/lib/firmamento/negocio';
 import { fechaHoyBogota, formatearNumero } from '@/lib/formato';
 import { BarraFicha } from './_components/FichaCompleta';
 import { EstadoFicha } from './_components/EstadoFicha';
@@ -17,7 +16,8 @@ import { GraficoSemanas } from './_components/GraficoSemanas';
 import { ListaConvocatorias } from './_components/ListaConvocatorias';
 import { SelectorNegocio } from './_components/SelectorNegocio';
 import { SinNegocio } from './_components/SinNegocio';
-import { VistaPreviaFicha } from './_components/VistaPreviaFicha';
+import { TarjetaEmprendimiento } from '@/components/vitrina/TarjetaEmprendimiento';
+import { hrefFichaPublica, negocioActivo } from '@/lib/firmamento/negocio';
 
 export const metadata: Metadata = { title: 'Inicio' };
 
@@ -38,9 +38,14 @@ function textoVariacion(v: number | null): string {
   return `${v > 0 ? 'Subió' : 'Bajó'} ${formatearNumero(Math.abs(v))} % frente a las 4 semanas anteriores.`;
 }
 
-export default async function NegocioInicioPage() {
+export default async function NegocioInicioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ registrado?: string; foto?: string; menu?: string }>;
+}) {
   const { usuarioId, nombre } = await exigirNegocio();
   const { negocios, actual } = await negocioActivo(usuarioId);
+  const { registrado, foto, menu } = await searchParams;
 
   if (!actual) {
     return (
@@ -67,7 +72,20 @@ export default async function NegocioInicioPage() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-5">
-      <SelectorNegocio negocios={negocios} actual={actual} />
+      {registrado && (
+        <p role="status" className="rounded-xl border border-azul/60 bg-hueso p-4 font-sans text-base text-tinta">
+          <span aria-hidden="true" className="mr-2 text-azul-texto">✓</span>
+          Recibimos tu registro.
+          {(foto === 'error' || menu === 'error') && ' No pudimos subir la foto o el menú: agrégalos desde «Mi ficha».'}
+        </p>
+      )}
+
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <SelectorNegocio negocios={negocios} actual={actual} />
+        <Link href="/firmamento/negocio/registro" className={CLASE_BOTON_PANEL}>
+          Agregar otro negocio
+        </Link>
+      </div>
 
       <EstadoFicha estado={portafolio.estado} motivo={portafolio.motivo_rechazo} enlaceFicha />
 
@@ -189,7 +207,17 @@ export default async function NegocioInicioPage() {
           )}
 
           <Tarjeta titulo="Así te ven tus vecinos" id="asi-te-ven" plegable resumen="Vista previa de tu ficha">
-            <VistaPreviaFicha portafolio={portafolio} />
+            <div className="modo-dia mb-3 rounded-xl bg-hueso px-4 pb-4 text-tinta [&_article]:border-t-0 [&_article]:pb-0 [&_article]:pt-4">
+              <TarjetaEmprendimiento portafolio={portafolio} indice={0} definicionesCampos={[]} vistaPrevia />
+            </div>
+            {publicada ? (
+              <a href={hrefFichaPublica(portafolio)!} target="_blank" rel="noopener" className={CLASE_BOTON_PANEL}>
+                Ver mi ficha en Constelaciones <span aria-hidden="true">↗</span>
+                <span className="sr-only"> (se abre en otra pestaña)</span>
+              </a>
+            ) : (
+              <p className="font-sans text-sm text-tinta/70">Aún no se ve en Constelaciones: aparece apenas la aprobemos.</p>
+            )}
           </Tarjeta>
         </div>
 
