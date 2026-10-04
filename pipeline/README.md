@@ -167,6 +167,12 @@ INGESTA_URL=https://<dominio>/api/ingesta/convocatorias INGESTA_SECRETO=... pyth
 # INGESTA_VIGIA_URL: si el informe va a otra URL; por defecto es INGESTA_URL con «/vigia» al final
 ```
 
+Fuentes actuales: Fondo Emprender (SENA) y Bancóldex (`/es/noticias`, filtrada a líneas de crédito y
+convocatorias). Se revisaron y NO se agregaron: iNNpulsa y SENA (el listado se arma con JavaScript, el HTML
+llega vacío), Ruta N (`/ofertas` es una lista filtrada por JavaScript; el resto solo trae ofertas de empleo) y
+la Cámara de Comercio de Medellín (páginas de programas permanentes mezcladas con el menú, sin listado de
+convocatorias). El `entidad` de cada fuente tiene que ser idéntico al nombre sembrado en la 033.
+
 Cada fuente del JSON lleva un `id` slug estable (es la llave del historial en la base: no se cambia). Reglas
 de buena vecindad: respeta `robots.txt`, una página por fuente por día, User-Agent propio, pausa entre fuentes,
 solo páginas públicas de entidades, nada se publica sin moderación humana.
