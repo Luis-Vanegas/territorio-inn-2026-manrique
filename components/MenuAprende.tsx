@@ -118,7 +118,7 @@ export function MenuAprende({
             className={
               enLinea
                 ? 'ml-3 flex flex-col border-l border-tinta/12'
-                : 'absolute left-0 top-full z-50 mt-1 flex w-64 flex-col border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]'
+                : 'absolute left-0 top-full z-50 mt-1 flex w-64 flex-col border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(11_16_38/0.08)]'
             }
           >
             {enlaces.map((e) => {

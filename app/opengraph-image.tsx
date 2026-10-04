@@ -20,9 +20,9 @@ export const alt = 'Constelaciones · Manrique — Comuna 3, Medellín';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-const HUESO = '#ffffff';
-const TINTA = '#1a1a1a';
-const AZUL = '#0957c3'; // azul-texto: 6.6:1 sobre blanco, el kicker es texto chico
+const HUESO = '#F3EFE4'; // hueso del sitio (crema estrella)
+const TINTA = '#0B1026'; // tinta del sitio (azul noche)
+const AZUL = '#0957c3'; // azul-texto: 5,8:1 sobre la crema, el kicker es texto chico
 
 export default function Imagen() {
   return new ImageResponse(

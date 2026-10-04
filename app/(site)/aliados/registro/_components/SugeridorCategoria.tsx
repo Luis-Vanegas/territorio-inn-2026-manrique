@@ -98,7 +98,7 @@ export function SugeridorCategoria({
           <p className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <span>
               Te sugerimos: <strong className="font-medium text-tinta">{resultado.sugerida.nombre}</strong>{' '}
-              (<span className="font-cifra tabular-nums">{porcentaje(resultado.sugerida.probabilidad)}</span>)
+              (<span className="font-sans tabular-nums">{porcentaje(resultado.sugerida.probabilidad)}</span>)
             </span>
             {categoriaId === resultado.sugerida.id ? (
               <span className="text-xs text-azul-texto">✓ Elegida abajo</span>
@@ -132,7 +132,7 @@ export function SugeridorCategoria({
                     ].join(' ')}
                   >
                     {o.nombre}
-                    <span className="font-cifra tabular-nums opacity-70">
+                    <span className="font-sans tabular-nums opacity-70">
                       {porcentaje(o.probabilidad)}
                     </span>
                   </button>

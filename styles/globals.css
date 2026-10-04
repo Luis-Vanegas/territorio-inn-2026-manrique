@@ -13,8 +13,8 @@
      Contraste verificado con la fórmula WCAG de docs/sistema-diseno-a11y.md;
      valores exactos a confirmar con scripts/contraste.mjs (skill
      diseno-interfaz) contra el sitio real antes de darlos por definitivos. */
-  --hueso-rgb: 255 255 255; /* blanco — pedido explícito por sobre el F7F5F0 anterior */
-  --tinta-rgb: 26 26 26;
+  --hueso-rgb: 243 239 228; /* crema estrella #F3EFE4: una sola paleta con Firmamento */
+  --tinta-rgb: 11 16 38; /* azul noche #0B1026: 16,37:1 sobre hueso */
   /* Controles nativos (lista del <select>, barras de desplazamiento) siguen al tema. */
   color-scheme: light;
 
@@ -29,9 +29,9 @@
      amarillo, así que se usa solo como fill con tinta encima (11.25:1, sobra
      en los dos modos). */
   --morado-rgb: 198 77 190; /* #C64DBE */
-  --morado-texto-rgb: 177 57 169; /* #B139A9 — 5.21:1 sobre blanco */
+  --morado-texto-rgb: 168 48 159; /* #A8309F — 5,09:1 sobre hueso, 4,87:1 sobre amarillo/15 */
   --azul-rgb: 60 138 246; /* #3C8AF6 */
-  --azul-texto-rgb: 9 87 195; /* #0957C3 — 6.64:1 sobre blanco */
+  --azul-texto-rgb: 9 87 195; /* #0957C3 — 5,78:1 sobre hueso, 5,52:1 sobre amarillo/15 */
   --amarillo-rgb: 244 204 72; /* #F4CC48 — solo fill, nunca texto */
 
   /* Ritmo del sitio en un solo lugar. Antes cada seccion repetia su propio
@@ -43,14 +43,14 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --hueso-rgb: 26 26 26;
-  --tinta-rgb: 245 245 245; /* 15.97:1 entre sí, igual que hueso/tinta claro */
+  --hueso-rgb: 11 16 38; /* noche #0B1026 */
+  --tinta-rgb: 243 239 228; /* estrella #F3EFE4: 16,37:1 entre sí, igual que en claro */
 
-  --morado-rgb: 198 77 190;
-  --morado-texto-rgb: 203 93 195; /* #CB5DC3 — 4.89:1 sobre hueso oscuro */
-  --azul-rgb: 60 138 246; /* ya da 5.11:1 sobre hueso oscuro, no necesita oscurecerse */
-  --azul-texto-rgb: 60 138 246;
-  --amarillo-rgb: 244 204 72; /* 11.25:1 sobre hueso oscuro, sobra */
+  --morado-rgb: 224 122 216; /* noche-morado: 7,12:1 sobre hueso oscuro */
+  --morado-texto-rgb: 224 122 216;
+  --azul-rgb: 127 176 255; /* noche-azul: 8,56:1 sobre hueso oscuro */
+  --azul-texto-rgb: 127 176 255;
+  --amarillo-rgb: 244 204 72; /* sodio: 12,16:1 sobre hueso oscuro */
 }
 
 /* Fallback para quien todavía no tiene data-theme seteado (primera visita,
@@ -60,12 +60,12 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]):not([data-theme="dark"]) {
     color-scheme: dark;
-    --hueso-rgb: 26 26 26;
-    --tinta-rgb: 245 245 245;
-    --morado-rgb: 198 77 190;
-    --morado-texto-rgb: 203 93 195;
-    --azul-rgb: 60 138 246;
-    --azul-texto-rgb: 60 138 246;
+    --hueso-rgb: 11 16 38;
+    --tinta-rgb: 243 239 228;
+    --morado-rgb: 224 122 216;
+    --morado-texto-rgb: 224 122 216;
+    --azul-rgb: 127 176 255;
+    --azul-texto-rgb: 127 176 255;
     --amarillo-rgb: 244 204 72;
   }
 }
@@ -120,7 +120,7 @@ body {
   background-color: rgb(var(--azul-rgb));
   border: 2px solid rgb(var(--hueso-rgb));
   /* Sin esto los puntos se pierden sobre el gris claro de las tiles. */
-  box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25);
+  box-shadow: 0 0 0 1px rgb(11 16 38 / 0.25);
   transition: transform 120ms ease;
 }
 
@@ -144,19 +144,19 @@ body {
   border-radius: 9999px;
   background-color: rgb(var(--tinta-rgb));
   border: 3px solid rgb(var(--hueso-rgb));
-  box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3);
+  box-shadow: 0 0 0 1px rgb(11 16 38 / 0.3);
   animation: pulso-usuario 2.4s ease-out infinite;
 }
 
 @keyframes pulso-usuario {
   0% {
-    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3), 0 0 0 0 rgb(26 26 26 / 0.35);
+    box-shadow: 0 0 0 1px rgb(11 16 38 / 0.3), 0 0 0 0 rgb(11 16 38 / 0.35);
   }
   70% {
-    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3), 0 0 0 18px rgb(26 26 26 / 0);
+    box-shadow: 0 0 0 1px rgb(11 16 38 / 0.3), 0 0 0 18px rgb(11 16 38 / 0);
   }
   100% {
-    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.3), 0 0 0 0 rgb(26 26 26 / 0);
+    box-shadow: 0 0 0 1px rgb(11 16 38 / 0.3), 0 0 0 0 rgb(11 16 38 / 0);
   }
 }
 
@@ -177,13 +177,13 @@ body {
 
 @keyframes pulso-marcador {
   0% {
-    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25), 0 0 0 0 rgb(60 138 246 / 0.45);
+    box-shadow: 0 0 0 1px rgb(11 16 38 / 0.25), 0 0 0 0 rgb(var(--azul-rgb) / 0.45);
   }
   70% {
-    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25), 0 0 0 14px rgb(60 138 246 / 0);
+    box-shadow: 0 0 0 1px rgb(11 16 38 / 0.25), 0 0 0 14px rgb(var(--azul-rgb) / 0);
   }
   100% {
-    box-shadow: 0 0 0 1px rgb(26 26 26 / 0.25), 0 0 0 0 rgb(60 138 246 / 0);
+    box-shadow: 0 0 0 1px rgb(11 16 38 / 0.25), 0 0 0 0 rgb(var(--azul-rgb) / 0);
   }
 }
 
@@ -199,13 +199,13 @@ body {
 
 @keyframes latido-estrella {
   0% {
-    box-shadow: 0 0 0 0 rgb(60 138 246 / 0.45);
+    box-shadow: 0 0 0 0 rgb(var(--azul-rgb) / 0.45);
   }
   70% {
-    box-shadow: 0 0 0 12px rgb(60 138 246 / 0);
+    box-shadow: 0 0 0 12px rgb(var(--azul-rgb) / 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgb(60 138 246 / 0);
+    box-shadow: 0 0 0 0 rgb(var(--azul-rgb) / 0);
   }
 }
 
@@ -624,6 +624,18 @@ body:has(dialog[open]) {
   --amarillo-rgb: 244 204 72;
   background-color: theme('colors.noche');
   color: theme('colors.estrella');
+}
+
+/* Ventana de día: lo contrario de .modo-noche. Para una pieza que muestra cómo se
+   ve el sitio de día (la vista previa de la ficha) aunque el panel esté en oscuro. */
+.modo-dia {
+  color-scheme: light;
+  --hueso-rgb: 243 239 228;
+  --tinta-rgb: 11 16 38;
+  --morado-rgb: 198 77 190;
+  --morado-texto-rgb: 168 48 159;
+  --azul-rgb: 60 138 246;
+  --azul-texto-rgb: 9 87 195;
 }
 
 .modo-noche :where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {

@@ -295,7 +295,7 @@ export default function MapaAliadosClient({
         data={capaLimite}
         style={{
           className: 'limite-comuna',
-          color: '#1a1a1a', // el CSS (.limite-comuna) lo cambia con el tema
+          color: '#0B1026', // el CSS (.limite-comuna) lo cambia con el tema
           weight: 1.25,
           opacity: 0.55,
           fillColor: '#3c8af6',
