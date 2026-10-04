@@ -9,7 +9,7 @@
 
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { buscarNegocios, relacionados, terminosDe } from '../lib/busqueda.ts';
+import { buscarNegocios, relacionados, sugerenciasDeCategorias, terminosDe } from '../lib/busqueda.ts';
 import {
   aBuscable,
   aplanarComercios,
@@ -186,5 +186,22 @@ for (const c of comercios.map((x) => x.detalle?.cocina).filter(Boolean)) {
   }
 }
 assert.equal(webLegible('https://www.smartfit.com.co/ruta'), 'smartfit.com.co');
+
+// Búsquedas del equipo sobre el inicio (4-oct): el mapa se filtra con esto, así que
+// cada una tiene que devolver comercios del rubro y la basura, nada.
+const enOsm = (q) => buscarNegocios(OSM, q).resultados;
+const almuerzos = enOsm('almuerzos');
+assert.ok(almuerzos.length >= 10, '«almuerzos» encuentra la comida del barrio');
+assert.ok(
+  almuerzos.every((r) => r.categoria_id === 'comidas' || /pollo|comida|almuerzo|restaurante/i.test(r.nombre)),
+  '«almuerzos» solo trae comida',
+);
+assert.ok(almuerzos.some((r) => /restaurante/i.test(r.nombre)), '«almuerzos» incluye restaurantes');
+assert.ok(enOsm('comidas').length >= 10, '«comidas» encuentra comida');
+assert.ok(enOsm('papeleria').length >= 5, '«papelería» encuentra papelerías');
+assert.ok(enOsm('barberia').some((r) => r.categoria_id === 'belleza_peluqueria'), '«barbería» trae belleza y peluquería');
+assert.ok(enOsm('ropa').length >= 3, '«ropa» encuentra ropa y calzado');
+assert.equal(enOsm('xyzq').length, 0, 'un texto sin sentido no trae nada (el mapa muestra el aviso)');
+assert.deepEqual(sugerenciasDeCategorias([n('a', 'A', 'otros', 'Otros'), n('b', 'B', 'comidas', 'Comidas y almuerzos')]), ['Comidas'], 'las sugerencias saltan «Otros» y cortan en «y»');
 
 console.log('✓ busqueda: aliados, comercios de OpenStreetMap y texto de OSM');

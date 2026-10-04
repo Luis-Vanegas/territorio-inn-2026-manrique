@@ -1,5 +1,7 @@
 import { listarAprobados } from "@/lib/db/portafolios.repo";
-import { BuscadorInicio } from "@/components/BuscadorInicio";
+import { BuscadorNegocios } from "@/components/BuscadorNegocios";
+import { ID_MAPA_INICIO, ProveedorBusqueda } from "@/components/BusquedaInicio";
+import { sugerenciasDeCategorias } from "@/lib/busqueda";
 import { MapaAliadosDestacado } from "@/components/MapaAliadosDestacado";
 import { CifrasBarrio } from "@/components/CifrasBarrio";
 import { GaleriaAliados } from "@/components/GaleriaAliados";
@@ -22,29 +24,35 @@ export default async function Home() {
 
   return (
     <main>
-      <section className="margen-editorial pt-10 sm:pt-14" aria-labelledby="titulo-inicio">
-        <h1
-          id="titulo-inicio"
-          className="font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl"
-        >
-          Los negocios de la Comuna 3, Manrique, en un mapa.
-        </h1>
-        <div className="mt-6 max-w-xl">
-          <BuscadorInicio />
-        </div>
-      </section>
+      <ProveedorBusqueda sugerencias={sugerenciasDeCategorias(aliados)}>
+        <section className="margen-editorial pt-10 sm:pt-14" aria-labelledby="titulo-inicio">
+          <h1
+            id="titulo-inicio"
+            className="font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl"
+          >
+            Los negocios de la Comuna 3, Manrique, en un mapa.
+          </h1>
+          <div className="mt-6 max-w-xl">
+            <BuscadorNegocios />
+          </div>
+        </section>
 
-      <section className="margen-editorial pb-16 pt-10" aria-label="Mapa de los negocios">
-        <MapaAliadosDestacado
-          portafolios={aliados}
-          constelaciones={d.filas.map((f) => ({
-            id: f.id,
-            codigo: f.codigo,
-            nombre: f.nombre,
-            tamano: f.tamano,
-          }))}
-        />
-      </section>
+        <section
+          id={ID_MAPA_INICIO}
+          className="margen-editorial scroll-mt-4 pb-16 pt-10"
+          aria-label="Mapa de los negocios"
+        >
+          <MapaAliadosDestacado
+            portafolios={aliados}
+            constelaciones={d.filas.map((f) => ({
+              id: f.id,
+              codigo: f.codigo,
+              nombre: f.nombre,
+              tamano: f.tamano,
+            }))}
+          />
+        </section>
+      </ProveedorBusqueda>
 
       <CifrasBarrio d={d} />
       <EnfoqueSection />
