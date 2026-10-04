@@ -20,13 +20,14 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
       <div className="border-l-2 border-tinta/20 bg-tinta/[0.03] px-5 py-4">
         <p className="font-sans text-sm text-tinta/70">Este registro está borrado.</p>
         <p className="mt-1 font-sans text-sm text-tinta/65">
-          Si te equivocaste o quieres volver a aparecer en el mapa, registra tu negocio de nuevo.
+          Si te equivocaste o quieres volver a aparecer en el mapa, entra a Firmamento con tu cuenta de
+          Google y registra tu negocio de nuevo.
         </p>
         <Link
-          href="/firmamento/negocio/registro"
+          href="/firmamento/entrar"
           className="mt-3 inline-block font-sans text-sm text-azul-texto underline decoration-azul underline-offset-4 hover:text-azul-texto/80"
         >
-          Registrar de nuevo →
+          Entrar a Firmamento →
         </Link>
       </div>
     );

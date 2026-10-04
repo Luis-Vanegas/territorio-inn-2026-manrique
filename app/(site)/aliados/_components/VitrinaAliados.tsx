@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
 
@@ -309,15 +308,7 @@ export function VitrinaAliados({
           <p className="mt-10 border-t border-tinta/12 pt-8 font-sans text-tinta/70">
             {categoriaActiva
               ? `Todavía no hay aliados en ${nombreCategoria ?? 'esa categoría'}; abajo ves los comercios del barrio de esa categoría.`
-              : 'Todavía no hay aliados publicados; los registros pasan por revisión antes de aparecer. Abajo ves los comercios del barrio.'}{' '}
-            Si tienes un negocio en la Comuna 3,{' '}
-            <Link
-              href="/firmamento/negocio/registro"
-              className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
-            >
-              sé el primero en aparecer
-            </Link>
-            .
+              : 'Todavía no hay aliados publicados; los registros pasan por revisión antes de aparecer. Abajo ves los comercios del barrio.'}
           </p>
         )}
 
