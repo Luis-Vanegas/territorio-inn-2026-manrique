@@ -11,7 +11,7 @@ import { BarrasCategoria } from './BarrasCategoria';
  * Los 15 barrios de la Comuna 3 coloreados por una cifra (hoy, comercios de
  * OpenStreetMap por barrio), con su leyenda y la lista equivalente.
  *
- * Es una «ventana de noche» (`.modo-noche`): sirve igual dentro de una página de
+ * Va con los colores del tema (las teselas del mapa son oscuras fijas). Sirve dentro de una página de
  * día. Leaflet toca `window` al importarse, de ahí el `dynamic` con `ssr: false`
  * (solo se permite en un Client Component, por eso este wrapper).
  *
@@ -30,8 +30,8 @@ const MapaClient = dynamic(() => import('./MapaBarriosClient'), {
   ssr: false,
   // Misma altura que el mapa: si no, la página salta cuando termina de cargar.
   loading: () => (
-    <div className="flex h-full w-full items-center justify-center bg-noche-3">
-      <span className="font-sans text-sm text-tenue">Cargando mapa…</span>
+    <div className="flex h-full w-full items-center justify-center bg-tinta/5">
+      <span className="font-sans text-sm text-tinta/70">Cargando mapa…</span>
     </div>
   ),
 });
@@ -63,41 +63,41 @@ export function MapaBarrios({
   );
 
   return (
-    <div className="modo-noche" style={{ backgroundColor: 'transparent' }}>
-      <div className={marco ? 'border border-trazo bg-noche-2 p-4 sm:p-5' : ''}>
+    <div>
+      <div className={marco ? 'rounded-xl border border-tinta/12 p-4 sm:p-5' : ''}>
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:items-start">
           <div className="min-w-0">
             <div
               role="group"
               aria-label={`Mapa de los barrios de la Comuna 3 coloreados por ${cifra}. Cada barrio lleva su número; la lista de al lado trae los mismos valores.`}
-              className="h-[360px] w-full overflow-hidden border border-trazo sm:h-[460px]"
+              className="h-[360px] w-full overflow-hidden border border-tinta/12 sm:h-[460px]"
             >
               <MapaClient valores={valores} />
             </div>
 
-            <p className="mt-3 font-sans text-sm font-medium text-estrella">
+            <p className="mt-3 font-sans text-sm font-medium text-tinta">
               Más claro, más {cifra}
             </p>
-            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 font-sans text-sm text-estrella">
+            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-2 font-sans text-sm text-tinta">
               {CLASES_BARRIO.map((c) => (
                 <li key={c.etiqueta} className="inline-flex items-center gap-2">
                   <span
                     aria-hidden="true"
-                    className="inline-block h-4 w-6 border border-trazo-2"
+                    className="inline-block h-4 w-6 border border-tinta/40"
                     style={{ backgroundColor: c.relleno }}
                   />
                   {c.etiqueta}
                 </li>
               ))}
             </ul>
-            <p className="mt-2 font-sans text-sm leading-relaxed text-tenue">
+            <p className="mt-2 font-sans text-sm leading-relaxed text-tinta/70">
               El color solo agrupa: cada barrio lleva su número escrito. Los nombres aparecen al acercar el
               mapa.
             </p>
           </div>
 
           <div className="min-w-0">
-            <h3 className="font-sans text-lg font-medium text-estrella">Barrio por barrio</h3>
+            <h3 className="font-sans text-lg font-medium text-tinta">Barrio por barrio</h3>
             <BarrasCategoria
               className="mt-3"
               encabezado="Barrio"
@@ -113,7 +113,7 @@ export function MapaBarrios({
           </div>
         </div>
 
-        <p className="mt-5 break-words font-sans tabular-nums text-xs leading-relaxed text-tenue">{fuente}</p>
+        <p className="mt-5 break-words font-sans tabular-nums text-xs leading-relaxed text-tinta/70">{fuente}</p>
       </div>
     </div>
   );
