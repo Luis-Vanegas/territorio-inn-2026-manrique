@@ -21,10 +21,12 @@ export default function Home() {
         <ModalRegistroExitoso />
       </Suspense>
       <Hero />
-      {/* Orden del plan de diseño (§3): Hero → banda Firmamento (noche, con los
-          números del territorio) → mapa de Aliados → qué ofrecemos → galería. */}
-      <MetricasSection />
+      {/* Orden: Hero → mapa de Aliados (el ÚNICO mapa y el único botón de
+          registro) → números del territorio → qué ofrecemos → galería. Sin banda
+          de noche: Firmamento va aparte (/firmamento) y la Constelación viva solo
+          está en la puerta (/firmamento/entrar). */}
       <AliadosDestacado />
+      <MetricasSection />
       <EnfoqueSection />
       <GaleriaAliados />
       <Footer />
