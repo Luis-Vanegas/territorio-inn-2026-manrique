@@ -5,6 +5,12 @@ enlaces que parecen convocatorias abiertas y los envía a
 `POST /api/ingesta/convocatorias`, donde entran SIEMPRE como `pendiente`. Una
 persona (moderación) decide si se publica. El vigía no publica nada.
 
+Al final de cada corrida manda UN informe a `POST /api/ingesta/vigia`: por fuente,
+si respondió, el código HTTP, la huella de su contenido, cuántas candidatas y cuántas
+nuevas trajo. Así se sabe si una fuente murió o cambió sin abrir los logs. El
+runner de Actions nace limpio cada día, así que el vigía no guarda estado: manda la
+huella y el servidor la compara con la anterior.
+
 Solo biblioteca estándar de Python: el workflow no instala dependencias, así que
 corre en segundos y no hay nada que se rompa por una versión.
 
@@ -12,6 +18,8 @@ Uso:
     python pipeline/04_vigia_convocatorias.py --seco        # imprime, no envía
     INGESTA_URL=https://<dominio>/api/ingesta/convocatorias \\
     INGESTA_SECRETO=... python pipeline/04_vigia_convocatorias.py
+    # el informe va a INGESTA_VIGIA_URL; sin ella, a INGESTA_URL cambiando
+    # «/convocatorias» por «/vigia»
 
 Buenas maneras con las páginas ajenas: se identifica con un User-Agent propio,
 respeta robots.txt, pide una página por fuente y espera entre fuentes. Si una
@@ -21,14 +29,17 @@ enviar a la plataforma.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
+import socket
 import sys
 import time
 import urllib.error
 import urllib.request
 import urllib.robotparser
+from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -65,10 +76,10 @@ class _Enlaces(HTMLParser):
             self._href = None
 
 
-def _pedir(url: str) -> bytes:
+def _pedir(url: str) -> tuple[int, bytes]:
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        return r.read()
+        return r.status, r.read()
 
 
 def _decodificar(cuerpo: bytes) -> str:
@@ -83,27 +94,74 @@ def _permitido_por_robots(url: str) -> bool:
     p = urlparse(url)
     rp = urllib.robotparser.RobotFileParser()
     try:
-        rp.parse(_decodificar(_pedir(f"{p.scheme}://{p.netloc}/robots.txt")).splitlines())
+        rp.parse(_decodificar(_pedir(f"{p.scheme}://{p.netloc}/robots.txt")[1]).splitlines())
     except (urllib.error.URLError, TimeoutError, OSError):
         return True  # sin robots.txt legible no hay restricción declarada
     return rp.can_fetch(USER_AGENT, url)
 
 
-def revisar_fuente(fuente: dict) -> list[dict]:
-    """Devuelve las convocatorias candidatas de una fuente, sin duplicar por URL."""
+def _es_timeout(e: BaseException) -> bool:
+    if isinstance(e, (TimeoutError, socket.timeout)):
+        return True
+    return isinstance(e, urllib.error.URLError) and isinstance(e.reason, (TimeoutError, socket.timeout))
+
+
+def _error_corto(e: BaseException) -> str:
+    """Un texto corto y sin saltos de línea: la base lo limita a 200 caracteres."""
+    razon = getattr(e, "reason", None) or e
+    return f"{type(e).__name__}: {razon}".replace("\n", " ")[:200]
+
+
+def revisar_fuente(fuente: dict) -> dict:
+    """Revisa una fuente y devuelve su resultado, sin lanzar por fallos de red.
+
+    `items` son las candidatas (sin duplicar por URL) y `informe` lo que va al
+    informe de corrida. La huella es el sha256 de TODOS los enlaces de la página
+    (texto + destino, ordenados): el HTML crudo trae tokens que cambian solos y
+    daría «cambió» todos los días.
+    """
     url = fuente["url"]
+    informe = {
+        "id": fuente["id"],
+        "entidad": fuente["entidad"],
+        "url": url,
+        "estado": "responde",
+        "http_status": None,
+        "huella": None,
+        "candidatas": 0,
+        "nuevas": 0,
+        "error": None,
+    }
+    resultado: dict = {"items": [], "informe": informe}
+
     if not _permitido_por_robots(url):
         print(f"  robots.txt no permite revisar {url}: se omite", file=sys.stderr)
-        return []
+        informe.update(estado="bloqueada_robots", error="robots.txt no permite revisar esta página")
+        return resultado
+
+    try:
+        status, cuerpo = _pedir(url)
+    except urllib.error.HTTPError as e:
+        print(f"  no se pudo leer: HTTP {e.code}", file=sys.stderr)
+        informe.update(estado="error_http", http_status=e.code, error=_error_corto(e))
+        return resultado
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        print(f"  no se pudo leer: {e}", file=sys.stderr)
+        informe.update(estado="timeout" if _es_timeout(e) else "error_http", error=_error_corto(e))
+        return resultado
 
     parser = _Enlaces()
-    parser.feed(_decodificar(_pedir(url)))
+    parser.feed(_decodificar(cuerpo))
+    informe["http_status"] = status
+
+    todos = sorted({f"{t}\t{urljoin(url, h)}" for t, h in parser.enlaces if h})
+    informe["huella"] = hashlib.sha256("\n".join(todos).encode("utf-8")).hexdigest()
 
     incluir = [re.compile(p, re.I) for p in fuente.get("incluir", [])]
     excluir = [re.compile(p, re.I) for p in fuente.get("excluir", [])]
 
     vistos: set[str] = set()
-    salida = []
+    salida: list[dict] = resultado["items"]
     for texto, href in parser.enlaces:
         if not (3 <= len(texto) <= 200):
             continue
@@ -124,7 +182,8 @@ def revisar_fuente(fuente: dict) -> list[dict]:
                 # aprobar (migración 033); `entidad` se resuelve por nombre en la ingesta.
             }
         )
-    return salida
+    informe["candidatas"] = len(salida[:MAX_POR_ENVIO])
+    return resultado
 
 
 class _SinRedirecciones(urllib.request.HTTPRedirectHandler):
@@ -135,11 +194,11 @@ class _SinRedirecciones(urllib.request.HTTPRedirectHandler):
         raise urllib.error.HTTPError(req.full_url, code, f"redirección a {newurl} no permitida", headers, fp)
 
 
-def enviar(url_api: str, secreto: str, fuente: str, items: list[dict]) -> dict:
-    cuerpo = json.dumps({"fuente": fuente, "items": items}, ensure_ascii=False).encode("utf-8")
+def _post(url_api: str, secreto: str, cuerpo: dict) -> dict:
+    datos = json.dumps(cuerpo, ensure_ascii=False).encode("utf-8")
     req = urllib.request.Request(
         url_api,
-        data=cuerpo,
+        data=datos,
         method="POST",
         headers={
             "Content-Type": "application/json; charset=utf-8",
@@ -151,9 +210,25 @@ def enviar(url_api: str, secreto: str, fuente: str, items: list[dict]) -> dict:
         return json.loads(r.read().decode("utf-8"))
 
 
+def enviar(url_api: str, secreto: str, fuente: str, items: list[dict]) -> dict:
+    return _post(url_api, secreto, {"fuente": fuente, "items": items})
+
+
+def url_del_informe(url_api: str) -> str:
+    explicita = os.environ.get("INGESTA_VIGIA_URL", "")
+    if explicita:
+        return explicita
+    return re.sub(r"/convocatorias/?$", "/vigia", url_api)
+
+
+def _ahora() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--seco", action="store_true", help="imprime los candidatos y no envía nada")
+    ap.add_argument("--fuentes", type=Path, default=FUENTES, help="otro JSON de fuentes (para probar fallos); por defecto el del repo")
     args = ap.parse_args()
 
     url_api = os.environ.get("INGESTA_URL", "")
@@ -161,25 +236,28 @@ def main() -> int:
     if not args.seco and not (url_api and secreto):
         print("Faltan INGESTA_URL e INGESTA_SECRETO (o usa --seco).", file=sys.stderr)
         return 1
-    if not args.seco and not url_api.startswith("https://"):
-        # El Bearer viaja en claro por http: se rechaza antes de mandarlo.
+    # El Bearer viaja en claro por http: se rechaza antes de mandarlo. Salvo un
+    # servidor de desarrollo en esta misma máquina (localhost), donde no sale a la red.
+    destino = urlparse(url_api)
+    local = destino.scheme == "http" and destino.hostname in ("localhost", "127.0.0.1")
+    if not args.seco and not (url_api.startswith("https://") or local):
         print("INGESTA_URL debe empezar con https://", file=sys.stderr)
         return 1
 
-    fuentes = json.loads(FUENTES.read_text(encoding="utf-8"))["fuentes"]
+    fuentes = json.loads(args.fuentes.read_text(encoding="utf-8"))["fuentes"]
     fallo_envio = False
+    iniciada = _ahora()
+    informes = []
 
     for i, fuente in enumerate(fuentes):
         if i:
             time.sleep(ESPERA_ENTRE_FUENTES)
         print(f"{fuente['nombre']}")
-        try:
-            items = revisar_fuente(fuente)[:MAX_POR_ENVIO]
-        except (urllib.error.URLError, TimeoutError, OSError) as e:
-            print(f"  no se pudo leer: {e}", file=sys.stderr)
-            continue
+        r = revisar_fuente(fuente)
+        items = r["items"][:MAX_POR_ENVIO]
+        informes.append(r["informe"])
 
-        print(f"  {len(items)} candidata(s)")
+        print(f"  {r['informe']['estado']} · {len(items)} candidata(s)")
         if args.seco:
             for it in items:
                 print(f"   - {it['titulo']}\n     {it['url']}")
@@ -187,8 +265,9 @@ def main() -> int:
         if not items:
             continue
         try:
-            r = enviar(url_api, secreto, fuente["nombre"], items)
-            print(f"  enviado: {r['nuevas']} nueva(s), {r['repetidas']} repetida(s), {r['vencidas']} vencida(s)")
+            resp = enviar(url_api, secreto, fuente["nombre"], items)
+            r["informe"]["nuevas"] = resp["nuevas"]
+            print(f"  enviado: {resp['nuevas']} nueva(s), {resp['repetidas']} repetida(s), {resp['vencidas']} vencida(s)")
         except urllib.error.HTTPError as e:
             # 503 = falta INGESTA_SECRETO en el servidor; 401 = el secreto no coincide.
             print(f"  la plataforma respondió {e.code}", file=sys.stderr)
@@ -196,6 +275,26 @@ def main() -> int:
         except (urllib.error.URLError, TimeoutError, OSError) as e:
             print(f"  no se pudo enviar: {e}", file=sys.stderr)
             fallo_envio = True
+
+    print("Informe: " + ", ".join(f"{x['id']}={x['estado']}" for x in informes))
+    if args.seco:
+        return 0
+
+    informe = {
+        "origen": "actions" if os.environ.get("GITHUB_ACTIONS") == "true" else "manual",
+        "iniciada_en": iniciada,
+        "terminada_en": _ahora(),
+        "fuentes": informes,
+    }
+    try:
+        resp = _post(url_del_informe(url_api), secreto, informe)
+        print(f"Informe de corrida guardado: {resp['respondieron']}/{resp['fuentes']} respondieron, {resp['nuevas']} nueva(s)")
+    except urllib.error.HTTPError as e:
+        print(f"el informe de corrida fue rechazado ({e.code})", file=sys.stderr)
+        fallo_envio = True
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        print(f"no se pudo enviar el informe de corrida: {e}", file=sys.stderr)
+        fallo_envio = True
 
     return 1 if fallo_envio else 0
 
