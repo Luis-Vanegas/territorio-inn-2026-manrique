@@ -25,7 +25,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const rutas: { ruta: string; prioridad: number }[] = [
     { ruta: '', prioridad: 1 },
     { ruta: '/aliados', prioridad: 0.9 },
-    { ruta: '/aliados/registro', prioridad: 0.8 },
     // Pública aunque su contenido completo pida sesión: sin sesión sirve una
     // vista previa real, y es la página por la que la gente llega a registrarse.
     // /entrar y el panel (/firmamento/negocio) NO van — son privadas y noindex.

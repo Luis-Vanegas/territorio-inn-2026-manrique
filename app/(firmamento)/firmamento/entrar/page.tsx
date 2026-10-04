@@ -6,6 +6,7 @@ import { FormaRol } from '@/components/firmamento/FormaRol';
 import { Plegable } from '@/components/firmamento/Plegable';
 import { verificarSesion } from '@/lib/auth/admin';
 import { googleConfigurado } from '@/lib/auth/google';
+import { rutaInterna } from '@/lib/auth/destino';
 import { MENSAJES_INGRESO } from '@/lib/auth/mensajesIngreso';
 import { sesionActual } from '@/lib/auth/usuario';
 import type { RolFirmamento } from '@/lib/firmamento/navegacion';
@@ -57,9 +58,11 @@ const CLASE_ENLACE = 'font-medium text-azul-texto underline underline-offset-4';
 export default async function EntrarFirmamentoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ rol?: string; error?: string }>;
+  searchParams: Promise<{ rol?: string; error?: string; destino?: string }>;
 }) {
-  const { rol, error } = await searchParams;
+  const { rol, error, destino } = await searchParams;
+  // Adónde vuelve el negocio tras Google (la guarda del registro lo manda). Solo rutas del panel del negocio.
+  const destinoNegocio = rutaInterna(destino)?.startsWith('/firmamento/negocio') ? destino! : '/firmamento/negocio';
   const abierto = ROLES.find((r) => r.rol === rol)?.rol;
   const mensajeError = error ? MENSAJES[error] : null;
   const conGoogle = googleConfigurado();
@@ -74,12 +77,12 @@ export default async function EntrarFirmamentoPage({
         {vecino && (
           <Aviso>
             Ya entraste como {vecino.nombre}.{' '}
-            <Link href="/firmamento/negocio" className={CLASE_ENLACE}>
-              Ir a mi panel
+            <Link href={destinoNegocio} className={CLASE_ENLACE}>
+              {destinoNegocio === '/firmamento/negocio' ? 'Ir a mi panel' : 'Seguir'}
             </Link>
           </Aviso>
         )}
-        <BotonGoogle destino="/firmamento/negocio" disponible={conGoogle} />
+        <BotonGoogle destino={destinoNegocio} disponible={conGoogle} />
         <p className="font-sans text-sm text-tinta/70">Sirve para entrar y para registrarte. No creas ninguna contraseña.</p>
       </>
     ),
@@ -175,7 +178,7 @@ export default async function EntrarFirmamentoPage({
 
           <p className="mt-6 font-sans text-base text-tinta/70">
             ¿No estás en la red?{' '}
-            <Link href="/aliados/registro" className={`inline-flex min-h-[44px] items-center ${CLASE_ENLACE}`}>
+            <Link href="/firmamento/negocio/registro" className={`inline-flex min-h-[44px] items-center ${CLASE_ENLACE}`}>
               Regístrate gratis
             </Link>
           </p>

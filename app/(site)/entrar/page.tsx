@@ -108,7 +108,7 @@ export default async function EntrarPage({
         <p className="mt-10 border-t border-tinta/12 pt-8 text-center font-sans text-sm leading-relaxed text-tinta/65">
           ¿Aún no tienes tu negocio en Constelaciones?{' '}
           <Link
-            href="/aliados/registro"
+            href="/firmamento/negocio/registro"
             className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
           >
             Regístralo gratis

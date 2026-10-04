@@ -23,7 +23,7 @@ function EncabezadoEstado({ portafolio }: { portafolio: PortafolioAdmin }) {
           Si te equivocaste o quieres volver a aparecer en el mapa, registra tu negocio de nuevo.
         </p>
         <Link
-          href="/aliados/registro"
+          href="/firmamento/negocio/registro"
           className="mt-3 inline-block font-sans text-sm text-azul-texto underline decoration-azul underline-offset-4 hover:text-azul-texto/80"
         >
           Registrar de nuevo →

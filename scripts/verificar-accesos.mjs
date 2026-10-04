@@ -87,12 +87,11 @@ const GUARDA_ACCION = /\b(verificarSesion|sesionActual|entidadDeSesion|exigir(?:
 /** archivo:función → por qué no pide sesión. */
 const ACCIONES_PUBLICAS = {
   'consultarAsesor:consultarAsesor': 'token del enlace del negocio + cupo de agente',
-  'geocodificarDireccion:geocodificarDireccionAction': 'botón del registro público, con cupo propio',
+  'geocodificarDireccion:geocodificarDireccionAction': 'botón del registro (vecino y equipo) y de las ediciones, con cupo propio',
   'gestionarEstado:actualizarPortafolio': 'token del enlace (/aliados/estado/[token]) + cupo de estado',
   'gestionarEstado:borrarPortafolio': 'token del enlace (/aliados/estado/[token]) + cupo de estado',
   'registrarCandidato:registrarCandidato': 'registro público con cupo',
   'registrarPeticion:registrarPeticion': 'buzón público con cupo',
-  'registrarPortafolio:registrarPortafolio': 'registro público con cupo',
   'sesionAdmin:iniciarSesion': 'el login mismo, con cupo de login',
   'sesionFirmamento:salirDeFirmamento': 'cerrar sesión no necesita sesión',
   'sesionUsuario:salir': 'cerrar sesión no necesita sesión',

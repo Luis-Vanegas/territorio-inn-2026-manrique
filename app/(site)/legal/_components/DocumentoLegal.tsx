@@ -18,7 +18,7 @@ export function DocumentoLegal({
   version,
   actualizado,
   avisoBorrador = true,
-  volverA = { href: '/aliados/registro', texto: '← Volver al registro' },
+  volverA = { href: '/firmamento/negocio/registro', texto: '← Volver al registro' },
   children,
 }: {
   titulo: string;
