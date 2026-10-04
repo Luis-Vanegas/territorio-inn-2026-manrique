@@ -315,15 +315,14 @@ html.js:not(.js-listo) [data-reveal] {
 /* Líneas de constelación: noche-3 sobre teselas claras, finas, debajo de las estrellas. */
 .arista-constelacion {
   stroke: theme('colors.noche-3');
-  stroke-opacity: 0.7;
-  stroke-width: 1.25;
+  stroke-opacity: 0.35;
+  stroke-width: 0.9;
   fill: none;
 }
 
 /* Nombre de una constelación: Fraunces itálica, sin caja, con halo del fondo
-   para despegarlo de las teselas. Toda la etiqueta aparece desde zoom 15 (la
-   misma clase que oculta los nombres de barrio): más lejos, los códigos del sur
-   se encimaban; la lista junto al mapa ya identifica cada constelación. */
+   para despegarlo de las teselas. Solo se dibuja la de la constelación elegida
+   (CapaConstelaciones), así que no hay nombres que se encimen. */
 .etiqueta-constelacion {
   display: block;
   width: max-content;
@@ -335,9 +334,6 @@ html.js:not(.js-listo) [data-reveal] {
   color: rgb(var(--tinta-rgb));
   text-shadow: 0 0 3px rgb(var(--hueso-rgb)), 0 0 3px rgb(var(--hueso-rgb)), 0 0 2px rgb(var(--hueso-rgb));
   pointer-events: none;
-}
-.etiquetas-barrio-ocultas .etiqueta-constelacion {
-  display: none;
 }
 
 /* Contorno de la comuna: tinta del tema (oscuro sobre teselas claras, claro
@@ -424,6 +420,7 @@ html.js:not(.js-listo) [data-reveal] {
 :root[data-theme='dark'] .arista-constelacion,
 .modo-noche .arista-constelacion {
   stroke: theme('colors.noche-azul');
+  stroke-opacity: 0.5;
 }
 
 /* Anillo del marcador activo: noche sobre teselas oscuras no se ve. */
@@ -446,7 +443,7 @@ html.js:not(.js-listo) [data-reveal] {
   }
 }
 
-/* Caja táctil de 44 px alrededor de la estrella de 11: es lo que se toca. */
+/* Caja táctil de 44 px alrededor de la estrella chica: es lo que se toca. */
 .caja-estrella {
   display: flex;
   width: 44px;
@@ -462,20 +459,6 @@ html.js:not(.js-listo) [data-reveal] {
 .leaflet-marker-icon:hover .caja-estrella svg,
 .leaflet-marker-icon:focus-visible .caja-estrella svg {
   transform: scale(1.6);
-}
-
-.estrella-osm {
-  display: block;
-  animation: parpadeo-estrella 4s ease-in-out infinite alternate;
-}
-
-@keyframes parpadeo-estrella {
-  from {
-    opacity: 0.6;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 /* Con menos movimiento la regla global apaga las animaciones; el trazo
