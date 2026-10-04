@@ -107,9 +107,20 @@ def _es_timeout(e: BaseException) -> bool:
 
 
 def _error_corto(e: BaseException) -> str:
-    """Un texto corto y sin saltos de línea: la base lo limita a 200 caracteres."""
-    razon = getattr(e, "reason", None) or e
-    return f"{type(e).__name__}: {razon}".replace("\n", " ")[:200]
+    """Una frase corta en español «tú» para el panel del equipo (la base la limita a
+    200 caracteres). El detalle técnico no se guarda: ya sale por stderr en el log."""
+    if _es_timeout(e):
+        return "No respondió a tiempo"
+    if isinstance(e, urllib.error.HTTPError):
+        c = e.code
+        if c in (404, 410):
+            return f"La página no existe ({c})"
+        if c >= 500:
+            return f"El servidor falló ({c})"
+        if c in (401, 403):
+            return f"La página no permite el acceso ({c})"
+        return f"La página respondió con error ({c})"
+    return "No se pudo conectar"
 
 
 def revisar_fuente(fuente: dict) -> dict:
@@ -136,7 +147,7 @@ def revisar_fuente(fuente: dict) -> dict:
 
     if not _permitido_por_robots(url):
         print(f"  robots.txt no permite revisar {url}: se omite", file=sys.stderr)
-        informe.update(estado="bloqueada_robots", error="robots.txt no permite revisar esta página")
+        informe.update(estado="bloqueada_robots", error="Su robots.txt no permite revisarla")
         return resultado
 
     try:
