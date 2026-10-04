@@ -106,7 +106,7 @@ export function SugeridorModeracion({
           <span key={o.id}>
             {i > 0 && (i === opciones.length - 1 ? ' y ' : ', ')}
             <strong className="font-medium text-tinta">{o.nombre}</strong>{' '}
-            <span className="font-cifra text-xs text-tinta/65">{porcentaje(o.probabilidad)}</span>
+            <span className="font-sans tabular-nums text-xs text-tinta/65">{porcentaje(o.probabilidad)}</span>
           </span>
         ))}
         .

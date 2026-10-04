@@ -516,6 +516,11 @@ la misma regla de «Metáfora», aplicada adentro de una página.
   chica). Las vistas por URL de una página (`?vista=`) usan el mismo componente
   (`SubPestanas`). Insignias de conteo reales: `amarillo` con texto `tinta`, DM Sans; la
   pestaña suma las de sus secciones. Negocio y entidad no tienen subpestañas.
+- **Territorio del equipo**: mapa de barrios y mapa de constelaciones en `VentanaNoche`; el
+  interruptor «Centralidades del POT» (apagado de entrada) dibuja las centralidades con
+  contorno discontinuo y su nombre escrito (no solo color), con la nota «Uso interno: licencia
+  de los polígonos pendiente». Solo en este panel, nunca en páginas públicas. Un cero de DM
+  Mono en una cifra grande se pinta en DM Sans (`CifraLimpia`): la barra se lee «Ø».
 - **Bloques**: `Tarjeta` (borde `tinta/12`, `rounded-xl`, título Fraunces). Con
   `plegable` es un `<details>` (`Plegable`: abre sin JS; con JS el contenido entra con
   un fundido de `AnimatePresence`) para ahorrar alto en lo que no se consulta todos los días; la

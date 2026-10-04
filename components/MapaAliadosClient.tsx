@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Polygon, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
@@ -14,8 +14,10 @@ import { grupoDeCategoria, type Grupo } from '@/lib/categorias/grupos';
 import type { Portafolio } from '@/lib/db/portafolios.repo';
 import { enlaceWhatsapp } from '@/lib/contacto';
 import { contar } from '@/lib/interacciones';
+import type { CentralidadMapa } from './MapaAliados';
 import { CapaConstelaciones } from './mapa/CapaConstelaciones';
 import { svgForma } from './mapa/formas';
+import { PALETA_NOCHE } from '@/lib/paleta';
 import { useTemaOscuro } from '@/lib/tema';
 
 /**
@@ -120,6 +122,8 @@ type Props = {
   filtroConstelacion?: string;
   /** Siempre teselas oscuras, sin importar el tema (la página /firmamento es nocturna). */
   noche?: boolean;
+  /** Capa interna del POT (solo el panel del equipo): contorno discontinuo y nombre, sin clics. */
+  centralidades?: CentralidadMapa[];
 };
 
 /**
@@ -148,8 +152,16 @@ function Encuadre({ foco }: { foco: L.LatLngBounds | null }) {
     };
   }, [mapa]);
 
+  // El primer encuadre va sin animar: con StrictMode (y al salir de la página) el
+  // mapa se desmonta a mitad del zoom animado y Leaflet termina la transición
+  // sobre un panel ya borrado (`_leaflet_pos` de undefined en `_onZoomTransitionEnd`).
+  const primero = useRef(true);
   useEffect(() => {
-    mapa.fitBounds(foco ?? LIMITES_COMUNA, { padding: [16, 16], maxZoom: ZOOM.seleccion });
+    mapa.fitBounds(foco ?? LIMITES_COMUNA, { padding: [16, 16], maxZoom: ZOOM.seleccion, animate: !primero.current });
+    primero.current = false;
+    return () => {
+      mapa.stop();
+    };
   }, [mapa, foco]);
 
   return null;
@@ -177,6 +189,9 @@ function IrASeleccionado({
     } else {
       mapa.flyTo(destino, zoom, { duration: 0.7 });
     }
+    return () => {
+      mapa.stop(); // un vuelo en curso no debe seguir sobre un mapa desmontado
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seleccionado, mapa]);
 
@@ -191,6 +206,7 @@ export default function MapaAliadosClient({
   constelaciones,
   filtroConstelacion = '',
   noche = false,
+  centralidades,
 }: Props) {
   // El polígono no cambia nunca; sin memo, react-leaflet vuelve a montar la
   // capa GeoJSON en cada render y el mapa parpadea al filtrar por categoría.
@@ -209,6 +225,20 @@ export default function MapaAliadosClient({
   // desplazamiento de Leaflet (el CSS global solo alcanza a las de CSS). Este
   // componente solo corre en el navegador (ssr:false), así que window existe.
   const oscuro = useTemaOscuro() || noche;
+  const capaPot = useMemo(
+    () =>
+      centralidades && centralidades.length > 0
+        ? ({
+            type: 'FeatureCollection',
+            features: centralidades.map((c) => ({
+              type: 'Feature',
+              properties: { nombre: c.nombre, jerarquia: c.jerarquia },
+              geometry: c.geometry,
+            })),
+          } as unknown as GeoJsonObject)
+        : null,
+    [centralidades],
+  );
   const sinMovimiento = useMemo(
     () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
@@ -272,6 +302,30 @@ export default function MapaAliadosClient({
           fillOpacity: 0.04,
         }}
       />
+
+      {capaPot && (
+        <GeoJSON
+          key={oscuro ? 'pot-noche' : 'pot-dia'}
+          data={capaPot}
+          interactive={false}
+          style={{
+            className: 'limite-centralidad',
+            color: oscuro ? PALETA_NOCHE.sodio : PALETA_NOCHE.noche,
+            weight: 2.5,
+            opacity: 0.95,
+            dashArray: '9 6',
+            fillColor: oscuro ? PALETA_NOCHE.sodio : PALETA_NOCHE.noche,
+            fillOpacity: 0.06,
+          }}
+          onEachFeature={(f, capa) =>
+            capa.bindTooltip(`${f.properties.nombre} · ${f.properties.jerarquia}`, {
+              permanent: true,
+              direction: 'center',
+              className: oscuro ? 'etiqueta-centralidad etiqueta-centralidad--noche' : 'etiqueta-centralidad',
+            })
+          }
+        />
+      )}
 
       <EtiquetasBarrioSegunZoom />
       <Encuadre foco={foco} />

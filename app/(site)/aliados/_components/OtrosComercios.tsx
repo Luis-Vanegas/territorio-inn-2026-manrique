@@ -60,7 +60,7 @@ export function OtrosComercios({
         {cercania && ' Van del más cercano al más lejano.'}
       </p>
       {osmBase && (
-        <p className="mt-2 font-cifra text-xs leading-relaxed text-tinta/70">
+        <p className="mt-2 font-sans tabular-nums text-xs leading-relaxed text-tinta/70">
           © colaboradores de OpenStreetMap (ODbL). Datos de OpenStreetMap al {fechaLarga(osmBase)}.
         </p>
       )}

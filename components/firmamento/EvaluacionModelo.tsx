@@ -15,7 +15,7 @@ import { MatrizConfusion } from './MatrizConfusion';
 
 function Fuente({ evaluacion }: { evaluacion: EvaluacionModelo }) {
   return (
-    <p className="mt-4 break-words font-cifra text-xs leading-relaxed text-tenue">
+    <p className="mt-4 break-words font-sans tabular-nums text-xs leading-relaxed text-tenue">
       Fuente: validación con {formatearNumero(evaluacion.n_holdout)} comercios apartados, OpenStreetMap, ©
       colaboradores (ODbL) · modelo entrenado el {fechaLarga(evaluacion.fecha_corrida)}
     </p>

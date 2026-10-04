@@ -16,6 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, useInView, useReducedMotion } from "framer-motion";
 import { formatearNumero as formatear } from "@/lib/formato";
+import { CifraLimpia } from "./CifraLimpia";
 
 export function NumeroAnimado({
   numero,
@@ -45,8 +46,7 @@ export function NumeroAnimado({
 
   return (
     <span ref={ref} aria-hidden="true">
-      {texto}
-      {sufijo}
+      <CifraLimpia texto={`${texto}${sufijo}`} />
     </span>
   );
 }

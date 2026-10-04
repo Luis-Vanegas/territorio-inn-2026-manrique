@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 
-import { MapaAliados } from '@/components/MapaAliados';
+import { MapaAliados, type CentralidadMapa } from '@/components/MapaAliados';
 
 /**
  * El «mapa + lista que enciende una constelación» de Firmamento, en un solo
@@ -67,7 +67,15 @@ export function MapaEstelar({
   fijar,
   caja,
   className = '',
-}: Pick<EstadoMapaEstelar, 'elegida' | 'fijar' | 'caja'> & { className?: string }) {
+  alto,
+  centralidades,
+}: Pick<EstadoMapaEstelar, 'elegida' | 'fijar' | 'caja'> & {
+  className?: string;
+  /** Clases de alto del mapa (por defecto, las de la variante `vitrina`). */
+  alto?: string;
+  /** Solo el panel del equipo: capa interna de centralidades del POT con su interruptor. */
+  centralidades?: CentralidadMapa[];
+}) {
   return (
     <div ref={caja} className={`min-w-0 scroll-mt-24 ${className}`}>
       <MapaAliados
@@ -77,6 +85,8 @@ export function MapaEstelar({
         noche
         constelacionElegida={elegida}
         alElegirConstelacion={fijar}
+        alto={alto}
+        centralidades={centralidades}
       />
     </div>
   );

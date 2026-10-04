@@ -359,6 +359,27 @@ html.js:not(.js-listo) [data-reveal] {
   display: none;
 }
 
+/* Centralidades del POT (capa interna del equipo): nombre en negrita sobre el
+   contorno discontinuo, sin caja. De noche, sodio; de día, tinta. */
+.leaflet-container .leaflet-tooltip.etiqueta-centralidad {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: theme('colors.noche');
+  text-shadow: 0 0 3px rgb(var(--hueso-rgb)), 0 0 3px rgb(var(--hueso-rgb));
+}
+.leaflet-container .leaflet-tooltip.etiqueta-centralidad--noche {
+  color: theme('colors.sodio');
+  text-shadow: 0 0 3px theme('colors.noche'), 0 0 3px theme('colors.noche');
+}
+.leaflet-tooltip.etiqueta-centralidad::before {
+  display: none;
+}
+
 /* Mapa de barrios coloreado (components/firmamento/MapaBarriosClient.tsx): el
    número del barrio sobre su polígono y, al acercar, su nombre. El color del
    texto lo pone el componente según el relleno de la clase (4,5:1 o más). */
