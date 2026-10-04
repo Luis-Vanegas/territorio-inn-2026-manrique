@@ -66,13 +66,6 @@ export async function AliadosDestacado() {
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
             <Link
-              href="/aliados/registro"
-              className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto text-hueso transition-colors hover:bg-transparent hover:text-azul-texto px-6 py-3 font-sans text-base"
-            >
-              Sumar mi negocio →
-            </Link>
-
-            <Link
               href="/aliados"
               className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
             >
