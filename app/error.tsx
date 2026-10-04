@@ -4,8 +4,8 @@
 //
 // Sin este archivo, la home entera devolvía la pantalla default de Next —
 // stack trace en inglés, fondo blanco, cero salida — y la home es justamente
-// la ruta más expuesta: es `force-dynamic` y consulta Neon tres veces
-// (AliadosDestacado, GaleriaAliados, MetricasSection). Un `fetch failed` del
+// la ruta más expuesta: es `force-dynamic` y consulta Neon varias veces
+// (aliados, datos abiertos, GaleriaAliados). Un `fetch failed` del
 // pool, un pico de latencia o la base dormida bastaban para tumbarla.
 //
 // El caso más probable no es un bug del código: es la base momentáneamente

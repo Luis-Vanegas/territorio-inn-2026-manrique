@@ -8,7 +8,7 @@ import Link from 'next/link';
  * decide: el del módulo Servicios lo apaga porque su texto es el definitivo
  * del proyecto, no un borrador a la espera de otra revisión.
  *
- * `volverA` existe porque el enlace de salida estaba fijo a /aliados/registro,
+ * `volverA` existe porque el enlace de salida estaba fijo al registro,
  * y un documento que se lee desde el formulario de Servicios tiene que devolver
  * a la persona a donde estaba. Dejarla en otro formulario sería perderle el
  * trabajo hecho.
@@ -18,7 +18,7 @@ export function DocumentoLegal({
   version,
   actualizado,
   avisoBorrador = true,
-  volverA = { href: '/firmamento/negocio/registro', texto: '← Volver al registro' },
+  volverA = { href: '/', texto: '← Volver al inicio' },
   children,
 }: {
   titulo: string;

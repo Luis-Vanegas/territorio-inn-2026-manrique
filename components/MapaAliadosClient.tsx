@@ -16,7 +16,7 @@ import { enlaceWhatsapp } from '@/lib/contacto';
 import { contar } from '@/lib/interacciones';
 import type { CentralidadMapa } from './MapaAliados';
 import { CapaConstelaciones } from './mapa/CapaConstelaciones';
-import { svgForma } from './mapa/formas';
+import { svgEstrella } from './mapa/formas';
 import { PALETA_NOCHE } from '@/lib/paleta';
 import { useTemaOscuro } from '@/lib/tema';
 
@@ -24,13 +24,13 @@ import { useTemaOscuro } from '@/lib/tema';
  * Mapa de la vitrina.
  *
  * Los marcadores son divIcon y no <Marker> por defecto por dos razones:
- * la estética (una forma y un color por grupo, en vez del pin azul de Leaflet)
- * y porque los íconos default de Leaflet se rompen con bundlers — resuelven sus
- * PNG por ruta relativa y en Next terminan en 404.
+ * la estética (una estrella del color de su grupo, en vez del pin azul de
+ * Leaflet) y porque los íconos default de Leaflet se rompen con bundlers —
+ * resuelven sus PNG por ruta relativa y en Next terminan en 404.
  *
- * Cada grupo de categoría tiene su forma además de su color (DESIGN.md ›
- * Categorías): el color solo no basta con daltonismo. La caja del marcador mide
- * 44 px (objetivo táctil) aunque la forma dibujada mida 26.
+ * Un aliado es la estrella GRANDE (28 px); los comercios de OSM, las chicas
+ * (CapaConstelaciones). La categoría exacta va escrita en el popup y en el
+ * `title`. La caja del marcador mide 44 px (objetivo táctil).
  *
  * ponytail: sin cluster de marcadores. Hoy son ~8 aliados. Pasada la centena
  * (plan de diseño §3 › Mapa) hay que agrupar, p. ej. con leaflet.markercluster;
@@ -45,7 +45,7 @@ function iconoGrupo(grupo: Grupo, activo: boolean) {
   if (!icono) {
     icono = L.divIcon({
       className: '', // Leaflet mete estilos propios si esto queda vacío por defecto
-      html: `<span class="marcador-grupo${activo ? ' marcador-grupo--activo' : ''}">${svgForma(grupo, 26)}</span>`,
+      html: `<span class="marcador-grupo${activo ? ' marcador-grupo--activo' : ''}">${svgEstrella(grupo.color, 28)}</span>`,
       iconSize: [44, 44],
       iconAnchor: [22, 22],
       popupAnchor: [0, -16],
@@ -116,8 +116,10 @@ type Props = {
   ubicacionUsuario?: Coordenada | null;
   /** Id del negocio resaltado desde el listado: el mapa vuela hacia él. */
   seleccionado?: string | null;
-  /** Datos ya cargados: si es null la capa de constelaciones no se dibuja. */
+  /** Datos ya cargados: si es null la capa de comercios de OSM no se dibuja. */
   constelaciones?: DatosConstelaciones | null;
+  /** Líneas y nombres de las constelaciones (interruptor «Líneas de constelación»). */
+  lineas?: boolean;
   /** Id de una constelación para verla sola y acercarse a ella; '' = todas. */
   filtroConstelacion?: string;
   /** Siempre teselas oscuras, sin importar el tema (la página /firmamento es nocturna). */
@@ -205,6 +207,7 @@ export default function MapaAliadosClient({
   seleccionado,
   constelaciones,
   filtroConstelacion = '',
+  lineas = true,
   noche = false,
   centralidades,
 }: Props) {
@@ -335,6 +338,7 @@ export default function MapaAliadosClient({
         <CapaConstelaciones
           datos={constelaciones}
           filtroId={filtroConstelacion}
+          lineas={lineas}
           ubicacion={ubicacionUsuario}
         />
       )}
@@ -373,7 +377,7 @@ export default function MapaAliadosClient({
                 <span
                   aria-hidden="true"
                   className="inline-flex"
-                  dangerouslySetInnerHTML={{ __html: svgForma(grupo, 16) }}
+                  dangerouslySetInnerHTML={{ __html: svgEstrella(grupo.color, 16) }}
                 />
                 {p.categoria_nombre}
               </span>

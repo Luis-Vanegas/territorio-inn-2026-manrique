@@ -103,9 +103,9 @@ Contrastes medidos con la fórmula WCAG (luminancia relativa), no estimados:
 `border-tinta/12` sobre el mismo `hueso`, como antes sobre el blanco; un `#FBF9F3` solo
 agregaría un tono más sin que nada lo pida. Si una pieza lo necesita, se discute aquí.
 
-**Paneles sin noche (4-oct, Luis):** `VentanaNoche` ya no prende `.modo-noche`: los paneles van enteros con los colores del tema (como la portada) y `VentanaNoche` solo enmarca con `tinta/12`. La noche queda en `/firmamento`, la puerta `/firmamento/entrar` y los mapas con teselas oscuras (`MapaBarrios`).
+**Paneles sin noche (4-oct, Luis):** `VentanaNoche` ya no prende `.modo-noche`: los paneles van enteros con los colores del tema (como la portada) y `VentanaNoche` solo enmarca con `tinta/12`. La noche queda solo en los mapas con teselas oscuras del modo oscuro; `/firmamento` público ya no existe y la puerta sigue el tema.
 
-**Ventanas de noche** (`.modo-noche`, `/firmamento`):
+**Ventanas de noche** (`.modo-noche`):
 En modo oscuro el fondo de la ventana coincide con el de la página, así que se
 separa con un anillo `trazo` (`dark:ring-1 dark:ring-trazo`, y `dark:border-trazo` en
 las piezas con borde propio). **Ventana de día** (`.modo-dia`): lo contrario, para lo
@@ -113,7 +113,7 @@ que muestra cómo se ve el sitio de día aunque el panel esté en oscuro (la vis
 previa de la ficha).
 
 **`theme-color`** (barra del navegador en el celular): `#F3EFE4` en todo el sitio,
-que siempre abre en claro, y `#0B1026` en `/firmamento`, que es de noche.
+que siempre abre en claro.
 
 Fondo hueso, tinta azul noche, y los acentos de la constelación: morado, azul,
 amarillo. (El acento se llamó «magenta» en este documento y «morado» en el
@@ -170,12 +170,7 @@ Todo movimiento va con `framer-motion` y respeta `prefers-reduced-motion`: quien
 lo pidió ve el contenido aparecer directo. Solo se animan `transform` y
 `opacity`; nada dura más de 900 ms.
 
-**Una excepción, acotada**: la Constelación viva (ver «Firmamento › Constelación
-viva») usa **Anime.js** porque es una coreografía de cinco fases sobre cientos de
-elementos SVG, con trazo de líneas (`stroke-dashoffset`), que framer-motion
-resolvería con un componente por estrella. Ahí cada tramo dura ≤ 900 ms pero la
-secuencia entera llega a ~4,3 s; corre una sola vez, al entrar en pantalla, y
-ningún texto ni botón la espera. Fuera de ese componente, framer-motion.
+**Sin excepciones**: todo movimiento va con framer-motion o CSS (Anime.js se quitó el 4-oct-2026 con la Constelación viva).
 
 `components/ScrollReveal.tsx` hace fade + slide de 16 px al entrar en viewport,
 una sola vez.
@@ -214,15 +209,15 @@ una frase de texto corrido quedan exentos.
 
 Propuesta aprobada en `docs/plan-diseno-2026-10.md` §2 y §8; esta sección es la
 fuente de verdad de la identidad nocturna. Componentes hechos: el mapa (ver
-«Mapa») y la página `/firmamento` (ver «La página /firmamento»); los tokens
+«Mapa») y los paneles con sesión; la página pública `/firmamento` ya no existe
+(4-oct-2026: redirige a `/`, que es la parte pública de datos, ver «Portada»); los tokens
 viven en `lib/paleta.ts` y los esparce `tailwind.config.ts`.
 
 ### Metáfora
 
 *De día el barrio, de noche el firmamento.* El sitio de día (hueso, como hoy) es
 donde el vecino **hace** cosas: buscar, registrarse, aprender. El Firmamento es
-donde se **leen** los datos del territorio. Vive en la página `/firmamento`, en
-las «ventanas» de noche de los paneles con
+donde se **leen** los datos del territorio. Vive en las «ventanas» de los paneles con
 sesión (que son de día: ahí se hacen cosas). El sitio no abre en noche: el tema inicial sigue
 siendo claro (ver «Tema»); el Firmamento es una superficie propia, no el modo
 oscuro. Por eso sus colores no cambian con el selector de tema.
@@ -274,12 +269,7 @@ El motivo es el dato; nada decorativo que no salga de uno.
 - **Líneas de constelación** = el árbol de expansión mínima (MST) **real** de cada
   constelación que encontró el análisis (HDBSCAN). No se dibujan líneas a mano ni
   inventadas.
-- **Letras griegas** (α, β, γ…) numeran las secciones de `/firmamento`, en
-  Fraunces itálica, color `sodio`.
-- **Horizonte** de ladera con luces de casa y la aguja de la iglesia, como
-  ilustración de cabecera.
-- Titular de `/firmamento`: Fraunces itálica 300 con una palabra en `sodio` y peso
-  600. El sitio de día conserva su titular actual.
+- **Nombre de una constelación** en el mapa: Fraunces en itálica, sin caja.
 
 ### Reglas de cifras
 
@@ -296,11 +286,9 @@ El motivo es el dato; nada decorativo que no salga de uno.
 - Las celdas con menos de 5 casos se muestran como «<5», con una nota que explique
   por qué (protege a los vecinos; ver `docs/seguridad.md`).
 - El número de aliados nunca se escribe a mano y tiene dos fuentes según la pieza:
-  la **portada** muestra el total de aprobados leído de la base
-  (`contarAprobadosPorCategoria`), que es público porque la vitrina ya los lista uno
-  por uno; `/firmamento` solo usa los **agregados con k ≥ 5** de
-  `obtenerDatosAbiertos` (el mismo repo de `/api/datos`), con celdas «<5». Ningún
-  otro componente consulta la base para una cifra de aliados.
+  las cifras de la **portada** («El barrio en cifras») y del panel de entidad usan solo los
+  **agregados con k ≥ 5** de `obtenerDatosAbiertos` (el mismo repo de `/api/datos`), con
+  celdas «<5»; los paneles del equipo y del negocio leen sus propios repos con guarda.
 
 ### DM Mono: rol cerrado
 
@@ -345,6 +333,12 @@ identifican, nunca dicen bueno o malo.
 | Salud | `menta` | Cruz |
 | Otros | `tenue` | Anillo (círculo hueco) |
 
+**En el mapa solo el color** (Luis, 4-oct-2026, como el tablero de la asesoría): cada
+negocio es una estrella del color de su grupo y el TAMAÑO dice si es aliado o comercio de
+OSM. Tradeoff aceptado: con daltonismo el mapa no basta para distinguir categorías; la
+categoría exacta va escrita en el popup y en el `title` de cada marcador, y la forma sigue
+en barras, listas y fichas.
+
 Simulación de daltonismo (Machado 2009, severidad completa, distancia CIE76 entre
 los colores de los grupos; visión normal: mínimo 29,0): la pareja más cercana baja
 a 11,6 (Belleza y Oficios, protanopía), 13,1 (Salud y Otros, deuteranopía) y 18,3
@@ -358,14 +352,22 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
 - **Encuadre**: abre ajustado al polígono de la comuna; el paneo se limita a su
   margen (35 %) y fuera del polígono hay una máscara suave. Un aliado fuera del
   margen sigue en la lista pero el mapa no lo muestra.
-- **Aliados**: marcador con la forma y el color de su grupo (tabla de arriba), de
-  26 px dentro de una caja táctil de 44. El mapeo categoría → grupo vive en un solo
-  lugar, `lib/categorias/grupos.ts`.
-- **Constelaciones** (interruptor con `aria-pressed`): halo punteado, líneas del
-  MST y estrellas de cuatro puntas en `noche-3`, pequeñas, debajo de los
-  marcadores de aliados. Son comercios de OpenStreetMap, **no aliados**: la
-  leyenda lo dice y el texto habla de «comercios mapeados en OpenStreetMap»,
-  nunca de «negocios que hay».
+- **Cada negocio es una estrella** de cuatro puntas del color de su grupo, con
+  contorno `noche` (`svgEstrella`, `components/mapa/formas.ts`). **Aliado**: grande,
+  28 px. **Comercio de OpenStreetMap**: chica, 16 px si está en una constelación y
+  11 px si está suelto, debajo de los aliados. Caja táctil de 44 en todas. El mapeo
+  categoría → grupo vive en un solo lugar, `lib/categorias/grupos.ts`. Los comercios
+  de OSM **no son aliados**: la leyenda lo dice y el texto habla de «comercios en
+  OpenStreetMap», nunca de «negocios que hay».
+- **Líneas de constelación** (interruptor «Líneas de constelación», `aria-pressed`,
+  encendido de entrada): líneas finas del MST (`noche-3` sobre teselas claras,
+  `noche-azul` sobre oscuras) y el nombre de cada constelación en Fraunces itálica,
+  sin caja: el código («C04») siempre y el nombre desde zoom 15. Apagarlo deja las
+  estrellas. Sin halos.
+- **Leyenda**: tres renglones y una sola línea de fuente debajo. (1) **Tamaño**:
+  grande = aliado de Constelaciones, pequeña = comercio en OpenStreetMap. (2) **Color =
+  categoría**: los 6 grupos con su conteo (aliados + estrellas que el mapa muestra).
+  (3) **Línea = constelación**: negocios cercanos unidos.
 - **Filtros del mapa** (sin controles nuevos): el desplegable «Ver una sola» lista
   cada constelación como «C04 · Carrera 31 · Tienda y víveres — 13 comercios»;
   si el JSON no trae `codigo` o un nombre descriptivo se usa lo que haya
@@ -375,9 +377,7 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   Tienda y víveres:»). El filtro de categoría de `/aliados` (`?categoria=`)
   también filtra las estrellas del mapa y la lista «Otros comercios» (mismos ids;
   `filtrarPorCategoria`): una constelación sin comercios de esa categoría
-  desaparece y las líneas solo unen estrellas que quedan. La leyenda cuenta lo que
-  el mapa muestra por grupo («Comida (círculo) · 42»), aliados y estrellas, e
-  incluye los comercios sin nombre («incluidos 9 comercios sin nombre»).
+  desaparece y las líneas solo unen estrellas que quedan.
 - **Mostrar todo, sea aliado o no**: el filtro de categoría de `/aliados` ofrece
   las categorías de aliados Y las que solo trae OSM, con los dos conteos sumados
   (`unirCategorias`; «Sin categoría» al final). Con cualquier `?categoria=` el mapa
@@ -400,7 +400,8 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   ni enlaces**: la dirección es la forma de saber dónde queda. Horario y cocina
   se traducen (`lib/geo/comerciosOsm.ts`): «Mo-Sa 08:00-18:00» se lee «Lunes a
   sábado, 8:00 a. m. – 6:00 p. m.»; lo que no se puede interpretar se muestra tal
-  cual. OSM no trae fotos, así que la ficha usa la forma de su grupo en vez de foto.
+  cual. OSM no trae fotos, así que la ficha usa la forma de su grupo en vez de foto
+  (el popup y las listas conservan la forma; el marcador del mapa es la estrella).
 - **Otros comercios del barrio** (`/aliados`, bajo el listado de aliados): los
   mismos comercios de OSM como lista de información, con la misma ficha, línea de
   fuente en `font-cifra` («© colaboradores de OpenStreetMap (ODbL)», fecha del
@@ -410,121 +411,36 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
   ordena alfabéticamente. Se pinta por tandas de 12.
 - **Buscador**: los comercios de OSM aparecen en los resultados (portada y
   `/aliados`) con la etiqueta «OpenStreetMap»; ante empate, primero los aliados.
-- **Fuente**: bajo el mapa, en `font-cifra`: «© colaboradores de OpenStreetMap
-  (ODbL)», fecha del snapshot de OSM y fecha de la corrida. La misma atribución se
+- **Fuente**: una sola línea bajo la leyenda, en DM Sans pequeña: aliados aprobados de
+  Constelaciones y comercios de OpenStreetMap (© colaboradores, ODbL), fecha del snapshot
+  de OSM y fecha de la corrida. La misma atribución se
   suma al control de Leaflet mientras la capa está prendida.
 - **En modo oscuro**: las teselas pasan a Esri `World_Dark_Gray_Base` (mismo
   servicio y atribución; las dos URL viven en `TESELAS`, `lib/geo/constantes.ts`) y
   cambian al vuelo con el selector de tema (`useTemaOscuro` de `lib/tema.ts`, un solo
   MutationObserver sobre `data-theme`, con `prefers-color-scheme` si falta). El contorno de la comuna toma `tinta` (5,4:1 sobre la
-  tesela), halos y líneas de constelación pasan de `noche-3` a `noche-azul`
-  (4,3:1) y el anillo del marcador activo a `estrella`. Los marcadores de grupo
-  sacan 5,5:1 o más sobre la tesela oscura. Popups y ficha de «Otros comercios»
+  tesela), las líneas de constelación pasan de `noche-3` a `noche-azul`
+  (4,3:1) y el anillo del marcador activo a `estrella`. Los nombres de constelación
+  usan `tinta` con halo `hueso`, así que siguen al tema. Popups y ficha de «Otros comercios»
   usan `hueso`/`tinta` del tema (ver «Tema»); la leyenda y la línea de fuente se
   leen con `tinta/75` y `tinta/70`.
 - **Alternativa sin mapa**: enlace «Ver los aliados en lista» sobre el mapa.
 
-### La página /firmamento
+### La página /firmamento (retirada)
 
-Ruta `app/(site)/firmamento/`, componentes en `components/firmamento/`. Siempre de
-noche, sin seguir el selector de tema, y lee solo datos que ya existen (nada nuevo
-en la base, ninguna pieza simulada).
-
-- **`.modo-noche`** (styles/globals.css) envuelve la página y redefine los mismos
-  tokens `hueso`/`tinta`/`azul-texto`/`morado-texto` con `noche`, `estrella`,
-  `noche-azul` y `noche-morado`. Así el mapa existente (popups, controles,
-  leyenda, ficha de comercio) sale con la paleta nocturna sin duplicar clases; el
-  foco pasa a `sodio` (12:1 sobre `noche`). `MapaAliados` recibe `noche` y no sigue
-  el tema; `constelacionElegida` y `alElegirConstelacion` dejan que la tabla
-  controle el filtro del mapa. No hay un segundo mapa. **El mapa de /firmamento no
-  lleva aliados individuales** (`portafolios` vacío): es un tablero de agregados
-  k ≥ 5; los aliados se ven en `/aliados`.
-- **Fraunces itálica** se carga solo en esta ruta (`layout.tsx` de la carpeta,
-  variable `--font-fraunces-italica`, clase `.font-italica`): el layout raíz solo
-  trae la Fraunces normal y sin ella el navegador inclinaría la letra a la fuerza.
-  Va en el titular (itálica 300, «mento» en peso 600 `sodio`), en las letras
-  griegas y en el índice.
-- **Secciones** (solo las que tienen dato real): α cielo de hoy (4 indicadores
-  con estrella + el cielo proyectado), β mapa estelar, γ tabla de constelaciones
-  (tocar el código de una fila la enciende en el mapa; se apaga al tocarla otra
-  vez), δ la brecha («tres miradas» lado a lado con la nota de que **no** son
-  comparables como porcentaje, y la red por categoría con celdas «<5»), ε sugeridor
-  en vivo, ζ indicadores de otras entidades, η método y límites. La vigía de
-  convocatorias del prototipo no entra: aún no tiene dato propio en el sitio.
-- **Cifras**: las de nuestros archivos se leen en `datos.ts` (OSM, modelo, datos
-  abiertos); las de otras entidades (Cámara, DANE, DAP) están en `lib/cifras.ts`, cada una con
-  fuente y año, y la portada importa de ahí la misma cifra de Cámara. Si la base no responde, el indicador de aliados dice que no pudo
-  consultarse; no se deja en cero.
-- **Cielo** (`CieloConstelaciones`): comercios y líneas del MST proyectados del
-  lat/lon real dentro del contorno de la comuna. Las líneas se trazan con
-  `pathLength` (≤ 900 ms en total) al entrar en pantalla y las estrellas parpadean
-  en 4 grupos desfasados (0,6 ↔ 1, de 3 a 6 s). Con menos movimiento aparece todo
-  directo. Sin JavaScript se ve entero: framer rinde el trazo en 0, así que
-  `.linea-cielo` lo anula sin la clase `js` y lo revela a los 4 s sin `js-listo`
-  (las mismas tres capas de «Movimiento»).
-- **Horizonte**: cada luz es un comercio de OSM y su posición de oeste a este es
-  su longitud; la altura dentro de la ladera es solo reparto visual.
-- **Índice**: barra pegajosa bajo el encabezado, con enlaces de 44 px; en pantallas
-  angostas se desplaza dentro de su barra, no la página.
-- **Tabla de constelaciones**: `caption`, `th scope`, botón de 44 px con
-  `aria-pressed` en el código de cada fila. Bajo `sm` el radio y la mezcla bajan
-  bajo el nombre para que no haya scroll horizontal a 320 px.
-- **Celdas «<5»**: se muestran tal cual, con la nota de por qué (menos de 5
-  negocios podrían señalar a una persona; Ley 1581).
-
-### Constelación viva
-
-La pieza que dice qué es el sitio sin leer nada: «los negocios de tu barrio forman
-constelaciones; únete a la tuya». Es el mismo dato de «Motivos», hecho secuencia.
-Componente `components/firmamento/ConstelacionViva.tsx` (servidor) con variantes
-`completa` (sin uso hoy: la portada ya no tiene banda de noche) y `compacta` (puerta `/firmamento/entrar`: franja baja arriba del título en
-el celular, columna a la derecha en escritorio; nunca empuja el menú de roles).
-
-- **Datos reales, proyectados en el servidor** (`lib/firmamento/cieloVivo.ts`, una vez
-  por proceso): contorno de `manrique.json`, los 15 barrios de
-  `barrios-manrique.json`, los 320 comercios de `constelaciones.json` con la forma y el
-  color de su grupo (`<use>` de seis símbolos, no 320 trazos distintos) y el MST de
-  cada constelación. Proyección equirectangular local con corrección por coseno, la
-  misma de `/firmamento` (`lib/firmamento/proyeccion.ts`). Al navegador no viaja ni un
-  lat/lon: solo el SVG final.
-- **Secuencia** (variante completa; la compacta comprime los tiempos y no lleva
-  nombres): 1) se traza el contorno de la comuna (900 ms); 2) aparecen los barrios,
-  trazo fino `trazo-2` (700 ms, escalonados 40 ms); 3) se encienden los comercios
-  desde el centro hacia afuera, forma y color de su grupo (500 ms cada uno, 3 ms de
-  escalón); 4) se trazan las líneas de cada constelación, `noche-azul` (700 ms,
-  escalonadas); 5) brillan hasta 5 constelaciones grandes con un halo `sodio` (radio p90
-  acotado a 14–30 unidades) y su nombre corto («Carrera 31», «María Cano -
-  Carambolas»), en DM Sans sobre una pastilla `noche` (en el celular solo 3). Se
-  eligen de mayor a menor pero **separadas entre sí** (120 unidades de 600): las cinco
-  mayores caen en el mismo núcleo y sus nombres se encimaban. Total ~4,3 s (compacta
-  ~2,5 s). Solo `opacity`, `transform` y el trazo.
-- **Reposo**: los halos titilan con una animación CSS (`opacity` 0,55 ↔ 1, 2,4 s) que
-  se pausa fuera de pantalla (IntersectionObserver) y no existe con menos movimiento.
-  Nada de bucles en JS.
-- **Sin JS / menos movimiento / fallo**: el HTML del servidor trae el SVG final. Con
-  la clase `js` arranca oculto (`[data-fase]`) y lo revela la animación; sin `js` se ve
-  entero, con `js` sin `js-listo` se revela a los 4 s (las tres capas de
-  «Movimiento»), con `prefers-reduced-motion` se ve directo sin cargar Anime.js, y si
-  Anime.js no carga se revela todo de una.
-- **Peso**: Anime.js se importa con `import()` dentro del efecto, por módulos
-  (`animejs/timeline`, `animejs/svg`, `animejs/utils`), solo cuando la pieza entra en
-  pantalla y sin menos movimiento: no está en el bundle inicial ni compite con el LCP
-  (el titular del Hero). Esos tres módulos pesan 37 KB minificados, 14,5 KB con gzip
-  (Anime.js completo: 118 KB minificado).
-- **Puerta en el celular**: la franja mide 64 px de alto y la frase se acorta («Los
-  negocios de Manrique forman constelaciones.»); a 320 × 700 la última fila del menú
-  de roles sigue en la primera pantalla.
-- **Accesible**: la variante completa es `role="img"` con una descripción con los
-  conteos y los nombres; las etiquetas superpuestas son `aria-hidden`. La compacta es
-  decorativa (`aria-hidden`) y lleva al lado una frase equivalente. Toda cifra visible
-  lleva su línea de fuente (OSM, Alcaldía de Medellín, fecha).
+Desde el 4-oct-2026 `/firmamento` redirige a `/`: los datos públicos (mapa, cifras,
+constelaciones, barrios) viven en el inicio (ver «Portada»). Se borraron la página, el
+índice de letras griegas, las secciones, el cielo proyectado, el horizonte, el sugeridor
+público y la evaluación del modelo en lo público (la evaluación sigue en el panel del
+equipo, Modelos). La Constelación viva de la puerta también se quitó (la puerta lleva una
+foto) y con ella `animejs`.
 
 ### Firmamento con sesión (puerta y paneles)
 
 Rutas `app/(firmamento)/firmamento/` (`entrar`, `negocio`, `equipo`, `entidad`).
-Dirección «Ventana al cielo» (Luis, 3-oct-2026; `docs/plan-rediseno-firmamento.md`).
-Reemplaza la primera versión, que copió el prototipo de la asesoría (todo de noche,
-foto a la izquierda, beneficios, mucha monoespaciada) y se descartó por eso.
+Dirección «Ventana al cielo» (Luis, 3-oct-2026; `docs/plan-rediseno-firmamento.md`). La
+puerta se rehízo el 4-oct-2026 sobre la pantalla de la asesoría, pero con los colores del
+tema y sin beneficios ni cifras.
 
 **De día, con ventanas de noche.** La puerta y los paneles son superficies de día
 (`hueso`/`tinta`, siguen el selector de tema como el resto del sitio) porque ahí se
@@ -535,17 +451,19 @@ la misma regla de «Metáfora», aplicada adentro de una página.
 - **Encabezado**: el `SiteHeader` de siempre, arriba de la puerta y de los tres paneles
   (lo pone `app/(firmamento)/firmamento/layout.tsx`). El enlace a Constelaciones es el
   logo de siempre; no hay una barra propia ni una tarjeta «La cara de la red».
-- **Puerta** (`/firmamento/entrar`): un título («Entra a Firmamento») y un **menú de
-  roles** de tres filas, cada una con su forma de grupo y su acento de marca:
-  ✦ Tengo un negocio (estrella, `amarillo`) · ● Soy del equipo (círculo, `azul`) ·
-  ■ Represento una entidad (cuadrado, `morado`). La forma es la que identifica (no solo
-  el color). Cada fila es un `<details name="rol">` nativo (se abre una a la vez, sin JS)
-  con su acción adentro: Google para negocio; correo y contraseña, o Google, para el
-  equipo; Google para entidad. El servidor abre la del `?rol=` (o ninguna). Con JS el
-  contenido entra con un fundido y 6 px de desplazamiento (`AnimatePresence`, 200 ms;
-  no se anima la altura, solo `opacity` y `transform`; directo con menos movimiento) y el `summary` anuncia `aria-expanded`. Debajo, una sola línea: «¿No estás
-  en la red? Regístrate gratis». **Sin foto, sin beneficios, sin cifras.** Los errores
-  de ingreso salen arriba del menú (`role="alert"`, borde `amarillo`, texto `tinta`).
+- **Puerta** (`/firmamento/entrar`): en escritorio, mitad y mitad a alto completo: a la
+  izquierda la **foto de Manrique** (`public/fotos/manrique-iglesia.jpg`, `object-cover`)
+  con un velo `noche` abajo y encima «Firma**mento**» (Fraunces, «mento» en `sodio`) y
+  una sola línea («Los datos de tu barrio, trabajando para tu negocio.»; tonos fijos
+  claros porque van sobre la foto); a la derecha, la **tarjeta** «Entra a Firmamento»
+  (`hueso`/`tinta`, sigue el selector de tema) con tres **pestañas**: Mi negocio ·
+  Equipo · Entidad. Son enlaces a `?rol=` (el servidor pinta la elegida, sin JS;
+  `aria-current`; activa en `azul-texto` con texto `hueso`). Mi negocio: Google, «Sirve
+  para entrar y para registrarte» y «¿Te registró el equipo? Usa el enlace que te
+  enviamos por WhatsApp.». Equipo: correo y contraseña, o Google. Entidad: Google.
+  En el celular la foto va arriba, baja (176 px), y la tarjeta debajo. **Sin enlace de
+  registro, sin beneficios, sin cifras.** Los errores de ingreso (incluido `sin_equipo`)
+  salen arriba de las pestañas (`role="alert"`, borde `amarillo`, texto `tinta`).
 - **Panel** (`PanelShell`): bajo el `SiteHeader`, un encabezado de panel con el rol en
   mayúsculas cortas (`morado-texto`, la excepción de voz de marca), el nombre del negocio
   o de la entidad en Fraunces, el botón al sitio («Mi ficha pública», «Ver
@@ -575,7 +493,7 @@ la misma regla de «Metáfora», aplicada adentro de una página.
   `sodio` de noche) dentro de un `GrupoCifras`, que imprime UNA línea de fuente para el
   grupo. Las bandas de cifras y los mapas van en una `VentanaNoche` (marco `tinta/12`,
   `rounded-2xl`, colores del tema; desde el 4-oct no es de noche). `Tarjeta` y `Kpi` leen
-  `hueso`/`tinta` y sus variantes `[.modo-noche_&]`, así que sirven igual en `/firmamento`.
+  `hueso`/`tinta` y sus variantes `[.modo-noche_&]`, así que sirven de día y de noche.
 - **Pie**: atribución OSM y «Datos abiertos con supresión de celdas menores a 5», en DM
   Sans pequeña.
 - **Formularios mudados de `/admin`**: escriben `hueso`/`tinta`, así que de día se ven
@@ -599,7 +517,9 @@ la misma regla de «Metáfora», aplicada adentro de una página.
 ## Navegación
 
 Ítems del encabezado (`components/SiteHeader.tsx`): Inicio · Aliados · **Aprende ▾**
-(Formalización, Marca, Ventas) · Firmamento · Nosotros, más el botón «Registrarme».
+(Formalización, Marca, Ventas) · Nosotros, más un solo botón, «Entrar» →
+`/firmamento/entrar` (sin sesión; con sesión, el menú de la persona). No hay enlace
+«Firmamento» ni «Registrarme»: el registro se ofrece después de entrar con Google.
 Empleo e Inventario predictivo se suman solo si su flag está prendido (antes de
 «Aprende»). «Escríbenos» sale del menú superior y queda en el pie (y al final del menú
 móvil, que tiene espacio); el buzón no se pierde.
@@ -616,25 +536,25 @@ móvil, que tiene espacio); el buzón no se pierde.
 
 ## Portada
 
-Orden: Hero → Aliados con mapa (el ÚNICO mapa y el único botón de registro, «Sumar mi
-negocio») → «El proyecto, en números» → Qué ofrecemos → Galería. **La portada no tiene
-banda de noche**: todo es de día, con los tokens del tema, y alterna sola con el modo
-oscuro. Firmamento va aparte (`/firmamento`) y la Constelación viva solo está en la
-puerta (`/firmamento/entrar`).
-La sección «El proyecto, en números»: las visitas se quitaron (las infla el propio
-equipo; siguen en el panel de administración). Muestra datos del **territorio**, cada
-uno con su fuente y su fecha en DM Sans pequeña debajo (`Kpi`): comercios mapeados en OpenStreetMap
-y constelaciones (de `public/firmamento/constelaciones.json`, fecha de la base de OSM),
-y empresas registradas en Cámara
-de Comercio en Manrique (2.626, de `lib/cifras.ts`; Cámara de Comercio de Medellín para Antioquia,
-Estructura Empresarial 2025). Cada cifra lleva la estrella de cuatro puntas. El
-mensaje es «La brecha es nuestra línea base». Los aliados no se repiten ahí: su cifra
-ya va junto al mapa. Sin botón de registro; un solo enlace discreto, «Ver más datos en
-Firmamento →», lleva a `/firmamento`.
+La parte pública de datos (Luis, 4-oct-2026; reemplaza a la página `/firmamento`). De
+día/oscuro según el selector, sin bandas de noche. Orden y nada más:
 
-El mapa y el buscador de la portada se comportan como `/aliados`: aliados (todos, sin
-tope) y comercios de OSM, con los que no tienen nombre solo en el mapa; usan las mismas
-funciones de `lib/geo/comerciosOsm.ts` y `lib/busqueda.ts`.
+1. **Título corto** («Los negocios de la Comuna 3, Manrique, en un mapa.») y el
+   **buscador** de negocios (`BuscadorInicio`). Sin hero grande, sin foto, sin botón de
+   registro.
+2. **El mapa** (uno solo en toda la página; ver «Mapa»): aliados + comercios de OSM,
+   interruptor «Líneas de constelación», leyenda de tres renglones y, al lado (debajo en
+   el celular), la **lista de constelaciones**: tocar una la enciende en el mapa
+   (`useConstelacionElegida` + `BotonConstelacion`, el patrón de `MapaEstelar`).
+3. **El barrio en cifras** (`CifrasBarrio`): cuatro `Kpi` en un `GrupoCifras` (aliados
+   por datos abiertos k = 5, comercios de OSM, constelaciones; Cámara con su propia
+   fuente), comercios por grupo de categoría con su % (`BarrasCategoria`), barrios como
+   barras (comercios de OSM, con los aliados del barrio por datos abiertos en la nota) y
+   las cinco constelaciones más grandes. Cada bloque, su línea de fuente.
+4. Las guías (`EnfoqueSection`) y la galería de aliados, como estaban.
+
+Sin título «Firmamento», sin letras griegas, sin método/F1/indicadores, sin sugeridor y
+sin textos largos.
 
 ## Pie de página
 

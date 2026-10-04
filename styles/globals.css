@@ -312,27 +312,31 @@ html.js:not(.js-listo) [data-reveal] {
   fill-opacity: 0.55;
 }
 
-/* Constelaciones de OpenStreetMap: noche-3 sobre teselas claras, tenues, para
-   que no se confundan con los aliados (formas grandes y de color). */
-.halo-constelacion {
-  fill: theme('colors.noche-3');
-  fill-opacity: 0.07;
-  stroke: theme('colors.noche-3');
-  stroke-opacity: 0.4;
-  stroke-width: 1;
-  stroke-dasharray: 4 4;
-}
-
-.halo-constelacion--activa {
-  fill-opacity: 0.14;
-  stroke-opacity: 0.8;
-}
-
+/* Líneas de constelación: noche-3 sobre teselas claras, finas, debajo de las estrellas. */
 .arista-constelacion {
   stroke: theme('colors.noche-3');
   stroke-opacity: 0.7;
   stroke-width: 1.25;
   fill: none;
+}
+
+/* Nombre de una constelación: Fraunces itálica, sin caja, con halo del fondo
+   para despegarlo de las teselas. El nombre largo aparece desde zoom 15 (la
+   misma clase que oculta los nombres de barrio); el código, siempre. */
+.etiqueta-constelacion {
+  display: block;
+  width: max-content;
+  max-width: 16rem;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-size: 13px;
+  line-height: 1.15;
+  color: rgb(var(--tinta-rgb));
+  text-shadow: 0 0 3px rgb(var(--hueso-rgb)), 0 0 3px rgb(var(--hueso-rgb)), 0 0 2px rgb(var(--hueso-rgb));
+  pointer-events: none;
+}
+.etiquetas-barrio-ocultas .etiqueta-constelacion .nombre {
+  display: none;
 }
 
 /* Contorno de la comuna: tinta del tema (oscuro sobre teselas claras, claro
@@ -414,27 +418,11 @@ html.js:not(.js-listo) [data-reveal] {
 
 /* Constelaciones sobre teselas oscuras: el noche-3 se perdía (1,2:1). Pasan a
    noche-azul (#7FB0FF), la misma familia de color. */
-:root[data-theme='dark'] .halo-constelacion,
+/* Líneas sobre teselas oscuras: el noche-3 se perdía (1,2:1). Pasan a
+   noche-azul (#7FB0FF), la misma familia de color. */
 :root[data-theme='dark'] .arista-constelacion,
-.modo-noche .halo-constelacion,
 .modo-noche .arista-constelacion {
-  fill: theme('colors.noche-azul');
   stroke: theme('colors.noche-azul');
-}
-
-:root[data-theme='dark'] .halo-constelacion,
-.modo-noche .halo-constelacion {
-  fill-opacity: 0.1;
-}
-
-:root[data-theme='dark'] .halo-constelacion--activa,
-.modo-noche .halo-constelacion--activa {
-  fill-opacity: 0.2;
-}
-
-:root[data-theme='dark'] .arista-constelacion,
-.modo-noche .arista-constelacion {
-  fill: none;
 }
 
 /* Anillo del marcador activo: noche sobre teselas oscuras no se ve. */
@@ -642,88 +630,4 @@ body:has(dialog[open]) {
   outline: 2px solid theme('colors.sodio');
   outline-offset: 2px;
   box-shadow: 0 0 0 4px theme('colors.noche');
-}
-
-/* Fraunces itálica (la carga app/(site)/firmamento/layout.tsx): titular, letras
-   griegas e índice de /firmamento. Si la variable no está (otra ruta), cae a la
-   Fraunces normal inclinada y luego a Georgia. */
-.font-italica {
-  font-family: var(--font-fraunces-italica, var(--font-fraunces)), Georgia, serif;
-  font-style: italic;
-  font-variation-settings: "SOFT" 60;
-}
-
-/* Líneas del cielo de /firmamento (framer-motion `pathLength`). framer rinde el
-   trazo en 0 dentro del HTML del servidor: mismas tres capas que [data-reveal]
-   (DESIGN.md › Movimiento). Sin `js` se ven enteras; con `js` pero sin
-   `js-listo` se dibujan solas a los 4 s. */
-html:not(.js) .linea-cielo {
-  stroke-dasharray: none !important;
-  stroke-dashoffset: 0 !important;
-}
-
-html.js:not(.js-listo) .linea-cielo {
-  animation: revelar-linea 1ms linear 4s forwards;
-}
-
-@keyframes revelar-linea {
-  to {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Constelación viva (DESIGN.md › Firmamento › Constelación viva). El HTML trae
-   el SVG final; solo con `js` arranca oculto para que Anime.js lo coreografíe
-   (los estilos inline de Anime.js le ganan a esta regla). Mismas tres capas que
-   [data-reveal]: sin `js` se ve, con `js` sin `js-listo` se revela a los 4 s, y
-   con menos movimiento se ve directo. `--listo` es el respaldo si Anime.js no carga. */
-html.js .cielo-vivo [data-fase] {
-  opacity: 0;
-}
-
-html.js:not(.js-listo) .cielo-vivo [data-fase] {
-  animation: revelar-respaldo 1ms linear 4s forwards;
-}
-
-.cielo-vivo--listo [data-fase] {
-  opacity: 1 !important;
-  transform: none !important;
-  stroke-dasharray: none !important;
-  stroke-dashoffset: 0 !important;
-}
-
-.cielo-vivo use,
-.cielo-vivo [data-fase='halo'] {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-/* Brillo en reposo: CSS barato, pausado fuera de pantalla. */
-.cielo-vivo--reposo .cielo-vivo__halo {
-  animation: titilar 2.4s ease-in-out infinite alternate;
-  animation-play-state: paused;
-}
-
-.cielo-vivo--reposo.cielo-vivo--visible .cielo-vivo__halo {
-  animation-play-state: running;
-}
-
-@keyframes titilar {
-  from {
-    opacity: 0.55;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cielo-vivo [data-fase] {
-    opacity: 1 !important;
-    animation: none !important;
-  }
-  .cielo-vivo__halo {
-    animation: none !important;
-  }
 }

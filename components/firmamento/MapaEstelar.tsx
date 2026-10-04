@@ -7,7 +7,7 @@ import { MapaAliados, type CentralidadMapa } from '@/components/MapaAliados';
 
 /**
  * El «mapa + lista que enciende una constelación» de Firmamento, en un solo
- * lugar. Lo usan la tabla de constelaciones de `/firmamento` (`MapaYTabla`) y
+ * lugar. Lo usan el territorio del equipo (`MapaTerritorio`) y
  * «Dónde apoyar primero» del observatorio de la entidad (`ObservatorioCielo`).
  *
  * El estado es uno: la constelación elegida. Tocar un botón de la lista la
@@ -15,7 +15,8 @@ import { MapaAliados, type CentralidadMapa } from '@/components/MapaAliados';
  * botón marcado. Es el mapa de siempre (`MapaAliados`, noche fija), SIN aliados
  * individuales: el arreglo va vacío, así que ningún nombre, dirección ni
  * coordenada de un negocio de la red llega a estas pantallas (regla k = 5). Las
- * estrellas son comercios de OpenStreetMap, que ya son públicos.
+ * estrellas son comercios de OpenStreetMap, que ya son públicos. El inicio usa
+ * el hook y `BotonConstelacion` con su propio mapa (ese sí con aliados).
  *
  * Uso:
  *   const { elegida, elegir, fijar, caja } = useConstelacionElegida();
