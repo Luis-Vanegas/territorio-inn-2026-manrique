@@ -1,8 +1,11 @@
 """Paso 3 · Clasificador de categoría a partir del nombre del negocio.
 
 Entrena con los comercios de OSM del Valle de Aburrá (paso 1), cuya etiqueta sale
-de los tags de OSM mapeados a las 12 categorías del sitio. NO se entrena con los
-registros propios del sitio (son 7): el modelo se aplica a ellos, no aprende de ellos.
+de los tags de OSM mapeados a las 12 categorías del sitio. Si existe
+pipeline/datos/ejemplos_constelaciones.json (lo genera
+scripts/exportar-ejemplos-entrenamiento.mjs desde la base: fichas aprobadas con la
+categoría que dejó el moderador), los suma al entrenamiento con más peso. Sin ese
+archivo el script hace exactamente lo de siempre: es reproducible desde el repo.
 
 Salidas:
   public/modelo_categoria.json   pesos para inferir en el navegador (sin API ni servidor)
@@ -15,6 +18,10 @@ Rigor de la evaluación (por qué no basta un train_test_split):
   modelo nunca vio. Se reporta también el split ingenuo, para que se vea la diferencia.
 - Se mide además en la Comuna 3 con el modelo entrenado SIN ningún local de la
   Comuna 3 (holdout geográfico): es lo más parecido a usarlo en un barrio nuevo.
+- Los ejemplos propios son pocos: el holdout de OSM mide que no se rompa lo que ya
+  funcionaba, y los propios se miden aparte con validación cruzada dejando fuera un
+  nombre por vez (y sacando de OSM los nombres iguales). El modelo nuevo solo se
+  publica si el F1 macro del holdout de OSM no baja.
 - El modelo de referencia (pipeline/referencia/) se evalúa sobre el mismo holdout.
   Ojo: su entrenamiento fue sobre una descarga del mismo día de OSM, así que
   probablemente vio parte de estos nombres; su número está sesgado a su favor.
@@ -53,6 +60,19 @@ MAX_NGRAMAS = 4000       # tamaño del JSON que viaja al navegador (~0,4 MB)
 MIN_DF = 3               # un n-grama visto en 1-2 negocios es memoria, no señal
 GRILLA_C = [0.5, 1, 3, 10, 30]
 REFERENCIA = RAIZ / "pipeline" / "referencia" / "modelo_categoria.json"
+EJEMPLOS = DATOS / "ejemplos_constelaciones.json"
+# Cada ficha propia pesa como 5 nombres de OSM. Razón: su etiqueta la fijó una
+# persona (no un tag de OSM), es del dominio exacto (negocios de la Comuna 3) y trae
+# descripción, que OSM no tiene; pero son pocas, y un peso alto dejaría que UNA ficha
+# mal clasificada arrastre un n-grama entero. 5 es una elección, no un valor
+# afinado: con tan pocos ejemplos no hay con qué ajustarlo sin hacer trampa; el
+# reporte muestra la sensibilidad (1, 5, 20) sobre el holdout de OSM para que se vea.
+PESO_PROPIOS = 5.0
+# Con menos fichas propias, cualquier subida del F1 es ruido de clases chicas (con 5
+# ejemplos el modelo los memorizó y no mejoró dejando uno fuera): no se publica.
+MIN_PROPIOS = 30
+PESOS_SENSIBILIDAD = [1.0, 5.0, 20.0]
+MAX_PLIEGUES_PROPIOS = 10  # pasado este número de nombres, validación agrupada en vez de uno-fuera
 
 
 def normalizar_grupo(nombre: str) -> str:
@@ -85,10 +105,12 @@ def modelo(c: float) -> LogisticRegression:
     )
 
 
-def entrenar(textos_tr, y_tr, c):
+def entrenar(textos_tr, y_tr, c, pesos=None):
     vec = vectorizador()
     X = vec.fit_transform(textos_tr)
-    clf = modelo(c).fit(X, y_tr)
+    # sample_weight se multiplica con class_weight="balanced": el balanceo por clase
+    # se calcula sobre los conteos sin ponderar, así que no se anula con los pesos.
+    clf = modelo(c).fit(X, y_tr, sample_weight=pesos)
     return vec, clf
 
 
@@ -132,6 +154,162 @@ def evaluar_referencia(textos, y):
     P /= P.sum(axis=1, keepdims=True)
     pred = np.array(ref["clases"])[P.argmax(axis=1)]
     return pred, P, ref
+
+
+def texto_de_ficha(nombre: str, descripcion: str) -> str:
+    """Texto de una ficha: nombre + descripción separados por un espacio.
+
+    Es lo mismo que arma la moderación (FichaModeracion.tsx: nombre, descripción y
+    categoria_otra con join(' ')); `otros` no entra al entrenamiento, así que aquí
+    no hay categoria_otra. Una sola forma de armarlo: si cambia en la app, cambia acá.
+    """
+    return " ".join(p for p in (nombre.strip(), descripcion.strip()) if p)
+
+
+def cargar_propios():
+    """Ejemplos propios exportados de la base, o None si no hay archivo.
+
+    Devuelve un dict con textos (nombre + descripción), nombres, y, grupos y conteos. Las fichas
+    de una categoría que el modelo no tiene (modistería, lavandería...) se cuentan
+    pero no entran: agregar una clase con 1-2 ejemplos sería ruido, no aprendizaje.
+    """
+    if not EJEMPLOS.exists():
+        return None
+    meta = json.loads(EJEMPLOS.read_text(encoding="utf-8"))
+    ejemplos = [e for e in meta["ejemplos"] if e["nombre"].strip()]
+    validos = [e for e in ejemplos if e["categoria"] in CLASES]
+    fuera = [e["categoria"] for e in ejemplos if e["categoria"] not in CLASES]
+    if not validos:
+        return None
+    textos = np.array([texto_de_ficha(e["nombre"], e["descripcion"]) for e in validos])
+    y = np.array([e["categoria"] for e in validos])
+    grupos = np.array([normalizar_grupo(e["nombre"]) for e in validos])
+    return {
+        "textos": textos,
+        "nombres": np.array([e["nombre"].strip() for e in validos]),
+        "y": y,
+        "grupos": grupos,
+        "con_decision": int(sum(e["decision_equipo"] is not None for e in validos)),
+        "fuera_de_clases": fuera,
+        "meta": meta,
+    }
+
+
+def validar_propios(propios, textos_osm, y_osm, grupos_osm, c):
+    """Validación de los ejemplos propios: dejando fuera un nombre por vez.
+
+    Para cada pliegue se entrena con OSM (sin los nombres iguales a los del pliegue)
+    + los demás propios, y se predice lo que quedó fuera. Se compara con el modelo
+    solo-OSM sobre el mismo texto y sobre el nombre solo (lo que ve el registro).
+    """
+    from sklearn.model_selection import GroupKFold
+
+    textos, y, grupos = propios["textos"], propios["y"], propios["grupos"]
+    n_grupos = len(set(grupos))
+    if n_grupos < 2:
+        return None
+    k = n_grupos if n_grupos <= MAX_PLIEGUES_PROPIOS * 6 else MAX_PLIEGUES_PROPIOS
+    vec0, clf0 = entrenar(textos_osm, y_osm, c)
+    nuevo = np.empty(len(y), dtype=object)
+    for tr, te in GroupKFold(n_splits=k).split(textos, y, grupos):
+        quitar = np.isin(grupos_osm, list(set(grupos[te])))
+        t = np.concatenate([textos_osm[~quitar], textos[tr]])
+        yy = np.concatenate([y_osm[~quitar], y[tr]])
+        w = np.concatenate([np.ones((~quitar).sum()), np.full(len(tr), PESO_PROPIOS)])
+        v, m = entrenar(t, yy, c, w)
+        nuevo[te] = predecir(v, m, textos[te])[0]
+    viejo = predecir(vec0, clf0, textos)[0]
+    viejo_nombre = predecir(vec0, clf0, propios["nombres"])[0]
+    return {"pliegues": k, "nuevo": nuevo, "viejo": viejo, "viejo_nombre": viejo_nombre}
+
+
+def f1_presentes(y, p):
+    """F1 macro sobre las clases reales o predichas de los propios.
+
+    El macro de las 12 clases daría 0 a las que no aparecen: no es un error del modelo.
+    Una clase predicha que no existe en los propios sí cuenta (F1 = 0): es un error."""
+    etiquetas = sorted(set(y) | set(p))
+    return float(f1_score(y, p, labels=etiquetas, average="macro", zero_division=0))
+
+
+def seccion_ejemplos_propios(propios, cand, f1_osm_solo, publicar, sensibilidad, validacion, c, cambian, n_holdout):
+    """Texto del reporte sobre el ciclo de aprendizaje. Devuelve (sección, línea de limitaciones)."""
+    if propios is None:
+        return (
+            "## Ejemplos propios del sitio\n\nSin `pipeline/datos/ejemplos_constelaciones.json`: el modelo se "
+            "entrenó solo con OSM. Para sumar las fichas aprobadas: `node scripts/exportar-ejemplos-entrenamiento.mjs` "
+            "y volver a correr este script.\n",
+            "- No se ha medido contra los registros reales del sitio: no hay archivo de ejemplos propios (**pendiente**).",
+        )
+    y_p = propios["y"]
+    n_p = len(y_p)
+    por_cat = ", ".join(f"{k} {v}" for k, v in pd.Series(y_p).value_counts().items())
+    fuera = propios["fuera_de_clases"]
+    f1_cand = cand[4]
+    veredicto = (
+        f"**Publicado**: el F1 macro del holdout de OSM no bajó ({f1_osm_solo:.4f} → {f1_cand:.4f})."
+        if publicar
+        else f"**No publicado**: hay {n_p} fichas propias y hacen falta {MIN_PROPIOS} para que una subida no sea ruido."
+        if f1_cand >= f1_osm_solo
+        else f"**No publicado**: el F1 macro del holdout de OSM bajó ({f1_osm_solo:.4f} → {f1_cand:.4f}); "
+        "`public/modelo_categoria.json` queda con el modelo anterior (solo OSM)."
+    )
+    out = [
+        "## Ejemplos propios del sitio (ciclo de aprendizaje)",
+        "",
+        f"Fuente: `{EJEMPLOS.name}` (generado {propios['meta']['fecha_corrida'][:10]} por "
+        "`scripts/exportar-ejemplos-entrenamiento.mjs`): fichas aprobadas con la categoría que dejó el moderador. "
+        "Texto = nombre + descripción, igual que lo que lee la moderación.",
+        "",
+        f"- Usados: **{n_p}** ({por_cat}); con decisión del equipo en el sugeridor: {propios['con_decision']}.",
+        f"- Fuera de las 12 clases del modelo (no entran): {len(fuera)}"
+        + (f" ({', '.join(sorted(set(fuera)))})." if fuera else "."),
+        f"- Peso de cada ficha propia: {PESO_PROPIOS:g} (frente a 1 por cada nombre de OSM); C = {c} (el elegido solo con OSM).",
+        "",
+        "### (a) Holdout de OSM (mismo split, nombres que el modelo no vio)",
+        "",
+        tabla_md(
+            ["Modelo", "F1 macro"],
+            [["Solo OSM", f"{f1_osm_solo:.4f}"], [f"OSM + {n_p} propios (peso {PESO_PROPIOS:g})", f"{f1_cand:.4f}"]],
+        ),
+        "",
+        veredicto,
+        "",
+        f"Con los propios cambian **{cambian} de {n_holdout}** predicciones del holdout. Con tan pocas filas nuevas, "
+        "un movimiento de un par de centésimas en el F1 macro es perturbación de las clases chicas (una sola predicción "
+        "movida en una clase de 2-10 locales ya lo mueve), no aprendizaje demostrado: la regla de publicación es una "
+        "valla contra regresiones, no una prueba de mejora.",
+        "",
+        "Sensibilidad al peso (mismo holdout; informativa, el peso no se eligió con esto): "
+        + ", ".join(f"peso {w:g}: {v:.4f}" for w, v in sensibilidad.items())
+        + ".",
+        "",
+        "### (b) Sobre los propios (validación dejando fuera un nombre por vez)",
+        "",
+    ]
+    if validacion is None:
+        out.append("**Pendiente**: hace falta más de un nombre distinto para validar.")
+    else:
+        nuevo, viejo, v_nom = validacion["nuevo"], validacion["viejo"], validacion["viejo_nombre"]
+        a = lambda p: int((p == y_p).sum())
+        out += [
+            tabla_md(
+                ["Modelo", "Aciertos", "Exactitud", "F1 macro (clases presentes)"],
+                [
+                    ["Solo OSM, leyendo solo el nombre (lo que ve el registro)", f"{a(v_nom)}/{n_p}", f"{a(v_nom)/n_p:.3f}", f"{f1_presentes(y_p, v_nom):.3f}"],
+                    ["Solo OSM, leyendo nombre + descripción", f"{a(viejo)}/{n_p}", f"{a(viejo)/n_p:.3f}", f"{f1_presentes(y_p, viejo):.3f}"],
+                    ["OSM + los demás propios, nombre + descripción", f"{a(nuevo)}/{n_p}", f"{a(nuevo)/n_p:.3f}", f"{f1_presentes(y_p, nuevo):.3f}"],
+                ],
+            ),
+            "",
+            f"Pliegues: {validacion['pliegues']} (cada uno deja fuera un nombre y también saca de OSM los nombres iguales). "
+            f"Con {n_p} ejemplos esto es **anecdótico, no una métrica**: un acierto más o menos mueve la exactitud "
+            f"{100 / n_p:.0f} puntos. Sirve para detectar que algo se rompió, no para afirmar que el modelo mejoró.",
+        ]
+    return "\n".join(out) + "\n", (
+        f"- Los ejemplos propios son {n_p} y su validación es anecdótica. "
+        "Más fichas aprobadas y más decisiones del equipo mejoran esto (**pendiente de datos**)."
+    )
 
 
 def tabla_md(cabeza, filas):
@@ -183,6 +361,43 @@ def main() -> None:
     acc_seguro = float(accuracy_score(y[te][seguro], pred[seguro])) if seguro.any() else float("nan")
     top3 = float(np.mean([y[te][i] in clf.classes_[np.argsort(-P[i])[:3]] for i in range(len(te))]))
 
+    # --- Ejemplos propios (opcional) ----------------------------------------
+    # C se elige solo con OSM (arriba) y se reutiliza: así la diferencia del
+    # holdout de OSM se debe a los ejemplos propios y no a otro hiperparámetro.
+    f1_osm_solo = f1_modelo  # modelo solo-OSM: la cifra contra la que se compara el candidato
+    propios = cargar_propios()
+    cambian_holdout = 0
+    cand = None  # modelo candidato (OSM entrenamiento + propios) sobre el mismo holdout
+    sensibilidad = {}
+    if propios:
+        n_p = len(propios["y"])
+        t_c = np.concatenate([textos[tr], propios["textos"]])
+        y_c = np.concatenate([y[tr], propios["y"]])
+        w_c = np.concatenate([np.ones(len(tr)), np.full(n_p, PESO_PROPIOS)])
+        vec_c, clf_c = entrenar(t_c, y_c, c_mejor, w_c)
+        pred_c, P_c = predecir(vec_c, clf_c, textos[te])
+        cand = (vec_c, clf_c, pred_c, P_c, f1m(y[te], pred_c))
+        cambian_holdout = int((pred_c != pred).sum())  # pred = la del modelo solo-OSM, todavía
+        for w in PESOS_SENSIBILIDAD:
+            if w == PESO_PROPIOS:
+                sensibilidad[w] = cand[4]
+                continue
+            v_s, m_s = entrenar(t_c, y_c, c_mejor, np.concatenate([np.ones(len(tr)), np.full(n_p, w)]))
+            sensibilidad[w] = f1m(y[te], predecir(v_s, m_s, textos[te])[0])
+    # Regla de publicación: el F1 macro del holdout de OSM no puede bajar.
+    publicar = cand is not None and cand[4] >= f1_modelo and n_p >= MIN_PROPIOS
+    if publicar:
+        # El resto del reporte (por categoría, matriz, cobertura) describe el modelo que se publica.
+        vec, clf, pred, P, f1_modelo = cand
+        acc_modelo = float(accuracy_score(y[te], pred))
+        seguro = P.max(axis=1) >= UMBRAL_CONFIANZA
+        cobertura = float(seguro.mean())
+        acc_seguro = float(accuracy_score(y[te][seguro], pred[seguro])) if seguro.any() else float("nan")
+        top3 = float(np.mean([y[te][i] in clf.classes_[np.argsort(-P[i])[:3]] for i in range(len(te))]))
+    validacion = (
+        validar_propios(propios, textos, y, grupos, c_mejor) if propios else None
+    )
+
     # --- Líneas base --------------------------------------------------------
     base = {}
     for nombre, estrategia in (("clase mayoritaria", "most_frequent"), ("azar según frecuencias", "stratified")):
@@ -214,7 +429,15 @@ def main() -> None:
     # --- Modelo final: se re-entrena con TODO y se exporta -----------------
     # Las métricas de arriba son de un modelo entrenado sin el holdout; el que
     # se publica ve los datos completos (más datos, mismo C). No se evalúa a sí mismo.
-    vec_f, clf_f = entrenar(textos, y, c_mejor)
+    if publicar:
+        vec_f, clf_f = entrenar(
+            np.concatenate([textos, propios["textos"]]),
+            np.concatenate([y, propios["y"]]),
+            c_mejor,
+            np.concatenate([np.ones(len(textos)), np.full(len(propios["y"]), PESO_PROPIOS)]),
+        )
+    else:
+        vec_f, clf_f = entrenar(textos, y, c_mejor)
     orden = [list(clf_f.classes_).index(c) for c in CLASES]  # mismo orden que CATEGORIAS
     vocab = [t for t, _ in sorted(vec_f.vocabulary_.items(), key=lambda kv: kv[1])]
     fecha = ahora_iso()
@@ -244,18 +467,28 @@ def main() -> None:
         "umbral_confianza": UMBRAL_CONFIANZA,
         "hiperparametros": {"C": c_mejor, "class_weight": "balanced", "min_df": MIN_DF, "max_features": MAX_NGRAMAS},
         "entrenado_con": int(len(df)),
-        "fuente": f"{FUENTE}, Valle de Aburrá, datos {entrada.name}",
-        "licencia": "ODbL 1.0 — los pesos derivan de nombres de OpenStreetMap",
+        "entrenado_con_propios": int(len(propios["y"])) if publicar else 0,
+        "peso_ejemplos_propios": PESO_PROPIOS if publicar else None,
+        "fuente": f"{FUENTE}, Valle de Aburrá, datos {entrada.name}"
+        + (f"; más {len(propios['y'])} fichas aprobadas del sitio (nombre y descripción, ejemplos {propios['meta']['fecha_corrida'][:10]})" if publicar else ""),
+        "licencia": "ODbL 1.0 — los pesos derivan de nombres de OpenStreetMap"
+        + (" y de fichas aprobadas del propio sitio" if publicar else ""),
         "fecha_corrida": fecha,
         "semilla": SEMILLA,
         "metricas": metricas,
     }
     destino = PUBLICO / "modelo_categoria.json"
-    destino.write_text(json.dumps(salida, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    # Con ejemplos propios que bajarían el F1 de OSM (o sin ejemplos y sin archivo
+    # previo) el archivo publicado no se toca; el reporte explica por qué.
+    if propios is None or publicar:
+        destino.write_text(json.dumps(salida, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
     # --- Reporte ------------------------------------------------------------
     dist = df["categoria"].value_counts()
     sin_mapa = int(len(pd.read_csv(entrada, keep_default_na=False)) - len(df))
+    seccion_propios, limite_propios = seccion_ejemplos_propios(
+        propios, cand, f1_osm_solo, publicar, sensibilidad, validacion, c_mejor, cambian_holdout, len(te)
+    )
     texto = f"""# Reporte del clasificador de categoría
 
 Fecha de corrida: {fecha} · semilla {SEMILLA} · generado por `pipeline/03_clasificador.py`.
@@ -298,6 +531,7 @@ Entrenado **sin** ningún local de la Comuna 3 (ni nombres repetidos de ahí) y 
 Referencia sobre los mismos locales: F1 macro {f1_ref_geo:.3f}. Con tan pocas filas (varias clases con 2-8
 ejemplos) el F1 macro tiene mucha varianza; tómalo como orden de magnitud, no como cifra fina.
 
+{seccion_propios}
 ## Detalle por categoría (holdout agrupado)
 
 {por_clase_md(y[te], pred)}
@@ -319,7 +553,7 @@ ejemplos) el F1 macro tiene mucha varianza; tómalo como orden de magnitud, no c
 
 - Etiquetas "débiles": OSM puede estar mal etiquetado; no hay verificación manual de una muestra (**pendiente**).
 - `barberia` tiene muy pocos ejemplos ({int(dist.get('barberia', 0))}); su F1 es poco fiable.
-- No se ha medido contra los registros reales del sitio (hay 7, insuficiente para una métrica) (**pendiente**).
+{limite_propios}
 - El modelo publicado (`public/modelo_categoria.json`, {destino.stat().st_size / 1024:.0f} KB) se re-entrena
   con todos los datos tras evaluar; las métricas de arriba son del modelo entrenado sin el holdout.
 """

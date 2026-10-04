@@ -15,3 +15,6 @@ next-env.d.ts
 # Originales de fotos sin optimizar. Las versiones que usa el sitio viven en
 # public/fotos/ — estas quedan fuera del repo para no duplicar los mismos bytes.
 originales/
+
+# Ejemplos propios para reentrenar el sugeridor: salen de la base (nombres y descripciones de vecinos)
+/pipeline/datos/ejemplos_constelaciones.json

@@ -88,6 +88,32 @@ Con el criterio de la asesoría son 320 y 20 constelaciones. El conjunto de entr
    holdout agrupado por nombre (ver el reporte para el porqué), línea base, holdout geográfico y comparación con
    `referencia/`.
 
+   Si existe `pipeline/datos/ejemplos_constelaciones.json` (ver «Ciclo de aprendizaje»), suma esas fichas con peso 5
+   y solo publica el modelo nuevo con al menos 30 fichas propias (`MIN_PROPIOS`) y si el F1 macro del holdout de OSM no baja. Sin ese archivo hace lo de siempre.
+
+## Ciclo de aprendizaje del sugeridor
+
+Las fichas aprobadas del sitio (nombre, descripción y la categoría que dejó el moderador) son ejemplos del dominio
+exacto. Se reentrena así, desde la raíz del repo:
+
+```bash
+# 1. Exportar ejemplos (solo SELECT; sin contactos, direcciones, coordenadas ni ids). DATABASE_URL del entorno;
+#    si no, la de .env.local, que puede ser PRODUCCIÓN: para una rama de Neon, pásala inline.
+node scripts/exportar-ejemplos-entrenamiento.mjs        # -> pipeline/datos/ejemplos_constelaciones.json (en .gitignore)
+# 2. Reentrenar (semilla 42; con el archivo suma los propios, sin él es el de siempre)
+cd pipeline && python 03_clasificador.py && cd ..       # -> reporte_modelo.md (+ modelo_categoria.json solo con 30+ fichas propias y si el F1 de OSM no bajó)
+# 3. Verificar y regenerar lo derivado
+node scripts/exportar-evaluacion-modelo.mjs             # -> public/firmamento/modelo_evaluacion.json
+python pipeline/verificar_salidas.py
+node --experimental-strip-types scripts/verificar-sugeridor.mjs   # falla si cambió una probabilidad: regenerar CASOS con la función `inferir` de verificar_salidas.py
+node --experimental-strip-types scripts/verificar-evaluacion-modelo.mjs
+# 4. Publicar: revisar `git diff` (modelo, reporte, evaluación, casos) y hacer commit; el despliegue sirve el JSON nuevo.
+```
+
+El reporte separa dos cosas: (a) F1 macro en el holdout de OSM, contra el modelo solo-OSM de la misma corrida, y
+(b) los propios con validación dejando fuera un nombre por vez. Con pocos ejemplos (b) es anecdótico y un cambio
+de centésimas en (a) es ruido de clases chicas: la regla de publicación evita regresiones, no demuestra mejora.
+
 ## Validaciones incluidas
 
 | Validación | Dónde | Resultado de la corrida |
