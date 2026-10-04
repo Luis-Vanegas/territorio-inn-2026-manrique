@@ -1,25 +1,52 @@
-import { Hero } from "@/components/Hero";
-import { AliadosDestacado } from "@/components/AliadosDestacado";
+import { listarAprobados } from "@/lib/db/portafolios.repo";
+import { BuscadorInicio } from "@/components/BuscadorInicio";
+import { MapaAliadosDestacado } from "@/components/MapaAliadosDestacado";
+import { CifrasBarrio } from "@/components/CifrasBarrio";
 import { GaleriaAliados } from "@/components/GaleriaAliados";
-import { MetricasSection } from "@/components/MetricasSection";
 import { EnfoqueSection } from "@/components/EnfoqueSection";
 import { Footer } from "@/components/Footer";
+import { leerFirmamento } from "./firmamento/datos";
 
-// AliadosDestacado consulta la base (negocios aprobados) en cada carga: es la
-// misma razón que /aliados es force-dynamic — un negocio recién aprobado debe
-// verse ya, no cinco minutos después por un cache de ruta.
+// Lee la base (aliados) en cada carga: un negocio recién aprobado debe verse ya.
+// Las lecturas van cacheadas en sus repos (`cachearVitrina`).
 export const dynamic = "force-dynamic";
 
-export default function Home() {
+/**
+ * Inicio = la parte pública de datos (Luis, 4-oct-2026; reemplaza a la página
+ * pública /firmamento). Orden: título + buscador → EL mapa (uno solo) con la
+ * lista de constelaciones → el barrio en cifras → guías → galería. Sin hero,
+ * sin botones de registro: el registro se alcanza solo desde /firmamento/entrar.
+ */
+export default async function Home() {
+  const [aliados, d] = await Promise.all([listarAprobados(), leerFirmamento()]);
+
   return (
     <main>
-      <Hero />
-      {/* Orden: Hero → mapa de Aliados (el ÚNICO mapa y el único botón de
-          registro) → números del territorio → qué ofrecemos → galería. Sin banda
-          de noche: Firmamento va aparte (/firmamento) y la Constelación viva solo
-          está en la puerta (/firmamento/entrar). */}
-      <AliadosDestacado />
-      <MetricasSection />
+      <section className="margen-editorial pt-10 sm:pt-14" aria-labelledby="titulo-inicio">
+        <h1
+          id="titulo-inicio"
+          className="font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl"
+        >
+          Los negocios de la Comuna 3, Manrique, en un mapa.
+        </h1>
+        <div className="mt-6 max-w-xl">
+          <BuscadorInicio />
+        </div>
+      </section>
+
+      <section className="margen-editorial pb-16 pt-10" aria-label="Mapa de los negocios">
+        <MapaAliadosDestacado
+          portafolios={aliados}
+          constelaciones={d.filas.map((f) => ({
+            id: f.id,
+            codigo: f.codigo,
+            nombre: f.nombre,
+            tamano: f.tamano,
+          }))}
+        />
+      </section>
+
+      <CifrasBarrio d={d} />
       <EnfoqueSection />
       <GaleriaAliados />
       <Footer />
