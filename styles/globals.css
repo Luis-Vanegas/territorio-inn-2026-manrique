@@ -632,35 +632,6 @@ body:has(dialog[open]) {
   box-shadow: 0 0 0 4px theme('colors.noche');
 }
 
-/* Fraunces itálica (la carga app/(site)/firmamento/layout.tsx): titular, letras
-   griegas e índice de /firmamento. Si la variable no está (otra ruta), cae a la
-   Fraunces normal inclinada y luego a Georgia. */
-.font-italica {
-  font-family: var(--font-fraunces-italica, var(--font-fraunces)), Georgia, serif;
-  font-style: italic;
-  font-variation-settings: "SOFT" 60;
-}
-
-/* Líneas del cielo de /firmamento (framer-motion `pathLength`). framer rinde el
-   trazo en 0 dentro del HTML del servidor: mismas tres capas que [data-reveal]
-   (DESIGN.md › Movimiento). Sin `js` se ven enteras; con `js` pero sin
-   `js-listo` se dibujan solas a los 4 s. */
-html:not(.js) .linea-cielo {
-  stroke-dasharray: none !important;
-  stroke-dashoffset: 0 !important;
-}
-
-html.js:not(.js-listo) .linea-cielo {
-  animation: revelar-linea 1ms linear 4s forwards;
-}
-
-@keyframes revelar-linea {
-  to {
-    stroke-dasharray: none;
-    stroke-dashoffset: 0;
-  }
-}
-
 /* Constelación viva (DESIGN.md › Firmamento › Constelación viva). El HTML trae
    el SVG final; solo con `js` arranca oculto para que Anime.js lo coreografíe
    (los estilos inline de Anime.js le ganan a esta regla). Mismas tres capas que
