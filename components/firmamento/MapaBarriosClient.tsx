@@ -33,10 +33,13 @@ function Encuadre() {
   useEffect(() => {
     const fijarMinimo = () => mapa.setMinZoom(Math.max(ZOOM.minimo, mapa.getBoundsZoom(LIMITES_PANEO)));
     fijarMinimo();
-    mapa.fitBounds(LIMITES, { padding: [8, 8], maxZoom: ZOOM.seleccion });
+    // Sin animar y con stop(): un zoom animado que sigue tras desmontar rompe en
+    // `_onZoomTransitionEnd` (mismo bug que MapaAliadosClient › Encuadre).
+    mapa.fitBounds(LIMITES, { padding: [8, 8], maxZoom: ZOOM.seleccion, animate: false });
     mapa.on('resize', fijarMinimo);
     return () => {
       mapa.off('resize', fijarMinimo);
+      mapa.stop();
     };
   }, [mapa]);
   return null;

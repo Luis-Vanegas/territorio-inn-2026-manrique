@@ -3,7 +3,7 @@
 // Antes mostraba negocios y visitas al sitio. Las visitas salieron (D4 del plan
 // de diseño): las infla el propio equipo y dicen más del equipo que del barrio;
 // siguen completas en /admin/estadisticas. Ahora son datos del TERRITORIO y cada
-// cifra lleva su fuente y su fecha debajo, en font-cifra (DESIGN.md › Reglas de
+// cifra lleva su fuente y su fecha debajo, en DM Sans pequeña (DESIGN.md › Reglas de
 // cifras). Ninguna es simulada:
 //   - comercios y constelaciones salen de public/firmamento/constelaciones.json
 //     (se importa en el servidor, como /aliados; el navegador no lo descarga);
@@ -143,7 +143,7 @@ export async function MetricasSection() {
                   </p>
                   <p className="mt-4 font-sans text-base font-medium text-estrella">{c.etiqueta}</p>
                   <p className="mt-1 font-sans text-sm text-tenue">{c.contexto}</p>
-                  <p className="mt-auto break-words pt-4 font-cifra text-xs leading-relaxed text-tenue">
+                  <p className="mt-auto break-words pt-4 font-sans text-xs leading-relaxed text-tenue">
                     {c.fuente}
                   </p>
                 </div>

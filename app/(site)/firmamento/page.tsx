@@ -125,7 +125,7 @@ export default async function FirmamentoPage() {
           cuadra, forman una constelación. Aquí ves el cielo de la economía de Manrique con datos reales
           y abiertos.
         </p>
-        <p className="mt-4 font-cifra text-sm leading-relaxed text-tenue">
+        <p className="mt-4 font-sans text-sm leading-relaxed text-tenue">
           Datos de OpenStreetMap al {fechaOsm}
         </p>
         <CtaAliado variante="cabecera" />
@@ -194,7 +194,7 @@ export default async function FirmamentoPage() {
                 Cada estrella es un comercio y cada línea une a los de una misma constelación. Es el
                 mapa de más abajo, sin las calles.
               </p>
-              <p className="mt-2 font-cifra text-xs leading-relaxed text-tenue">
+              <p className="mt-2 font-sans text-xs leading-relaxed text-tenue">
                 Fuente: {fuenteOsm} · datos al {fechaOsm}
               </p>
             </div>
@@ -276,7 +276,7 @@ export default async function FirmamentoPage() {
                     className="flex items-baseline justify-between gap-4 border-b border-trazo py-2.5 font-sans text-base text-estrella"
                   >
                     <span className="min-w-0 break-words">{c.nombre}</span>
-                    <span className="shrink-0 font-cifra tabular-nums text-sodio">{c.negocios}</span>
+                    <span className="shrink-0 font-sans tabular-nums text-sodio">{c.negocios}</span>
                   </li>
                 ))}
               </ul>
@@ -286,7 +286,7 @@ export default async function FirmamentoPage() {
                 una celda también se oculta la menor de las visibles, para que nadie pueda deducirla
                 restando del total.
               </p>
-              <p className="mt-2 font-cifra text-xs leading-relaxed text-tenue">
+              <p className="mt-2 font-sans text-xs leading-relaxed text-tenue">
                 Fuente: {fuenteRed} · consultado el {fechaLarga(datosRed.generado_en)}
               </p>
             </div>
@@ -341,7 +341,7 @@ export default async function FirmamentoPage() {
                       <th scope="row" className="px-3 py-2.5 font-normal">
                         {medida}
                       </th>
-                      <td className="px-3 py-2.5 text-right font-cifra tabular-nums text-sodio">
+                      <td className="px-3 py-2.5 text-right font-sans tabular-nums text-sodio">
                         {fmt(valor, 3)}
                       </td>
                     </tr>
@@ -354,7 +354,7 @@ export default async function FirmamentoPage() {
               por debajo de la exactitud. Con menos de {modelo.umbralPorcentaje} % de confianza el
               modelo no sugiere una sola: muestra tres y la persona decide.
             </p>
-            <p className="mt-2 font-cifra text-xs leading-relaxed text-tenue">
+            <p className="mt-2 font-sans text-xs leading-relaxed text-tenue">
               Fuente: validación con comercios apartados, {fuenteOsm} · modelo entrenado el{' '}
               {fechaLarga(modelo.fecha)}
             </p>
@@ -455,7 +455,7 @@ export default async function FirmamentoPage() {
                   </dd>
                 </div>
               </dl>
-              <p className="mt-4 font-cifra text-xs leading-relaxed text-tenue">
+              <p className="mt-4 font-sans text-xs leading-relaxed text-tenue">
                 Fuente: {fuenteOsm} · datos al {fechaOsm} · agrupados el {fechaLarga(osm.fechaCorrida)}
               </p>
             </Panel>
@@ -490,7 +490,7 @@ export default async function FirmamentoPage() {
                   </li>
                 )}
               </ul>
-              <p className="mt-4 font-cifra text-xs leading-relaxed text-tenue">
+              <p className="mt-4 font-sans text-xs leading-relaxed text-tenue">
                 Fuente: {fuenteOsm} · datos al {fechaOsm}
               </p>
             </Panel>

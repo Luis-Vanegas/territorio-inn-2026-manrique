@@ -14,7 +14,7 @@ export const vincularCuentaSchema = z.object({
   correo,
   // El checkbox de confirmación: solo «si» autoriza quitarle el negocio a otra cuenta.
   reasignar: z
-    .literal('si')
+    .literal('si', { error: 'Confirmación no válida.' })
     .nullish()
     .transform((v) => v === 'si'),
 });

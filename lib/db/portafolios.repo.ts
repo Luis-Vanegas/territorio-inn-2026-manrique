@@ -80,11 +80,11 @@ const COLUMNAS_COMUNES = `
   p.facebook,
   p.foto_url,
   p.menu_url,
-  p.productos,
+  coalesce(p.productos, '[]'::jsonb) as productos,
   p.creado_en,
   p.punto_referencia,
-  p.horario,
-  p.medios_pago,
+  coalesce(p.horario, '{}') as horario,
+  coalesce(p.medios_pago, '{}') as medios_pago,
   p.verificado_en
 `;
 

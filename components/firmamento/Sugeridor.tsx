@@ -57,7 +57,7 @@ function Opcion({ s, sinMovimiento }: { s: Sugerencia; sinMovimiento: boolean | 
           <Forma id={s.id} />
           <span className="min-w-0 break-words">{s.nombre}</span>
         </span>
-        <span className="shrink-0 font-cifra tabular-nums">{porcentaje(s.probabilidad)}</span>
+        <span className="shrink-0 font-sans tabular-nums">{porcentaje(s.probabilidad)}</span>
       </div>
       <Medidor valor={s.probabilidad} sinMovimiento={sinMovimiento} />
     </li>
@@ -124,7 +124,7 @@ export function Sugeridor({ umbralPorcentaje }: { umbralPorcentaje: number }) {
           <Forma id={resultado.sugerida.id} />
           <span className="min-w-0 break-words">{resultado.sugerida.nombre}</span>
         </p>
-        <p className="mt-1 font-cifra text-sm text-sodio">
+        <p className="mt-1 font-sans text-sm text-sodio">
           Confianza {porcentaje(resultado.sugerida.probabilidad)}
         </p>
         <Medidor valor={resultado.sugerida.probabilidad} sinMovimiento={sinMovimiento} />
