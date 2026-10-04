@@ -110,7 +110,7 @@ export function BotonConstelacion({
 }) {
   const estado = activa
     ? 'border-sodio bg-sodio font-medium text-noche'
-    : 'border-trazo-2 text-estrella hover:border-sodio hover:text-sodio';
+    : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto';
 
   if (variante === 'texto') {
     return (

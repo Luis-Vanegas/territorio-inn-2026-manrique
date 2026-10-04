@@ -103,7 +103,9 @@ Contrastes medidos con la fórmula WCAG (luminancia relativa), no estimados:
 `border-tinta/12` sobre el mismo `hueso`, como antes sobre el blanco; un `#FBF9F3` solo
 agregaría un tono más sin que nada lo pida. Si una pieza lo necesita, se discute aquí.
 
-**Ventanas de noche** (`VentanaNoche`, `.modo-noche`, `/firmamento`): igual que antes.
+**Paneles sin noche (4-oct, Luis):** `VentanaNoche` ya no prende `.modo-noche`: los paneles van enteros con los colores del tema (como la portada) y `VentanaNoche` solo enmarca con `tinta/12`. La noche queda en `/firmamento`, la puerta `/firmamento/entrar` y los mapas con teselas oscuras (`MapaBarrios`).
+
+**Ventanas de noche** (`.modo-noche`, `/firmamento`):
 En modo oscuro el fondo de la ventana coincide con el de la página, así que se
 separa con un anillo `trazo` (`dark:ring-1 dark:ring-trazo`, y `dark:border-trazo` en
 las piezas con borde propio). **Ventana de día** (`.modo-dia`): lo contrario, para lo
@@ -571,9 +573,9 @@ la misma regla de «Metáfora», aplicada adentro de una página.
   variante `seccion` (sin marco, raya arriba) es la de las guías de `/formalizacion`.
 - **Cifras**: `Kpi` (cifra en DM Mono, etiqueta en DM Sans, estrella `morado` de día y
   `sodio` de noche) dentro de un `GrupoCifras`, que imprime UNA línea de fuente para el
-  grupo. Las bandas de cifras y los mapas van en una `VentanaNoche` (`.modo-noche`,
-  `rounded-2xl`): adentro, `Tarjeta` y `Kpi` toman solos la paleta de noche porque leen
-  `hueso`/`tinta` y sus variantes `[.modo-noche_&]`.
+  grupo. Las bandas de cifras y los mapas van en una `VentanaNoche` (marco `tinta/12`,
+  `rounded-2xl`, colores del tema; desde el 4-oct no es de noche). `Tarjeta` y `Kpi` leen
+  `hueso`/`tinta` y sus variantes `[.modo-noche_&]`, así que sirven igual en `/firmamento`.
 - **Pie**: atribución OSM y «Datos abiertos con supresión de celdas menores a 5», en DM
   Sans pequeña.
 - **Formularios mudados de `/admin`**: escriben `hueso`/`tinta`, así que de día se ven

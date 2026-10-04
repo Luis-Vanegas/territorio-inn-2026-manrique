@@ -51,15 +51,15 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
           const lC = largo(s.contactos);
           return (
             <g key={i}>
-              <text x="0" y={y + 21} fontSize="12" fill="#B7BEDC" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
+              <text x="0" y={y + 21} fontSize="12" className="fill-tinta/70" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {etiqueta(i)}
               </text>
               <rect x={COL_ETIQUETA} y={y + 4} width={lV} height={ALTO_BARRA} fill="#7FB0FF" rx="2" />
-              <text x={COL_ETIQUETA + lV + 5} y={y + 14.5} fontSize="12" fill="#F3EFE4" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
+              <text x={COL_ETIQUETA + lV + 5} y={y + 14.5} fontSize="12" className="fill-tinta" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {s.vistas}
               </text>
               <rect x={COL_ETIQUETA} y={y + 4 + ALTO_BARRA + 2} width={lC} height={ALTO_BARRA} fill="url(#rayas-contacto)" stroke="#F4CC48" strokeWidth="1" rx="2" />
-              <text x={COL_ETIQUETA + lC + 5} y={y + 28.5} fontSize="12" fill="#F4CC48" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
+              <text x={COL_ETIQUETA + lC + 5} y={y + 28.5} fontSize="12" className="fill-tinta" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {s.contactos}
               </text>
             </g>
