@@ -108,10 +108,10 @@ export function MenuUsuarioPanel({
           )}
 
           <Link
-            href="/firmamento"
+            href="/"
             className="flex min-h-[44px] items-center rounded-lg px-3 font-sans text-sm text-tinta hover:bg-tinta/5"
           >
-            Firmamento público
+            Mapa y cifras del barrio
           </Link>
 
           <form action={salirDeFirmamento}>
