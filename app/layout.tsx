@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Mono, DM_Sans, Fraunces } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -51,6 +51,10 @@ const dmMono = DM_Mono({
 
 const DESCRIPCION =
   "Propuesta para la Comuna 3 de Medellín — Presupuesto Participativo Comuna 3. Reto: Empleo y Desarrollo Económico.";
+
+// Barra del navegador del celular: el hueso del día (el sitio abre siempre en
+// claro). /firmamento lo cambia a noche en su propio layout.
+export const viewport: Viewport = { themeColor: "#F3EFE4" };
 
 export const metadata: Metadata = {
   // Sin metadataBase, Next resuelve las URLs relativas de Open Graph contra

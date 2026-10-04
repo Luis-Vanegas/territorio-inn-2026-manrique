@@ -149,7 +149,8 @@ export function VistaPreviaEnVivo({
       <aside className={`flex min-w-0 flex-col gap-5 ${lateral ? '' : 'lg:sticky lg:top-6'}`}>
         <Tarjeta titulo="Así te verán en Constelaciones" id="vista-previa-titulo" plegable abierta resumen="en vivo">
           <p className="font-sans text-sm leading-relaxed text-tinta/70">{nota}</p>
-          <div className="mt-2 [&_article]:border-t-0 [&_article]:pb-0 [&_article]:pt-4">
+          {/* De día aunque el panel esté en oscuro: es como se ve el sitio (.modo-dia). */}
+          <div className="modo-dia mt-3 rounded-xl bg-hueso px-4 pb-4 text-tinta [&_article]:border-t-0 [&_article]:pb-0 [&_article]:pt-4">
             <TarjetaEmprendimiento portafolio={vista} indice={0} definicionesCampos={publicos} vistaPrevia />
           </div>
         </Tarjeta>

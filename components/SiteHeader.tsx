@@ -187,7 +187,7 @@ export function SiteHeader({
 
           <nav
             aria-label="Navegación principal"
-            className="absolute right-[var(--margen-editorial)] top-full mt-1 flex max-h-[calc(100dvh-5.5rem)] w-[min(20rem,calc(100vw_-_2*var(--margen-editorial)))] flex-col gap-1 overflow-y-auto border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
+            className="absolute right-[var(--margen-editorial)] top-full mt-1 flex max-h-[calc(100dvh-5.5rem)] w-[min(20rem,calc(100vw_-_2*var(--margen-editorial)))] flex-col gap-1 overflow-y-auto border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(11_16_38/0.08)]"
           >
             {ENTRADAS.map((e) =>
               e.tipo === 'aprende' ? (

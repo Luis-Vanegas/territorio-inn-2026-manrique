@@ -33,7 +33,7 @@ export function PestanasEstado<T extends string>({
             ].join(' ')}
           >
             {e.etiqueta}
-            <span className="font-cifra text-xs">{conteos[e.id]}</span>
+            <span className="font-sans text-xs tabular-nums">{conteos[e.id]}</span>
           </Link>
         );
       })}

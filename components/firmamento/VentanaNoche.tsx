@@ -39,7 +39,7 @@ export function VentanaNoche({
   return (
     <Etiqueta
       aria-labelledby={titulo ? id : undefined}
-      className={`modo-noche min-w-0 rounded-2xl px-4 py-5 sm:px-6 sm:py-6 ${className}`}
+      className={`modo-noche min-w-0 rounded-2xl px-4 py-5 dark:ring-1 dark:ring-trazo sm:px-6 sm:py-6 ${className}`}
     >
       {titulo && (
         <div className="mb-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">

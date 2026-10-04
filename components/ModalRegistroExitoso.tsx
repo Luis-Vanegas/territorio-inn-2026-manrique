@@ -82,7 +82,7 @@ export function ModalRegistroExitoso() {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md border border-tinta/55 bg-hueso p-6 shadow-[0_8px_40px_rgb(26_26_26/0.15)] sm:p-8"
+        className="w-full max-w-md border border-tinta/55 bg-hueso p-6 shadow-[0_8px_40px_rgb(11_16_38/0.15)] sm:p-8"
       >
         <span className="font-sans text-xs text-azul-texto">✓ Registro guardado</span>
 

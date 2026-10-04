@@ -207,7 +207,7 @@ export default async function NegocioInicioPage({
           )}
 
           <Tarjeta titulo="Así te ven tus vecinos" id="asi-te-ven" plegable resumen="Vista previa de tu ficha">
-            <div className="[&_article]:border-t-0 [&_article]:pt-0">
+            <div className="modo-dia mb-3 rounded-xl bg-hueso px-4 pb-4 text-tinta [&_article]:border-t-0 [&_article]:pb-0 [&_article]:pt-4">
               <TarjetaEmprendimiento portafolio={portafolio} indice={0} definicionesCampos={[]} vistaPrevia />
             </div>
             {publicada ? (

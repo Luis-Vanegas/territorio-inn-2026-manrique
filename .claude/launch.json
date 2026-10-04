@@ -9,6 +9,12 @@
       "autoPort": true
     },
     {
+      "name": "dev-prueba",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["C:/Users/LENOVO/AppData/Local/Temp/claude/C--Users-LENOVO-Music-Proy-Comunatres/0cff4952-c945-4392-9608-0a7a5467d952/scratchpad/conPrueba.mjs", ".", "npx", "next", "dev", "--webpack", "-p", "3035"],
+      "port": 3035
+    },
+    {
       "name": "dev-existente",
       "url": "http://localhost:3000"
     }

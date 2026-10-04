@@ -1,166 +1,96 @@
-// «El proyecto, en números», ahora como la banda Firmamento (noche) de la portada.
+// «El proyecto, en números»: sección normal de la portada, con los tokens del
+// tema (hueso/tinta) — alterna sola con el modo claro/oscuro. Ya no es una banda
+// de noche: Firmamento va aparte (/firmamento).
 //
-// Antes mostraba negocios y visitas al sitio. Las visitas salieron (D4 del plan
-// de diseño): las infla el propio equipo y dicen más del equipo que del barrio;
-// siguen completas en /admin/estadisticas. Ahora son datos del TERRITORIO y cada
-// cifra lleva su fuente y su fecha debajo, en DM Sans pequeña (DESIGN.md › Reglas de
-// cifras). Ninguna es simulada:
+// Datos del TERRITORIO, cada cifra con su fuente y su fecha debajo, en DM Sans
+// pequeña (DESIGN.md › Reglas de cifras). Ninguna es simulada:
 //   - comercios y constelaciones salen de public/firmamento/constelaciones.json
 //     (se importa en el servidor, como /aliados; el navegador no lo descarga);
-//   - los aliados salen de la base, en cada carga;
 //   - las empresas de Cámara son una cifra publicada, con su cita.
-//
-// Los colores son los hex fijos de noche: la banda no cambia con el tema
-// claro/oscuro (DESIGN.md › Firmamento). El borde superior es un degradado del
-// color del día al de la noche: la transición es CSS, no depende de JS.
+// Los aliados NO se repiten acá: su cifra ya va junto al mapa (AliadosDestacado).
 
 import Link from "next/link";
-import { contarAprobadosPorCategoria } from "@/lib/db/portafolios.repo";
 import { aplanarComercios } from "@/lib/geo/comerciosOsm";
 import { CAMARA_EMPRESAS } from "@/lib/cifras";
-import { fechaHoyBogota, formatearNumero } from "@/lib/formato";
 import { fechaLarga, type DatosConstelaciones } from "@/lib/geo/constelaciones";
 import datosOsmJson from "@/public/firmamento/constelaciones.json";
-import { Estrella } from "./firmamento/Estrella";
-import { ConstelacionViva, fuenteConstelacionViva } from "./firmamento/ConstelacionViva";
+import { Kpi } from "./firmamento/Kpi";
 import { ScrollReveal } from "./ScrollReveal";
-import { NumeroAnimado } from "./NumeroAnimado";
 
 // La cifra de Cámara vive en lib/cifras.ts (la comparte /firmamento): Tabla 16
 // de la Estructura Empresarial 2025, matriculadas o renovadas en 2025.
 
 const datosOsm = datosOsmJson as unknown as DatosConstelaciones;
 
-type Cifra = {
-  numero: number;
-  etiqueta: string;
-  contexto: string;
-  fuente: string;
-};
-
-export async function MetricasSection() {
-  const conteos = await contarAprobadosPorCategoria();
-  const aliados = Object.values(conteos).reduce((a, b) => a + b, 0);
-  const hoy = fechaHoyBogota();
-
+export function MetricasSection() {
   const comercios = aplanarComercios(datosOsm).length;
   const fechaOsm = fechaLarga(datosOsm.osm_base);
 
-  const cifras: Cifra[] = [
-    {
-      numero: comercios,
-      etiqueta: "Comercios mapeados en OpenStreetMap",
-      contexto: "El mapa abierto del barrio. No todos son aliados.",
-      fuente: `Fuente: © colaboradores de OpenStreetMap (ODbL) · datos al ${fechaOsm}`,
-    },
-    {
-      numero: datosOsm.constelaciones.length,
-      etiqueta: "Constelaciones",
-      contexto: "Grupos de comercios que quedan cerca unos de otros.",
-      fuente: `Fuente: agrupación de los comercios de OpenStreetMap (HDBSCAN) · corrida del ${fechaLarga(datosOsm.fecha_corrida)}`,
-    },
-    {
-      numero: aliados,
-      etiqueta: aliados === 1 ? "Aliado en la red" : "Aliados en la red",
-      contexto: "Negocios que se registraron y ya están en el mapa.",
-      fuente: `Fuente: base de datos de Constelaciones · al ${hoy}`,
-    },
-    {
-      numero: CAMARA_EMPRESAS.numero,
-      etiqueta: "Empresas registradas en Cámara de Comercio, en Manrique",
-      contexto: "Lo que ve el registro mercantil: solo lo formal.",
-      fuente: `Fuente: ${CAMARA_EMPRESAS.fuente} · matriculadas o renovadas en ${CAMARA_EMPRESAS.fecha} · consultada el 1 de octubre de 2026`,
-    },
-  ];
-
   return (
-    <div className="bg-noche text-estrella">
-      {/* Día → noche: sin saltos de layout y sin JS. */}
-      <div aria-hidden="true" className="h-16 bg-gradient-to-b from-hueso to-noche sm:h-24" />
+    <section aria-labelledby="titulo-numeros" className="seccion border-t border-tinta/12">
+      <ScrollReveal>
+        <h2
+          id="titulo-numeros"
+          className="max-w-3xl font-display text-5xl font-medium leading-[0.95] text-tinta sm:text-7xl"
+        >
+          El proyecto, en números
+        </h2>
+        <p className="mt-6 max-w-2xl font-display text-2xl font-light italic leading-snug text-morado-texto sm:text-3xl">
+          La brecha es nuestra línea base.
+        </p>
+        <p className="mt-4 max-w-2xl font-sans text-lg leading-relaxed text-tinta/70">
+          El registro mercantil, el mapa abierto y nuestra red son tres miradas distintas al mismo
+          barrio. La distancia entre ellas es el punto de partida para medir cuánto avanzamos.
+        </p>
+      </ScrollReveal>
 
-      {/* La Constelación viva abre la noche (DESIGN.md › Firmamento ›
-          Constelación viva): el texto y el botón van primero en el HTML y no
-          esperan a la animación. */}
-      <section
-        aria-labelledby="titulo-constelacion-viva"
-        className="margen-editorial grid items-center gap-x-12 gap-y-8 pb-16 sm:pb-24 lg:grid-cols-12"
-      >
-        <div className="lg:col-span-5">
-          <p className="font-sans text-xs tracking-[0.2em] text-sodio">COMUNA 3 · MANRIQUE</p>
-          <h2
-            id="titulo-constelacion-viva"
-            className="mt-4 font-display text-4xl font-medium leading-[1.02] text-estrella sm:text-6xl"
-          >
-            Los negocios de tu barrio forman constelaciones
-          </h2>
-          <p className="mt-6 max-w-xl font-sans text-lg leading-relaxed text-tenue">
-            Cada punto es un comercio del mapa abierto del barrio, con la forma de lo que hace. Los que
-            quedan cerca se unen en una constelación. Únete a la tuya: registra tu negocio y aparece en el
-            mapa.
-          </p>
-          <Link
-            href="/aliados/registro"
-            className="mt-8 inline-flex min-h-[44px] items-center border border-sodio bg-sodio px-6 py-3 font-sans text-base font-medium text-noche transition-colors hover:bg-transparent hover:text-sodio focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-estrella"
-          >
-            Únete a tu constelación →
-          </Link>
-        </div>
-        <figure className="min-w-0 lg:col-span-7">
-          <ConstelacionViva className="mx-auto max-w-[640px]" />
-          <figcaption className="mx-auto mt-4 max-w-[640px] font-sans text-xs leading-relaxed text-tenue">
-            {fuenteConstelacionViva()} No todos los comercios del mapa son aliados.
-          </figcaption>
-        </figure>
-      </section>
+      <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <li className="min-w-0">
+          <ScrollReveal className="h-full">
+            <Kpi
+              valor={String(comercios)}
+              numero={comercios}
+              etiqueta="Comercios mapeados en OpenStreetMap"
+              aclaracion="El mapa abierto del barrio. No todos son aliados."
+              fuente="© colaboradores de OpenStreetMap (ODbL)"
+              fecha={`datos al ${fechaOsm}`}
+            />
+          </ScrollReveal>
+        </li>
+        <li className="min-w-0">
+          <ScrollReveal delay={0.1} className="h-full">
+            <Kpi
+              valor={String(datosOsm.constelaciones.length)}
+              numero={datosOsm.constelaciones.length}
+              etiqueta="Constelaciones"
+              aclaracion="Grupos de comercios que quedan cerca unos de otros."
+              fuente="agrupación de los comercios de OpenStreetMap (HDBSCAN)"
+              fecha={`corrida del ${fechaLarga(datosOsm.fecha_corrida)}`}
+            />
+          </ScrollReveal>
+        </li>
+        <li className="min-w-0">
+          <ScrollReveal delay={0.2} className="h-full">
+            <Kpi
+              valor={String(CAMARA_EMPRESAS.numero)}
+              numero={CAMARA_EMPRESAS.numero}
+              etiqueta="Empresas registradas en Cámara de Comercio, en Manrique"
+              aclaracion="Lo que ve el registro mercantil: solo lo formal."
+              fuente={CAMARA_EMPRESAS.fuente}
+              fecha={`matriculadas o renovadas en ${CAMARA_EMPRESAS.fecha} · consultada el 1 de octubre de 2026`}
+            />
+          </ScrollReveal>
+        </li>
+      </ul>
 
-      <section aria-labelledby="titulo-numeros" className="margen-editorial pb-16 sm:pb-24">
-        <ScrollReveal>
-          <h2
-            id="titulo-numeros"
-            className="max-w-3xl font-display text-5xl font-medium leading-[0.95] text-estrella sm:text-7xl"
-          >
-            El proyecto, en números
-          </h2>
-          <p className="mt-6 max-w-2xl font-display text-2xl font-light italic leading-snug text-sodio sm:text-3xl">
-            La brecha es nuestra línea base.
-          </p>
-          <p className="mt-4 max-w-2xl font-sans text-lg leading-relaxed text-tenue">
-            El registro mercantil, el mapa abierto y nuestra red son tres miradas distintas al mismo
-            barrio. La distancia entre ellas es el punto de partida para medir cuánto avanzamos.
-          </p>
-        </ScrollReveal>
-
-        <ul className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {cifras.map((c, indice) => (
-            <li key={c.etiqueta}>
-              <ScrollReveal delay={indice * 0.1} className="h-full">
-                <div className="flex h-full flex-col border border-trazo bg-noche-2 p-5">
-                  <p className="flex items-center gap-3 font-cifra text-5xl font-medium text-sodio">
-                    <Estrella tamano={20} color="currentColor" className="shrink-0 text-sodio" />
-                    {/* El conteo animado es aria-hidden: el lector de pantalla lee el valor final. */}
-                    <span className="sr-only">{formatearNumero(c.numero)}</span>
-                    <NumeroAnimado numero={c.numero} decimales={0} />
-                  </p>
-                  <p className="mt-4 font-sans text-base font-medium text-estrella">{c.etiqueta}</p>
-                  <p className="mt-1 font-sans text-sm text-tenue">{c.contexto}</p>
-                  <p className="mt-auto break-words pt-4 font-sans text-xs leading-relaxed text-tenue">
-                    {c.fuente}
-                  </p>
-                </div>
-              </ScrollReveal>
-            </li>
-          ))}
-        </ul>
-
-        <ScrollReveal delay={0.2}>
-          <Link
-            href="/firmamento"
-            className="mt-10 inline-flex min-h-[44px] items-center border border-sodio bg-sodio px-6 py-3 font-sans text-base font-medium text-noche transition-colors hover:bg-transparent hover:text-sodio focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-estrella"
-          >
-            Ver el firmamento →
-          </Link>
-        </ScrollReveal>
-      </section>
-    </div>
+      <ScrollReveal delay={0.2}>
+        <Link
+          href="/firmamento"
+          className="mt-8 inline-flex min-h-[44px] items-center font-sans text-base text-azul-texto underline underline-offset-4 hover:no-underline"
+        >
+          Ver más datos en Firmamento →
+        </Link>
+      </ScrollReveal>
+    </section>
   );
 }

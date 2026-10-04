@@ -206,7 +206,7 @@ export default function SelectorUbicacionClient({
             data={capaLimite}
             style={{
               className: 'limite-comuna',
-              color: '#1a1a1a', // el CSS (.limite-comuna) lo cambia con el tema
+              color: '#0B1026', // el CSS (.limite-comuna) lo cambia con el tema
               weight: 1.5,
               opacity: 0.6,
               fillColor: '#3c8af6',

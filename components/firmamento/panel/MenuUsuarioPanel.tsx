@@ -91,7 +91,7 @@ export function MenuUsuarioPanel({
       {abierto && (
         <div
           id={idPanel}
-          className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]"
+          className="absolute right-0 top-full z-50 mt-2 w-64 rounded-xl border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(11_16_38/0.08)]"
         >
           <div className="px-3 pb-2 pt-1">
             <p className="break-words font-sans text-sm font-medium text-tinta">{nombre}</p>

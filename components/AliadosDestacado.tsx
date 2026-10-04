@@ -45,7 +45,7 @@ export async function AliadosDestacado() {
                   {total} {total === 1 ? "negocio" : "negocios"} ya en el mapa
                 </span>
                 {/* Regla de cifras de DESIGN.md: toda cifra lleva fuente y fecha. */}
-                <span className="font-cifra text-xs text-tinta/70">
+                <span className="font-sans text-xs text-tinta/70">
                   Fuente: base de datos de Constelaciones · al {fechaHoyBogota()}
                 </span>
               </span>
@@ -65,13 +65,6 @@ export async function AliadosDestacado() {
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Link
-              href="/aliados/registro"
-              className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto text-hueso transition-colors hover:bg-transparent hover:text-azul-texto px-6 py-3 font-sans text-base"
-            >
-              Sumar mi negocio →
-            </Link>
-
             <Link
               href="/aliados"
               className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
