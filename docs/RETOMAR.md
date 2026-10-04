@@ -60,7 +60,7 @@ Revisá cada uno con `git log reto/alineacion..<rama>`. Si el agente no terminó
 | Prioridad | Rama | Qué es |
 |---|---|---|
 | **1** | `worktree-agent-ae10328fa06ce247c` | **Registro dentro de Firmamento** (lo crítico) |
-| 2 | `worktree-agent-ac5f06e841345bdf3` | **Paleta C + portada sin duplicados** |
+| 2 | ~~`worktree-agent-ac5f06e841345bdf3`~~ | **Paleta C + portada sin duplicados: INTEGRADO** (merge + `d13e7c3`: un solo botón de registro, el del Hero). Falta ver los paneles con sesión con la paleta nueva. |
 | 3 | `worktree-agent-ae10f813816819b8a` | **Vigía vivo** (opcional para la entrega) |
 
 ### 1 · Registro dentro de Firmamento
