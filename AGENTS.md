@@ -172,7 +172,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `pipeline/03_clasificador.py`), inferencia en el NAVEGADOR: lo que la persona
   escribe en el nombre no sale de su pantalla. Con confianza >= 0,45 sugiere una;
   si no, las 3 mejores (`sugerirCategoria`). Replica a `pipeline/verificar_salidas.py`:
-  al reentrenar hay que regenerar los casos de `scripts/verificar-sugeridor.mjs`.
+  al reentrenar hay que regenerar los casos de `scripts/verificar-sugeridor.mjs`. Ciclo de aprendizaje: `node scripts/exportar-ejemplos-entrenamiento.mjs` (fichas aprobadas, nombre + descripción + categoría final, sin datos personales → `pipeline/datos/ejemplos_constelaciones.json`, ignorado por git) → `03_clasificador.py` los suma (peso 5) y solo publica si el F1 macro del holdout de OSM no baja → `exportar-evaluacion-modelo.mjs` y `verificar_salidas.py`; comandos en `pipeline/README.md`. El texto de entrenamiento de una ficha es `nombre + ' ' + descripción`, igual que lo que lee la moderación.
   En el registro lo monta `SugeridorCategoria.tsx` bajo «Nombre del negocio»
   (aria-live polite; ≥ 0,45 «Usar esta», si no las 3 mejores). Lo único que
   viaja al enviar son dos campos ocultos (`sugerencia_categoria`,
