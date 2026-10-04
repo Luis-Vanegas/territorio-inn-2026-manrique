@@ -68,6 +68,9 @@ EJEMPLOS = DATOS / "ejemplos_constelaciones.json"
 # afinado: con tan pocos ejemplos no hay con qué ajustarlo sin hacer trampa; el
 # reporte muestra la sensibilidad (1, 5, 20) sobre el holdout de OSM para que se vea.
 PESO_PROPIOS = 5.0
+# Con menos fichas propias, cualquier subida del F1 es ruido de clases chicas (con 5
+# ejemplos el modelo los memorizó y no mejoró dejando uno fuera): no se publica.
+MIN_PROPIOS = 30
 PESOS_SENSIBILIDAD = [1.0, 5.0, 20.0]
 MAX_PLIEGUES_PROPIOS = 10  # pasado este número de nombres, validación agrupada en vez de uno-fuera
 
@@ -246,6 +249,8 @@ def seccion_ejemplos_propios(propios, cand, f1_osm_solo, publicar, sensibilidad,
     veredicto = (
         f"**Publicado**: el F1 macro del holdout de OSM no bajó ({f1_osm_solo:.4f} → {f1_cand:.4f})."
         if publicar
+        else f"**No publicado**: hay {n_p} fichas propias y hacen falta {MIN_PROPIOS} para que una subida no sea ruido."
+        if f1_cand >= f1_osm_solo
         else f"**No publicado**: el F1 macro del holdout de OSM bajó ({f1_osm_solo:.4f} → {f1_cand:.4f}); "
         "`public/modelo_categoria.json` queda con el modelo anterior (solo OSM)."
     )
@@ -380,7 +385,7 @@ def main() -> None:
             v_s, m_s = entrenar(t_c, y_c, c_mejor, np.concatenate([np.ones(len(tr)), np.full(n_p, w)]))
             sensibilidad[w] = f1m(y[te], predecir(v_s, m_s, textos[te])[0])
     # Regla de publicación: el F1 macro del holdout de OSM no puede bajar.
-    publicar = cand is not None and cand[4] >= f1_modelo
+    publicar = cand is not None and cand[4] >= f1_modelo and n_p >= MIN_PROPIOS
     if publicar:
         # El resto del reporte (por categoría, matriz, cobertura) describe el modelo que se publica.
         vec, clf, pred, P, f1_modelo = cand

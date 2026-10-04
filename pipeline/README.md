@@ -89,7 +89,7 @@ Con el criterio de la asesoría son 320 y 20 constelaciones. El conjunto de entr
    `referencia/`.
 
    Si existe `pipeline/datos/ejemplos_constelaciones.json` (ver «Ciclo de aprendizaje»), suma esas fichas con peso 5
-   y solo publica el modelo nuevo si el F1 macro del holdout de OSM no baja. Sin ese archivo hace lo de siempre.
+   y solo publica el modelo nuevo con al menos 30 fichas propias (`MIN_PROPIOS`) y si el F1 macro del holdout de OSM no baja. Sin ese archivo hace lo de siempre.
 
 ## Ciclo de aprendizaje del sugeridor
 
@@ -101,7 +101,7 @@ exacto. Se reentrena así, desde la raíz del repo:
 #    si no, la de .env.local, que puede ser PRODUCCIÓN: para una rama de Neon, pásala inline.
 node scripts/exportar-ejemplos-entrenamiento.mjs        # -> pipeline/datos/ejemplos_constelaciones.json (en .gitignore)
 # 2. Reentrenar (semilla 42; con el archivo suma los propios, sin él es el de siempre)
-cd pipeline && python 03_clasificador.py && cd ..       # -> reporte_modelo.md (+ modelo_categoria.json solo si el F1 de OSM no bajó)
+cd pipeline && python 03_clasificador.py && cd ..       # -> reporte_modelo.md (+ modelo_categoria.json solo con 30+ fichas propias y si el F1 de OSM no bajó)
 # 3. Verificar y regenerar lo derivado
 node scripts/exportar-evaluacion-modelo.mjs             # -> public/firmamento/modelo_evaluacion.json
 python pipeline/verificar_salidas.py
