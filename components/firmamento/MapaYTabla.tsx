@@ -81,7 +81,7 @@ export function MapaYTabla({
               Cada categoría lleva la forma de su grupo: el color solo la refuerza. Cuenta los comercios
               con y sin nombre.
             </p>
-            <p className="mt-2 font-cifra text-xs leading-relaxed text-tenue">
+            <p className="mt-2 font-sans tabular-nums text-xs leading-relaxed text-tenue">
               Fuente: OpenStreetMap, © colaboradores (ODbL) · datos al {fechaLarga(osmBase)}
             </p>
           </div>
@@ -140,17 +140,17 @@ export function MapaYTabla({
                     <td className="min-w-0 px-2 py-2 align-middle sm:px-3">
                       <span className="break-words text-estrella">{f.nombre}</span>
                       {/* En pantallas angostas el radio y la mezcla bajan bajo el nombre. */}
-                      <span className="mt-1 block font-cifra text-xs text-tenue sm:hidden">
+                      <span className="mt-1 block font-sans tabular-nums text-xs text-tenue sm:hidden">
                         Radio {f.radioM} m
                       </span>
                       <span className="mt-1 block break-words text-xs leading-snug text-tenue lg:hidden">
                         {f.mezcla}
                       </span>
                     </td>
-                    <td className="px-2 py-2 text-right align-middle font-cifra tabular-nums sm:px-3">
+                    <td className="px-2 py-2 text-right align-middle font-sans tabular-nums sm:px-3">
                       {f.tamano}
                     </td>
-                    <td className="hidden whitespace-nowrap px-3 py-2 text-right align-middle font-cifra tabular-nums sm:table-cell">
+                    <td className="hidden whitespace-nowrap px-3 py-2 text-right align-middle font-sans tabular-nums sm:table-cell">
                       {f.radioM} m
                     </td>
                     <td className="hidden px-3 py-2 align-middle text-tenue lg:table-cell">
@@ -167,7 +167,7 @@ export function MapaYTabla({
           categoría más común; «Sin calle registrada» quiere decir que OpenStreetMap no trae calle para
           ellos. El radio es la distancia del centro al comercio más lejano del grupo.
         </p>
-        <p className="mt-2 font-cifra text-xs leading-relaxed text-tenue">
+        <p className="mt-2 font-sans tabular-nums text-xs leading-relaxed text-tenue">
           Fuente: OpenStreetMap, © colaboradores (ODbL) · datos al {fechaLarga(osmBase)} · agrupados el{' '}
           {fechaLarga(fechaCorrida)}
         </p>

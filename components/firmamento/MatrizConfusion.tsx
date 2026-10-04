@@ -63,7 +63,7 @@ export function MatrizConfusion({
         className="mx-auto mt-3 block h-auto w-full max-w-[34rem]"
       >
         {clases.map((_, i) => (
-          <g key={`eje-${i}`} className="font-cifra" fontSize="12" fill={PALETA_NOCHE.tenue}>
+          <g key={`eje-${i}`} className="font-sans tabular-nums" fontSize="12" fill={PALETA_NOCHE.tenue}>
             <text x={MARGEN + CELDA * i + CELDA / 2} y={MARGEN / 2 + 4} textAnchor="middle">
               {i + 1}
             </text>
@@ -98,7 +98,7 @@ export function MatrizConfusion({
                     y={y + CELDA / 2 + 4}
                     textAnchor="middle"
                     fontSize="12"
-                    className="font-cifra"
+                    className="font-sans tabular-nums"
                     fill={clase.texto}
                   >
                     {n}
@@ -127,7 +127,7 @@ export function MatrizConfusion({
       <ol className="mt-4 grid gap-x-6 gap-y-1 font-sans text-sm text-estrella sm:grid-cols-2" aria-label="Clave de los números">
         {clases.map((c, i) => (
           <li key={c.id} className="flex items-center gap-2">
-            <span className="w-5 shrink-0 text-right font-cifra tabular-nums text-tenue">{i + 1}</span>
+            <span className="w-5 shrink-0 text-right font-sans tabular-nums text-tenue">{i + 1}</span>
             <span
               aria-hidden="true"
               className="inline-flex shrink-0"
@@ -144,9 +144,9 @@ export function MatrizConfusion({
           <ul className="mt-2 list-disc space-y-1.5 pl-5 font-sans text-base leading-relaxed text-estrella marker:text-sodio">
             {mayores.map((m) => (
               <li key={`${m.r}-${m.c}`}>
-                Puso <span className="font-cifra tabular-nums">{m.n}</span> de los{' '}
-                <span className="font-cifra tabular-nums">{m.de}</span> locales de {nombre(m.r)} en{' '}
-                {nombre(m.c)} (<span className="font-cifra tabular-nums">{Math.round((100 * m.n) / (m.de || 1))} %</span>).
+                Puso <span className="font-sans tabular-nums">{m.n}</span> de los{' '}
+                <span className="font-sans tabular-nums">{m.de}</span> locales de {nombre(m.r)} en{' '}
+                {nombre(m.c)} (<span className="font-sans tabular-nums">{Math.round((100 * m.n) / (m.de || 1))} %</span>).
               </li>
             ))}
           </ul>

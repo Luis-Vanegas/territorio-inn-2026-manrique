@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { NumeroAnimado } from '@/components/NumeroAnimado';
+import { CifraLimpia } from '../CifraLimpia';
 import { Estrella } from './Estrella';
 
 /**
@@ -69,8 +70,7 @@ export function Kpi({
         </span>
         {numero === undefined ? (
           <span aria-hidden="true">
-            {valor}
-            {sufijo}
+            <CifraLimpia texto={`${valor}${sufijo}`} />
           </span>
         ) : (
           <NumeroAnimado numero={numero} decimales={decimales} sufijo={sufijo} />

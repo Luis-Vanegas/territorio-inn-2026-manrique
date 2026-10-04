@@ -113,7 +113,7 @@ export function MapaBarrios({
           </div>
         </div>
 
-        <p className="mt-5 break-words font-cifra text-xs leading-relaxed text-tenue">{fuente}</p>
+        <p className="mt-5 break-words font-sans tabular-nums text-xs leading-relaxed text-tenue">{fuente}</p>
       </div>
     </div>
   );
