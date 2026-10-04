@@ -6,8 +6,9 @@
 // para abrir/cerrar. Solo «Aprende» necesita estado (MenuAprende), y por eso
 // es un botón con aria-expanded.
 //
-// Ítems (DESIGN.md › Navegación): Inicio · Aliados · Aprende ▾ · Firmamento ·
-// Nosotros, y Empleo/Inventario solo con su flag prendido.
+// Ítems (DESIGN.md › Navegación): Inicio · Aliados · Aprende ▾ · Nosotros, y
+// Empleo/Inventario solo con su flag prendido. Sin sesión, a la derecha, el
+// único botón: «Entrar» (la puerta de Firmamento; el registro va después de Google).
 //
 // Es 'use client' por una sola razón: usePathname, para marcar en qué página
 // está la persona. No hay forma de saber la ruta en un Server Component sin
@@ -54,7 +55,6 @@ const ENTRADAS: Entrada[] = [
   { tipo: 'enlace', href: '/aliados', etiqueta: 'Aliados' },
   ...MODULOS_SUELTOS.map((e) => ({ tipo: 'enlace' as const, ...e })),
   { tipo: 'aprende' },
-  { tipo: 'enlace', href: '/firmamento', etiqueta: 'Firmamento' },
   { tipo: 'enlace', href: '/nosotros', etiqueta: 'Nosotros' },
 ];
 
@@ -159,10 +159,10 @@ export function SiteHeader({
             <MenuUsuario key={pathname} nombre={sesion.nombre} foto={sesion.foto} enlaces={enlacesPrivados} />
           ) : (
             <Link
-              href="/entrar"
+              href="/firmamento/entrar"
               className="inline-flex min-h-[44px] items-center border border-azul-texto bg-azul-texto px-4 font-sans text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
             >
-              Registrarme →
+              Entrar
             </Link>
           )}
         </div>
@@ -246,10 +246,10 @@ export function SiteHeader({
               </>
             ) : (
               <Link
-                href="/entrar"
+                href="/firmamento/entrar"
                 className="mt-1 inline-flex min-h-[44px] items-center justify-center border border-azul-texto bg-azul-texto px-3 text-center font-sans text-base text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
               >
-                Registrarme →
+                Entrar
               </Link>
             )}
           </nav>

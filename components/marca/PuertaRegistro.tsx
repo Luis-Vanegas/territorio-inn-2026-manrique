@@ -88,7 +88,7 @@ export function PuertaRegistro({
           </p>
 
           <Link
-            href="/entrar"
+            href="/firmamento/entrar"
             className="mt-8 inline-block border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
           >
             Entrar o registrarme →

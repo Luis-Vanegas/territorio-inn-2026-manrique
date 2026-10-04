@@ -187,6 +187,8 @@ const nextConfig = {
       // Los datos públicos del territorio viven en el inicio (4-oct-2026). `source` exacto:
       // /firmamento/entrar y los paneles (/firmamento/negocio|equipo|entidad/**) NO se redirigen.
       { source: '/firmamento', destination: '/', permanent: false },
+      // La puerta vieja de día: una sola puerta, la de Firmamento. Next conserva el ?error=.
+      { source: '/entrar', destination: '/firmamento/entrar', permanent: false },
     ];
   },
   async headers() {
