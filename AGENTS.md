@@ -423,7 +423,24 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
 - **Endpoints de máquina sin IP**: `verificarLimite` deja pasar cuando no hay IP,
   así que quien quita los headers se saltaría el cupo. `/api/ingesta/convocatorias`
   suma un contador en memoria compartido para esas peticiones
-  (`lib/limiteMemoria.ts`), y si `verificarLimite` falla responde 503, no 500.
+  (`lib/limiteMemoria.ts`), y si `verificarLimite` falla responde 503, no 500. Desde
+  la 036 esa puerta es UNA sola, `puertaIngesta` (`lib/auth/puertaIngesta.ts`: 503 sin
+  `INGESTA_SECRETO`, cupo, 401, y `leerJsonAcotado` para el tope de bytes); los dos
+  endpoints de `/api/ingesta/*` la llaman y ninguno compara el secreto por su cuenta.
+- **Vigía vivo** (migración 036, `lib/db/vigia.repo.ts`, `POST /api/ingesta/vigia`): al final
+  de cada corrida `04_vigia_convocatorias.py` manda UN informe con el estado de cada fuente
+  (`responde`, `error_http`, `timeout`, `bloqueada_robots`, código HTTP, huella sha256 de los
+  enlaces de la página, candidatas, nuevas). Zod estricto (`vigia.schema.ts`; texto de
+  terceros) y el mismo secreto y puerta que la ingesta. El pipeline NO guarda estado (el
+  runner de Actions nace limpio): `registrarCorrida` compara la huella con la última de esa
+  `fuente_id` y escribe `cambio` / `sin_cambio` en UNA sentencia con CTE; los totales los
+  calcula el repo, no el informe. La llave de una fuente es su `id` slug en
+  `pipeline/fuentes_convocatorias.json` (no lo cambies: es el historial). Se lee SOLO en el
+  panel del equipo (Convocatorias › «Fuentes del vigía», `leerVigiaEquipo` de
+  `lib/firmamento/vigia.ts`, que cruza el JSON de fuentes con la última corrida; una fuente
+  nueva sin informe sale «Sin informe aún»). No va en páginas públicas
+  (`scripts/verificar-vigia.mjs` lo comprueba). Para probar fallos sin tocar el JSON real:
+  `python pipeline/04_vigia_convocatorias.py --fuentes otro.json`.
 - **Centralidades del POT** (`public/firmamento/centralidades.json`, `pipeline/05_centralidades.py`):
   las centralidades urbanas del Acuerdo 48 de 2014 cruzadas con las constelaciones. Se regenera con
   `python pipeline/05_centralidades.py --descargar` (el servicio de la Alcaldía responde vacío sin un

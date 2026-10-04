@@ -152,6 +152,31 @@ Solo cuatro tocan la comuna: Gaitán, Santa Inés y San Blas (barriales, adentro
 (zonal, 6,9 % de su área adentro, el resto en la comuna vecina). No existe una capa llamada «Manrique Central».
 Límite: el comercio de OSM solo cubre la comuna; de lo que una centralidad tenga afuera no se midió.
 
+## Vigía de convocatorias (paso 4)
+
+`04_vigia_convocatorias.py` (solo biblioteca estándar) revisa las páginas de
+`fuentes_convocatorias.json` y manda las candidatas a `/api/ingesta/convocatorias` (siempre `pendiente`).
+Desde la migración 036 también manda UN informe de corrida a `/api/ingesta/vigia`: por fuente, si respondió,
+el código HTTP, la huella de sus enlaces, candidatas y nuevas; el servidor decide `cambio` / `sin_cambio`
+(el runner de Actions no guarda estado). Se ve en el panel del equipo › Convocatorias › «Fuentes del vigía».
+
+```bash
+python pipeline/04_vigia_convocatorias.py --seco     # no envía nada
+INGESTA_URL=https://<dominio>/api/ingesta/convocatorias INGESTA_SECRETO=... python pipeline/04_vigia_convocatorias.py
+# --fuentes otro.json: probar con otras fuentes (p. ej. una URL muerta para ver el fallo)
+# INGESTA_VIGIA_URL: si el informe va a otra URL; por defecto es INGESTA_URL con «/vigia» al final
+```
+
+Fuentes actuales: Fondo Emprender (SENA) y Bancóldex (`/es/noticias`, filtrada a líneas de crédito y
+convocatorias). Se revisaron y NO se agregaron: iNNpulsa y SENA (el listado se arma con JavaScript, el HTML
+llega vacío), Ruta N (`/ofertas` es una lista filtrada por JavaScript; el resto solo trae ofertas de empleo) y
+la Cámara de Comercio de Medellín (páginas de programas permanentes mezcladas con el menú, sin listado de
+convocatorias). El `entidad` de cada fuente tiene que ser idéntico al nombre sembrado en la 033.
+
+Cada fuente del JSON lleva un `id` slug estable (es la llave del historial en la base: no se cambia). Reglas
+de buena vecindad: respeta `robots.txt`, una página por fuente por día, User-Agent propio, pausa entre fuentes,
+solo páginas públicas de entidades, nada se publica sin moderación humana.
+
 ## Licencia y atribución (ODbL)
 
 Los datos vienen de **OpenStreetMap** © colaboradores de OpenStreetMap, bajo la licencia

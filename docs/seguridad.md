@@ -207,6 +207,12 @@ Tabla `intentos_registro` en Postgres, con cupos separados por `origen`:
 (La tabla completa de cupos, con `estado`, `agente`, `geocodificar`, `datos` e
 `ingesta`, está en `lib/db/rateLimit.ts`.)
 
+**Endpoints de máquina del vigía** (`/api/ingesta/convocatorias` y `/api/ingesta/vigia`, desde la 036):
+comparten UNA puerta (`lib/auth/puertaIngesta.ts`): 503 sin `INGESTA_SECRETO`, 401 con header malo (gasta
+cupo `ingesta`), contador en memoria para peticiones sin IP, tope de bytes y Zod estricto. El segundo solo
+escribe un informe de estados y conteos (sin datos personales) y no publica nada. No se añade superficie
+de lectura: el estado del vigía solo lo ve el equipo, tras `exigirEquipo()`.
+
 Están separados a propósito: compartir cupo permitiría quemar el de login con
 intentos fallidos para dejar a esa IP sin poder registrar un negocio.
 

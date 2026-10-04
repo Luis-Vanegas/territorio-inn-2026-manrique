@@ -185,7 +185,7 @@ El control sigue en el `where` de cada repo (sin RLS, AGENTS.md).
 | Territorio y plan de brigada (CSV) | `portafolios` × `constelaciones.json` |
 | Ficha al % | Columnas llenas de `portafolios` |
 | Observatorio de la entidad | `obtenerDatosAbiertos` (k = 5), lo mismo que `/firmamento` |
-| Salud de las fuentes del vigía | `vigia_informe.json` del pipeline. ponytail: a tabla solo si el panel necesita historia |
+| Salud de las fuentes del vigía | Tablas `vigia_corridas` y `vigia_fuentes_estado` (migración 036, §10) |
 | «Demanda sin oferta» (tabla 4.2) | Pendiente: `sugerencias_categoria` con `origen = 'busqueda'` ya existe; falta saber si hubo resultado. Se decide cuando se toque el buscador |
 
 ## 7. Código que cambia con la 033
@@ -283,3 +283,24 @@ erDiagram
   distinguirlas de la fila del seed de demostración, que tiene la misma forma.
 - ponytail: las invitaciones vencidas no se purgan; son pocas filas sin datos personales (el token
   es un hash). Si crecen, una línea en `/api/cron/purgar`.
+
+
+## 10. Migración 036: vigía vivo (corridas y estado por fuente)
+
+Dominio D (oportunidades). Solo aditiva. Sin datos personales: URLs de páginas públicas de entidades,
+estados y conteos. La escribe `POST /api/ingesta/vigia` (secreto de máquina) y la lee el panel del equipo.
+El SQL completo está en `lib/db/migrations/036_vigia.sql`.
+
+- `vigia_corridas`: `iniciada_en`, `terminada_en`, `recibida_en`, `origen` (`actions` | `manual`),
+  `total_fuentes` (1 a 50), `total_nuevas`; CHECK `terminada_en >= iniciada_en`.
+- `vigia_fuentes_estado`: `corrida_id` (FK, cascade), `fuente_id` (slug, es el `id` del JSON de fuentes),
+  `entidad_id` (FK nullable, por nombre; no la crea), `url` (http/https, máx. 500), `estado`
+  (`responde`, `cambio`, `sin_cambio`, `error_http`, `timeout`, `bloqueada_robots`), `http_status`
+  (100 a 599 o null), `huella` (sha256 hex o null), `candidatas`, `nuevas`, `error` (1 a 200 caracteres).
+  UNIQUE (`corrida_id`, `fuente_id`); hay huella si y solo si la página respondió; un fallo trae `error`
+  y cero candidatas; `nuevas <= candidatas`.
+- **`responde` vs `cambio` / `sin_cambio`**: el pipeline solo dice «respondió» y manda la huella; el repo
+  la compara con la última huella de la misma `fuente_id` (la más reciente que tenga huella, no la de la
+  corrida anterior). `responde` = primera vez que se ve la fuente.
+- **Huella**: sha256 de TODOS los enlaces de la página (texto + destino, ordenados), no del HTML crudo.
+- ponytail: las corridas no se purgan (una por día, pocas filas). Si crecen, una línea en `/api/cron/purgar`.
