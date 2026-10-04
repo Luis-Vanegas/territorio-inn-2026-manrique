@@ -1,3 +1,4 @@
+import type { Viewport } from 'next';
 import { Fraunces } from 'next/font/google';
 
 /**
@@ -14,6 +15,8 @@ const frauncesItalica = Fraunces({
   variable: '--font-fraunces-italica',
   display: 'swap',
 });
+
+export const viewport: Viewport = { themeColor: '#0B1026' };
 
 export default function FirmamentoLayout({ children }: { children: React.ReactNode }) {
   return <div className={frauncesItalica.variable}>{children}</div>;

@@ -186,7 +186,7 @@ export default async function EntrarFirmamentoPage({
             lector de pantalla llegue primero al título; en el celular sube como
             franja baja de 64 px para no empujar el menú de roles (a 320 × 700 la
             última fila sigue en pantalla). */}
-        <div className="order-first mb-5 flex items-center gap-4 rounded-2xl bg-noche px-4 py-2 lg:order-none lg:col-start-2 lg:row-start-1 lg:mb-0 lg:flex-col lg:items-stretch lg:gap-5 lg:p-6">
+        <div className="order-first mb-5 flex items-center gap-4 rounded-2xl bg-noche px-4 py-2 dark:ring-1 dark:ring-trazo lg:order-none lg:col-start-2 lg:row-start-1 lg:mb-0 lg:flex-col lg:items-stretch lg:gap-5 lg:p-6">
           <ConstelacionViva variante="compacta" className="h-16 shrink-0 lg:h-auto lg:w-full" />
           <p className="font-sans text-sm leading-snug text-tenue lg:text-base">
             Los negocios de Manrique forman constelaciones.{' '}

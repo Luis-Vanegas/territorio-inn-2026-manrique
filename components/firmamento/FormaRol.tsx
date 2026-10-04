@@ -10,8 +10,8 @@ import type { RolFirmamento } from '@/lib/firmamento/navegacion';
  */
 const SELLO: Record<RolFirmamento, { fondo: string; forma: string }> = {
   negocio: { fondo: 'bg-amarillo', forma: '#0B1026' },
-  equipo: { fondo: 'bg-azul-texto', forma: '#FFFFFF' },
-  entidad: { fondo: 'bg-morado-texto', forma: '#FFFFFF' },
+  equipo: { fondo: 'bg-noche-azul', forma: '#0B1026' },
+  entidad: { fondo: 'bg-noche-morado', forma: '#0B1026' },
 };
 
 export function FormaRol({ rol, tamano = 40 }: { rol: RolFirmamento; tamano?: number }) {

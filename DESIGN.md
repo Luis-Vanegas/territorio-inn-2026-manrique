@@ -67,7 +67,53 @@ marca, no descuido. No se extiende a la navegación ni a frases largas.
 
 ## Color
 
-Fondo hueso, tinta casi negra, y los acentos de la constelación: morado, azul,
+**Una sola paleta, dos luces** (decisión de Luis, 3-oct-2026). Constelaciones y
+Firmamento comparten paleta: la de Firmamento. El sitio de día es la misma paleta
+con luz de día, y el modo oscuro es la misma paleta con luz de noche. No hay un
+gris ni un blanco puro en ningún lado.
+
+| Token | Claro (día) | Oscuro (noche) |
+|---|---|---|
+| `hueso` (superficie) | `#F3EFE4` (= `estrella`) | `#0B1026` (= `noche`) |
+| `tinta` (texto) | `#0B1026` (= `noche`) | `#F3EFE4` (= `estrella`) |
+| `morado-texto` | `#A8309F` | `#E07AD8` (= `noche-morado`) |
+| `azul-texto` | `#0957C3` | `#7FB0FF` (= `noche-azul`) |
+| `morado` / `azul` (decorativos) | `#C64DBE` / `#3C8AF6` | `#E07AD8` / `#7FB0FF` |
+| `amarillo` (= `sodio`) | `#F4CC48`, solo fill | `#F4CC48`, solo fill |
+
+Antes: hueso `#FFFFFF`, tinta `#1A1A1A`; en oscuro hueso `#1A1A1A`, tinta `#F5F5F5`,
+morado-texto `#CB5DC3`, azul-texto `#3C8AF6`.
+
+Contrastes medidos con la fórmula WCAG (luminancia relativa), no estimados:
+
+| Par | Claro | Oscuro |
+|---|---|---|
+| `tinta` sobre `hueso` | 16,37 | 16,37 |
+| `morado-texto` sobre `hueso` | 5,09 (antes `#B139A9`: 4,54, sin margen) | 7,12 |
+| `azul-texto` sobre `hueso` | 5,78 | 8,56 |
+| `morado-texto` sobre `amarillo/15` | 4,87 | 5,26 |
+| `azul-texto` sobre `amarillo/15` | 5,52 | 6,32 |
+| `tinta/70` sobre `hueso` | 6,64 | 8,30 |
+| `tinta/60` sobre `hueso` | 4,74 | 6,37 |
+| `tinta/55` (borde de control) | 4,05 (pasa 3:1) | 5,54 |
+| `tinta/12`, `tinta/15` (separadores) | 1,29 y 1,37, solo decorativos | 1,34 y 1,47 |
+| `amarillo` sobre `hueso` | 1,35: nunca texto | 12,16 |
+
+**Superficies elevadas**: no hay un token nuevo. Las tarjetas se separan con
+`border-tinta/12` sobre el mismo `hueso`, como antes sobre el blanco; un `#FBF9F3` solo
+agregaría un tono más sin que nada lo pida. Si una pieza lo necesita, se discute aquí.
+
+**Ventanas de noche** (`VentanaNoche`, `.modo-noche`, `/firmamento`): igual que antes.
+En modo oscuro el fondo de la ventana coincide con el de la página, así que se
+separa con un anillo `trazo` (`dark:ring-1 dark:ring-trazo`, y `dark:border-trazo` en
+las piezas con borde propio). **Ventana de día** (`.modo-dia`): lo contrario, para lo
+que muestra cómo se ve el sitio de día aunque el panel esté en oscuro (la vista
+previa de la ficha).
+
+**`theme-color`** (barra del navegador en el celular): `#F3EFE4` en todo el sitio,
+que siempre abre en claro, y `#0B1026` en `/firmamento`, que es de noche.
+
+Fondo hueso, tinta azul noche, y los acentos de la constelación: morado, azul,
 amarillo. (El acento se llamó «magenta» en este documento y «morado» en el
 código y en el manual de marca: el nombre del token es **`morado`**, en todos
 lados.) Los tokens viven en `tailwind.config.ts` y en `styles/globals.css`.
@@ -174,7 +220,7 @@ viven en `lib/paleta.ts` y los esparce `tailwind.config.ts`.
 *De día el barrio, de noche el firmamento.* El sitio de día (hueso, como hoy) es
 donde el vecino **hace** cosas: buscar, registrarse, aprender. El Firmamento es
 donde se **leen** los datos del territorio. Vive en la página `/firmamento`, en
-una banda nocturna de la portada y en las «ventanas» de noche de los paneles con
+las «ventanas» de noche de los paneles con
 sesión (que son de día: ahí se hacen cosas). El sitio no abre en noche: el tema inicial sigue
 siendo claro (ver «Tema»); el Firmamento es una superficie propia, no el modo
 oscuro. Por eso sus colores no cambian con el selector de tema.
@@ -263,7 +309,7 @@ tanta letra monoespaciada chica que volvió a parecer un panel técnico, que es 
 que se quiso evitar al sacar JetBrains Mono.
 
 Va en DM Mono (`font-cifra`, cargada en `app/layout.tsx`, pesos 400 y 500) **solo la
-cifra grande de un indicador**: el número de un `Kpi`, de la banda de la portada o de
+cifra grande de un indicador**: el número de un `Kpi` (también en la portada) o de
 una ventana de noche (`text-3xl` o más). Nada más.
 
 **No** va en DM Mono, aunque tenga números: las fuentes y las fechas (DM Sans pequeña,
@@ -273,8 +319,7 @@ etiquetas, los formularios, el cuerpo de texto, las mayúsculas de sección («M
 GUÍA»), los títulos y los números que son parte de una frase («3 trámites», «Paso 2
 de 5»). Si dudas, es DM Sans.
 
-Deuda conocida: varias piezas anteriores a esta decisión (líneas de fuente del mapa y
-de la banda de la portada, `/firmamento`) todavía ponen fuentes y fechas en
+Deuda conocida: varias piezas anteriores a esta decisión (líneas de fuente de `/firmamento`) todavía ponen fuentes y fechas en
 `font-cifra`. Se pasan a DM Sans al tocarlas; un componente nuevo ya no lo hace.
 
 Costo: una familia más que descargar con datos móviles. Se mitiga con solo dos pesos y
@@ -430,8 +475,7 @@ en la base, ninguna pieza simulada).
 La pieza que dice qué es el sitio sin leer nada: «los negocios de tu barrio forman
 constelaciones; únete a la tuya». Es el mismo dato de «Motivos», hecho secuencia.
 Componente `components/firmamento/ConstelacionViva.tsx` (servidor) con variantes
-`completa` (portada, primera pieza de la banda de noche, antes de «El proyecto, en
-números») y `compacta` (puerta `/firmamento/entrar`: franja baja arriba del título en
+`completa` (sin uso hoy: la portada ya no tiene banda de noche) y `compacta` (puerta `/firmamento/entrar`: franja baja arriba del título en
 el celular, columna a la derecha en escritorio; nunca empuja el menú de roles).
 
 - **Datos reales, proyectados en el servidor** (`lib/firmamento/cieloVivo.ts`, una vez
@@ -570,17 +614,21 @@ móvil, que tiene espacio); el buzón no se pierde.
 
 ## Portada
 
-Orden: Hero → banda Firmamento (noche: Constelación viva y luego las cifras) → Aliados
-con mapa → Qué ofrecemos → Galería.
-La banda es «El proyecto, en números»: las visitas se quitaron (las infla el propio
+Orden: Hero → Aliados con mapa (el ÚNICO mapa y el único botón de registro, «Sumar mi
+negocio») → «El proyecto, en números» → Qué ofrecemos → Galería. **La portada no tiene
+banda de noche**: todo es de día, con los tokens del tema, y alterna sola con el modo
+oscuro. Firmamento va aparte (`/firmamento`) y la Constelación viva solo está en la
+puerta (`/firmamento/entrar`).
+La sección «El proyecto, en números»: las visitas se quitaron (las infla el propio
 equipo; siguen en el panel de administración). Muestra datos del **territorio**, cada
-uno con su fuente y su fecha en `font-cifra` debajo: comercios mapeados en OpenStreetMap
+uno con su fuente y su fecha en DM Sans pequeña debajo (`Kpi`): comercios mapeados en OpenStreetMap
 y constelaciones (de `public/firmamento/constelaciones.json`, fecha de la base de OSM),
-aliados en la red (total de aprobados de la base de datos, fecha de hoy; regla en «Reglas de cifras») y empresas registradas en Cámara
+y empresas registradas en Cámara
 de Comercio en Manrique (2.626, de `lib/cifras.ts`; Cámara de Comercio de Medellín para Antioquia,
 Estructura Empresarial 2025). Cada cifra lleva la estrella de cuatro puntas. El
-mensaje es «La brecha es nuestra línea base» y el botón lleva a `/firmamento`. La
-transición día→noche es un degradado de borde (sin JS), no una animación.
+mensaje es «La brecha es nuestra línea base». Los aliados no se repiten ahí: su cifra
+ya va junto al mapa. Sin botón de registro; un solo enlace discreto, «Ver más datos en
+Firmamento →», lleva a `/firmamento`.
 
 El mapa y el buscador de la portada se comportan como `/aliados`: aliados (todos, sin
 tope) y comercios de OSM, con los que no tienen nombre solo en el mapa; usan las mismas

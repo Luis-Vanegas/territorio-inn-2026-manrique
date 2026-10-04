@@ -111,7 +111,7 @@ export function MenuUsuario({
         </span>
       </summary>
 
-      <div className="absolute right-0 top-12 z-50 w-64 border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(26_26_26/0.08)]">
+      <div className="absolute right-0 top-12 z-50 w-64 border border-tinta/12 bg-hueso p-2 shadow-[0_4px_20px_rgb(11_16_38/0.08)]">
         {/* El nombre completo va acá, donde sí hay ancho: la barra muestra el
             primer nombre, y quien abre el menú confirma con qué cuenta entró.
             Sin borde debajo — el espacio ya separa. */}
