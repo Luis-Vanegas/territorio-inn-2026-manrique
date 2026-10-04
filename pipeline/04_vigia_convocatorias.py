@@ -165,7 +165,9 @@ def revisar_fuente(fuente: dict) -> dict:
     parser.feed(_decodificar(cuerpo))
     informe["http_status"] = status
 
-    todos = sorted({f"{t}\t{urljoin(url, h)}" for t, h in parser.enlaces if h})
+    # Cloudflare reescribe los correos en enlaces /cdn-cgi/ con un cifrado distinto en cada
+    # pedido: dejarlos adentro haría que la huella cambie sola (pasó con Bancóldex).
+    todos = sorted({f"{t}\t{urljoin(url, h)}" for t, h in parser.enlaces if h and "/cdn-cgi/" not in h})
     informe["huella"] = hashlib.sha256("\n".join(todos).encode("utf-8")).hexdigest()
 
     incluir = [re.compile(p, re.I) for p in fuente.get("incluir", [])]
