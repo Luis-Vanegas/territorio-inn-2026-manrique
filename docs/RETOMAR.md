@@ -114,6 +114,8 @@ Lo que tiene que quedar:
 
 **4-oct, EN PRODUCCIÓN:** respaldo Neon `respaldo-pre-034-035`, migraciones 034 y 035 aplicadas, `main` = `5f98316`, Vercel OK y prueba rápida OK. Falta (con OK de Luis): borrar las ramas de Neon de prueba y respaldo, el script temporal y los worktrees viejos. El vigía queda para después de la entrega.
 
+**4-oct, 2º deploy EN PRODUCCIÓN:** respaldo `respaldo-pre-036`, migración 036 aplicada, `main` = `15c6885`: buscador del inicio que filtra el mapa, leyenda solo con categorías, vigía vivo (tarjeta en Equipo › Convocatorias) y ciclo de aprendizaje del sugeridor (publica con 30+ fichas propias; el modelo sigue en F1 0,528). Pendientes de Luis: crear `INGESTA_SECRETO` en Vercel y GitHub (hoy la ingesta responde 503, cerrada a propósito); repo público o vigía a mano; Bancóldex sí/no; filtrar Fondo Emprender por vigencia; quitar «OpenStreetMap · no es aliado» de /aliados y del popup; dividir «Comidas y almuerzos»; borrar ramas Neon de prueba y respaldo.
+
 ## Pasos para cerrar (en este orden)
 
 1. Integrar las ramas a `reto/alineacion` (`git merge --no-ff`) en el orden 1 → 2 → 3 y resolver conflictos.
