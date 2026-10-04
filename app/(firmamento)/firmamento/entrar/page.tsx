@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 
-import { ConstelacionViva, fuenteConstelacionViva } from '@/components/firmamento/ConstelacionViva';
-import { FormaRol } from '@/components/firmamento/FormaRol';
-import { Plegable } from '@/components/firmamento/Plegable';
 import { verificarSesion } from '@/lib/auth/admin';
 import { googleConfigurado } from '@/lib/auth/google';
 import { rutaInterna } from '@/lib/auth/destino';
@@ -31,10 +29,10 @@ const MENSAJES: Record<string, string> = {
     'Esa cuenta de Google no tiene acceso al panel del equipo. Pide una invitación a un moderador o entra con tu correo y contraseña.',
 };
 
-const ROLES: { rol: RolFirmamento; titulo: string; descripcion: string }[] = [
-  { rol: 'negocio', titulo: 'Tengo un negocio', descripcion: 'Tu ficha, tus clientes y las oportunidades para ti.' },
-  { rol: 'equipo', titulo: 'Soy del equipo', descripcion: 'Moderación, convocatorias y datos de la red.' },
-  { rol: 'entidad', titulo: 'Represento una entidad', descripcion: 'Datos del territorio y convocatorias.' },
+const ROLES: { rol: RolFirmamento; titulo: string }[] = [
+  { rol: 'negocio', titulo: 'Mi negocio' },
+  { rol: 'equipo', titulo: 'Equipo' },
+  { rol: 'entidad', titulo: 'Entidad' },
 ];
 
 function Aviso({ children }: { children: React.ReactNode }) {
@@ -48,13 +46,15 @@ function Aviso({ children }: { children: React.ReactNode }) {
 const CLASE_ENLACE = 'font-medium text-azul-texto underline underline-offset-4';
 
 /**
- * La puerta de Firmamento (DESIGN.md › Firmamento con sesión › Puerta): un menú
- * de tres roles que se despliegan en el lugar, de día y bajo el encabezado del
- * sitio. Sin foto, sin beneficios, sin cifras: aquí se viene a entrar.
+ * La puerta de Firmamento (DESIGN.md › Firmamento con sesión › Puerta), como la
+ * pantalla de la asesoría (Luis, 4-oct-2026): foto de Manrique a la izquierda
+ * (arriba en el celular) y a la derecha la tarjeta con tres pestañas. Con los
+ * colores del tema, sin beneficios ni cifras, y sin enlace de registro: el
+ * registro se ofrece después de entrar con Google, en «Mi negocio».
  *
- * Cada fila es un `Plegable` con `name="rol"` (uno abierto a la vez, nativo del
- * `<details>`): funciona sin JS y el servidor abre la del `?rol=` que mandan las
- * guardas. La lógica de ingreso es la de siempre: Google por
+ * Las pestañas son enlaces a `?rol=`: el servidor pinta la elegida, así que
+ * funcionan sin JS y las guardas abren la que corresponde (con su aviso de
+ * `?error=`). La lógica de ingreso es la de siempre: Google por
  * `/api/auth/google/iniciar` con destino validado, y la Server Action del equipo.
  */
 export default async function EntrarFirmamentoPage({
@@ -65,7 +65,7 @@ export default async function EntrarFirmamentoPage({
   const { rol, error, destino } = await searchParams;
   // Adónde vuelve el negocio tras Google (la guarda del registro lo manda). Solo rutas del panel del negocio.
   const destinoNegocio = rutaInterna(destino)?.startsWith('/firmamento/negocio') ? destino! : '/firmamento/negocio';
-  const abierto = ROLES.find((r) => r.rol === rol)?.rol;
+  const abierto = ROLES.find((r) => r.rol === rol)?.rol ?? 'negocio';
   const mensajeError = error ? MENSAJES[error] : null;
   const conGoogle = googleConfigurado();
 
@@ -86,6 +86,9 @@ export default async function EntrarFirmamentoPage({
         )}
         <BotonGoogle destino={destinoNegocio} disponible={conGoogle} />
         <p className="font-sans text-sm text-tinta/70">Sirve para entrar y para registrarte. No creas ninguna contraseña.</p>
+        <p className="font-sans text-sm text-tinta/70">
+          ¿Te registró el equipo? Usa el enlace que te enviamos por WhatsApp.
+        </p>
       </>
     ),
     equipo: (
@@ -126,78 +129,69 @@ export default async function EntrarFirmamentoPage({
     ),
   };
 
+  // Al cambiar de pestaña el destino del negocio se conserva; el aviso de error, no.
+  const hrefRol = (r: RolFirmamento) =>
+    `/firmamento/entrar?${new URLSearchParams(r === 'negocio' && destino ? { rol: r, destino } : { rol: r })}`;
+
   return (
-    <main className="margen-editorial pb-20 pt-6 sm:pt-16">
-      <div className="mx-auto flex max-w-xl flex-col lg:grid lg:max-w-5xl lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-16">
-        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
-          <h1 className="font-display text-4xl font-medium leading-tight tracking-tight text-tinta sm:text-5xl">
-            Entra a Firmamento
-          </h1>
-          <p className="mt-3 font-sans text-base text-tinta/70">Elige cómo participas en la red.</p>
+    <main className="grid lg:min-h-[calc(100dvh-4.5rem)] lg:grid-cols-2">
+      {/* La foto es el paisaje: alt vacío no, porque cuenta dónde estás. El texto
+          encima va en tonos fijos claros sobre un velo oscuro: es la foto, no la página. */}
+      <div className="relative h-44 overflow-hidden sm:h-56 lg:h-auto">
+        <Image
+          src="/fotos/manrique-iglesia.jpg"
+          alt="La aguja blanca de la iglesia de Manrique entre miles de casas de ladrillo que trepan la ladera."
+          fill
+          priority
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-noche/85 via-noche/30 to-transparent" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 lg:p-12">
+          <p className="font-display text-3xl font-medium leading-none text-estrella sm:text-5xl">
+            Firma<span className="text-sodio">mento</span>
+          </p>
+          <p className="mt-2 max-w-md font-sans text-sm leading-snug text-estrella sm:text-base">
+            Los datos de tu barrio, trabajando para tu negocio.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-start justify-center px-4 py-8 sm:px-8 lg:items-center lg:py-12">
+        <div className="w-full max-w-md rounded-2xl border border-tinta/12 bg-hueso p-5 shadow-[0_4px_24px_rgb(11_16_38/0.08)] sm:p-7">
+          <h1 className="font-display text-3xl font-medium leading-tight text-tinta">Entra a Firmamento</h1>
+          <p className="mt-1 font-sans text-sm text-tinta/70">Elige cómo participas en la red.</p>
 
           {mensajeError && (
             <p
               role="alert"
-              className="mt-6 border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
+              className="mt-5 border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
             >
               {mensajeError}
             </p>
           )}
 
-          <div className="mt-8 divide-y divide-tinta/12 overflow-hidden rounded-2xl border border-tinta/12">
-            {ROLES.map((r) => (
-              <Plegable
-                key={r.rol}
-                name="rol"
-                abierto={r.rol === abierto}
-                className="group"
-                claseResumen="flex min-h-[72px] items-center gap-4 px-4 py-3 transition-colors hover:bg-tinta/[0.03] focus-visible:[outline-offset:-3px] sm:px-5"
-                claseContenido="flex flex-col gap-4 px-4 pb-6 pt-1 sm:px-5 sm:pl-[5.25rem]"
-                resumen={
-                  <>
-                    <FormaRol rol={r.rol} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-sans text-lg font-medium leading-snug text-tinta">{r.titulo}</span>
-                      <span className="block font-sans text-sm leading-snug text-tinta/70">{r.descripcion}</span>
-                    </span>
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="20"
-                      height="20"
-                      aria-hidden="true"
-                      focusable="false"
-                      className="shrink-0 text-tinta/70 transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
-                    >
-                      <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </>
-                }
-              >
-                {acciones[r.rol]}
-              </Plegable>
-            ))}
-          </div>
+          <nav aria-label="Cómo participas" className="mt-5 grid grid-cols-3 gap-1 rounded-xl border border-tinta/12 p-1">
+            {ROLES.map((r) => {
+              const activa = r.rol === abierto;
+              return (
+                <Link
+                  key={r.rol}
+                  href={hrefRol(r.rol)}
+                  replace
+                  scroll={false}
+                  aria-current={activa ? 'page' : undefined}
+                  className={`flex min-h-[44px] items-center justify-center rounded-lg px-2 text-center font-sans text-sm transition-colors ${
+                    activa ? 'bg-azul-texto font-medium text-hueso' : 'text-tinta/75 hover:bg-tinta/5 hover:text-tinta'
+                  }`}
+                >
+                  {r.titulo}
+                </Link>
+              );
+            })}
+          </nav>
 
-          <p className="mt-6 font-sans text-base text-tinta/70">
-            ¿No estás en la red?{' '}
-            <Link href="/firmamento/negocio/registro" className={`inline-flex min-h-[44px] items-center ${CLASE_ENLACE}`}>
-              Regístrate gratis
-            </Link>
-          </p>
-        </div>
-
-        {/* Constelación viva compacta (DESIGN.md › Firmamento › Constelación viva):
-            decorativa y con su frase al lado. Va después en el HTML para que el
-            lector de pantalla llegue primero al título; en el celular sube como
-            franja baja de 64 px para no empujar el menú de roles (a 320 × 700 la
-            última fila sigue en pantalla). */}
-        <div className="order-first mb-5 flex items-center gap-4 rounded-2xl bg-noche px-4 py-2 dark:ring-1 dark:ring-trazo lg:order-none lg:col-start-2 lg:row-start-1 lg:mb-0 lg:flex-col lg:items-stretch lg:gap-5 lg:p-6">
-          <ConstelacionViva variante="compacta" className="h-16 shrink-0 lg:h-auto lg:w-full" />
-          <p className="font-sans text-sm leading-snug text-tenue lg:text-base">
-            Los negocios de Manrique forman constelaciones.{' '}
-            <span className="hidden text-estrella sm:inline">Entra y cuida la tuya.</span>
-          </p>
-          <p className="hidden font-sans text-xs leading-relaxed text-tenue lg:block">{fuenteConstelacionViva()}</p>
+          <div className="mt-5 flex flex-col gap-4">{acciones[abierto]}</div>
         </div>
       </div>
     </main>
