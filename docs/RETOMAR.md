@@ -108,6 +108,8 @@ Lo que tiene que quedar:
 - Sección pública «Vigía» en `/firmamento`, con las reglas del raspado ético.
 - Si el 4-oct no llega, se deja para después: no bloquea la entrega.
 
+**4-oct:** paneles enteros con los colores del tema (`2183d44`; `VentanaNoche` ya no es de noche). El vigía queda para DESPUÉS de la entrega (decisión de Luis). Siguiente: QA final (en curso) → OK de Luis → producción con 034 + 035.
+
 ## Pasos para cerrar (en este orden)
 
 1. Integrar las ramas a `reto/alineacion` (`git merge --no-ff`) en el orden 1 → 2 → 3 y resolver conflictos.
