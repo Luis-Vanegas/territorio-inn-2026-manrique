@@ -33,6 +33,7 @@ node --experimental-strip-types scripts/verificar-marca.mjs   # los verificar-*.
 
 - **`.env.local` puede tener dos `DATABASE_URL`** (producción y rama `dev` de Neon). Next usa la última; `scripts/migrar.mjs` usa la **primera**. Antes de migrar, confirmá contra qué base apunta (`npm run db:estado`). Para migrar producción a propósito, pasá `DATABASE_URL` inline; le gana al archivo.
 - **`useActionState` sí existe**: Next 16 corre sobre el React que él mismo vendoriza (`next/dist/compiled/react`), no sobre el de `node_modules`. No uses `useFormState`.
+- **`npm run dev` usa `--webpack` a propósito**: en Windows, Turbopack (Next 16.3.6) no resuelve `next/font/google` (`next/font/google queries have exactly one entry`) y todas las rutas dan 500; borrar `.next` no lo arregla. El build de Vercel (Linux) sí compila con Turbopack.
 - **Next 16 degrada `images` `quality` en silencio** si el valor no está en `images.qualities` de `next.config.mjs`.
 - **No recortes fotos de contenido** antes de subirlas: el contenedor ya aplica `object-cover`, y el recorte previo se suma al del contenedor.
 - **Barridos de código** (voseo, `<label>` sin asociar, etc.): Los barridos se hacen por criterio de búsqueda sobre todo el árbol, no por listas de archivos armadas de memoria (`TASKS.md` documenta las tres veces que eso falló).
