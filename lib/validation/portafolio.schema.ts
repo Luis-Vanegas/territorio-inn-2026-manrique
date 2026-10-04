@@ -104,7 +104,7 @@ export const opcional = <T extends z.ZodTypeAny>(schema: T) =>
  * termina en una URL usable en un href. Si ya parece una URL, se respeta tal
  * cual (evita convertir un link a una publicación puntual en el perfil).
  */
-const normalizarRedSocial = (dominio: string) => (valor: string) => {
+export const normalizarRedSocial =(dominio: string) => (valor: string) => {
   const limpio = valor.trim();
   if (!limpio || /^https?:\/\//i.test(limpio)) return limpio;
   const sinArroba = limpio.replace(/^@/, '').replace(/^\/+/, '');

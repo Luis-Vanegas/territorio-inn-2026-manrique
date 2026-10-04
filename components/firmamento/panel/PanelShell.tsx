@@ -23,6 +23,31 @@ import { CLASE_BOTON_PANEL } from './Tarjeta';
  * llena el layout del rol. Los conteos son de la base: nada aquí se escribe a
  * mano.
  */
+const SIN_FICHA = 'Aún no se ve en Constelaciones';
+
+function BotonSitio({
+  sitio,
+  className,
+}: {
+  sitio: { etiqueta: string; href: string; externo: boolean };
+  className: string;
+}) {
+  if (!sitio.externo) {
+    return (
+      <Link href={sitio.href} className={`${CLASE_BOTON_PANEL} ${className}`}>
+        {sitio.etiqueta}
+      </Link>
+    );
+  }
+  // La ficha pública abre en otra pestaña: el panel queda donde estaba.
+  return (
+    <a href={sitio.href} target="_blank" rel="noopener" className={`${CLASE_BOTON_PANEL} ${className}`}>
+      {sitio.etiqueta} <span aria-hidden="true">↗</span>
+      <span className="sr-only"> (se abre en otra pestaña)</span>
+    </a>
+  );
+}
+
 export function PanelShell({
   contexto,
   titular,
@@ -34,12 +59,17 @@ export function PanelShell({
   /** El nombre grande del encabezado: el negocio activo o la entidad. Por defecto, el de `contexto`. */
   titular?: string;
   insignias?: Record<string, number>;
-  /** Destino del botón al sitio cuando depende de los datos (la ficha pública del negocio); si no, el de `BOTON_SITIO`. */
-  hrefSitio?: string;
+  /**
+   * Destino del botón al sitio cuando depende de los datos (la ficha pública del
+   * negocio, en otra pestaña); `null` = la ficha aún no se ve en Constelaciones y
+   * el botón lo dice sin enlazar. Sin la prop, el de `BOTON_SITIO`.
+   */
+  hrefSitio?: string | null;
   children: React.ReactNode;
 }) {
   const { rol } = contexto;
-  const sitio = { ...BOTON_SITIO[rol], href: hrefSitio ?? BOTON_SITIO[rol].href };
+  const sitio = { ...BOTON_SITIO[rol], href: hrefSitio ?? BOTON_SITIO[rol].href, externo: hrefSitio !== undefined };
+  const sinFicha = hrefSitio === null;
   const nombre = titular ?? (rol === 'equipo' ? 'Panel del equipo' : contexto.nombre);
 
   return (
@@ -58,11 +88,25 @@ export function PanelShell({
                 {nombre}
               </p>
             </div>
-            <Link href={sitio.href} className={`${CLASE_BOTON_PANEL} hidden shrink-0 sm:inline-flex`}>
-              {sitio.etiqueta}
-            </Link>
-            <MenuUsuarioPanel rol={rol} nombre={contexto.nombre} foto={contexto.foto} sitio={sitio} />
+            {sinFicha ? (
+              <span className="hidden shrink-0 rounded-lg border border-dashed border-tinta/30 px-4 py-2 font-sans text-sm text-tinta/70 sm:inline-flex">
+                {SIN_FICHA}
+              </span>
+            ) : (
+              <BotonSitio sitio={sitio} className="hidden shrink-0 sm:inline-flex" />
+            )}
+            <MenuUsuarioPanel rol={rol} nombre={contexto.nombre} foto={contexto.foto} sitio={sinFicha ? null : sitio} />
           </div>
+          {/* En el celular el botón no cabe en la fila: va debajo, siempre visible. */}
+          {hrefSitio !== undefined && (
+            <div className="-mt-1 pb-3 sm:hidden">
+              {sinFicha ? (
+                <p className="font-sans text-sm text-tinta/70">{SIN_FICHA}</p>
+              ) : (
+                <BotonSitio sitio={sitio} className="w-full justify-center" />
+              )}
+            </div>
+          )}
           <NavPanel rol={rol} insignias={insignias} />
         </div>
       </div>

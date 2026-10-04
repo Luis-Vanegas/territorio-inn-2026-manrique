@@ -42,9 +42,15 @@ export interface ContextoNegocio extends ContextoPanel {
   usuarioId: string;
 }
 
-export async function exigirNegocio(): Promise<ContextoNegocio> {
+/**
+ * `destino`: adónde volver después de Google (p. ej. el registro). Viaja a la
+ * puerta y de ahí a `/api/auth/google/iniciar`, que lo valida con `rutaInterna`.
+ */
+export async function exigirNegocio(destino?: string): Promise<ContextoNegocio> {
   const sesion = await sesionActual();
-  if (!sesion) redirect('/firmamento/entrar?rol=negocio');
+  if (!sesion) {
+    redirect(`/firmamento/entrar?rol=negocio${destino ? `&destino=${encodeURIComponent(destino)}` : ''}`);
+  }
   return { rol: 'negocio', nombre: sesion.nombre, foto: sesion.foto, usuarioId: sesion.id };
 }
 

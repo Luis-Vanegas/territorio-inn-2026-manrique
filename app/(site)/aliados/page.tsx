@@ -81,7 +81,7 @@ export default async function AliadosPage({
 
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
           <Link
-            href="/aliados/registro"
+            href="/firmamento/negocio/registro"
             className="border border-azul-texto bg-azul-texto px-6 py-3 font-sans text-sm text-hueso transition-colors hover:bg-transparent hover:text-azul-texto"
           >
             Poner mi negocio en el mapa →

@@ -20,7 +20,7 @@ import {
   esComercioOsm,
   type ComercioBuscable,
 } from '@/lib/geo/comerciosOsm';
-import { TarjetaEmprendimiento } from './TarjetaEmprendimiento';
+import { TarjetaEmprendimiento } from '@/components/vitrina/TarjetaEmprendimiento';
 import { OtrosComercios, type ComercioListado } from './OtrosComercios';
 
 /**
@@ -312,7 +312,7 @@ export function VitrinaAliados({
               : 'Todavía no hay aliados publicados; los registros pasan por revisión antes de aparecer. Abajo ves los comercios del barrio.'}{' '}
             Si tienes un negocio en la Comuna 3,{' '}
             <Link
-              href="/aliados/registro"
+              href="/firmamento/negocio/registro"
               className="underline decoration-azul underline-offset-4 hover:text-azul-texto"
             >
               sé el primero en aparecer

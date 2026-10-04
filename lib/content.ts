@@ -50,7 +50,7 @@ export const hero = {
   // que el Hero, que es lo primero que ve cualquiera, empuje una sola acción
   // — registrar el negocio — en vez de ofrecer cuatro puertas a la vez.
   ctas: [
-    { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/aliados/registro" },
+    { tipo: "ofrecer" as const, etiqueta: "Tengo un negocio u oficio", href: "/firmamento/negocio/registro" },
   ] satisfies { tipo: "buscar" | "ofrecer"; etiqueta: string; href: string }[],
   // Los cuatro caminos se agrupaban solo por color, y el color era el único
   // portador del significado "buscar" vs "ofrecer" — falla WCAG 1.4.1: quien

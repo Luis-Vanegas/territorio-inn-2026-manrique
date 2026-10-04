@@ -58,7 +58,7 @@ const ENTRADAS: Entrada[] = [
   { tipo: 'enlace', href: '/nosotros', etiqueta: 'Nosotros' },
 ];
 
-// Las subrutas cuentan como la sección: estando en /aliados/registro, el ítem
+// Las subrutas cuentan como la sección: estando en /aliados/estado/<token>, el ítem
 // "Aliados" sigue siendo dónde estás. Lo contrario deja el menú entero apagado
 // justo en las páginas de formulario, que es donde más falta hace saber
 // de dónde veniste.

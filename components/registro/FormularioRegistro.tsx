@@ -5,11 +5,10 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useFormStatus } from 'react-dom';
 
-import {
-  registrarPortafolio,
-  type EstadoRegistro,
-} from '@/lib/actions/registrarPortafolio';
+import type { EstadoRegistro } from '@/lib/actions/registrarPortafolio';
 import { geocodificarDireccionAction } from '@/lib/actions/geocodificarDireccion';
+import { CompartirEnlace } from '@/components/firmamento/CompartirEnlace';
+import { CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
 import { manejarSeleccionFoto } from '@/lib/imagen/comprimir';
 import { nombreCampoFormulario } from '@/lib/validation/camposPersonalizados.schema';
 import type { Categoria } from '@/lib/db/portafolios.repo';
@@ -141,7 +140,7 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
   const porcentaje = Math.round((completos / total) * 100);
 
   return (
-    <div className="sticky bottom-0 -mx-[clamp(1.5rem,5vw,6rem)] border-t border-tinta/12 bg-hueso/95 px-[clamp(1.5rem,5vw,6rem)] py-4 backdrop-blur">
+    <div className="sticky bottom-0 border-t border-tinta/12 bg-hueso/95 py-4 backdrop-blur">
       {/* Barra de progreso real, no solo una lista de texto: ver el avance
           moverse es lo que hace que alguien termine un formulario largo. */}
       <div className="h-1 w-full overflow-hidden bg-tinta/8" aria-hidden="true">
@@ -177,14 +176,62 @@ function BarraEnvio({ faltantes, total }: { faltantes: string[]; total: number }
 
 // ─── formulario ──────────────────────────────────────────────
 
+const OPCIONES_CONSTANCIA = [
+  { valor: 'verbal_presencial', etiqueta: 'Lo autorizó en voz alta, conmigo presente' },
+  { valor: 'firma_papel', etiqueta: 'Firmó la autorización en papel' },
+];
+
+/** Resultado del registro asistido: el enlace personal, para mandárselo a la persona. */
+function RegistroAsistidoListo({ estado }: { estado: Extract<EstadoRegistro, { estado: 'ok' }> }) {
+  const mensaje = `Hola. Este es el enlace personal de «${estado.nombre}» en Constelaciones: ${estado.enlace} — Ábrelo para ver tu ficha y corregirla; si tienes Google, toca «Continuar con Google» y la manejas desde tu panel. No lo compartas: con este enlace se puede editar tu ficha.`;
+  return (
+    <div role="status" className="mt-8 flex max-w-xl flex-col gap-4">
+      <p className="font-sans text-base font-medium text-tinta">
+        <span aria-hidden="true" className="mr-2 text-azul-texto">✓</span>
+        Registramos «{estado.nombre}». Queda en revisión: aún no se ve en Constelaciones.
+      </p>
+      {(estado.fotoFallo || estado.menuFallo) && (
+        <p className="border-l-2 border-amarillo bg-amarillo/15 px-3 py-2 font-sans text-sm text-tinta">
+          No pudimos subir {estado.fotoFallo && estado.menuFallo ? 'la foto ni el menú' : estado.fotoFallo ? 'la foto' : 'el menú'}.
+          Se puede agregar después desde la ficha.
+        </p>
+      )}
+      <div>
+        <h2 className="font-sans text-sm font-medium text-tinta">Enviar acceso</h2>
+        <p className="mt-1 font-sans text-sm text-tinta/70">
+          {estado.whatsapp ? 'Abre el chat con el WhatsApp que acabas de registrar.' : 'La ficha no tiene WhatsApp: elige el chat al enviarlo.'}
+        </p>
+        <div className="mt-2">
+          <CompartirEnlace mensaje={mensaje} numero={estado.whatsapp} etiquetaWhatsapp="Enviar acceso por WhatsApp" />
+        </div>
+      </div>
+      {/* Recargar deja el formulario vacío sin estado viejo de la action. */}
+      <button type="button" onClick={() => window.location.reload()} className={`${CLASE_BOTON_PRIMARIO} self-start`}>
+        Registrar otro negocio
+      </button>
+    </div>
+  );
+}
+
+/**
+ * El formulario de registro de un negocio. Uno solo para las dos puertas
+ * (AGENTS.md › «Dos puertas, una ficha»): `modo="propio"` lo llena el vecino
+ * desde su panel (`registrarPortafolio`) y `modo="asistido"` el equipo en campo
+ * (`registrarAsistido`), que suma la constancia de cómo autorizó el titular.
+ */
 export function FormularioRegistro({
   categorias,
   camposPersonalizados,
+  accion: accionServidor,
+  modo,
 }: {
   categorias: Categoria[];
   camposPersonalizados: DefinicionCampo[];
+  accion: (anterior: EstadoRegistro, formData: FormData) => Promise<EstadoRegistro>;
+  modo: 'propio' | 'asistido';
 }) {
-  const [estado, accion] = useActionState(registrarPortafolio, ESTADO_INICIAL);
+  const [estado, accion] = useActionState(accionServidor, ESTADO_INICIAL);
+  const asistido = modo === 'asistido';
 
   // Marca de tiempo de cuándo se abrió el formulario, para el chequeo de
   // tiempo mínimo de llenado en el server (anti-bot).
@@ -212,6 +259,8 @@ export function FormularioRegistro({
   // Investigación — va a aliados_investigacion, no a portafolios, y nunca se
   // publica. Opcional.
   const [formalidad, setFormalidad] = useState('');
+  // Solo asistido: cómo autorizó el titular (027 lo exige en la base).
+  const [constancia, setConstancia] = useState('');
 
   const direccionRef = useRef<HTMLInputElement>(null);
   const [geocodificando, setGeocodificando] = useState(false);
@@ -317,6 +366,7 @@ export function FormularioRegistro({
     [llenos.barrio, 'barrio'],
     [llenos.contacto, 'contacto'],
     [llenos.consentimiento, 'consentimiento'],
+    ...(asistido ? [[constancia !== '', 'cómo autorizó'] as [boolean, string]] : []),
     ...camposRequeridos.map(
       (c) => [Boolean(llenosPersonalizados[c.slug]), c.etiqueta.toLowerCase()] as [boolean, string],
     ),
@@ -329,11 +379,12 @@ export function FormularioRegistro({
   const numeroCampos = '08';
   const numeroPermisos = camposPersonalizados.length > 0 ? '09' : '08';
 
-  // Un registro exitoso hace redirect() del lado del server a
-  // /aliados/estado/[token] — no hay estado 'ok' que mostrar acá.
+  // El propio termina en redirect() al panel; solo el asistido vuelve con 'ok'.
+  if (estado.estado === 'ok') return <RegistroAsistidoListo estado={estado} />;
+
   return (
     <>
-      <form action={accion} className="mt-14 flex flex-col gap-12">
+      <form action={accion} className="flex flex-col gap-12">
       {/* Honeypot + tiempo mínimo de llenado: anti-bot silencioso, no le
           agrega fricción a una persona real. */}
       <input
@@ -857,8 +908,9 @@ export function FormularioRegistro({
               className="mt-1 h-4 w-4 shrink-0 accent-azul"
             />
             <span className="font-sans text-sm leading-relaxed text-tinta/75">
-              Confirmo que soy dueño o represento este negocio, que la información
-              es veraz y que acepto los{' '}
+              {asistido
+                ? 'La persona confirmó que es dueña o representa este negocio, que la información es veraz y que acepta los '
+                : 'Confirmo que soy dueño o represento este negocio, que la información es veraz y que acepto los '}
               <Link
                 href="/legal/terminos"
                 target="_blank"
@@ -881,8 +933,9 @@ export function FormularioRegistro({
               className="mt-1 h-4 w-4 shrink-0 accent-azul"
             />
             <span className="font-sans text-sm leading-relaxed text-tinta/75">
-              Autorizo el tratamiento de mis datos conforme a la Ley 1581 de 2012
-              y a la{' '}
+              {asistido
+                ? 'La persona autorizó el tratamiento de sus datos conforme a la Ley 1581 de 2012 y a la '
+                : 'Autorizo el tratamiento de mis datos conforme a la Ley 1581 de 2012 y a la '}
               <Link
                 href="/legal/politica-datos"
                 target="_blank"
@@ -898,18 +951,32 @@ export function FormularioRegistro({
               {err('acepto_habeas_data')![0]}
             </p>
           )}
+
+          {asistido && (
+            <CampoFormulario
+              id="consentimiento_asistido"
+              etiqueta="¿Cómo autorizó la persona?"
+              ayuda="La autorización la da el titular, no quien llena el formulario (Ley 1581). Queda registrado con tu correo."
+              requerido
+              errores={err('consentimiento_asistido')}
+            >
+              {(p) => (
+                <ChipsUnica
+                  {...p}
+                  name="consentimiento_asistido"
+                  opciones={OPCIONES_CONSTANCIA}
+                  valor={constancia}
+                  alCambiar={setConstancia}
+                  requerido
+                />
+              )}
+            </CampoFormulario>
+          )}
         </div>
       </Seccion>
 
       <BarraEnvio faltantes={faltantes} total={REQUISITOS.length} />
       </form>
-
-      <Link
-        href="/aliados"
-        className="mt-20 inline-block font-sans text-sm text-tinta/65 underline decoration-azul underline-offset-4 hover:text-azul-texto"
-      >
-        ← Volver al mapa
-      </Link>
     </>
   );
 }

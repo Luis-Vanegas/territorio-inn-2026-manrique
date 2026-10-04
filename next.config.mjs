@@ -182,6 +182,8 @@ const nextConfig = {
       { source: '/admin/:path*', destination: '/firmamento/equipo/:path*', permanent: false },
       { source: '/mi-cuenta', destination: '/firmamento/negocio', permanent: false },
       { source: '/mi-cuenta/clientes', destination: '/firmamento/negocio/clientes', permanent: false },
+      // El registro vive en Firmamento, con sesión: los enlaces viejos (WhatsApp, impresos) llegan ahí.
+      { source: '/aliados/registro', destination: '/firmamento/negocio/registro', permanent: false },
     ];
   },
   async headers() {

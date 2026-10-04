@@ -13,7 +13,7 @@ const BOTON =
 export function CtaAliado({ variante }: { variante: 'cabecera' | 'cierre' }) {
   if (variante === 'cabecera') {
     return (
-      <Link href="/aliados/registro" className={`${BOTON} mt-6`}>
+      <Link href="/firmamento/negocio/registro" className={`${BOTON} mt-6`}>
         Únete como aliado
         <span aria-hidden="true">→</span>
       </Link>
@@ -33,7 +33,7 @@ export function CtaAliado({ variante }: { variante: 'cabecera' | 'cierre' }) {
           Cuantos más negocios de Manrique se registren, más completo queda este cielo y más fácil es que
           lleguen apoyos a tu cuadra. Una persona del equipo revisa cada registro antes de publicarlo.
         </p>
-        <Link href="/aliados/registro" className={`${BOTON} mt-6`}>
+        <Link href="/firmamento/negocio/registro" className={`${BOTON} mt-6`}>
           Únete como aliado
           <span aria-hidden="true">→</span>
         </Link>
