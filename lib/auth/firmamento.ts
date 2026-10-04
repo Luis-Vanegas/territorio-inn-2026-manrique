@@ -56,7 +56,11 @@ export async function exigirNegocio(destino?: string): Promise<ContextoNegocio> 
 
 export async function exigirEquipo(): Promise<ContextoPanel> {
   const sesion = await verificarSesion();
-  if (!sesion) redirect('/firmamento/entrar?rol=equipo');
+  if (!sesion) {
+    // Entró con Google pero su cuenta no es de moderador: sin este aviso vuelve al
+    // login sin explicación y parece que los botones del equipo no funcionan.
+    redirect((await sesionActual()) ? '/firmamento/entrar?rol=equipo&error=sin_equipo' : '/firmamento/entrar?rol=equipo');
+  }
   return { rol: 'equipo', nombre: sesion.email, foto: null };
 }
 
