@@ -24,7 +24,7 @@ function useRutaPanel(rol: RolFirmamento) {
 }
 
 export function NavPanel({ rol, insignias = {} }: { rol: RolFirmamento; insignias?: Insignias }) {
-  const { pestanas, activa } = useRutaPanel(rol);
+  const { actual, pestanas } = useRutaPanel(rol);
   return (
     <BarraPestanas
       etiqueta="Secciones del panel"
@@ -34,7 +34,7 @@ export function NavPanel({ rol, insignias = {} }: { rol: RolFirmamento; insignia
         corta: p.corta,
         n: p.items.reduce((t, it) => t + (insignias[it.href] ?? 0), 0),
         unidad: p.items.length === 1 ? p.items[0]!.unidad : undefined,
-        activo: p === activa,
+        activo: p.items.includes(actual), // una página oculta (el registro) no marca ninguna
       }))}
     />
   );

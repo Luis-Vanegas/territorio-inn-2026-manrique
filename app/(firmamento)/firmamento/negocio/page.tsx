@@ -75,7 +75,7 @@ export default async function NegocioInicioPage({
       {registrado && (
         <p role="status" className="rounded-xl border border-azul/60 bg-hueso p-4 font-sans text-base text-tinta">
           <span aria-hidden="true" className="mr-2 text-azul-texto">✓</span>
-          Recibimos tu registro. En revisión: aún no se ve en Constelaciones.
+          Recibimos tu registro.
           {(foto === 'error' || menu === 'error') && ' No pudimos subir la foto o el menú: agrégalos desde «Mi ficha».'}
         </p>
       )}
