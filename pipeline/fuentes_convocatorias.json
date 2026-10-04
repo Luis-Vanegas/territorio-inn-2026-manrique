@@ -8,6 +8,14 @@
       "url": "https://www.fondoemprender.com/SitePages/FondoEmprenderConvocatoriasVigentes.aspx",
       "incluir": ["^convocatoria .*\\d"],
       "excluir": ["cerrada"]
+    },
+    {
+      "id": "bancoldex-noticias",
+      "nombre": "Bancóldex · noticias (líneas de crédito y convocatorias)",
+      "entidad": "Bancóldex",
+      "url": "https://www.bancoldex.com/es/noticias",
+      "incluir": ["l[ií]nea de cr[eé]dito", "convocatoria", "inscripciones"],
+      "excluir": ["premi", "estafa", "oficina", "presidente"]
     }
   ]
 }
