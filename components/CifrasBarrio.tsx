@@ -82,7 +82,7 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
 
         <Bloque titulo="Comercios por barrio" fuente={`${FUENTE_OSM} · ${fechaOsm}. Aliados: datos abiertos (k = 5) · ${fechaRed}`}>
           <BarrasCategoria
-            filas={d.barrios.map((b) => ({
+            filas={[...d.barrios].sort((a, b) => b.valor - a.valor).map((b) => ({
               id: b.barrio,
               nombre: b.barrio,
               valor: b.valor,

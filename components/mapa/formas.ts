@@ -56,6 +56,6 @@ export const ESTRELLA_VIEWBOX = '-1 -1 26 26';
  * menta se pierden sobre las teselas claras sin él.
  */
 export function svgEstrella(color: string, tamano: number): string {
-  const trazo = tamano >= 20 ? 1.5 : 2.2; // en unidades del viewBox: la chica necesita más para verse
+  const trazo = tamano >= 20 ? 1.2 : 1.6; // unidades del viewBox: la chica, un poco más para que el amarillo se vea
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="${ESTRELLA_VIEWBOX}" aria-hidden="true" focusable="false"><path d="${ESTRELLA_PATH}" fill="${color}" stroke="${CONTORNO}" stroke-width="${trazo}" stroke-linejoin="round"/></svg>`;
 }
