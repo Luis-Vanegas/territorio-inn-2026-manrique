@@ -72,13 +72,27 @@ export async function verificarSesion(): Promise<{ email: string } | null> {
   if (firma.length !== esperada.length) return null;
   if (!crypto.timingSafeEqual(Buffer.from(firma), Buffer.from(esperada))) return null;
 
+  let email: unknown;
   try {
     const data = JSON.parse(Buffer.from(payloadB64, 'base64url').toString());
     if (typeof data.exp !== 'number' || data.exp < Date.now()) return null;
-    return { email: data.email };
+    email = data.email;
   } catch {
     return null;
   }
+
+  // `sesion_usuario` se firma con el mismo secreto y formato: sin esto, la cookie
+  // de un vecino pegada como `admin_session` pasaba la firma (su payload no trae
+  // `email`). No se mira `activo`: los moderadores de Google tienen fila con
+  // `activo = false` hasta la migración 035, que trae la comprobación completa.
+  if (typeof email !== 'string' || !email) return null;
+  try {
+    const rows = await sql`select 1 from admins where email = ${email}`;
+    if (rows.length === 0) return null;
+  } catch {
+    return null;
+  }
+  return { email };
 }
 
 /**
