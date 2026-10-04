@@ -20,3 +20,12 @@ export function formatearNumero(valor: number, decimales = 0): string {
     maximumFractionDigits: decimales,
   });
 }
+
+/** «3 de octubre de 2026, 6:02 a. m.» en hora de Bogotá, para un instante ISO (una corrida del vigía). */
+export function fechaHoraBogota(iso: string): string {
+  return new Intl.DateTimeFormat('es-CO', {
+    dateStyle: 'long',
+    timeStyle: 'short',
+    timeZone: 'America/Bogota',
+  }).format(new Date(iso));
+}

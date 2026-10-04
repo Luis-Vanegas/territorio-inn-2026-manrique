@@ -10,7 +10,9 @@ import {
 } from '@/lib/db/convocatorias.repo';
 import { matrizAlcance } from '@/lib/db/equipo.repo';
 import { listarCategorias } from '@/lib/db/portafolios.repo';
+import { leerVigiaEquipo } from '@/lib/firmamento/vigia';
 import { FichaConvocatoria } from './_components/FichaConvocatoria';
+import { FuentesVigia } from './_components/FuentesVigia';
 
 export const metadata: Metadata = { title: 'Convocatorias' };
 
@@ -35,13 +37,18 @@ export default async function ConvocatoriasPage({
   const estadoActivo: EstadoConvocatoria =
     ESTADOS_CONVOCATORIA.find((e) => e === solicitado) ?? 'pendiente';
 
-  const [convocatorias, conteos, categorias, matriz] = await Promise.all([
+  const [convocatorias, conteos, categorias, matriz, vigia] = await Promise.all([
     listarConvocatorias(estadoActivo),
     contarConvocatoriasPorEstado(),
     listarCategorias(),
     // Solo alimenta el «llegaría a N aliados»: si falla, la cola sigue sin la cifra.
     matrizAlcance().catch((e) => {
       console.error('[equipo/convocatorias] alcance', e instanceof Error ? e.message : e);
+      return null;
+    }),
+    // Si falla (o la 036 aún no está aplicada), la tarjeta lo dice y la cola sigue.
+    leerVigiaEquipo().catch((e) => {
+      console.error('[equipo/convocatorias] vigía', e instanceof Error ? e.message : e);
       return null;
     }),
   ]);
@@ -61,6 +68,8 @@ export default async function ConvocatoriasPage({
         categorías y la formalidad que marques al aprobar. El texto viene de
         terceros: revisa el enlace antes de aprobar.
       </p>
+
+      <FuentesVigia vigia={vigia} />
 
       <PestanasEstado
         ruta="/firmamento/equipo/convocatorias"
