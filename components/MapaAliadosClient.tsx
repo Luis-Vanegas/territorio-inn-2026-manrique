@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Polygon, Popup, useMap } from 'react-leaflet';
+import { detenerMapa } from '@/components/mapa/detenerMapa';
 import L from 'leaflet';
 import type { GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
@@ -173,7 +174,7 @@ function Encuadre({ foco, animar }: { foco: L.LatLngBounds | null; animar: boole
     mapa.fitBounds(foco ?? LIMITES_COMUNA, { padding: [16, 16], maxZoom: ZOOM.seleccion, animate: !primero.current && animar });
     primero.current = false;
     return () => {
-      mapa.stop();
+      detenerMapa(mapa);
     };
   }, [mapa, foco, animar]);
 
@@ -215,7 +216,7 @@ function IrASeleccionado({
     }
     return () => {
       mapa.off('moveend', abrir);
-      mapa.stop(); // un vuelo en curso no debe seguir sobre un mapa desmontado
+      detenerMapa(mapa); // un vuelo en curso no debe seguir sobre un mapa desmontado
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seleccionado, mapa]);

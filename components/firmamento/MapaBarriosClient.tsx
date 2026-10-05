@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from 'react';
 import { GeoJSON, MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { detenerMapa } from '@/components/mapa/detenerMapa';
 import L from 'leaflet';
 import type { Feature, GeoJsonObject } from 'geojson';
 import 'leaflet/dist/leaflet.css';
@@ -39,7 +40,7 @@ function Encuadre() {
     mapa.on('resize', fijarMinimo);
     return () => {
       mapa.off('resize', fijarMinimo);
-      mapa.stop();
+      detenerMapa(mapa);
     };
   }, [mapa]);
   return null;
