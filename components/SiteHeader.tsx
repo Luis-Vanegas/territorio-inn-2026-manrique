@@ -51,8 +51,9 @@ const MODULOS_SUELTOS = enfoque.modulos
 type Entrada = { tipo: 'enlace'; href: string; etiqueta: string } | { tipo: 'aprende' };
 
 const ENTRADAS: Entrada[] = [
+  // Sin «Aliados»: el Inicio ya tiene el mapa, el buscador y la lista (Luis, 4-oct).
+  // /aliados sigue viva, enlazada desde «Ver los aliados en lista».
   { tipo: 'enlace', href: '/', etiqueta: 'Inicio' },
-  { tipo: 'enlace', href: '/aliados', etiqueta: 'Aliados' },
   ...MODULOS_SUELTOS.map((e) => ({ tipo: 'enlace' as const, ...e })),
   { tipo: 'aprende' },
   { tipo: 'enlace', href: '/nosotros', etiqueta: 'Nosotros' },
