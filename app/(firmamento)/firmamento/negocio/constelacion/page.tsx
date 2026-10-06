@@ -8,20 +8,13 @@ import { exigirNegocio } from '@/lib/auth/firmamento';
 import { enlaceWhatsapp } from '@/lib/contacto';
 import { listarAprobados, obtenerPropio, type Portafolio } from '@/lib/db/portafolios.repo';
 import { posiblesAlianzas } from '@/lib/firmamento/alianzas';
+import { datosOsm, entornoDeNegocio } from '@/lib/firmamento/entorno';
 import { negocioActivo } from '@/lib/firmamento/negocio';
 import { fechaHoyBogota, formatearNumero } from '@/lib/formato';
-import { fechaLarga, type DatosConstelaciones } from '@/lib/geo/constelaciones';
-import {
-  constelacionDe,
-  etiquetaConstelacion,
-  lineaMezcla,
-  vecinosDeConstelacion,
-} from '@/lib/geo/comerciosOsm';
-import { distanciaMetros, formatearDistancia } from '@/lib/geo/distancia';
+import { fechaLarga } from '@/lib/geo/constelaciones';
+import { etiquetaConstelacion, lineaMezcla } from '@/lib/geo/comerciosOsm';
+import { formatearDistancia } from '@/lib/geo/distancia';
 import { urlSitio } from '@/lib/sitio';
-// Import estático: solo viaja en el bundle del SERVIDOR (cuenta qué hay cerca).
-// El navegador sigue pidiendo el JSON por fetch para dibujar la capa del mapa.
-import datosOsmJson from '@/public/firmamento/constelaciones.json';
 import { Invitar } from '../_components/Invitar';
 import { ListaVecinos, type Vecino } from '../_components/ListaVecinos';
 import { SelectorNegocio } from '../_components/SelectorNegocio';
@@ -30,11 +23,6 @@ import { SinNegocio } from '../_components/SinNegocio';
 export const metadata: Metadata = { title: 'Mi constelación' };
 
 export const dynamic = 'force-dynamic';
-
-const datosOsm = datosOsmJson as unknown as DatosConstelaciones;
-
-/** Hasta dónde se considera «cerca» un aliado de la plataforma. */
-const METROS_ALIADOS_CERCA = 1500;
 
 export default async function NegocioConstelacionPage() {
   const { usuarioId, nombre } = await exigirNegocio();
@@ -58,26 +46,21 @@ export default async function NegocioConstelacionPage() {
   // El mensaje de «cómo conectarme»: va ya escrito en el enlace de WhatsApp de cada aliado cercano.
   const mensajeAlianza = `Hola, soy ${primerNombre}, de ${portafolio.nombre}. Estamos cerca en Manrique y creo que podemos ayudarnos a que más vecinos nos encuentren. ¿Hablamos?`;
 
-  const punto = { lat: portafolio.latitud, lon: portafolio.longitud };
-  const constelacion = constelacionDe(punto, datosOsm.constelaciones);
-  const vecinosOsm = vecinosDeConstelacion(punto, datosOsm, Number.MAX_SAFE_INTEGER, portafolio.nombre);
+  const entorno = entornoDeNegocio(portafolio, aprobados);
+  const { constelacion, enElMapa } = entorno;
 
   // Aliados de la plataforma a la redonda: no son de OSM, son de la vitrina.
-  const aliadosCerca: Vecino[] = aprobados
-    .filter((a) => a.id !== portafolio.id)
-    .map((a) => ({
-      clave: `aliado-${a.id}`,
-      nombre: a.nombre,
-      categoria: a.categoria_id,
-      metros: distanciaMetros([punto.lat, punto.lon], [a.latitud, a.longitud]),
-      esAliado: true,
-      direccion: a.direccion,
-      contacto: a.whatsapp ? `${enlaceWhatsapp(a.whatsapp)}?text=${encodeURIComponent(mensajeAlianza)}` : null,
-    }))
-    .filter((a) => a.metros <= METROS_ALIADOS_CERCA)
-    .sort((a, b) => a.metros - b.metros);
+  const aliadosCerca: Vecino[] = entorno.aliadosCerca.map(({ aliado: a, metros }) => ({
+    clave: `aliado-${a.id}`,
+    nombre: a.nombre,
+    categoria: a.categoria_id,
+    metros,
+    esAliado: true,
+    direccion: a.direccion,
+    contacto: a.whatsapp ? `${enlaceWhatsapp(a.whatsapp)}?text=${encodeURIComponent(mensajeAlianza)}` : null,
+  }));
 
-  const comerciosCerca: Vecino[] = (vecinosOsm?.comercios ?? []).map(({ comercio, metros }) => ({
+  const comerciosCerca: Vecino[] = entorno.comerciosCerca.map(({ comercio, metros }) => ({
     clave: `osm-${comercio.osm}`,
     nombre: comercio.nombre ?? 'Comercio sin nombre',
     categoria: comercio.categoria,
@@ -94,28 +77,7 @@ export default async function NegocioConstelacionPage() {
   );
 
   // Sin constelación: decir cuál es la más cercana y a cuánto, no inventar una.
-  const masCercana = constelacion
-    ? null
-    : datosOsm.constelaciones
-        .map((c) => ({ c, metros: distanciaMetros([punto.lat, punto.lon], [c.centroide.lat, c.centroide.lon]) }))
-        .sort((a, b) => a.metros - b.metros)[0] ?? null;
-
-  // El mapa recibe a los aliados publicados y al propio negocio (aunque aún no esté
-  // publicado), sin su WhatsApp: no tiene sentido ofrecerse a sí mismo un enlace
-  // que además contaría como un contacto en sus propios números.
-  const {
-    estado: _estado,
-    motivo_rechazo: _motivo,
-    moderado_por: _moderadoPor,
-    moderado_en: _moderadoEn,
-    foto_blob_pathname: _fotoBlob,
-    menu_blob_pathname: _menuBlob,
-    ...propioPublico
-  } = portafolio;
-  const enElMapa: Portafolio[] = [
-    ...aprobados.filter((a) => a.id !== portafolio.id),
-    { ...propioPublico, whatsapp: null },
-  ];
+  const masCercana = constelacion ? null : (entorno.cercanas[0] ?? null);
 
   const mensajeInvitar = `Hola, soy ${primerNombre}, de ${portafolio.nombre}. Estamos en Constelaciones, el mapa de los negocios de Manrique, y me encantaría verte ahí. Registra el tuyo gratis aquí: ${urlSitio()}/firmamento/negocio/registro`;
 
@@ -140,7 +102,7 @@ export default async function NegocioConstelacionPage() {
               Tu negocio queda lejos de todos los grupos
               {masCercana && (
                 <>
-                  {' '}(el más cercano, {masCercana.c.codigo ?? 'otro'}, está a{' '}
+                  {' '}(el más cercano, {masCercana.constelacion.codigo ?? 'otro'}, está a{' '}
                   <span className="tabular-nums">{formatearDistancia(masCercana.metros)}</span>)
                 </>
               )}
@@ -211,6 +173,7 @@ export default async function NegocioConstelacionPage() {
           <Tarjeta
             titulo="Aliados cerca de ti"
             id="aliados-cerca"
+            ancla="lista-aliados-cerca"
             plegable
             resumen={`${aliadosCerca.length} a menos de 1,5 km`}
           >

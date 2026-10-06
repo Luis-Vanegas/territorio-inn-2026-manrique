@@ -339,7 +339,12 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   existe: el destino tras Google es `/firmamento/negocio`. `/entrar` ya no existe: redirige a
   `/firmamento/entrar` (una sola puerta; el enlace personal `/aliados/estado/<token>` sigue
   funcionando solo). `constelaciones.json` también se importa en el servidor en
-  `negocio/constelacion/page.tsx`.
+  `lib/firmamento/entorno.ts` (`server-only`): `entornoDeNegocio(portafolio, aprobados)` es la ÚNICA
+  cuenta de «qué hay cerca» de un negocio (su constelación o la más cercana, aliados aprobados a menos de
+  1,5 km, comercios de OSM de su grupo, constelaciones cercanas y lo que se dibuja: aprobados + el propio
+  sin WhatsApp). La usan «Dónde estás» del inicio (`negocio/_components/DondeEstas.tsx`: `MapaAliados`
+  acercado al punto con `seleccionado`, texto con las mismas cifras y botón a «Mi constelación») y
+  `negocio/constelacion/page.tsx`; no recalcules eso en una página.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
   `token_publico` — para quien registramos en campo y no maneja tecnología.
@@ -474,8 +479,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   importan en el servidor: `app/(site)/aliados/page.tsx` (conteos del filtro de
   categorías con `unirCategorias`: aliados + comercios de OSM, así se puede filtrar
   por cualquier negocio del mapa aunque no tenga aliados), `app/(site)/firmamento/datos.ts` (inicio y
-  panel de entidad) y
-  `lib/firmamento/territorio.ts` (panel del equipo; `server-only`).
+  panel de entidad),
+  `lib/firmamento/territorio.ts` (panel del equipo; `server-only`) y `lib/firmamento/entorno.ts`
+  (panel del negocio; `server-only`).
 - **Firmamento con sesión (puerta y paneles, de día)**: `app/(firmamento)/firmamento/layout.tsx` monta el `SiteHeader`; `PanelShell` arma encabezado del panel + menú lateral (`lib/firmamento/navegacion.ts`: `NAV` por rol, el equipo agrupa en `pestana` Hoy/Red/Datos/Guías y `gruposDe` los deriva). Piezas únicas, no escribas otras: `Tarjeta` (`components/firmamento/panel/Tarjeta.tsx`, variantes `tarjeta`/`seccion`, `plegable`; reemplazó a `ModuloDesplegable`), `Plegable` (`<details>` + framer, funciona sin JS), `Kpi` + `GrupoCifras` (una línea de fuente por grupo), `VentanaNoche` (marco para cifras y mapas; desde el 4-oct NO es de noche: los paneles van enteros con los colores del tema), `BarraPestanas`/`SubPestanas` (`panel/Pestanas.tsx`, para vistas `?vista=` dentro de una página). Estas piezas escriben `hueso`/`tinta` y usan variantes `[.modo-noche_&]:` para la noche: dentro de una `VentanaNoche` cambian solas. Nada de tokens de noche (`estrella`, `tenue`, `noche-2`…) fijos en piezas que se usan en paneles: escribí `tinta`/`tinta/70`, que `.modo-noche` redefine. Paneles de negocio y entidad: cada pantalla es una pila de `Tarjeta` (plegables lo que no se mira a diario); `ListaConvocatorias` es una lista de filas dentro de una `Tarjeta`, no una tarjeta por convocatoria. «Cambios en tu ficha» (`negocio/_components/CambiosFicha.tsx`) lee `listarBitacora({ portafolioId })` solo con un id que ya pasó por `obtenerPropio`, muestra "El equipo" (nunca el correo de quien moderó) y nombres de campos, nunca valores; al formulario de edición no viaja `moderado_por`.
 - **Visualizaciones de Firmamento** (`components/firmamento/`): una sola pieza por cosa,
   no se copian. `BarrasCategoria` es la ÚNICA barra horizontal (forma del grupo, celda
