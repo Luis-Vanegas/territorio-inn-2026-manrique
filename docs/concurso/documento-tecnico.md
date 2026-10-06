@@ -67,7 +67,7 @@ puede usar; no dice que se haya medido su efecto (ver sección 7).
 | Guías de Marca y de Ventas para los aliados; «Mis clientes» (CRM mínimo con nombre, teléfono y nota) | Implementado en el repositorio | `AGENTS.md`; `lib/content.ts` |
 | Analítica agregada sin cookies: visitas por día y vistas y contactos por negocio y día; sin IP, sin recorridos | En producción | `docs/analitica.md` |
 | Validación geográfica del punto contra el polígono de la comuna | En producción | `docs/analitica.md`, «Seguridad del sitio» |
-| Pipeline de datos (OpenStreetMap, agrupamiento HDBSCAN, clasificador de categoría) | Ejecutado el 2 de octubre de 2026; salidas y métricas reproducibles. Sus salidas (`constelaciones.json` y el modelo del sugeridor) ya se sirven desde el sitio | `pipeline/README.md`; `pipeline/reporte_modelo.md`; `public/firmamento/` |
+| Pipeline de datos (OpenStreetMap, agrupamiento HDBSCAN, clasificador de categoría) | Ejecutado el 2 de octubre de 2026; clasificador reentrenado el 6 de octubre con 13 categorías; salidas y métricas reproducibles. Sus salidas (`constelaciones.json` y el modelo del sugeridor) ya se sirven desde el sitio | `pipeline/README.md`; `pipeline/reporte_modelo.md`; `public/firmamento/` |
 | `/firmamento`: tablero público de datos (secciones α a η) y mapa estelar con las constelaciones sobre OpenStreetMap | En producción | `app/(site)/firmamento/page.tsx`; `AGENTS.md`, patrón «`/firmamento`» |
 | Sugeridor de categoría en el formulario de registro (corre en el navegador; solo viajan la categoría inferida y su confianza, nunca el texto escrito) | En producción | `AGENTS.md`, patrón «Sugeridor de categoría» |
 | `/api/datos`: agregados de negocios aprobados con supresión de celdas pequeñas (k = 5) | En producción | `AGENTS.md`, patrón «Datos abiertos y regla k = 5»; `lib/db/datos.repo.ts` |
@@ -199,7 +199,8 @@ Cómo leer el cuadro:
 
 | Fuente | Qué aporta | Estado |
 |---|---|---|
-| OpenStreetMap por API Overpass (licencia ODbL) | Dos consultas. (1) Comercios con nombre del Valle de Aburrá (5.423, de los cuales 4.790 tienen categoría asignada y sirven para entrenamiento; el clasificador aprende de nombres, por eso exige `name`). (2) Establecimientos de la Comuna 3 con y sin nombre (320: 201 con nombre y 119 sin nombre), que alimentan las constelaciones | Script ejecutado el 2 de octubre de 2026 (`pipeline/01_osm_overpass.py`) en el servidor principal de Overpass. Snapshot del Valle: 2 de octubre de 2026, 04:40 UTC. Snapshot de la Comuna 3: 2 de octubre de 2026, 17:01 UTC. Cifras de corridas anteriores, que no deben leerse como vigentes: 205 con nombre (snapshot de la mañana del 2 de octubre, antes de contar los locales sin nombre) y 192 (espejo con snapshot del 6 de mayo de 2026). Las diferencias son de la base de OpenStreetMap y del criterio de conteo, no de crecimiento del comercio. Una descarga posterior puede dar otro número |
+| OpenStreetMap por API Overpass (licencia ODbL) | Dos consultas. (1) Comercios con nombre del Valle de Aburrá (5.423, de los cuales 4.796 tienen categoría asignada y sirven para entrenamiento; el clasificador aprende de nombres, por eso exige `name`). (2) Establecimientos de la Comuna 3 con y sin nombre (320: 201 con nombre y 119 sin nombre), que alimentan las constelaciones | Script ejecutado el 2 de octubre de 2026 (`pipeline/01_osm_overpass.py`) en el servidor principal de Overpass. Snapshot del Valle: 2 de octubre de 2026, 04:40 UTC. Snapshot de la Comuna 3: 2 de octubre de 2026, 17:01 UTC. Cifras de corridas anteriores, que no deben leerse como vigentes: 205 con nombre (snapshot de la mañana del 2 de octubre, antes de contar los locales sin nombre) y 192 (espejo con snapshot del 6 de mayo de 2026). Las diferencias son de la base de OpenStreetMap y del criterio de conteo, no de crecimiento del comercio. Una descarga posterior puede dar otro número |
+| OpenStreetMap por API Overpass (licencia ODbL): ampliación de Colombia | 469 comercios con nombre de toda Colombia de clases con pocos ejemplos en el Valle, casi todos de «Diseño, publicidad e impresiones» (etiquetas `copyshop`, `printing`, `signmaker`, `printer`, `advertising_agency` y `graphic_design`). Se usan solo para entrenar el clasificador, nunca en la evaluación; se descartan los nombres que ya están en el Valle | Script ejecutado el 6 de octubre de 2026 (`pipeline/06_ampliacion_clases.py`) en el servidor principal de Overpass. Snapshot: 6 de octubre de 2026, 16:53 UTC (`pipeline/datos/osm_meta_ampliacion_2026-10-06.json`) |
 | DANE, EMICRON 2025: boletines y anexos | Contexto de micronegocios en 24 ciudades | Disponible |
 | Estructura Empresarial 2025 de la Cámara de Comercio | Empresas registradas en Manrique (2.626), por tamaño y por sector | Leída del archivo original el 1 de octubre de 2026; ver Anexo A |
 | Exportación CSV del panel de moderación | Datos propios agregables de la red | En producción |
@@ -220,11 +221,16 @@ en cada archivo de salida).
   descripción, si existe).
 - **Datos de entrenamiento:** comercios con nombre del Valle de Aburrá en OpenStreetMap, sin
   duplicados, con la etiqueta de OpenStreetMap traducida a las categorías del sitio. Tamaño de
-  la muestra: 5.423 comercios con nombre en el Valle de Aburrá, de los cuales 4.790 (4.056 nombres
-  distintos) tienen una categoría del sitio asignada y se usan; 633 se descartan por no tener
-  etiqueta traducible. La clase más grande es «comidas» (1.696) y la más pequeña «barbería» (13).
-  Fuente: OpenStreetMap (OpenStreetMap contributors, 2026), snapshot del 2 de octubre de 2026,
-  licencia ODbL.
+  la muestra: 5.423 comercios con nombre en el Valle de Aburrá, de los cuales 4.796 (4.062 nombres
+  distintos) tienen una de las 13 categorías que cubre el modelo y se usan; 627 se descartan por no
+  tener etiqueta traducible. La clase más grande es «comidas» (1.696) y las más pequeñas «Diseño,
+  publicidad e impresiones» (16) y «barbería» (13). Fuente: OpenStreetMap (OpenStreetMap
+  contributors, 2026), snapshot del 2 de octubre de 2026, licencia ODbL.
+- **Ampliación de una clase escasa:** con 16 ejemplos en el Valle, «Diseño, publicidad e
+  impresiones» no se podía aprender. Se sumaron al entrenamiento 469 comercios reales de
+  OpenStreetMap en Colombia con etiquetas de esa clase (snapshot del 6 de octubre de 2026,
+  licencia ODbL; `pipeline/06_ampliacion_clases.py`). Se usan solo para entrenar, nunca en la
+  evaluación, y se descartan los nombres que ya aparecen en el Valle.
 - **No se entrena con los registros propios de la red:** son pocos y el entrenamiento sería
   inestable. Los registros propios son donde se aplica el modelo; las correcciones de los
   moderadores se suman después a los datos de entrenamiento.
@@ -244,12 +250,12 @@ en cada archivo de salida).
 | Frecuencia ponderada de secuencias de 2 a 4 caracteres dentro de cada palabra (TF-IDF de n-gramas) | Variable derivada | Numérica dispersa | Calculada a partir de las anteriores | 1 |
 | Categoría del sitio | Salida (etiqueta) | Categórica, un grupo de categorías del sitio | En entrenamiento: etiqueta de OpenStreetMap traducida; en uso: elección final de la persona | 1 |
 | Probabilidad de la categoría | Salida | Numérica entre 0 y 1 | Calculada por el modelo | 1 |
-| Umbral de confianza | Parámetro de uso | Numérica | Diseño del producto: por debajo de 0,45 la interfaz pregunta y muestra las tres más probables. Es el umbral con el que se midió la corrida del 2 de octubre. **[PENDIENTE: confirmar si se mantiene tras medir el uso real y las correcciones de los moderadores]** | 1 |
+| Umbral de confianza | Parámetro de uso | Numérica | Diseño del producto: por debajo de 0,45 la interfaz pregunta y muestra las tres más probables. Es el umbral con el que se midió la corrida del 6 de octubre. **[PENDIENTE: confirmar si se mantiene tras medir el uso real y las correcciones de los moderadores]** | 1 |
 
 - **Técnica:** TF-IDF de n-gramas de caracteres de 2 a 4 con bordes de palabra (`char_wb`) más
   regresión logística (Pedregosa et al., 2011). El parámetro de regularización (C = 30) se eligió por
   validación cruzada de 4 pliegues, agrupada, solo sobre los datos de entrenamiento.
-- **Evaluación:** se reserva el 20 % de los comercios (959), estratificado por categoría y
+- **Evaluación:** se reserva el 20 % de los comercios del Valle (960), estratificado por categoría y
   **agrupado por nombre**: ningún nombre del conjunto de prueba aparece en el entrenamiento. Se
   agrupa porque en OpenStreetMap abundan las cadenas con el mismo nombre, y un reparto al azar
   inflaría el resultado. Se reporta F1 macro frente a dos líneas base y la matriz de confusión
@@ -257,17 +263,27 @@ en cada archivo de salida).
 
 | Modelo | F1 macro | Exactitud |
 |---|---|---|
-| TF-IDF `char_wb` 2-4 + regresión logística | **0,528** | 0,633 |
-| Línea base: siempre la clase mayoritaria | 0,044 | 0,355 |
-| Línea base: azar según las frecuencias de las clases | 0,074 | 0,198 |
+| TF-IDF `char_wb` 2-4 + regresión logística | **0,480** | 0,628 |
+| Línea base: siempre la clase mayoritaria | 0,040 | 0,353 |
+| Línea base: azar según las frecuencias de las clases | 0,069 | 0,207 |
+
+Fuente de las cifras: `pipeline/reporte_modelo.md`, corrida del 6 de octubre de 2026 (13 categorías).
 
 - **Lectura del resultado.** El modelo supera con holgura a las dos líneas base, pero un F1 macro
-  de 0,528 no es un modelo infalible: es un sugeridor que acierta bastante en algunas categorías y
-  poco en otras. Con el umbral de 0,45, el modelo sugiere **una sola categoría en el 84,6 %** de los
-  casos y acierta el 70,4 % de esas sugerencias; en el resto muestra tres opciones. La categoría
-  correcta está entre las **tres primeras en el 89,6 %** de los casos del conjunto de prueba.
-- **Prueba geográfica.** Entrenado sin ningún comercio de la Comuna 3 y probado en sus 173
-  comercios con categoría asignada, el F1 macro fue 0,636 (exactitud 0,705). Varias categorías
+  de 0,480 no es un modelo infalible: es un sugeridor que acierta bastante en algunas categorías y
+  poco en otras. Con el umbral de 0,45, el modelo sugiere **una sola categoría en el 85,2 %** de los
+  casos y acierta el 69,4 % de esas sugerencias; en el resto muestra tres opciones. La categoría
+  correcta está entre las **tres primeras en el 86,7 %** de los casos del conjunto de prueba.
+- **Por qué el F1 macro bajó de 0,528 a 0,480.** La corrida del 2 de octubre promediaba 12
+  categorías; esta promedia 13. La nueva, «Diseño, publicidad e impresiones», tiene solo 3
+  ejemplos en el conjunto de prueba del Valle: el modelo acierta 2 de ellos (recall 0,667), pero
+  también marca como diseño unos 35 nombres ambiguos de otras categorías (precisión 0,054), y su F1
+  de 0,100 arrastra el promedio. Antes de la ampliación con datos de Colombia esa categoría
+  sacaba 0. Las otras 12 categorías promedian 0,512 en esta corrida (cálculo propio a partir del
+  F1 por categoría del reporte); la mayor parte de la caída viene de la categoría nueva y una parte
+  menor, de las demás. La exactitud casi no cambia (0,633 antes, 0,628 ahora).
+- **Prueba geográfica.** Entrenado sin ningún comercio de la Comuna 3 y probado en sus 174
+  comercios con categoría asignada, el F1 macro fue 0,594 (exactitud 0,718). Varias categorías
   tienen entre 2 y 8 ejemplos en ese conjunto, por lo que se toma como orden de magnitud y no como
   cifra fina.
 - **Comparación con un modelo externo.** El reporte también compara con un modelo de referencia,
@@ -282,10 +298,11 @@ en cada archivo de salida).
 - **Uso previsto y límites:** sugiere; la persona y el moderador deciden. Puede equivocarse con
   nombres propios («Dulce Poema») y con categorías con pocos ejemplos, y aprendió de nombres de
   comercios en los que pesan las cadenas y el centro de la ciudad. Límites medidos por
-  categoría en el conjunto de prueba (F1): mejor en salud y bienestar (0,848), mascotas (0,769) y
-  comidas (0,719); peor en ropa y calzado (0,222) y papelería (0,238); papelería tiene precisión de
-  0,153 porque el modelo confunde con ella muchas tiendas de víveres (72 de 199 en el conjunto de
-  prueba). «Barbería» tiene solo 13 ejemplos y su F1 no es fiable. El modelo no cubre ocho categorías del sitio (modistería,
+  categoría en el conjunto de prueba (F1): mejor en salud y bienestar (0,873), mascotas (0,821) y
+  comidas (0,732); peor en diseño, publicidad e impresiones (0,100), papelería (0,210), tecnología
+  y celulares (0,258) y ropa y calzado (0,303); papelería tiene precisión de 0,133 porque el modelo
+  confunde con ella muchas tiendas de víveres (77 de 200 en el conjunto de prueba). «Barbería»
+  tiene solo 13 ejemplos (2 en el conjunto de prueba, ninguno acertado) y su F1 no es fiable. El modelo no cubre ocho categorías del sitio (modistería,
   reparación de electrodomésticos, transporte y domicilios, educación y cuidado infantil,
   fotografía y eventos, lavandería, reciclaje y otros) porque no tienen etiqueta fiable en
   OpenStreetMap.
@@ -295,10 +312,11 @@ en cada archivo de salida).
   (3) El modelo no se ha validado contra los registros propios de la red: hay 7, insuficientes
   para una métrica. [PENDIENTE: métrica de datos-ml, validación con registros propios cuando haya
   suficientes] (4) El modelo reentrenado sugiere con confianza alta algunos casos erróneos: por
-  ejemplo, «Misceláneo El Vecino» se clasificó como «comidas» con una probabilidad de 0,90. Por eso
-  el registro solo **sugiere** y la persona elige; una probabilidad alta no equivale a una
-  categoría correcta. (5) Frente a la corrida anterior, el modelo sugiere una sola categoría con
-  más frecuencia (84,6 % frente a 76,0 %) pero acierta menos en ellas (70,4 % frente a 73,8 %).
+  ejemplo, «Misceláneo El Vecino» se clasificó como «comidas» con una probabilidad de 0,74, por
+  encima del umbral. Por eso el registro solo **sugiere** y la persona elige; una probabilidad alta
+  no equivale a una categoría correcta. (5) Frente a la corrida del 2 de octubre (12 categorías), el
+  modelo sugiere una sola categoría con un poco más de frecuencia (85,2 % frente a 84,6 %) y acierta
+  un poco menos en ellas (69,4 % frente a 70,4 %).
 - **Reentrenamiento:** periódico (propuesta: cada trimestre o cada cien correcciones de moderador),
   sumando las correcciones propias a los datos de OpenStreetMap. El reentrenamiento a partir de las
   decisiones del equipo en la moderación está **en implementación**, como también la vista del F1
@@ -445,7 +463,7 @@ predicciones.
 | La visibilidad llega a quien tiene menos acceso | Proporción de aliados informales | [PENDIENTE: línea base de formalidad declarada] | Al menos 40 % de los aliados, **con definición de «informal» fijada en la fase 1** | Formalidad declarada, agregada con k = 5 |
 | Registros asistidos efectivos | Aliados con origen «asistido» y consentimiento verificable | [PENDIENTE: el dato está en la base, pero no sale en `/api/datos`] | [COMPLETAR: meta; se propone derivarla del 40 % de informales] | Origen de registro (componente 7) |
 | Información confiable | Fichas con categoría y barrio confirmados | [PENDIENTE: línea base al día de la entrega; el barrio oficial ya se calcula y se guarda en cada ficha, y el panel del equipo marca las que quedan fuera de la comuna o en «Otros»] | 95 % de las fichas | Fichas con categoría y barrio oficial confirmados ÷ aprobadas |
-| El sugeridor ayuda y no estorba | Proporción de sugerencias aceptadas y corregidas por las personas | [PENDIENTE: métrica de datos-ml; el sugeridor ya está en el formulario y guarda si la persona aceptó la sugerencia, pero aún no hay registros suficientes para una tasa. Referencia de laboratorio, no de uso: el modelo acierta 70,4 % de las sugerencias únicas sobre datos de OpenStreetMap] | [COMPLETAR: meta, tras medir el uso inicial] | Registro de sugerencias y de la categoría final elegida |
+| El sugeridor ayuda y no estorba | Proporción de sugerencias aceptadas y corregidas por las personas | [PENDIENTE: métrica de datos-ml; el sugeridor ya está en el formulario y guarda si la persona aceptó la sugerencia, pero aún no hay registros suficientes para una tasa. Referencia de laboratorio, no de uso: el modelo acierta 69,4 % de las sugerencias únicas sobre datos de OpenStreetMap] | [COMPLETAR: meta, tras medir el uso inicial] | Registro de sugerencias y de la categoría final elegida |
 | La oferta de apoyo llega | Aliados conectados con al menos una convocatoria que les aplica | [PENDIENTE: número de convocatorias aprobadas y de aliados con al menos una que les aplica, el día de la entrega; «Para ti» ya existe, y el vigía todavía no corre solo] | 30 % de los aliados | Convocatorias aprobadas y vistas desde «Para ti» (componente 12) |
 | Diálogo con el territorio | Negocios entrevistados | 0 al inicio del piloto | 30 negocios | Registro del equipo |
 | Formación | Talleres realizados | 0 al inicio del piloto | 6 talleres | Registro del equipo |
@@ -474,7 +492,7 @@ ingreso.
 | Riesgo | A quién afecta | Mitigación |
 |---|---|---|
 | OpenStreetMap ve más lo formal y lo que está sobre vías principales; su cobertura es parcial (320 establecimientos mapeados, 201 de ellos con nombre, frente a 2.626 empresas en el registro mercantil, dos cifras que no son comparables como porcentaje). Proporción de locales de la comuna ubicados en la mitad norte del recuadro: [PENDIENTE: métrica de datos-ml, el pipeline aún no la calcula] | Si el mapa abierto orienta dónde se trabaja, quedan por fuera los negocios en casa de la ladera alta | Censo de campo con registro asistido en los barrios con menos puntos; meta explícita de inclusión de informales (al menos 40 %) |
-| El clasificador aprendió de nombres de comercios del Valle de Aburrá, muchos de cadenas y del centro; sus etiquetas vienen de OpenStreetMap sin revisión manual y no se ha validado con registros propios | Negocios con nombre propio o de categorías con pocos ejemplos (por ejemplo, barbería, con 13). Además, a veces sugiere con confianza alta una categoría errónea (por ejemplo, «Misceláneo El Vecino» como «comidas», con 0,90) | Umbral de confianza: por debajo, el sistema pregunta en lugar de sugerir; el modelo solo sugiere, y la persona y el moderador deciden; cada corrección reentrena con datos de Manrique |
+| El clasificador aprendió de nombres de comercios del Valle de Aburrá, muchos de cadenas y del centro; sus etiquetas vienen de OpenStreetMap sin revisión manual y no se ha validado con registros propios | Negocios con nombre propio o de categorías con pocos ejemplos (por ejemplo, barbería, con 13). Además, a veces sugiere con confianza alta una categoría errónea (por ejemplo, «Misceláneo El Vecino» como «comidas», con 0,74) | Umbral de confianza: por debajo, el sistema pregunta en lugar de sugerir; el modelo solo sugiere, y la persona y el moderador deciden; cada corrección reentrena con datos de Manrique |
 | La descripción libre de OpenStreetMap puede contener datos que identifican a una persona | Titulares de los comercios mapeados | La descripción no se publica ni sale en las constelaciones; solo se muestran dirección, horario, tipo de cocina y web cuando OpenStreetMap los trae; el pipeline no conserva teléfonos, contactos ni correos |
 | El registro mercantil solo ve lo formal: en las 24 ciudades que mide el DANE, 13,0 % de los micronegocios tiene registro en Cámara de Comercio (DANE, 2026). Esa cifra no es de Manrique y no se usa para estimar cuántos negocios informales hay en la comuna | Medir la cobertura contra la Cámara invisibilizaría a la mayoría | La cobertura se mide contra lo observado en campo y en el mapa abierto, no contra la Cámara; las 2.626 empresas registradas se muestran como una mirada más, no como el universo |
 | Los proveedores de lenguaje del asesor reciben la ficha del negocio | Titulares de datos, que no han sido informados de ese tratamiento (Ley 1581 de 2012) | La política de datos ya nombra a los proveedores y los datos que reciben, y la versión de términos subió a `2026-10-v5` (implementado en el repositorio; [PENDIENTE: confirmar el despliegue]). El asesor solo funciona con sesión; no se envían respuestas de investigación a proveedores que entrenan con lo recibido |
@@ -577,7 +595,7 @@ boletín del DANE del 30 de julio de 2026.]**
 | Empresas de Manrique por tamaño según activos | 2.569 microempresas (97,8 %), 51 pequeñas, 4 medianas, 2 grandes (Tabla 14) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
 | Empresas de Manrique por sector (seis mayores) | Comercio 1.091; industria manufacturera 309; alojamiento y comida 288; construcción 216; otras actividades de servicios 149; actividades profesionales, científicas y técnicas 130 (Tabla 16) | Cámara de Comercio de Medellín para Antioquia (2025); leída del archivo original | 1 de octubre de 2026 |
 | Barrios oficiales de la Comuna 3 | 15 | Alcaldía de Medellín (2000), Decreto 346 de 2000, y geocatálogo de la Alcaldía (s. f.). Polígonos usados para calcular el barrio: Alcaldía de Medellín, archivo entregado al equipo (2026), recortado el 2 de octubre de 2026 | 1 de octubre de 2026 (número de barrios); 2 de octubre de 2026 (polígonos) |
-| Establecimientos mapeados en OpenStreetMap | 5.423 comercios con nombre en el Valle de Aburrá (snapshot 04:40 UTC); 320 en la Comuna 3, 201 con nombre y 119 sin nombre (snapshot 17:01 UTC). Ambos del 2 de octubre de 2026, servidor principal de Overpass | OpenStreetMap contributors (2026), licencia ODbL; `pipeline/README.md` y `pipeline/reporte_modelo.md` | Corrida del 2 de octubre de 2026 |
+| Establecimientos mapeados en OpenStreetMap | 5.423 comercios con nombre en el Valle de Aburrá (snapshot 04:40 UTC); 320 en la Comuna 3, 201 con nombre y 119 sin nombre (snapshot 17:01 UTC). Ambos del 2 de octubre de 2026, servidor principal de Overpass. Además, 469 comercios de Colombia de clases escasas, solo para entrenar el clasificador (snapshot del 6 de octubre de 2026, 16:53 UTC) | OpenStreetMap contributors (2026), licencia ODbL; `pipeline/README.md`, `pipeline/reporte_modelo.md` y `pipeline/datos/osm_meta_ampliacion_2026-10-06.json` | Corridas del 2 y del 6 de octubre de 2026 |
 | Mandato local | Línea 4 Económica: «red estratégica con los pequeños comerciantes» (PDL Comuna 3, p. 114) | Alcaldía de Medellín (s. f.) | 1 de octubre de 2026 |
 
 Notas sobre las cifras:
@@ -651,7 +669,7 @@ McInnes, L., Healy, J., & Astels, S. (2017). hdbscan: Hierarchical density based
 *Journal of Open Source Software, 2*(11), 205. https://doi.org/10.21105/joss.00205
 
 OpenStreetMap contributors. (2026). *OpenStreetMap* [Base de datos geográfica abierta, licencia
-Open Database License 1.0; snapshots del 2 de octubre de 2026 (04:40 UTC para el Valle de Aburrá y 17:01 UTC para la Comuna 3) obtenidos ese día del servidor principal de la API Overpass]. https://www.openstreetmap.org/copyright
+Open Database License 1.0; snapshots del 2 de octubre de 2026 (04:40 UTC para el Valle de Aburrá y 17:01 UTC para la Comuna 3) y del 6 de octubre de 2026 (16:53 UTC, comercios de Colombia de clases escasas) obtenidos del servidor principal de la API Overpass]. https://www.openstreetmap.org/copyright
 
 Pacheco Duarte, J. F., Galindo Gómez, S. F., & Rodríguez Pupo, S. (2022). *Ruta de innovación
 social: Paso a paso para desarrollar innovaciones sociales* (Documento técnico 02). Corporación
