@@ -355,7 +355,7 @@ Aplica en la portada y en `/aliados` (`components/MapaAliados.tsx`).
 - **Cada negocio es una estrella** de cuatro puntas del color de su grupo, con
   contorno `noche` (`svgEstrella`, `components/mapa/formas.ts`). **Aliado**: grande,
   28 px, opaco y con borde fino del color de la tinta. **Comercio de OpenStreetMap**:
-  tenue (~55 % de opacidad, sin borde grueso), 12 px si está en una constelación y
+  tenue (~75 % de opacidad, halo de su color, sin borde grueso), 12 px si está en una constelación y
   9 px si está suelto, debajo de los aliados. Caja táctil de 44 en todas. El mapeo
   categoría → grupo vive en un solo lugar, `lib/categorias/grupos.ts`. Los comercios
   de OSM **no son aliados**: se distinguen por el tamaño y la opacidad, y el texto habla de «comercios»,
