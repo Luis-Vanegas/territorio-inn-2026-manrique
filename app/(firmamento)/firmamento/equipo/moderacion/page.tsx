@@ -176,48 +176,71 @@ export default async function ModeracionPage({
           el del punto, la categoría «Otros» y fichas sin foto o sin WhatsApp. Al
           corregir la ficha, la alerta desaparece.
         </p>
-        <Tarjeta titulo="Alertas de calidad" id="titulo-alertas" className="mt-6">
-          {alertas.length === 0 ? (
+        {alertas.length === 0 ? (
+          <Tarjeta titulo="Alertas de calidad" id="titulo-alertas" className="mt-6">
             <p className="font-sans text-sm text-tinta/70">Ninguna ficha tiene alertas.</p>
-          ) : (
-            <ul className="flex flex-col">
-              {alertas.map((a) => (
-                <li
-                  key={`${a.ficha.id}-${a.tipo}`}
-                  className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 border-t border-tinta/12 py-3 first:border-t-0 first:pt-0"
-                >
-                  <div className="min-w-0 flex-1 basis-72">
-                    <p className="font-sans text-base font-medium text-tinta">
-                      {a.ficha.nombre}{' '}
-                      <span className="ml-1 inline-block border border-tinta/30 px-2 py-0.5 align-middle font-sans text-xs font-normal text-tinta/70">
-                        {TITULO_ALERTA[a.tipo]}
+          </Tarjeta>
+        ) : (
+          <section aria-label="Lista de alertas de calidad" className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-2">
+            {alertas.map((a) => (
+              <article
+                key={`${a.ficha.id}-${a.tipo}`}
+                className="flex flex-col justify-between rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6"
+              >
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full border border-tinta/15 bg-tinta/5 px-2.5 py-0.5 font-sans text-xs font-medium text-tinta/80">
+                      {TITULO_ALERTA[a.tipo]}
+                    </span>
+                    {a.ficha.barrio && (
+                      <span className="rounded-full bg-tinta/5 px-2.5 py-0.5 font-sans text-xs text-tinta/70">
+                        {a.ficha.barrio}
                       </span>
-                      {a.ficha.estado === 'pendiente' && (
-                        <span className="ml-1 inline-block border border-tinta/30 px-2 py-0.5 align-middle font-sans text-xs font-normal text-tinta/70">
-                          Por revisar
-                        </span>
-                      )}
-                    </p>
-                    <p className="mt-1 font-sans text-sm leading-relaxed text-tinta/70">{a.texto}</p>
-                    {a.textoParaSugerir && (
-                      <SugeridorModeracion
-                        portafolioId={a.ficha.id}
-                        texto={a.textoParaSugerir}
-                        actual={otros}
-                        categorias={categorias}
-                        revisada={revisadas.has(a.ficha.id)}
-                      />
                     )}
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 font-sans text-xs font-medium ${
+                        a.ficha.estado === 'pendiente' ? 'bg-amarillo text-noche' : 'bg-tinta/5 text-tinta/70'
+                      }`}
+                    >
+                      {a.ficha.estado === 'pendiente' ? 'Por revisar' : 'Publicado'}
+                    </span>
                   </div>
-                  <Link href={enlaceFicha(a.ficha.id)} className={CLASE_BOTON_PANEL}>
-                    {a.ficha.estado === 'aprobado' ? 'Corregir la ficha' : 'Ver la ficha'}
+
+                  <h3 className="mt-3 font-display text-xl font-medium leading-snug text-tinta">
+                    {a.ficha.nombre}
+                  </h3>
+
+                  <p className="mt-1.5 font-sans text-sm leading-relaxed text-tinta/75">
+                    {a.texto}
+                  </p>
+
+                  {a.textoParaSugerir && (
+                    <SugeridorModeracion
+                      portafolioId={a.ficha.id}
+                      texto={a.textoParaSugerir}
+                      actual={otros}
+                      categorias={categorias}
+                      revisada={revisadas.has(a.ficha.id)}
+                    />
+                  )}
+                </div>
+
+                <div className="mt-5 flex items-center justify-between border-t border-tinta/10 pt-4">
+                  <span className="font-sans text-xs text-tinta/60">
+                    {a.ficha.estado === 'aprobado' ? 'Ficha activa en el mapa' : 'En espera de aprobación'}
+                  </span>
+                  <Link
+                    href={enlaceFicha(a.ficha.id)}
+                    className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-tinta/30 px-3.5 py-1.5 font-sans text-xs font-medium text-tinta transition-colors hover:border-tinta/60 hover:bg-tinta/5"
+                  >
+                    {a.ficha.estado === 'aprobado' ? 'Corregir la ficha' : 'Ver la ficha'} →
                     <span className="sr-only"> {a.ficha.nombre}</span>
                   </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Tarjeta>
+                </div>
+              </article>
+            ))}
+          </section>
+        )}
       </div>
     );
   }

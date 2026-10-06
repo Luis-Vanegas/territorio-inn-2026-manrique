@@ -97,6 +97,7 @@ export function TarjetaEmprendimiento({
   activo,
   datosOsm,
   vistaPrevia = false,
+  angosta = false,
 }: {
   portafolio: Portafolio;
   indice: number;
@@ -109,6 +110,8 @@ export function TarjetaEmprendimiento({
   datosOsm?: Pick<DatosConstelaciones, 'constelaciones'> | null;
   /** La misma tarjeta en «Así te verán en Constelaciones» (Firmamento): sin ancla ni conteo de toques. */
   vistaPrevia?: boolean;
+  /** En una columna estrecha (la ficha al lado del mapa del inicio): una sola columna, foto arriba, sin numeral. */
+  angosta?: boolean;
 }) {
   const camposExtra = formatearCamposExtra(portafolio.campos_extra, definicionesCampos);
 
@@ -117,7 +120,9 @@ export function TarjetaEmprendimiento({
       id={vistaPrevia ? undefined : portafolio.id}
       // scroll-mt evita que el header fijo tape el título al saltar desde el mapa.
       className={[
-        'grid scroll-mt-24 grid-cols-1 gap-5 border-t py-8 transition-colors duration-500 sm:grid-cols-[auto_1fr] sm:gap-7',
+        angosta
+          ? 'grid grid-cols-1 gap-5 border-t py-5'
+          : 'grid scroll-mt-24 grid-cols-1 gap-5 border-t py-8 transition-colors duration-500 sm:grid-cols-[auto_1fr] sm:gap-7',
         activo
           ? 'border-azul bg-azul/[0.05]'
           : 'border-tinta/12',
@@ -125,14 +130,16 @@ export function TarjetaEmprendimiento({
     >
       {/* La numeración en mono es la convención del sitio: "lo medido" se
           separa de "lo narrado". Ver docs/decisiones-diseno.md. */}
-      <span
-        className="font-sans text-xs text-tinta/60 sm:pt-1"
-        aria-hidden="true"
-      >
-        {String(indice + 1).padStart(2, '0')}
-      </span>
+      {!angosta && (
+        <span
+          className="font-sans text-xs text-tinta/60 sm:pt-1"
+          aria-hidden="true"
+        >
+          {String(indice + 1).padStart(2, '0')}
+        </span>
+      )}
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-[1fr_auto] sm:gap-8">
+      <div className={angosta ? 'grid grid-cols-1 gap-5' : 'grid grid-cols-1 gap-5 sm:grid-cols-[1fr_auto] sm:gap-8'}>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="font-sans text-xs uppercase tracking-wider text-morado-texto">
@@ -216,13 +223,13 @@ export function TarjetaEmprendimiento({
           <FotoAmpliable
             src={portafolio.foto_url}
             alt={`Fotografía de ${portafolio.nombre}`}
-            className="group relative block aspect-[4/3] w-full overflow-hidden bg-tinta/5 sm:w-52"
+            className={`group relative block aspect-[4/3] w-full overflow-hidden bg-tinta/5 ${angosta ? 'order-first' : 'sm:w-52'}`}
           >
             <Image
               src={portafolio.foto_url}
               alt={`Fotografía de ${portafolio.nombre}`}
               fill
-              sizes="(max-width: 640px) 100vw, 208px"
+              sizes={angosta ? '(max-width: 1024px) 100vw, 400px' : '(max-width: 640px) 100vw, 208px'}
               className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
             />
           </FotoAmpliable>

@@ -74,6 +74,15 @@
   box-sizing: border-box;
 }
 
+/* Lista nativa de un <select>: Chrome en Windows pinta las opciones con el fondo
+   del select, y uno con bg-transparent la dejaba blanca con el texto crema del
+   tema oscuro (solo se leía la opción bajo el mouse). */
+option,
+optgroup {
+  background-color: rgb(var(--hueso-rgb));
+  color: rgb(var(--tinta-rgb));
+}
+
 html {
   scroll-behavior: smooth;
 }

@@ -41,6 +41,8 @@ const PARES: readonly (readonly [string, string])[] = [
   ['educacion_cuidado', 'papeleria'],
   ['educacion_cuidado', 'salud_bienestar'],
   ['reciclaje', 'construccion'],
+  ['diseno_publicidad', 'papeleria'],
+  ['diseno_publicidad', 'fotografia_eventos'],
 ];
 
 /** ¿Estos dos rubros se complementan? (en cualquier orden) */

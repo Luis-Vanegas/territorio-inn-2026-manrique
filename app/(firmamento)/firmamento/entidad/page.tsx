@@ -11,6 +11,7 @@ import { CAMARA_EMPRESAS, INFORMALIDAD, TERRITORIO, type CifraConFuente } from '
 import { fechaHoyBogota, formatearNumero as fmt } from '@/lib/formato';
 import { fechaLarga } from '@/lib/geo/constelaciones';
 import { CELDA_PEQUENA } from '@/lib/privacidad/kAnonimato';
+import { ApoyoPorBarrio } from './_components/ApoyoPorBarrio';
 import { ComposicionRed } from './_components/ComposicionRed';
 import { ObservatorioCielo } from './_components/ObservatorioCielo';
 
@@ -116,6 +117,13 @@ export default async function EntidadObservatorioPage() {
       </VentanaNoche>
 
       <ObservatorioCielo filas={d.filas} osmBase={osm.osmBase} fechaCorrida={osm.fechaCorrida} />
+
+      <ApoyoPorBarrio
+        barrios={d.barrios}
+        constelaciones={d.filas}
+        aliadosPorBarrio={datosRed?.por_barrio ?? null}
+        fechaOsm={fechaOsm}
+      />
 
       <div className="grid gap-5 lg:grid-cols-2 lg:items-start">
         <ComposicionRed datos={datosRed} />

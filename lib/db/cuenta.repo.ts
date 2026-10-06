@@ -27,7 +27,23 @@ export async function perfilesParaTi(usuarioId: string): Promise<PerfilParaTi[]>
   return rows;
 }
 
-export type SemanaInteraccion = { vistas: number; contactos: number };
+/**
+ * Lo que ESE negocio marcó como su mayor dificultad (`aliados_investigacion.mayor_dolor`,
+ * privada): con eso «Para ti» ordena las guías. Solo los ids, que no salen de la
+ * pantalla de su propio dueño. Lista vacía si no respondió o no es de esta cuenta.
+ */
+export async function dificultadesDeNegocio(usuarioId: string, portafolioId: string): Promise<string[]> {
+  const rows = (await sql`
+    select i.mayor_dolor
+    from portafolios p
+    join aliados_investigacion i on i.portafolio_id = p.id
+    where p.id = ${portafolioId}
+      and p.usuario_id = ${usuarioId}
+  `) as { mayor_dolor: string[] | null }[];
+  return rows[0]?.mayor_dolor ?? [];
+}
+
+export type SemanaInteraccion ={ vistas: number; contactos: number };
 
 /** Semanas que baja el gráfico del inicio: las 4 últimas contra las 4 de antes. */
 export const SEMANAS_EN_NUMEROS = 8;

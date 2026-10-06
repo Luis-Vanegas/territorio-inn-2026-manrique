@@ -1,9 +1,7 @@
 import 'server-only';
 
-import { barrioDe } from '@/lib/geo/barrioOficial';
-import { BARRIOS_COMUNA_3 } from '@/lib/geo/constantes';
-import { dentroDeManrique, metrosAlBorde } from '@/lib/geo/dentroDeManrique';
 import type { FichaCalidad } from '@/lib/db/equipo.repo';
+import { revisarUbicacion } from './ubicacion';
 
 /**
  * Alertas de calidad de las fichas, calculadas al vuelo y sin tabla
@@ -20,7 +18,7 @@ export type TipoAlerta = 'fuera' | 'barrio' | 'otros' | 'incompleta';
 
 export type AlertaCalidad = {
   tipo: TipoAlerta;
-  ficha: Pick<FichaCalidad, 'id' | 'nombre' | 'estado'>;
+  ficha: Pick<FichaCalidad, 'id' | 'nombre' | 'estado' | 'barrio' | 'categoria_nombre'>;
   texto: string;
   /** Solo en «otros»: lo que la persona escribió, para que el sugeridor proponga una categoría. */
   textoParaSugerir?: string;
@@ -28,36 +26,29 @@ export type AlertaCalidad = {
 
 const GRAVEDAD: Record<TipoAlerta, number> = { fuera: 0, barrio: 1, otros: 2, incompleta: 3 };
 
-const sinTildes = (s: string) =>
-  s
-    .normalize('NFD')
-    .replace(/\p{M}/gu, '')
-    .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .trim();
-
-const BARRIOS = new Map(BARRIOS_COMUNA_3.map((b) => [sinTildes(b), b]));
-
 const metros = (n: number) => `${Math.round(n).toLocaleString('es-CO')} m`;
 
 export function alertasDeCalidad(fichas: readonly FichaCalidad[]): AlertaCalidad[] {
   const alertas: AlertaCalidad[] = [];
 
   for (const f of fichas) {
-    const ficha = { id: f.id, nombre: f.nombre, estado: f.estado };
-    const dentro = dentroDeManrique(f.latitud, f.longitud);
+    const ficha = {
+      id: f.id,
+      nombre: f.nombre,
+      estado: f.estado,
+      barrio: f.barrio,
+      categoria_nombre: f.categoria_nombre,
+    };
+    const { dentro, metrosFuera, declarado, oficial } = revisarUbicacion(f);
 
     if (!dentro) {
       alertas.push({
         ficha,
         tipo: 'fuera',
-        texto: `La ubicación cae fuera de la Comuna 3, a unos ${metros(metrosAlBorde(f.latitud, f.longitud))} del límite. Revisa el punto en el mapa de la ficha.`,
+        texto: `La ubicación cae fuera de la Comuna 3, a unos ${metros(metrosFuera)} del límite. Revisa el punto en el mapa de la ficha.`,
       });
     }
 
-    // El oficial guardado (033) y, si la fila es anterior al relleno, el del punto.
-    const oficial = f.barrio_oficial ?? (dentro ? barrioDe(f.latitud, f.longitud) : null);
-    const declarado = BARRIOS.get(sinTildes(f.barrio));
     if (!declarado) {
       alertas.push({
         ficha,

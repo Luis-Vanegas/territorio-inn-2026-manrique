@@ -172,7 +172,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `pipeline/03_clasificador.py`), inferencia en el NAVEGADOR: lo que la persona
   escribe en el nombre no sale de su pantalla. Con confianza >= 0,45 sugiere una;
   si no, las 3 mejores (`sugerirCategoria`). Replica a `pipeline/verificar_salidas.py`:
-  al reentrenar hay que regenerar los casos de `scripts/verificar-sugeridor.mjs`. Ciclo de aprendizaje: `node scripts/exportar-ejemplos-entrenamiento.mjs` (fichas aprobadas, nombre + descripción + categoría final, sin datos personales → `pipeline/datos/ejemplos_constelaciones.json`, ignorado por git) → `03_clasificador.py` los suma (peso 5) y solo publica con 30 o más fichas propias (`MIN_PROPIOS`; con 5 el modelo las memorizaba) y si el F1 macro del holdout de OSM no baja → `exportar-evaluacion-modelo.mjs` y `verificar_salidas.py`; comandos en `pipeline/README.md`. El texto de entrenamiento de una ficha es `nombre + ' ' + descripción`, igual que lo que lee la moderación.
+  al reentrenar hay que regenerar los casos de `scripts/verificar-sugeridor.mjs`. Ciclo de aprendizaje: `node scripts/exportar-ejemplos-entrenamiento.mjs` (fichas aprobadas, nombre + descripción + categoría final, sin datos personales → `pipeline/datos/ejemplos_constelaciones.json`, ignorado por git) → `03_clasificador.py` los suma (peso 5) y solo publica con 30 o más fichas propias (`MIN_PROPIOS`; con 5 el modelo las memorizaba) y si el F1 macro del holdout de OSM no baja → `exportar-evaluacion-modelo.mjs` y `verificar_salidas.py`; comandos en `pipeline/README.md`. Clases escasas: `pipeline/06_ampliacion_clases.py` baja de OSM en Colombia locales reales de esa clase (hoy diseño/publicidad) que `03_clasificador.py` suma SOLO al entrenamiento (nunca al holdout; descarta nombres del Valle). Nunca se agregan filas escritas a mano a los CSV de OSM. El texto de entrenamiento de una ficha es `nombre + ' ' + descripción`, igual que lo que lee la moderación.
   En el registro lo monta `SugeridorCategoria.tsx` bajo «Nombre del negocio»
   (aria-live polite; ≥ 0,45 «Usar esta», si no las 3 mejores). Lo único que
   viaja al enviar son dos campos ocultos (`sugerencia_categoria`,
@@ -199,7 +199,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   ejemplo de reentrenamiento es `portafolios.nombre` + `portafolios.categoria_id`
   de las filas con `portafolio_id` (ver docs/base-de-datos.md › 034). Una ficha
   con decisión del equipo (`fichasConCategoriaRevisada`) ya no muestra los
-  botones: otro clic no es otro ejemplo.
+  botones: otro clic no es otro ejemplo. «Pruébalo» (`equipo/modelos/_components/PruebaSugeridor.tsx`)
+  corre el mismo `sugerirCategoria` sobre nombre + descripción que escribe el equipo, sin action
+  ni formulario que se envíe, y pinta las tres más probables con `BarrasCategoria`.
 - **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
   la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
   vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
@@ -245,7 +247,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
   falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
-  que alimenta el panel del negocio: categoría y formalidad para «Para ti», semanas de vistas y
+  que alimenta el panel del negocio: categoría y formalidad para «Para ti», la `mayor_dolor` del negocio activo (`dificultadesDeNegocio`), semanas de vistas y
   contactos, comparación con la categoría; una consulta nueva del panel va en ese archivo y con ese filtro).
   Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
   correo. El contacto sale por
@@ -305,16 +307,18 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   panel (insignias, insumo de alertas y territorio, cambios de los dueños, aprendizaje del
   sugeridor, alcance de una convocatoria) van en `lib/db/equipo.repo.ts`. Las alertas de
   calidad NO se guardan: `alertasDeCalidad` (`lib/firmamento/calidad.ts`) las calcula al
-  vuelo con `dentroDeManrique`/`metrosAlBorde`, `barrio_oficial ?? barrioDe` y la categoría
-  `otros` (la propuesta del sugeridor corre en el navegador). `?ficha=<id>` en
+  vuelo con `revisarUbicacion` (`lib/firmamento/ubicacion.ts`: `dentroDeManrique`/`metrosAlBorde`,
+  `barrio_oficial ?? barrioDe`) y la categoría `otros` (la propuesta del sugeridor corre en el navegador). `?ficha=<id>` en
   `equipo/aliados` abre una ficha en su pestaña con la edición abierta: es el destino de
   «Cambios recientes» y de las alertas. Los CSV del panel (aliados, interacciones, plan de
   brigada, datos abiertos) salen de `/api/admin/exportar?conjunto=` (guarda propia).
   Entidades y miembros: `lib/actions/gestionarEntidades.ts`; un miembro se agrega por el
   correo de una cuenta que ya entró con Google (no se crean usuarios). Las actions que
   cambian algo del panel revalidan `revalidatePath('/firmamento/equipo', 'layout')` para
-  que las insignias se actualicen. Ítems del menú con `grupo` van bajo su encabezado en el
-  lateral y detrás de «Más» en la barra del celular.
+  que las insignias se actualicen. Menú (`components/firmamento/panel/NavPanel.tsx`):
+  lateral fijo desde `lg` (`NavLateral`) y, bajo `lg`, botón ☰ que abre la misma lista en
+  un cajón (`NavMovil`). Los ítems con `pestana` van bajo ese encabezado (`gruposDe`).
+  Solo los paneles con sesión llevan este menú: el sitio público NO.
   Estilo (Ola 2b): el panel es de día; la noche solo entra en `VentanaNoche` (cifras, mapas, F1 y
   matriz), nunca con tokens `estrella`/`tenue`/`sodio` sueltos en una página. Resumen = cifras
   (por revisar, alertas, convocatorias, invitaciones) + cambios de los dueños + bloques plegables;
@@ -337,7 +341,16 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   existe: el destino tras Google es `/firmamento/negocio`. `/entrar` ya no existe: redirige a
   `/firmamento/entrar` (una sola puerta; el enlace personal `/aliados/estado/<token>` sigue
   funcionando solo). `constelaciones.json` también se importa en el servidor en
-  `negocio/constelacion/page.tsx`.
+  `lib/firmamento/entorno.ts` (`server-only`): `entornoDeNegocio(portafolio, aprobados)` es la ÚNICA
+  cuenta de «qué hay cerca» de un negocio (su constelación o la más cercana, aliados aprobados a menos de
+  1,5 km, comercios de OSM de su grupo, constelaciones cercanas y lo que se dibuja: aprobados + el propio
+  sin WhatsApp). La usan «Dónde estás» del inicio (`negocio/_components/DondeEstas.tsx`: `MapaAliados`
+  acercado al punto con `seleccionado`, texto con las mismas cifras y botón a «Mi constelación») y
+  `negocio/constelacion/page.tsx`; no recalcules eso en una página.
+  El mismo `revisarUbicacion` alimenta `AvisoUbicacion` (`negocio/_components/`) en el inicio y en «Mi
+  constelación»: punto fuera de la Comuna 3 o barrio declarado distinto del oficial → aviso con «Mover mi
+  punto» a `/firmamento/negocio/ficha#ubicacion` (el `id` lo lleva la sección del mapa de
+  `FormularioEdicionPortafolio`). Solo avisa; no bloquea nada.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
   `token_publico` — para quien registramos en campo y no maneja tecnología.
@@ -386,7 +399,13 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» del panel del negocio
   (`convocatoriasParaTi` con `perfilesParaTi` de `cuenta.repo.ts`): cruza
   NEGOCIO POR NEGOCIO categoría y formalidad (`aliados_investigacion`); formalidad
-  desconocida (null o `prefiero_no_decir`) ve también las restringidas. No van en
+  desconocida (null o `prefiero_no_decir`) ve también las restringidas. Debajo, plegado,
+  «Otras convocatorias abiertas»: `listarConvocatoriasVigentes` menos las que encajan (lista
+  compacta, solo título, entidad y cierre). Las guías de «Para ti» salen de
+  `guiasParaTi` (`lib/firmamento/guiasParaTi.ts`): cada `mayor_dolor` del negocio activo apunta
+  a guías por `slug` de las colecciones (si una guía se quita, se cae de la lista, no da 404);
+  sin respuesta, las generales. El asesor (`Asesor` con `consultarAsesorUsuario`) va en una
+  `Tarjeta` plegable de esa página: `AsesorFlotante` vive solo en el layout del sitio. No van en
   la vitrina: no llaman `invalidarVitrina()`.
 - **Barrio oficial de un negocio** (`portafolios.barrio_oficial`, FK a `barrios`,
   migración 033): lo calcula `portafolios.repo.ts` con `barrioDe` en las tres
@@ -472,16 +491,19 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   importan en el servidor: `app/(site)/aliados/page.tsx` (conteos del filtro de
   categorías con `unirCategorias`: aliados + comercios de OSM, así se puede filtrar
   por cualquier negocio del mapa aunque no tenga aliados), `app/(site)/firmamento/datos.ts` (inicio y
-  panel de entidad) y
-  `lib/firmamento/territorio.ts` (panel del equipo; `server-only`).
-- **Firmamento con sesión (puerta y paneles, de día)**: `app/(firmamento)/firmamento/layout.tsx` monta el `SiteHeader`; `PanelShell` arma encabezado del panel + pestañas (`lib/firmamento/navegacion.ts`: `NAV` por rol, el equipo agrupa en `pestana` Hoy/Red/Datos/Guías y `pestanasDe` las deriva). Piezas únicas, no escribas otras: `Tarjeta` (`components/firmamento/panel/Tarjeta.tsx`, variantes `tarjeta`/`seccion`, `plegable`; reemplazó a `ModuloDesplegable`), `Plegable` (`<details>` + framer, funciona sin JS), `Kpi` + `GrupoCifras` (una línea de fuente por grupo), `VentanaNoche` (marco para cifras y mapas; desde el 4-oct NO es de noche: los paneles van enteros con los colores del tema), `BarraPestanas`/`SubPestanas` (`panel/Pestanas.tsx`). Estas piezas escriben `hueso`/`tinta` y usan variantes `[.modo-noche_&]:` para la noche: dentro de una `VentanaNoche` cambian solas. Nada de tokens de noche (`estrella`, `tenue`, `noche-2`…) fijos en piezas que se usan en paneles: escribí `tinta`/`tinta/70`, que `.modo-noche` redefine. Paneles de negocio y entidad: cada pantalla es una pila de `Tarjeta` (plegables lo que no se mira a diario); `ListaConvocatorias` es una lista de filas dentro de una `Tarjeta`, no una tarjeta por convocatoria. «Cambios en tu ficha» (`negocio/_components/CambiosFicha.tsx`) lee `listarBitacora({ portafolioId })` solo con un id que ya pasó por `obtenerPropio`, muestra "El equipo" (nunca el correo de quien moderó) y nombres de campos, nunca valores; al formulario de edición no viaja `moderado_por`.
+  panel de entidad),
+  `lib/firmamento/territorio.ts` (panel del equipo; `server-only`) y `lib/firmamento/entorno.ts`
+  (panel del negocio; `server-only`).
+- **Firmamento con sesión (puerta y paneles, de día)**: `app/(firmamento)/firmamento/layout.tsx` monta el `SiteHeader`; `PanelShell` arma encabezado del panel + menú lateral (`lib/firmamento/navegacion.ts`: `NAV` por rol, el equipo agrupa en `pestana` Hoy/Red/Datos/Guías y `gruposDe` los deriva). Piezas únicas, no escribas otras: `Tarjeta` (`components/firmamento/panel/Tarjeta.tsx`, variantes `tarjeta`/`seccion`, `plegable`; reemplazó a `ModuloDesplegable`), `Plegable` (`<details>` + framer, funciona sin JS), `Kpi` + `GrupoCifras` (una línea de fuente por grupo), `VentanaNoche` (marco para cifras y mapas; desde el 4-oct NO es de noche: los paneles van enteros con los colores del tema), `BarraPestanas`/`SubPestanas` (`panel/Pestanas.tsx`, para vistas `?vista=` dentro de una página). Estas piezas escriben `hueso`/`tinta` y usan variantes `[.modo-noche_&]:` para la noche: dentro de una `VentanaNoche` cambian solas. Nada de tokens de noche (`estrella`, `tenue`, `noche-2`…) fijos en piezas que se usan en paneles: escribí `tinta`/`tinta/70`, que `.modo-noche` redefine. Paneles de negocio y entidad: cada pantalla es una pila de `Tarjeta` (plegables lo que no se mira a diario); `ListaConvocatorias` es una lista de filas dentro de una `Tarjeta`, no una tarjeta por convocatoria. «Cambios en tu ficha» (`negocio/_components/CambiosFicha.tsx`) lee `listarBitacora({ portafolioId })` solo con un id que ya pasó por `obtenerPropio`, muestra "El equipo" (nunca el correo de quien moderó) y nombres de campos, nunca valores; al formulario de edición no viaja `moderado_por`.
 - **Visualizaciones de Firmamento** (`components/firmamento/`): una sola pieza por cosa,
   no se copian. `BarrasCategoria` es la ÚNICA barra horizontal (forma del grupo, celda
   «<5» con barra vacía, tabla `sr-only` dentro de un `<div className="sr-only">`; `PistaBarra`
   es su pista sin texto, la usa también «Tu ficha está al N %»). `MapaEstelar`
   (`useConstelacionElegida` + `MapaEstelar` + `BotonConstelacion`) es el «mapa + lista que
   enciende una constelación» de `MapaTerritorio` y `ObservatorioCielo`; el inicio usa el hook y
-  `BotonConstelacion` con su propio mapa (`MapaAliadosDestacado`, con aliados); el hook se desestructura
+  `BotonConstelacion` con su propio mapa (`MapaAliadosDestacado`, con aliados); «Mi constelación» del negocio
+  también (`negocio/constelacion/_components/ExplorarConstelaciones.tsx`: abre en la propia con
+  `useConstelacionElegida(margen, inicial)`, lista de las cercanas, «Ver una sola» y «Volver a la mía»); el hook se desestructura
   (pasar el objeto entero a un componente rompe la regla `react-hooks/refs`). `MapaBarrios`
   pinta los 15 barrios por una cifra con la escala de `lib/escalaSecuencial.ts` (5 clases
   para conteos, 6 para la matriz; el número del barrio va escrito, el color solo agrupa).
@@ -492,8 +514,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   después de cada `03_clasificador.py`; `verificar-evaluacion-modelo.mjs` falla si quedó
   viejo). Cifra del modelo: F1 macro del holdout agrupado por nombre, nunca la del split
   ingenuo ni la de la asesoría. En el mapa cada negocio es una estrella del color de su grupo
-  (`svgEstrella(color, tam)`): 28 px opaco con borde fino de tinta el aliado; el comercio de OSM, tenue (~55 % de opacidad, sin borde grueso), 12 px en constelación y 9 px suelto.
-- **Inicio = datos públicos** (`app/(site)/page.tsx`, 4-oct-2026; reemplaza a la página pública `/firmamento`, que redirige a `/`): título corto + `BuscadorNegocios` → UN mapa (`MapaAliadosDestacado`: `MapaAliados` con aliados + comercios de OSM, interruptor «Líneas de constelación», leyenda de una fila con los 6 grupos y la lista de constelaciones que enciende una). El buscador y el mapa comparten la consulta por contexto (`components/BusquedaInicio.tsx`, `ProveedorBusqueda` en la página): con una búsqueda activa el mapa solo dibuja lo que devuelve `buscarNegocios` (sin líneas ni nombres de constelación, encuadrado en los resultados), arriba sale «N resultados para «x»» + «Limpiar búsqueda» y la lista de la derecha pasa a ser la de resultados; el nombre de una constelación solo se escribe cuando está elegida → `CifrasBarrio` («El barrio en cifras»: `GrupoCifras`/`Kpi`, `BarrasCategoria` por grupo con %, barrios como barras, las constelaciones principales) → `EnfoqueSection` → `GaleriaAliados`. Lee con `leerFirmamento` (`app/(site)/firmamento/datos.ts`): OSM del JSON y aliados SOLO por `obtenerDatosAbiertos` (k = 5) para las cifras; el mapa y el buscador sí usan `listarAprobados` (la vitrina ya es pública). Sin hero, sin sugeridor y sin botones de registro: en todo lo público el registro no se ofrece; se llega por «Entrar» → `/firmamento/entrar` → Google → registro. Las cifras de otras entidades (Cámara…) viven en `lib/cifras.ts`, con fuente y año.
+  (`svgEstrella(color, tam, { brillo })`): 28 px opaco con borde fino de tinta el aliado; el comercio de OSM, tenue (~75 % de opacidad, sin borde grueso), 12 px en constelación y 9 px suelto. En el mapa los dos llevan `brillo` (halo de su color); la leyenda no.
+- **Inicio = datos públicos** (`app/(site)/page.tsx`, 4-oct-2026; reemplaza a la página pública `/firmamento`, que redirige a `/`): título corto + `BuscadorNegocios` → UN mapa (`MapaAliadosDestacado`: `MapaAliados` con aliados + comercios de OSM, interruptor «Líneas de constelación», leyenda de una fila con los 6 grupos y la lista de constelaciones que enciende una). El buscador y el mapa comparten la consulta por contexto (`components/BusquedaInicio.tsx`, `ProveedorBusqueda` en la página): con una búsqueda activa el mapa solo dibuja lo que devuelve `buscarNegocios` (sin líneas ni nombres de constelación, encuadrado en los resultados), arriba sale «N resultados para «x»» + «Limpiar búsqueda» y la lista de la derecha pasa a ser la de resultados; «Qué tengo cerca» (junto a «Líneas de constelación», slot `controles` de `MapaAliados`) hace lo mismo con lo que queda a 500 m de la persona y dice su barrio (`barrioDe`); tocar un negocio de esas listas o la estrella de un aliado abre su ficha en esa columna: `TarjetaEmprendimiento` con `angosta` (aliado) o `FichaComercioOsm` (OSM), nunca otra tarjeta; la fila entera de una constelación la enciende (`claseChipConstelacion` de `MapaEstelar`); el nombre de una constelación solo se escribe cuando está elegida → `CifrasBarrio` («El barrio en cifras»: `GrupoCifras`/`Kpi`, `BarrasCategoria` por grupo con %, barrios como barras, las constelaciones principales) → `EnfoqueSection` → `GaleriaAliados`. Lee con `leerFirmamento` (`app/(site)/firmamento/datos.ts`): OSM del JSON y aliados SOLO por `obtenerDatosAbiertos` (k = 5) para las cifras; el mapa y el buscador sí usan `listarAprobados` (la vitrina ya es pública). Sin hero, sin sugeridor y sin botones de registro: en todo lo público el registro no se ofrece; se llega por «Entrar» → `/firmamento/entrar` → Google → registro. Las cifras de otras entidades (Cámara…) viven en `lib/cifras.ts`, con fuente y año.
 - **Panel de entidad** (`app/(firmamento)/firmamento/entidad/`: observatorio, convocatorias,
   datos): una entidad ve SOLO agregados k = 5 y convocatorias. Lee por `leerFirmamento`
   (`app/(site)/firmamento/datos.ts`, que en la base solo usa `obtenerDatosAbiertos`), por
@@ -509,7 +531,10 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `bitacora` (`actor_tipo = 'entidad'`) y usa el cupo `estado` de `rateLimit.ts` (un origen
   nuevo exigiría migrar el CHECK de `intentos_registro`). La descarga CSV
   (`entidad/datos/csv/route.ts`, con guarda) sale de `lib/firmamento/datosAbiertos.ts`, que
-  solo reordena `DatosAbiertos`: una celda «<5» sigue «<5».
+  solo reordena `DatosAbiertos`: una celda «<5» sigue «<5». «Dónde apoyar primero» tiene dos
+  partes: por constelación (`ObservatorioCielo`, las más grandes de OSM) y por barrio
+  (`ApoyoPorBarrio`: barrios ordenados por locales de OSM, constelaciones de cada uno y los aliados
+  de `por_barrio` de los datos abiertos tal cual, «<5» escrito como «menos de 5», nunca restado).
 - **Imports con extensión `.ts`**: los verificadores (`scripts/verificar-*.mjs`)
   corren con `--experimental-strip-types`, que no resuelve imports sin extensión.
   Para que compartan código con la app (y no copiarlo), un archivo que ellos

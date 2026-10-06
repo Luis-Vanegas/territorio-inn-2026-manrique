@@ -76,6 +76,7 @@ export function MapaAliados({
   alto,
   resultados,
   seleccionadoEnLista,
+  controles,
 }: {
   portafolios: Portafolio[];
   alSeleccionar?: (id: string) => void;
@@ -102,6 +103,8 @@ export function MapaAliados({
   resultados?: ResultadosMapa | null;
   /** Negocio de la lista de resultados a donde vuela el mapa y abre su popup (`id` de aliado u `osm:<id>`). */
   seleccionadoEnLista?: string | null;
+  /** Botones extra de la barra, junto a «Líneas de constelación» (el inicio pone «Qué tengo cerca»). */
+  controles?: React.ReactNode;
 }) {
   const [verPot, setVerPot] = useState(false);
   const [activaInterna, setActivaInterna] = useState(true);
@@ -146,6 +149,8 @@ export function MapaAliados({
           <span aria-hidden="true">{activa ? '★' : '☆'}</span>
           Líneas de constelación
         </button>
+
+        {controles}
 
         {centralidades && (
           <button

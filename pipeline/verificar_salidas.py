@@ -26,6 +26,8 @@ CASOS = {  # nombres inventados a propósito: no salen de los datos de entrenami
     "Droguería San Rafael": "salud_bienestar",
     "Repuestos y Motos El Tornillo": "mecanica_motos",
     "Restaurante Sabor Paisa": "comidas",
+    "Diseño Gráfico y Publicidad El Faro": "diseno_publicidad",
+    "Litografía La Moderna": "diseno_publicidad",
 }
 
 

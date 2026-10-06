@@ -7,9 +7,13 @@ import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
 import { exigirNegocio } from '@/lib/auth/firmamento';
 import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { comparacionCategoria, perfilesParaTi, semanasDeNegocio } from '@/lib/db/cuenta.repo';
-import { obtenerPropio } from '@/lib/db/portafolios.repo';
+import { listarAprobados, obtenerPropio, type Portafolio } from '@/lib/db/portafolios.repo';
+import { entornoDeNegocio } from '@/lib/firmamento/entorno';
+import { revisarUbicacion } from '@/lib/firmamento/ubicacion';
 import { completitudFicha, resumenSemanas } from '@/lib/firmamento/ficha';
 import { fechaHoyBogota, formatearNumero } from '@/lib/formato';
+import { AvisoUbicacion } from './_components/AvisoUbicacion';
+import { DondeEstas } from './_components/DondeEstas';
 import { BarraFicha } from './_components/FichaCompleta';
 import { EstadoFicha } from './_components/EstadoFicha';
 import { GraficoSemanas } from './_components/GraficoSemanas';
@@ -53,11 +57,13 @@ export default async function NegocioInicioPage({
     );
   }
 
-  const [portafolio, semanas, comparacion, paraTi] = await Promise.all([
+  const [portafolio, semanas, comparacion, paraTi, aprobados] = await Promise.all([
     obtenerPropio(usuarioId, actual.id),
     opcional(semanasDeNegocio(usuarioId, actual.id), [], 'semanas'),
     opcional(comparacionCategoria(usuarioId, actual.id), null, 'comparación con la categoría'),
     opcional(perfilesParaTi(usuarioId).then(convocatoriasParaTi), [], '«Para ti»'),
+    // Lectura pública y cacheada: la misma lista de la vitrina.
+    opcional(listarAprobados(), [] as Portafolio[], 'aliados cercanos'),
   ]);
   if (!portafolio) return <SinNegocio aviso="No encontramos ese negocio en tu cuenta." />;
 
@@ -69,6 +75,7 @@ export default async function NegocioInicioPage({
   const hoy = fechaHoyBogota();
   const fuenteCifras = 'conteos anónimos de tu ficha';
   const primerNombre = nombre.trim().split(/\s+/)[0] ?? nombre;
+  const entorno = entornoDeNegocio(portafolio, aprobados);
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-5">
@@ -88,6 +95,7 @@ export default async function NegocioInicioPage({
       </div>
 
       <EstadoFicha estado={portafolio.estado} motivo={portafolio.motivo_rechazo} enlaceFicha />
+      <AvisoUbicacion revision={revisarUbicacion(portafolio)} barrio={portafolio.barrio} />
 
       <Tarjeta
         titulo={`Hola, ${primerNombre}`}
@@ -210,14 +218,20 @@ export default async function NegocioInicioPage({
             <div className="modo-dia mb-3 rounded-xl bg-hueso px-4 pb-4 text-tinta [&_article]:border-t-0 [&_article]:pb-0 [&_article]:pt-4">
               <TarjetaEmprendimiento portafolio={portafolio} indice={0} definicionesCampos={[]} vistaPrevia />
             </div>
-            {publicada ? (
-              <a href={hrefFichaPublica(portafolio)!} target="_blank" rel="noopener" className={CLASE_BOTON_PANEL}>
-                Ver mi ficha en Constelaciones <span aria-hidden="true">↗</span>
-                <span className="sr-only"> (se abre en otra pestaña)</span>
-              </a>
-            ) : (
-              <p className="font-sans text-sm text-tinta/70">Aún no se ve en Constelaciones: aparece apenas la aprobemos.</p>
+            {!publicada && (
+              <p className="mb-3 font-sans text-sm text-tinta/70">Aún no se ve en Constelaciones: aparece apenas la aprobemos.</p>
             )}
+            <div className="flex flex-wrap gap-3">
+              {publicada && (
+                <a href={hrefFichaPublica(portafolio)!} target="_blank" rel="noopener" className={CLASE_BOTON_PANEL}>
+                  Ver mi ficha en Constelaciones <span aria-hidden="true">↗</span>
+                  <span className="sr-only"> (se abre en otra pestaña)</span>
+                </a>
+              )}
+              <Link href="/firmamento/negocio/ficha" className={CLASE_BOTON_PANEL}>
+                Editar mi ficha
+              </Link>
+            </div>
           </Tarjeta>
         </div>
 
@@ -240,14 +254,7 @@ export default async function NegocioInicioPage({
             </Tarjeta>
           )}
 
-          <Tarjeta titulo="Tu cuadra" id="cuadra">
-            <p className="font-sans text-base leading-relaxed text-tinta/70">
-              Mira qué negocios tienes cerca, con quién podrías aliarte y cómo invitar a tus vecinos.
-            </p>
-            <Link href="/firmamento/negocio/constelacion" className={`${CLASE_BOTON_PANEL} mt-3`}>
-              Ver mi constelación
-            </Link>
-          </Tarjeta>
+          <DondeEstas entorno={entorno} portafolioId={portafolio.id} />
         </div>
       </div>
     </div>

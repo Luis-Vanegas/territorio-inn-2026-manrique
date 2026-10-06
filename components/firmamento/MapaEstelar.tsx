@@ -9,6 +9,7 @@ import { MapaAliados, type CentralidadMapa } from '@/components/MapaAliados';
  * El «mapa + lista que enciende una constelación» de Firmamento, en un solo
  * lugar. Lo usan el territorio del equipo (`MapaTerritorio`) y
  * «Dónde apoyar primero» del observatorio de la entidad (`ObservatorioCielo`).
+ * «Mi constelación» del negocio usa el hook con su propio mapa (con aliados).
  *
  * El estado es uno: la constelación elegida. Tocar un botón de la lista la
  * enciende en el mapa; el selector del propio mapa («Ver una sola») cambia el
@@ -41,9 +42,10 @@ export type EstadoMapaEstelar = {
 /**
  * @param margenSuperior píxeles que tapan el encabezado y el índice pegajosos:
  *   si el mapa asoma por encima de esa línea, se trae a la vista.
+ * @param inicial la constelación encendida al cargar («Mi constelación» abre en la propia).
  */
-export function useConstelacionElegida(margenSuperior = 120): EstadoMapaEstelar {
-  const [elegida, setElegida] = useState('');
+export function useConstelacionElegida(margenSuperior = 120, inicial = ''): EstadoMapaEstelar {
+  const [elegida, setElegida] = useState(inicial);
   const caja = useRef<HTMLDivElement>(null);
   const sinMovimiento = useReducedMotion();
 
@@ -93,6 +95,13 @@ export function MapaEstelar({
   );
 }
 
+/** Colores del chip con el código de una constelación, encendida o no. Lo comparten el botón y la fila del inicio. */
+export function claseChipConstelacion(activa: boolean) {
+  return activa
+    ? 'border-sodio bg-sodio font-medium text-noche'
+    : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto';
+}
+
 /**
  * Botón de 44 px que enciende o apaga una constelación en el mapa.
  * `codigo`: el chip con el código de la fila de una tabla («C04»).
@@ -109,9 +118,7 @@ export function BotonConstelacion({
   alAlternar: () => void;
   variante?: 'codigo' | 'texto';
 }) {
-  const estado = activa
-    ? 'border-sodio bg-sodio font-medium text-noche'
-    : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto';
+  const estado = claseChipConstelacion(activa);
 
   if (variante === 'texto') {
     return (

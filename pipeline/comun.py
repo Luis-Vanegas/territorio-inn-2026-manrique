@@ -37,6 +37,7 @@ CATEGORIAS = {
     "papeleria": "Papelería y misceláneas",
     "salud_bienestar": "Salud y bienestar",
     "mascotas": "Mascotas",
+    "diseno_publicidad": "Diseño, publicidad e impresiones",
 }
 
 FUENTE = "OpenStreetMap contributors (ODbL 1.0), vía Overpass API"
@@ -73,9 +74,13 @@ MAPEO_OSM = {
         "mobile_phone": "tecnologia_celulares", "computer": "tecnologia_celulares",
         "electronics": "tecnologia_celulares",
         "telecommunication": "tecnologia_celulares", "hifi": "tecnologia_celulares",
-        "stationery": "papeleria", "copyshop": "papeleria", "books": "papeleria",
+        "stationery": "papeleria", "books": "papeleria",
         "gift": "papeleria", "variety_store": "papeleria", "newsagent": "papeleria",
         "art": "papeleria",
+        "copyshop": "diseno_publicidad",
+        "printing": "diseno_publicidad",
+        "signmaker": "diseno_publicidad",
+        "graphic_designer": "diseno_publicidad",
         "chemist": "salud_bienestar", "optician": "salud_bienestar",
         "herbalist": "salud_bienestar", "medical_supply": "salud_bienestar",
         "massage": "salud_bienestar", "nutrition_supplements": "salud_bienestar",
@@ -93,6 +98,9 @@ MAPEO_OSM = {
         "shoemaker": "ropa_calzado",
         "electronics_repair": "tecnologia_celulares",
         "mechanic": "mecanica_motos", "car_repair": "mecanica_motos",
+        "printer": "diseno_publicidad",
+        "signmaker": "diseno_publicidad",
+        "photographic_laboratory": "diseno_publicidad",
     },
     "amenity": {
         "restaurant": "comidas", "fast_food": "comidas", "cafe": "comidas",
@@ -104,6 +112,8 @@ MAPEO_OSM = {
         "car_repair": "mecanica_motos", "car_wash": "mecanica_motos",
     },
     "leisure": {"fitness_centre": "salud_bienestar"},
+    # Solo lo trae 06_ampliacion_clases.py: las consultas del Valle no piden `office`.
+    "office": {"advertising_agency": "diseno_publicidad", "graphic_design": "diseno_publicidad"},
 }
 
 
@@ -121,7 +131,7 @@ def categoria_osm(fila) -> str:
 
     if v("hairdresser") == "barber" or v("shop") == "barber":
         return "barberia"
-    for clave in ("shop", "craft", "amenity", "leisure"):
+    for clave in ("shop", "craft", "amenity", "leisure", "office"):
         cat = MAPEO_OSM[clave].get(v(clave))
         if cat:
             return cat

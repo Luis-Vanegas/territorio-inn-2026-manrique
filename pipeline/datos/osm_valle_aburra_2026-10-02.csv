@@ -193,7 +193,7 @@ node,2418112363,Niñolandia,6.2481357,-75.5739264,toys,,,,,,,,,,,,
 node,2418127136,Autogol,6.2566704,-75.5817021,,,car_wash,,,,,,,,,,mecanica_motos
 node,2418127161,Cafe Le Gris,6.1989802,-75.5748979,,,restaurant,,,,,,,,,,comidas
 node,2428479772,Autolarte,6.2286619,-75.5712175,car,,,,,,,,,,,,mecanica_motos
-node,2469628041,Rocco Graficas,6.2471296,-75.5871762,copyshop,,,,,,Calle 42,68-38,,,,https://www.roccograficas.com/index.html,papeleria
+node,2469628041,Rocco Graficas,6.2471296,-75.5871762,copyshop,,,,,,Calle 42,68-38,,,,https://www.roccograficas.com/index.html,diseno_publicidad
 node,2505363299,Burger King,6.2018284,-75.5720001,,,fast_food,,,,,,,burger,,,comidas
 node,2529942656,Éxito,6.238312,-75.5867056,department_store,,,,,,Carrera 66B,32D-35,"Mo-Sa 07:00-21:00; Su,PH 09:00-19:00",,,,
 node,2529942657,Éxito La 70,6.24895,-75.58898,supermarket,,,,,,,,"Mo-Sa 08:30-21:00;Su,PH 08:00-17:00",,,,tienda_viveres
@@ -983,7 +983,7 @@ node,5427016321,Drogueria Uvapar,6.2633475,-75.5421933,chemist,,,,,,,,,,,,salud_
 node,5427016322,Mini Market la Uva,6.2632626,-75.5418578,supermarket,,,,,,Calle 69,,,,"supermercado, con elementos que pueden caer en la calle (avisos), elementos inflamables y con acumulo posible de basuras, y un poste ladead…",,tienda_viveres
 node,5427024329,Taller de motos,6.2669135,-75.5429485,car_repair,,,,,,Calle 71B,29-59,,,Razon social: Taller de motos,,mecanica_motos
 node,5427024331,Fruver Monterrey,6.2668864,-75.5430185,greengrocer,,,,,,Calle 71A,30-83,,,,,tienda_viveres
-node,5427026695,Fotos montajes,6.2666881,-75.5430416,photo,photographic_laboratory,,,,,Calle 71A,30-77,,,Fotografia para documentos y montaje,,
+node,5427026695,Fotos montajes,6.2666881,-75.5430416,photo,photographic_laboratory,,,,,Calle 71A,30-77,,,Fotografia para documentos y montaje,,diseno_publicidad
 node,5427032278,Venta de Mekato,6.2666742,-75.5429675,convenience,,,,,,Calle 71A,30-62,,,Sin razon social visible,,tienda_viveres
 node,5427042054,Billares Azules,6.2633283,-75.5420709,,brewery,,,,,,,,,VENTA DE LICORES Y ABARROTES,,
 node,5427063303,Supermercado max super,6.2645985,-75.5449319,supermarket,,,,,,Calle 70,32,Mo-Su 09:00-21:00,,super mercado con domicilio .,,tienda_viveres
@@ -1280,10 +1280,10 @@ node,5608338567,Tienda,6.2637154,-75.5406426,sweets,,,,,,Carrera 25,,,,"Pequeño
 node,5608338569,Venta de gas,6.2634015,-75.5406872,gas,,,,,,Carrera 25,,,,"Local con venta de gran cantidad de pipetas de gas propano, riesgo de inundación, deslizamiento de tierra, amenaza de caída de árbol y post…",,
 node,5618518721,Flying Tree Yoga,6.2412493,-75.5928123,,,,,fitness_centre,,Transversal 39A,71-85,,,,https://www.flyingtreeyoga.com/,salud_bienestar
 node,5619439577,Droguería San Jose,6.2465029,-75.5858671,,,pharmacy,pharmacy,,,,,,,,,salud_bienestar
-node,5619439579,Litografía,6.2463056,-75.5853602,copyshop,,,,,,,,,,,,papeleria
+node,5619439579,Litografía,6.2463056,-75.5853602,copyshop,,,,,,,,,,,,diseno_publicidad
 node,5619439580,Médico - Odontológico,6.2469495,-75.5866101,,,doctors,doctor,,,,,,,,,salud_bienestar
 node,5619439581,San Joaco Hambuerguesas,6.2469202,-75.5865189,,,fast_food,,,,,,,,,,comidas
-node,5619439582,Papelería,6.2469075,-75.5864525,copyshop,,,,,,,,,,,,papeleria
+node,5619439582,Papelería,6.2469075,-75.5864525,copyshop,,,,,,,,,,,,diseno_publicidad
 node,5619439583,Los Libertadores,6.2468162,-75.5861367,alcohol,,,,,,,,,,,,tienda_viveres
 node,5619439585,Tienda Religiosa,6.2463536,-75.5854527,art,,,,,,,,,,,,papeleria
 node,5619439587,Minimercado la 67,6.2466796,-75.5856874,supermarket,,,,,,,,,,,,tienda_viveres
@@ -1334,7 +1334,7 @@ node,5775965353,Cremas Doña Consuelo,6.2486979,-75.6215981,,,ice_cream,,,,,,,,,
 node,5780454853,Cafetería Boyaca,6.2509485,-75.5694343,,,restaurant,,,,,,Mo-Sa 07:30-18:00,,,,comidas
 node,5785080654,El Palacio Del Tenis,6.2494113,-75.5700055,shoes,,,,,,,,,,,,ropa_calzado
 node,5804933261,Sushi Train,6.2090697,-75.5650788,,,restaurant,,,,,,,sushi,,,comidas
-node,5820606938,fotocopiadora don Alberto,6.2684076,-75.5682461,copyshop,,,,,,,,,,"local comercial, implementos de estudio y mas",,papeleria
+node,5820606938,fotocopiadora don Alberto,6.2684076,-75.5682461,copyshop,,,,,,,,,,"local comercial, implementos de estudio y mas",,diseno_publicidad
 node,5824564453,Rocoto,6.207763,-75.5647175,,,restaurant,,,,,,,peruvian,,,comidas
 node,5835182985,La Parrillita,6.2098542,-75.5715547,,,restaurant,,,,,,,,,,comidas
 node,5835293799,De Lolita,6.2682967,-75.5683837,,,cafe,,,,,,Mo-Fr 06:00-19:00; Sa 08:00-16:00; PH off,,,https://delolita.com,comidas
@@ -1414,10 +1414,10 @@ node,6204110513,Panadería y Cafetería Los Hermanos,6.250606,-75.5622726,bakery
 node,6208520208,Electrónica I+D,6.254434,-75.5827167,computer,,,,,,Calle 48D,65A-35,Mo-Fr 09:00-18:00,,,https://www.didacticaselectronicas.com/,tecnologia_celulares
 node,6219926085,Caseros a su Gusto - C.C. Gran Plaza,6.2469582,-75.5725498,,,restaurant,,,,Carrera 45,53-50,,regional,,,comidas
 node,6226250586,ERRAJES,6.2299635,-75.5696192,hardware,,,,,,,,,,,,construccion
-node,6226260285,Casa del Tiplex,6.2309354,-75.5928018,copyshop,,,,,,,,,,,,papeleria
+node,6226260285,Casa del Tiplex,6.2309354,-75.5928018,copyshop,,,,,,,,,,,,diseno_publicidad
 node,6226260286,HSS,6.2287675,-75.5945321,hardware,,,,,,,,,,,,construccion
 node,6236597514,Buena Esquina,6.3302628,-75.558635,convenience,,,,,,,,,,,,tienda_viveres
-node,6237242587,Cemex Itagui,6.1582552,-75.6188464,copyshop,,,,,,,,,,,,papeleria
+node,6237242587,Cemex Itagui,6.1582552,-75.6188464,copyshop,,,,,,,,,,,,diseno_publicidad
 node,6237243586,CHENCHAS,6.2292797,-75.5838224,car_repair,,,,,,,,,,,,mecanica_motos
 node,6247458585,Mediclinico San Francisco,6.247378,-75.564657,,,doctors,,,,Carrera 45,49-45,Mo-Fr 06:00-16:00; Sa 07:00-12:00,,,https://www.mediclinico.com/,salud_bienestar
 node,6251492788,Smart Fit,6.2457535,-75.5647951,,,,,fitness_centre,,Calle 48,43-81,Mo-Th 05:00-22:00; Su 08:00-17:00; Fr 05:00-21:00; Sa 07:00-17:00,,,https://www.smartfit.com.co/sedes/san-ignacio,salud_bienestar
@@ -1692,7 +1692,7 @@ node,7220640493,Miscelánea San Miguel Arcángel,6.235384,-75.5941615,stationery
 node,7222256283,MotoMax Bulerías,6.2387944,-75.5900937,motorcycle_repair,,,,,,Calle 33,66B-285,Mo-Fr 08:00-18:00,,,,mecanica_motos
 node,7222256284,Del Oeste,6.2387435,-75.5900061,,,fast_food,,,,,,,burger,,,comidas
 node,7222263889,Brosty,6.2388662,-75.5899195,,,fast_food,,,,,,"PH,Mo-Su 10:00-21:00",chicken,,,comidas
-node,7222341864,Artes y Plotters,6.2388891,-75.5898189,craft,,,,,,,,,,,,
+node,7222341864,Artes y Plotters,6.2388891,-75.5898189,craft,,,,,,,,,,,,diseno_publicidad
 node,7222341865,Los Verdes,6.2389054,-75.5897652,,,fast_food,,,,,,,burger,,,comidas
 node,7222341866,Lico Bar Lucky,6.2389507,-75.5897231,alcohol,,,,,,,,,,,,tienda_viveres
 node,7222341867,PP Beauty Store,6.2389902,-75.5896577,beauty,,,,,,,,,,,,belleza_peluqueria
@@ -2449,7 +2449,7 @@ node,9597920460,Fj Racing,6.2224989,-75.6101375,motorcycle_repair,,,,,,,,,,,,mec
 node,9597920461,Las Comidas de Yolima,6.2228482,-75.6102634,,,fast_food,,,,,,,,,,comidas
 node,9597920489,Spa Mayte,6.2230615,-75.6062095,beauty,,,,,,,,,,,,belleza_peluqueria
 node,9598036017,Gana,6.2469164,-75.5648141,lottery,,,,,,,,,,,,
-node,9598036018,Konicolor,6.2469058,-75.5647891,,photographic_laboratory,,,,,,,,,,,
+node,9598036018,Konicolor,6.2469058,-75.5647891,,photographic_laboratory,,,,,,,,,,,diseno_publicidad
 node,9598450992,El Hueco,6.3462081,-75.5088091,stationery,,,,,,Calle 50 #51-06,,Mo-Sa 08:00-20:00; Su 08:00-15:00,,,,papeleria
 node,9598482097,Cerezuela,6.3461068,-75.5094588,clothes,,,,,,,,,,,,ropa_calzado
 node,9603524817,Mordiscos,6.2474106,-75.5653458,,,cafe,,,,,,,,,,comidas
@@ -3131,7 +3131,7 @@ node,11940088570,Restaurante escolar I.E.J.V.A,6.2551176,-75.5425957,,,restauran
 node,11940106969,Restaurante escolar,6.2549207,-75.5425684,,,restaurant,,,,,,,,,,comidas
 node,11943088559,JM variedades,6.2594354,-75.5804381,convenience,,,,,,,,,,,,tienda_viveres
 node,11943228374,Panadería Pan Appetit,6.2593811,-75.5802915,bakery,,,,,,,,,,,,panaderia
-node,11954672511,Taller de Grabado la Estampa,6.2021461,-75.5618982,printing,,,,,,,,,,,,
+node,11954672511,Taller de Grabado la Estampa,6.2021461,-75.5618982,printing,,,,,,,,,,,,diseno_publicidad
 node,11957070158,El Parque,6.2674675,-75.5657056,,,restaurant,,,,,,,,,,comidas
 node,11957101584,Librería Universidad de Antioquia,6.2674475,-75.5663433,books,,,,,,,,Mo-Fr 09:00-18:00; Sa 09:00-13:00,,,,papeleria
 node,11961657806,D1,6.3382044,-75.5411766,supermarket,,,,,,,,,,,,tienda_viveres
@@ -3426,7 +3426,7 @@ node,12209063974,"D' Lujo, casa",6.2499681,-75.5401235,beauty,,,,,,,,,,,,belleza
 node,12209079249,Criadero de gallinas,6.2494223,-75.5393527,,,animal_boarding,,,,,,,,,,mascotas
 node,12209087813,Vestidos de la verdad,6.2496868,-75.5394075,clothes,,,,,,,,,,,,ropa_calzado
 node,12209116143,Criadero gallinas,6.251295,-75.5404413,,,animal_boarding,,,,,,,,,,mascotas
-node,12209143457,Casa con servicio de fotocopias e impresiones,6.250729,-75.5401389,copyshop,,,,,,,,,,,,papeleria
+node,12209143457,Casa con servicio de fotocopias e impresiones,6.250729,-75.5401389,copyshop,,,,,,,,,,,,diseno_publicidad
 node,12209148507,Venta de obleas,6.2512429,-75.5404397,confectionery,,,,,,,,,,,,panaderia
 node,12209279460,Venta de gelatinas,6.2511745,-75.5389613,confectionery,,,,,,,,,,,,panaderia
 node,12209286779,Oro Rosa Lashes,6.2509096,-75.5395015,beauty,,,,,,,,,,,,belleza_peluqueria
@@ -3490,7 +3490,7 @@ node,12570554502,Gimnasio Universidad de Medellín,6.230726,-75.6105242,,,,,fitn
 node,12571350901,Kiosko UdeM,6.2317296,-75.6117315,kiosk,,,,,,,,,,,,tienda_viveres
 node,12572749335,Zona de comidas - Facultad de ingenierías,6.230213,-75.6117797,,,food_court,,,,,,,,,,comidas
 node,12572797163,Donde Guaca,6.2111622,-75.6049396,,,fast_food,,,,,,,burger;hot_dog;chorizos,,,comidas
-node,12588071626,Papelería: Copy Trazos,6.230271,-75.6120132,copyshop,,,,,,,,,,,,papeleria
+node,12588071626,Papelería: Copy Trazos,6.230271,-75.6120132,copyshop,,,,,,,,,,,,diseno_publicidad
 node,12614207581,Sofía La Arepería,6.1581504,-75.6430059,,,fast_food,,,,,,"Mo-Su,PH 06:00-21:30",,,,comidas
 node,12615730321,Panadería Ambrosía,6.159213,-75.6427336,bakery,,,,,,,,"Mo-Sa 06:00-20:40; Su,PH 06:00-18:40",,,,panaderia
 node,12619073496,Taller del Sur,6.1548798,-75.6163844,car_repair,,,,,,Carrera 48A,67,Mo-Fr 08:00-18:00; Sa 08:00-13:00,,,https://tallerdelsur.com/,mecanica_motos
@@ -3842,7 +3842,7 @@ node,13142713474,Cruz Verde,6.2232757,-75.5749616,,,pharmacy,pharmacy,,,,,,,,,sa
 node,13142786974,Farmatodo,6.2229876,-75.5749737,,,pharmacy,pharmacy,,,,,,,,,salud_bienestar
 node,13143622445,Artesano,6.2394037,-75.5963908,,,restaurant,,,,,,,,,,comidas
 node,13144751509,Rico Pan La 76,6.2368317,-75.5967119,bakery,,,,,,,,,,,,panaderia
-node,13144757029,Fotocopiar,6.2340364,-75.5964163,copyshop,,,,,,,,,,,,papeleria
+node,13144757029,Fotocopiar,6.2340364,-75.5964163,copyshop,,,,,,,,,,,,diseno_publicidad
 node,13144761963,La Gustella,6.2356437,-75.5965419,,,fast_food,,,,,,,hamburger,,,comidas
 node,13145094186,Alicos Grill,6.2432945,-75.5972493,,,restaurant,,,,,,,steak,,,comidas
 node,13145167377,Valentina Bakery,6.2401486,-75.5965204,bakery,,,,,,,,,,,,panaderia
@@ -4186,7 +4186,7 @@ node,13751660000,La Bendición de Tatú,6.09101,-75.6343869,tyres,,,,,,Carrera 4
 node,13751693104,Droguería Lavie Vital,6.0930563,-75.6337286,,,pharmacy,,,,Calle 128 Sur,46-59,,,,,salud_bienestar
 node,13751693105,Petlovers,6.0930476,-75.6338626,pet,,,,,,Calle 128 Sur,46-69,,,,,mascotas
 node,13751693106,Texam,6.0930412,-75.6339685,clothes,,,,,,Calle 128 Sur,46-73,,,,,ropa_calzado
-node,13751693107,Baes,6.0930278,-75.6342658,printing,,,,,,Calle 128 Sur,46-113,,,,https://ciasit.com/,
+node,13751693107,Baes,6.0930278,-75.6342658,printing,,,,,,Calle 128 Sur,46-113,,,,https://ciasit.com/,diseno_publicidad
 node,13751693109,Variedades Marce,6.0921845,-75.6343535,variety_store,,,,,,Carrera 48,129 Sur-10,,,,,papeleria
 node,13751693110,La Casa del Papel,6.0920777,-75.6343544,stationery,,,,,,Carrera 48,129 Sur-20,,,,,papeleria
 node,13751733714,Deli'empanadas Ángela,6.0882451,-75.6340381,,,fast_food,,,,,,,empanada,,,comidas
@@ -4459,7 +4459,7 @@ node,13939264063,Arte y Decoración L&L,6.0911129,-75.6375042,furniture,,,,,,Car
 node,13939264070,Almacén Felectros,6.0910622,-75.6375025,electronics,,,,,,Carrera 51,130 Sur-26,,,,,tecnologia_celulares
 node,13939264071,Óptik Alejandría,6.0909938,-75.6375002,optician,,,,,,Carrera 51,130 Sur-40,,,,,salud_bienestar
 node,13939264072,Órbita,6.0909601,-75.6374991,hairdresser,,,,,,Carrera 51,130 Sur-44,,,,,belleza_peluqueria
-node,13939264073,Dipro,6.0909372,-75.6374984,printing,,,,,,Carrera 51,130 Sur-48,,,,,
+node,13939264073,Dipro,6.0909372,-75.6374984,printing,,,,,,Carrera 51,130 Sur-48,,,,,diseno_publicidad
 node,13939264074,Ba' Esco,6.0907714,-75.6374928,stationery,,,,,,Carrera 52,130 Sur-64,,,,,papeleria
 node,13939264075,Ruiseñor,6.0907343,-75.6374916,musical_instrument,,,,,,Carrera 52,130 Sur-72,,,,,
 node,13939264076,Latinoamerica de vidrios,6.090698,-75.6374904,,glaziery,,,,,Carrera 52,130 Sur-76,,,,,construccion
@@ -4865,7 +4865,7 @@ way,380017723,Punto Verde,6.2454685,-75.5843682,kiosk,,,,,,,,,,,,tienda_viveres
 way,380017724,Tortas del Gordo,6.2455021,-75.5843697,bakery,,,,,,,,,,,,panaderia
 way,380017725,Uñas Mágicas,6.2457057,-75.5846374,beauty,,,,,,,,,,,,belleza_peluqueria
 way,380020461,Dika Pets,6.2459317,-75.5867574,clothes,,,,,,,,,,,,ropa_calzado
-way,380020463,Impresiones Rotamnundo,6.2461488,-75.5849105,copyshop,,,,,,,,,,,,papeleria
+way,380020463,Impresiones Rotamnundo,6.2461488,-75.5849105,copyshop,,,,,,,,,,,,diseno_publicidad
 way,380073792,Luna Moré,6.2438221,-75.5869453,,,restaurant,,,,,,,regional,,,comidas
 way,380089960,Consumo,6.2476714,-75.5879452,supermarket,,,,,,Carrera 69,,,,,,tienda_viveres
 way,380106206,Terpel San Juan,6.2485973,-75.5861561,no,,fuel,,,,,,24/7,,,,

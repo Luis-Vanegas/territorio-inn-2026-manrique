@@ -68,6 +68,7 @@ const SINONIMOS: string[][] = [
   ['domicilio', 'transporte', 'mensajeria', 'acarreo', 'trasteo', 'mandado'],
   ['mascota', 'perro', 'gato', 'veterinaria', 'concentrado'],
   ['papeleria', 'fotocopia', 'impresion', 'miscelanea', 'utiles'],
+  ['diseno', 'publicidad', 'impresion', 'estampado', 'litografia', 'rotulacion', 'pendon', 'volantes', 'tarjetas', 'fotocopia'],
   ['lavanderia', 'lavado', 'planchado'],
   ['fotografia', 'foto', 'evento', 'fiesta', 'decoracion', 'recreacion'],
   ['salud', 'drogueria', 'farmacia', 'masaje', 'terapia', 'bienestar'],

@@ -56,12 +56,20 @@ export const ESTRELLA_VIEWBOX = '-1 -1 26 26';
  *
  * El aliado es opaco y lleva un borde fino del color de la tinta del tema (oscuro
  * sobre teselas claras, claro sobre las oscuras): resalta sin pelear con el
- * color. El comercio de OSM (`tenue`) va a ~55 % de opacidad y con un borde casi
+ * color. El comercio de OSM (`tenue`) va a ~75 % de opacidad y con un borde casi
  * invisible: es contexto, no el protagonista (equipo, 4-oct: «se ve recargado»).
  */
-export function svgEstrella(color: string, tamano: number, { tenue = false }: { tenue?: boolean } = {}): string {
+export function svgEstrella(
+  color: string,
+  tamano: number,
+  { tenue = false, brillo = false }: { tenue?: boolean; brillo?: boolean } = {},
+): string {
   const atributos = tenue
-    ? `fill="${color}" fill-opacity="0.55" stroke="${CONTORNO}" stroke-opacity="0.35" stroke-width="0.8"`
+    ? `fill="${color}" fill-opacity="0.75" stroke="${CONTORNO}" stroke-opacity="0.25" stroke-width="0.6"`
     : `fill="${color}" stroke="${CONTORNO}" stroke-width="1.2" style="stroke:rgb(var(--tinta-rgb))"`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="${ESTRELLA_VIEWBOX}" aria-hidden="true" focusable="false"><path d="${ESTRELLA_PATH}" ${atributos} stroke-linejoin="round"/></svg>`;
+  // Brillo (solo en el mapa, no en la leyenda): un halo del color de su grupo, como
+  // una estrella de verdad. Lee mejor que el borde oscuro sobre las teselas de noche
+  // y deja ver la categoría aunque la estrella sea chica (Luis, 6-oct-2026).
+  const halo = brillo ? ` style="overflow:visible;filter:drop-shadow(0 0 ${tenue ? 2 : 4}px ${color})"` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="${ESTRELLA_VIEWBOX}" aria-hidden="true" focusable="false"${halo}><path d="${ESTRELLA_PATH}" ${atributos} stroke-linejoin="round"/></svg>`;
 }

@@ -16,7 +16,7 @@ import { svgEstrella } from './formas';
  * Capa de constelaciones: estrellas de OSM + líneas del árbol de expansión mínima + nombre.
  *
  * Son comercios de OpenStreetMap, no aliados. Cada uno es una ESTRELLA del color
- * de su grupo (`grupos.ts`), tenue (~55 % de opacidad, sin borde grueso): 12 px las
+ * de su grupo (`grupos.ts`), tenue (~75 % de opacidad y un halo de su color, sin borde grueso): 12 px las
  * que están en una constelación, 9 px las sueltas, contra 28 px opacos de un
  * aliado (Luis, 4-oct-2026: el tamaño dice aliado/comercio, el color la
  * categoría; el equipo pidió un mapa menos recargado). Se dibujan DEBAJO de los
@@ -48,7 +48,7 @@ function iconoComercio(grupo: Grupo, suelto: boolean) {
   if (!icono) {
     icono = L.divIcon({
       className: '',
-      html: `<span class="caja-estrella">${svgEstrella(grupo.color, suelto ? 9 : 12, { tenue: true })}</span>`,
+      html: `<span class="caja-estrella">${svgEstrella(grupo.color, suelto ? 9 : 12, { tenue: true, brillo: true })}</span>`,
       iconSize: [44, 44],
       iconAnchor: [22, 22],
       popupAnchor: [0, -8],

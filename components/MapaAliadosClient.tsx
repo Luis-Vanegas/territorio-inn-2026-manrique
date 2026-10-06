@@ -46,7 +46,7 @@ function iconoGrupo(grupo: Grupo, activo: boolean) {
   if (!icono) {
     icono = L.divIcon({
       className: '', // Leaflet mete estilos propios si esto queda vacío por defecto
-      html: `<span class="marcador-grupo${activo ? ' marcador-grupo--activo' : ''}">${svgEstrella(grupo.color, 28)}</span>`,
+      html: `<span class="marcador-grupo${activo ? ' marcador-grupo--activo' : ''}">${svgEstrella(grupo.color, 28, { brillo: true })}</span>`,
       iconSize: [44, 44],
       iconAnchor: [22, 22],
       popupAnchor: [0, -16],

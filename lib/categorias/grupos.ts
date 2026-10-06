@@ -70,6 +70,7 @@ const GRUPO_DE_CATEGORIA: Record<string, IdGrupo> = {
   construccion: 'oficios',
   mecanica_motos: 'oficios',
   tecnologia_celulares: 'oficios',
+  diseno_publicidad: 'oficios',
   lavanderia: 'oficios',
   transporte_domicilios: 'oficios',
   tecnologia: 'oficios',
