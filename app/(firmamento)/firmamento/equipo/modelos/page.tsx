@@ -10,6 +10,7 @@ import { exigirEquipo } from '@/lib/auth/firmamento';
 import { aprendizajeSugeridor } from '@/lib/db/equipo.repo';
 import { EVALUACION } from '@/lib/firmamento/evaluacionModelo';
 import { OSM } from '@/lib/firmamento/territorio';
+import { PruebaSugeridor } from './_components/PruebaSugeridor';
 
 export const metadata: Metadata = { title: 'Modelos' };
 
@@ -93,6 +94,14 @@ export default async function ModelosPage() {
           </Tarjeta>
         </div>
       </VentanaNoche>
+
+      <Tarjeta titulo="Pruébalo" id="titulo-prueba">
+        <p className="mb-4 max-w-prose font-sans text-sm leading-relaxed text-tinta/70">
+          Escribe el nombre de un negocio y mira qué categoría propone. Corre en tu navegador: lo que escribes aquí no
+          se envía ni se guarda.
+        </p>
+        <PruebaSugeridor />
+      </Tarjeta>
 
       <Tarjeta titulo="Lo que aprende del registro y de la moderación" id="titulo-aprendizaje" plegable abierta>
         <AprendizajeSugeridor datos={aprendizaje} />

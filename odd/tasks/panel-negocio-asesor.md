@@ -30,9 +30,9 @@ huecos menores.
       (`dentroDeManrique`) o barrio declarado distinto del oficial → «Mover mi punto» a la
       ficha, en el selector de ubicación.
 - [x] T4 · Mi constelación: recorrer las demás constelaciones en el mapa y volver a la propia.
-- [ ] T5 · Para ti: guías según las dificultades que declaró ESE negocio (`mayor_dolor`),
+- [x] T5 · Para ti: guías según las dificultades que declaró ESE negocio (`mayor_dolor`),
       otras convocatorias abiertas y botón al asesor de formalización.
-- [ ] T6 · Equipo › Modelos: cuadro «Pruébalo» (el sugeridor corre en el navegador).
+- [x] T6 · Equipo › Modelos: cuadro «Pruébalo» (el sugeridor corre en el navegador).
 - [ ] T7 · Entidad › Observatorio: «Dónde apoyar primero» con conteos de OSM por barrio /
       constelación (sin aliados).
 
@@ -67,3 +67,13 @@ para contactar» y «Proponer categoría al negocio» (necesitan estado nuevo en
 - T4 (delegado): «Mi constelación» abre en la propia y deja recorrer las cercanas (lista con
   `BotonConstelacion` + «Ver una sola» del mapa) y «Volver a la mía» (`ExplorarConstelaciones`;
   `useConstelacionElegida` acepta la constelación inicial). typecheck, lint y verificar en verde. Commit 3967977.
+- T5 (delegado): «Para ti» ordena las guías por la `mayor_dolor` del negocio activo
+  (`dificultadesDeNegocio` en `cuenta.repo.ts`, con el filtro del dueño; reglas en
+  `lib/firmamento/guiasParaTi.ts`, solo guías que existen por `slug`), suma «Otras convocatorias
+  abiertas» (`listarConvocatoriasVigentes` menos las que encajan) y el asesor en una `Tarjeta`
+  plegable (`Asesor` + `consultarAsesorUsuario`: `AsesorFlotante` solo vive en el layout del sitio;
+  esa action usa el negocio más reciente de la cuenta, no el activo). typecheck, lint y verificar en
+  verde. Sin verificación en navegador (sesión de Google). Commit d7815ea.
+- T6 (delegado): «Pruébalo» en Equipo › Modelos (`PruebaSugeridor`, en el navegador, barras con
+  `BarrasCategoria`). typecheck, lint y verificar en verde. Sin verificación en navegador (sesión de
+  moderador). Commit en el siguiente registro.

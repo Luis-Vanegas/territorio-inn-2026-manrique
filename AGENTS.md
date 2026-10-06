@@ -199,7 +199,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   ejemplo de reentrenamiento es `portafolios.nombre` + `portafolios.categoria_id`
   de las filas con `portafolio_id` (ver docs/base-de-datos.md › 034). Una ficha
   con decisión del equipo (`fichasConCategoriaRevisada`) ya no muestra los
-  botones: otro clic no es otro ejemplo.
+  botones: otro clic no es otro ejemplo. «Pruébalo» (`equipo/modelos/_components/PruebaSugeridor.tsx`)
+  corre el mismo `sugerirCategoria` sobre nombre + descripción que escribe el equipo, sin action
+  ni formulario que se envíe, y pinta las tres más probables con `BarrasCategoria`.
 - **Campos personalizados públicos**: un campo de `definiciones_campo` solo sale en
   la vitrina si tiene `publico = true` (default `false`, migración 032). El filtro
   vive en el SQL de `portafolios.repo.ts` (`COLUMNAS_PUBLICAS`), no en el
