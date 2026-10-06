@@ -66,4 +66,4 @@ para contactar» y «Proponer categoría al negocio» (necesitan estado nuevo en
   typecheck, lint y verificar en verde. Commit 59fadba.
 - T4 (delegado): «Mi constelación» abre en la propia y deja recorrer las cercanas (lista con
   `BotonConstelacion` + «Ver una sola» del mapa) y «Volver a la mía» (`ExplorarConstelaciones`;
-  `useConstelacionElegida` acepta la constelación inicial). typecheck, lint y verificar en verde.
+  `useConstelacionElegida` acepta la constelación inicial). typecheck, lint y verificar en verde. Commit 3967977.
