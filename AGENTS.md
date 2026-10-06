@@ -531,7 +531,10 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   `bitacora` (`actor_tipo = 'entidad'`) y usa el cupo `estado` de `rateLimit.ts` (un origen
   nuevo exigiría migrar el CHECK de `intentos_registro`). La descarga CSV
   (`entidad/datos/csv/route.ts`, con guarda) sale de `lib/firmamento/datosAbiertos.ts`, que
-  solo reordena `DatosAbiertos`: una celda «<5» sigue «<5».
+  solo reordena `DatosAbiertos`: una celda «<5» sigue «<5». «Dónde apoyar primero» tiene dos
+  partes: por constelación (`ObservatorioCielo`, las más grandes de OSM) y por barrio
+  (`ApoyoPorBarrio`: barrios ordenados por locales de OSM, constelaciones de cada uno y los aliados
+  de `por_barrio` de los datos abiertos tal cual, «<5» escrito como «menos de 5», nunca restado).
 - **Imports con extensión `.ts`**: los verificadores (`scripts/verificar-*.mjs`)
   corren con `--experimental-strip-types`, que no resuelve imports sin extensión.
   Para que compartan código con la app (y no copiarlo), un archivo que ellos

@@ -33,7 +33,7 @@ huecos menores.
 - [x] T5 · Para ti: guías según las dificultades que declaró ESE negocio (`mayor_dolor`),
       otras convocatorias abiertas y botón al asesor de formalización.
 - [x] T6 · Equipo › Modelos: cuadro «Pruébalo» (el sugeridor corre en el navegador).
-- [ ] T7 · Entidad › Observatorio: «Dónde apoyar primero» con conteos de OSM por barrio /
+- [x] T7 · Entidad › Observatorio: «Dónde apoyar primero» con conteos de OSM por barrio /
       constelación (sin aliados).
 
 Decisiones abiertas para Luis (fuera de alcance por ahora): en Equipo › alertas, «Marcar
@@ -76,4 +76,9 @@ para contactar» y «Proponer categoría al negocio» (necesitan estado nuevo en
   verde. Sin verificación en navegador (sesión de Google). Commit d7815ea.
 - T6 (delegado): «Pruébalo» en Equipo › Modelos (`PruebaSugeridor`, en el navegador, barras con
   `BarrasCategoria`). typecheck, lint y verificar en verde. Sin verificación en navegador (sesión de
-  moderador). Commit en el siguiente registro.
+  moderador). Commit 027952f.
+- T7 (delegado): el observatorio ya tenía «Dónde apoyar primero» por constelación
+  (`ObservatorioCielo`); se suma la parte por barrio (`entidad/_components/ApoyoPorBarrio.tsx`: los 5
+  barrios con más locales de OSM, sus constelaciones y los aliados de `por_barrio` de los datos
+  abiertos, ya suprimidos). Sin repos de negocios (`verificar-entidades`: 11 archivos del panel).
+  typecheck, lint y verificar en verde. Sin verificación en navegador (sesión de entidad).
