@@ -25,7 +25,7 @@ huecos menores.
 - [x] T1 · Inicio del negocio: tarjeta «Dónde estás» con mapa pequeño (su punto, aliados
       aprobados y comercios de OSM cercanos), nombre de su constelación o «estrella suelta»,
       cuántos negocios hay cerca y botón a «Mi constelación».
-- [ ] T2 · Inicio: «Editar mi ficha» junto a «Así te ven en Constelaciones».
+- [x] T2 · Inicio: «Editar mi ficha» junto a «Así te ven en Constelaciones».
 - [ ] T3 · Aviso de ubicación (Inicio y Mi constelación): fuera de la Comuna 3
       (`dentroDeManrique`) o barrio declarado distinto del oficial → «Mover mi punto» a la
       ficha, en el selector de ubicación.
@@ -57,4 +57,6 @@ para contactar» y «Proponer categoría al negocio» (necesitan estado nuevo en
 - T1 (delegado): «Dónde estás» en el inicio (`negocio/_components/DondeEstas.tsx`) con `MapaAliados`
   acercado al punto; la cuenta de «qué hay cerca» se movió a `lib/firmamento/entorno.ts`
   (`entornoDeNegocio`), que usan el inicio y «Mi constelación». typecheck, lint y verificar en verde.
-  Sin verificación en navegador (el panel exige sesión de Google).
+  Sin verificación en navegador (el panel exige sesión de Google). Commit 2f9cc5c.
+- T2 (delegado): «Editar mi ficha» junto a «Ver mi ficha en Constelaciones» en «Así te ven tus vecinos»
+  (también cuando aún no está publicada). typecheck, lint y verificar en verde.

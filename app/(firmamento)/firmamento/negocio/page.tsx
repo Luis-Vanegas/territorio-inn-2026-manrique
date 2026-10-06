@@ -215,14 +215,20 @@ export default async function NegocioInicioPage({
             <div className="modo-dia mb-3 rounded-xl bg-hueso px-4 pb-4 text-tinta [&_article]:border-t-0 [&_article]:pb-0 [&_article]:pt-4">
               <TarjetaEmprendimiento portafolio={portafolio} indice={0} definicionesCampos={[]} vistaPrevia />
             </div>
-            {publicada ? (
-              <a href={hrefFichaPublica(portafolio)!} target="_blank" rel="noopener" className={CLASE_BOTON_PANEL}>
-                Ver mi ficha en Constelaciones <span aria-hidden="true">↗</span>
-                <span className="sr-only"> (se abre en otra pestaña)</span>
-              </a>
-            ) : (
-              <p className="font-sans text-sm text-tinta/70">Aún no se ve en Constelaciones: aparece apenas la aprobemos.</p>
+            {!publicada && (
+              <p className="mb-3 font-sans text-sm text-tinta/70">Aún no se ve en Constelaciones: aparece apenas la aprobemos.</p>
             )}
+            <div className="flex flex-wrap gap-3">
+              {publicada && (
+                <a href={hrefFichaPublica(portafolio)!} target="_blank" rel="noopener" className={CLASE_BOTON_PANEL}>
+                  Ver mi ficha en Constelaciones <span aria-hidden="true">↗</span>
+                  <span className="sr-only"> (se abre en otra pestaña)</span>
+                </a>
+              )}
+              <Link href="/firmamento/negocio/ficha" className={CLASE_BOTON_PANEL}>
+                Editar mi ficha
+              </Link>
+            </div>
           </Tarjeta>
         </div>
 
