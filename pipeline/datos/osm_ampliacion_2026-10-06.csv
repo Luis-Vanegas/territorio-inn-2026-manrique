@@ -1,0 +1,490 @@
+osm_tipo,osm_id,nombre,shop,craft,office,categoria
+node,629561820,Taller de Encuadernación,copyshop,,,diseno_publicidad
+node,662253129,Auros copias,copyshop,,,diseno_publicidad
+node,1240468734,Internet,copyshop,,,diseno_publicidad
+node,1434713805,Fotocopias,copyshop,,,diseno_publicidad
+node,1434733188,Ser-copias,copyshop,,,diseno_publicidad
+node,1742213122,Impresos PVM,copyshop,,,diseno_publicidad
+node,1743029555,Hollman impresores,copyshop,,,diseno_publicidad
+node,1862259647,Centrocopias Bellas Artes,copyshop,,,diseno_publicidad
+node,1997308094,Copias y Copias,copyshop,,,diseno_publicidad
+node,1997308152,Tipografía DistriSellos,copyshop,,,diseno_publicidad
+node,1997309652,Makroservicios Express,copyshop,,,diseno_publicidad
+node,1997309654,Mecanocopias,copyshop,,,diseno_publicidad
+node,1997309658,Minolta del Sur Insumos,copyshop,,,diseno_publicidad
+node,1997309679,Plotter,copyshop,,,diseno_publicidad
+node,1997309685,Prisma,copyshop,,,diseno_publicidad
+node,2026527026,Bloque Q Piso 5,copyshop,,,diseno_publicidad
+node,2026527035,Fotocopiadora Bilioteca Arquitectura,copyshop,,,diseno_publicidad
+node,2026527041,Fotocopias Biblioteca Cede,copyshop,,,diseno_publicidad
+node,2026527048,Fotocopias Bloque B,copyshop,,,diseno_publicidad
+node,2026527070,Y-110,copyshop,,,diseno_publicidad
+node,2026668306,Copy Andes,copyshop,,,diseno_publicidad
+node,2026668308,Crayon,copyshop,,,diseno_publicidad
+node,2026668310,Euros Papeleria,copyshop,,,diseno_publicidad
+node,2026668311,Fotocopiadora Eduardo y Cia Ltda,copyshop,,,diseno_publicidad
+node,2026668312,Fotocopiadora la primera,copyshop,,,diseno_publicidad
+node,2026668313,Jackos,copyshop,,,diseno_publicidad
+node,2026668315,Pacho Copias,copyshop,,,diseno_publicidad
+node,2026668316,Print Copy,copyshop,,,diseno_publicidad
+node,2026668317,PubliDepot,copyshop,,,diseno_publicidad
+node,2026668319,Seneka,copyshop,,,diseno_publicidad
+node,2026668320,YadiCopias,copyshop,,,diseno_publicidad
+node,2026922019,Fotoc Autoservicio,copyshop,,,diseno_publicidad
+node,2469628041,Rocco Graficas,copyshop,,,diseno_publicidad
+node,2640966558,Fotocopias,copyshop,,,diseno_publicidad
+node,2640966560,Fotocopias,copyshop,,,diseno_publicidad
+node,2640966711,Laminación Anillados,copyshop,,,diseno_publicidad
+node,2713434860,GRAPH&CO Digital Printing Services,copyshop,,,diseno_publicidad
+node,3026582345,Mundo Copias,copyshop,,,diseno_publicidad
+node,3085462595,Publicidad Enlace Creativo,,,advertising_agency,diseno_publicidad
+node,3229725495,La Octava Copia,copyshop,,,diseno_publicidad
+node,3243668650,Café Internet,copyshop,,,diseno_publicidad
+node,3416665878,Plotter de la 44,copyshop,,,diseno_publicidad
+node,3417619897,Papirópolis,copyshop,,,diseno_publicidad
+node,3418425896,Canon Copiers,copyshop,,,diseno_publicidad
+node,3418425897,El Tunel,copyshop,,,diseno_publicidad
+node,3418425898,Aula de Regalos,copyshop,,,diseno_publicidad
+node,3418425899,Papelería LITTER,copyshop,,,diseno_publicidad
+node,3419170209,Avisos,,signmaker,,diseno_publicidad
+node,3419253231,Avisos y publicidad,copyshop,,,diseno_publicidad
+node,3462562484,Mog's Graphic Service,copyshop,,,diseno_publicidad
+node,3545044620,Arcoiris,copyshop,,,diseno_publicidad
+node,3751119880,Diseño G.F,copyshop,,,diseno_publicidad
+node,3756069068,Fotocopias Desde 35,copyshop,,,diseno_publicidad
+node,3756747894,Avisos Y&P,copyshop,printmaker,,diseno_publicidad
+node,3823139763,Fotocopiadora,copyshop,,,diseno_publicidad
+node,3942613011,Acuarium.Net,copyshop,,,diseno_publicidad
+node,4103559394,Plotter,copyshop,,,diseno_publicidad
+node,4103559395,Plotter,copyshop,,,diseno_publicidad
+node,4103559400,Plotter,copyshop,,,diseno_publicidad
+node,4103672116,Flash copias,copyshop,,,diseno_publicidad
+node,4103672118,Distribuidora emprender,copyshop,,,diseno_publicidad
+node,4103672129,Centro copiado la 47,copyshop,,,diseno_publicidad
+node,4103672131,Rapicopias el costeño,copyshop,,,diseno_publicidad
+node,4103672132,Impresiones su mejor calidad,copyshop,,,diseno_publicidad
+node,4103672159,Copias Elite,copyshop,,,diseno_publicidad
+node,4103733471,Solucion en impresion,copyshop,,,diseno_publicidad
+node,4103881162,Copi-servicios,copyshop,,,diseno_publicidad
+node,4103882192,Plotter,copyshop,,,diseno_publicidad
+node,4103882199,Copinet fotocopias,copyshop,,,diseno_publicidad
+node,4103882201,UNIK-K,copyshop,,,diseno_publicidad
+node,4106049689,CopyAndes,copyshop,,,diseno_publicidad
+node,4108997904,El Pato Disney,copyshop,,,diseno_publicidad
+node,4112079243,Copy print,copyshop,,,diseno_publicidad
+node,4128580072,Centro De Copias Felipe,copyshop,,,diseno_publicidad
+node,4128580073,Copinet 45,copyshop,,,diseno_publicidad
+node,4128580074,ServiCopy El Castillo,copyshop,,,diseno_publicidad
+node,4178807889,Creative Color,,,advertising_agency,diseno_publicidad
+node,4361680289,Auros,copyshop,,,diseno_publicidad
+node,4375581997,Copias,copyshop,,,diseno_publicidad
+node,4382569180,K'Maleón Publicidad y Servicios,copyshop,,graphic_design,diseno_publicidad
+node,4384330183,Adrian's Publicidad,copyshop,,graphic_design,diseno_publicidad
+node,4384334731,Tipografía y Litografía Gladys,copyshop,,graphic_design,diseno_publicidad
+node,4384337129,Impresiones Nicolás,copyshop,,,diseno_publicidad
+node,4384622064,Ideas Stop,,,advertising_agency,diseno_publicidad
+node,4386610561,Macro insumos Publicidad,,,advertising_agency,diseno_publicidad
+node,4393766585,multiservicios,copyshop,,,diseno_publicidad
+node,4535043654,Impacto Publicitario,,,advertising_agency,diseno_publicidad
+node,4563075691,Max Copias Cali,copyshop,,,diseno_publicidad
+node,4691397089,Remate los Alcázares,copyshop,,,diseno_publicidad
+node,4710833890,Apoyo Grafico LTDA,copyshop,,,diseno_publicidad
+node,4753309321,Sanoi,copyshop,,,diseno_publicidad
+node,4789259422,Papeleria 51,copyshop,,,diseno_publicidad
+node,4792012222,Papelería J-Fer,copyshop,,,diseno_publicidad
+node,4848614421,Fotocopas y Papeleria,copyshop,,,diseno_publicidad
+node,4888410107,NN,copyshop,,,diseno_publicidad
+node,4929616544,Servicopias,copyshop,,,diseno_publicidad
+node,4943269021,JOTAimpresos,copyshop,,,diseno_publicidad
+node,5028998562,Techno villa,copyshop,,,diseno_publicidad
+node,5040011924,Maskopias,copyshop,,,diseno_publicidad
+node,5040023051,Arcoiris,copyshop,,,diseno_publicidad
+node,5117653043,Tipografia Litografia Cristal Impresores,copyshop,,,diseno_publicidad
+node,5121017530,Avisos,copyshop,,graphic_design,diseno_publicidad
+node,5122430932,Fotocopiadoras,copyshop,,,diseno_publicidad
+node,5122784161,Rapidisimo,copyshop,,,diseno_publicidad
+node,5126820136,Auros,copyshop,,,diseno_publicidad
+node,5127233695,Rojinegro Distribuidora Libertaria,,,graphic_design,diseno_publicidad
+node,5127233696,Libros de Viejo y Nuevos,,,graphic_design,diseno_publicidad
+node,5128887282,Express,copyshop,,,diseno_publicidad
+node,5128998235,Gimac,,,graphic_design,diseno_publicidad
+node,5129230485,D3 Publicidad,copyshop,,graphic_design,diseno_publicidad
+node,5129285968,Impresos Glasé,copyshop,,graphic_design,diseno_publicidad
+node,5131542676,Impresion Digital Al Instante,copyshop,printer,,diseno_publicidad
+node,5131921173,Fotos,copyshop,,,diseno_publicidad
+node,5131985199,Avisos Impresión Digital,copyshop,,graphic_design,diseno_publicidad
+node,5133412921,Fotocopias Impresiones,copyshop,,,diseno_publicidad
+node,5133548965,Eco Print,printing,,,diseno_publicidad
+node,5133561947,Epson,copyshop,,,diseno_publicidad
+node,5133566076,Gráficas Bacatá,copyshop,,graphic_design,diseno_publicidad
+node,5133566103,Fotos,copyshop,,,diseno_publicidad
+node,5133796890,Plog,printing,,,diseno_publicidad
+node,5133863496,Punto Digital,copyshop,,,diseno_publicidad
+node,5134046378,FedEx,copyshop,,,diseno_publicidad
+node,5134046380,Aviatur Campus,copyshop,,,diseno_publicidad
+node,5134110971,RRes Impresores,copyshop,printmaker,,diseno_publicidad
+node,5135471887,Fotocopias De La 73,copyshop,,,diseno_publicidad
+node,5135627565,Copy,copyshop,,,diseno_publicidad
+node,5135677574,Color Copy,copyshop,,,diseno_publicidad
+node,5135725701,Universal de Calcomanias,printing,printer,,diseno_publicidad
+node,5135725702,Legado Publicidad,printing,,,diseno_publicidad
+node,5135816394,Print Market,printing,,,diseno_publicidad
+node,5135816404,Serigrafía,copyshop,printer,,diseno_publicidad
+node,5135816409,Tipografía y Litografía,copyshop,printer,,diseno_publicidad
+node,5135816410,Trama Gráfica,copyshop,printer,,diseno_publicidad
+node,5135816411,Marketing Impreso,copyshop,,,diseno_publicidad
+node,5135823773,Design Colors,copyshop,,,diseno_publicidad
+node,5135823774,PrismAcrílicos,copyshop,printmaker,,diseno_publicidad
+node,5135823779,Impacto Gráfico,copyshop,,,diseno_publicidad
+node,5135823783,Solucion Creativa Digital Printing,printing,,,diseno_publicidad
+node,5135823788,Barac Publicidad,copyshop,printmaker,,diseno_publicidad
+node,5135823803,Lanyllando,copyshop,printmaker,,diseno_publicidad
+node,5135958452,Estampados,copyshop,printer,,diseno_publicidad
+node,5135958455,Grafica Digital,copyshop,,,diseno_publicidad
+node,5135958464,Advanz,copyshop,printmaker,,diseno_publicidad
+node,5136295380,Material Publicitario Impresión Digital,printing,,,diseno_publicidad
+node,5137714318,Señal Print,printing,,,diseno_publicidad
+node,5138210257,Fotocopias,copyshop,,,diseno_publicidad
+node,5138232411,Fotos,copyshop,,,diseno_publicidad
+node,5143632449,Colopi,copyshop,,,diseno_publicidad
+node,5143777943,Papeleria Columbia Fotocopias,copyshop,,,diseno_publicidad
+node,5143900865,Gran Formato,,,graphic_design,diseno_publicidad
+node,5143900993,Waxi Acrilicos,copyshop,printmaker,,diseno_publicidad
+node,5143901017,H & D,copyshop,printmaker,,diseno_publicidad
+node,5145488351,Acrigrafic,copyshop,printmaker,,diseno_publicidad
+node,5145488354,Avisos TD,copyshop,printmaker,,diseno_publicidad
+node,5145488359,Avisos Lena,copyshop,printmaker,,diseno_publicidad
+node,5145557146,Apronev,copyshop,printmaker,,diseno_publicidad
+node,5145605225,Original Kopias,copyshop,,,diseno_publicidad
+node,5145871459,Copias,copyshop,,,diseno_publicidad
+node,5146139240,Casa Trodat,copyshop,printmaker,,diseno_publicidad
+node,5146146239,Central de Copiado,copyshop,printmaker,,diseno_publicidad
+node,5146266679,Centro De Diseño Impresion Y Publicidad,copyshop,,,diseno_publicidad
+node,5147929794,AH Publicidad,copyshop,printmaker,,diseno_publicidad
+node,5148012929,Avisos,printing,,,diseno_publicidad
+node,5148470426,Multiservicios Felmar,copyshop,,,diseno_publicidad
+node,5148637897,Fotocopias,copyshop,,,diseno_publicidad
+node,5150247141,Copynamos,copyshop,,,diseno_publicidad
+node,5150289281,Fotocopias,copyshop,,,diseno_publicidad
+node,5150316204,Litografía,,,advertising_agency,diseno_publicidad
+node,5152527737,Digital Conviction,copyshop,,,diseno_publicidad
+node,5152593374,Toner Factory,copyshop,,,diseno_publicidad
+node,5157570290,Llamadas Internaionales,copyshop,,,diseno_publicidad
+node,5157661418,Globalcom,copyshop,,,diseno_publicidad
+node,5157786728,Cartuchos,copyshop,,,diseno_publicidad
+node,5158001489,Papelería,copyshop,,,diseno_publicidad
+node,5159201525,Impresion Digital,,,graphic_design,diseno_publicidad
+node,5159632636,Papel Todo,copyshop,,,diseno_publicidad
+node,5159692585,Impresión Vinilo,copyshop,printmaker,,diseno_publicidad
+node,5159735038,Alemana,copyshop,printmaker,,diseno_publicidad
+node,5159935356,Diseños y Estampados DC,copyshop,printer,,diseno_publicidad
+node,5161104218,Avisos Plotter,printing,,,diseno_publicidad
+node,5161384207,Fábrica de Impresos,,,graphic_design,diseno_publicidad
+node,5161632178,Lito Print,printing,,,diseno_publicidad
+node,5161632181,Avisos,,,graphic_design,diseno_publicidad
+node,5161687065,LaImprenta.co,copyshop,,,diseno_publicidad
+node,5163172998,Internet Fotocopias,copyshop,,,diseno_publicidad
+node,5163487123,Vinilaser Señalizacion,copyshop,printer,,diseno_publicidad
+node,5163487124,Señalygraf,copyshop,printer,,diseno_publicidad
+node,5163487136,Acrilicos Avisos,,signmaker,,diseno_publicidad
+node,5163540792,Grabados Publicitarios,,,advertising_agency,diseno_publicidad
+node,5163540795,Plotter,copyshop,,,diseno_publicidad
+node,5163860939,Qualiprint,copyshop,printer,,diseno_publicidad
+node,5168557254,Centrocopias e Impresiones,copyshop,,,diseno_publicidad
+node,5171444930,Portal Fotocopias,copyshop,,,diseno_publicidad
+node,5171592637,Valentina Fotocopias,copyshop,,,diseno_publicidad
+node,5173299040,Papeleria,copyshop,,,diseno_publicidad
+node,5173355532,La Tienda del Grabado,copyshop,printer,,diseno_publicidad
+node,5173446701,Impresion,copyshop,,,diseno_publicidad
+node,5173613848,Papeleria & Dulceria,copyshop,,,diseno_publicidad
+node,5173834333,Reprograf,copyshop,,,diseno_publicidad
+node,5173857733,Copicomputo 61,copyshop,,,diseno_publicidad
+node,5173857771,Plotter,copyshop,,,diseno_publicidad
+node,5175102452,La Milagrosa Servicio Express,copyshop,,,diseno_publicidad
+node,5176734837,Avisos,,,advertising_agency,diseno_publicidad
+node,5176847669,In Print,printing,,,diseno_publicidad
+node,5177365447,Comcel,copyshop,,,diseno_publicidad
+node,5177365448,Papel & Láple,copyshop,,,diseno_publicidad
+node,5178332194,TN Print,copyshop,printmaker,,diseno_publicidad
+node,5178332195,Advanz,copyshop,printmaker,,diseno_publicidad
+node,5178499803,fotocopias,copyshop,,,diseno_publicidad
+node,5178546615,Avisos,copyshop,printmaker,,diseno_publicidad
+node,5184572419,Fotografia Digital,copyshop,,,diseno_publicidad
+node,5184776780,Papeleria Y Miscelánea,copyshop,,,diseno_publicidad
+node,5186624770,Camaleon,copyshop,,,diseno_publicidad
+node,5186690535,Impresion Digital,copyshop,,,diseno_publicidad
+node,5186811182,Colombia Imagen,copyshop,,,diseno_publicidad
+node,5187226494,Papelería,copyshop,,,diseno_publicidad
+node,5187472493,Promos,copyshop,printmaker,,diseno_publicidad
+node,5203139981,Lau,copyshop,,,diseno_publicidad
+node,5205006970,Fotocopias,copyshop,,,diseno_publicidad
+node,5206760336,Publinstant,copyshop,,graphic_design,diseno_publicidad
+node,5208524624,Variedades Luz-K,copyshop,,,diseno_publicidad
+node,5208662834,Lion Graficas,copyshop,,,diseno_publicidad
+node,5208877018,Fotocopias,copyshop,,,diseno_publicidad
+node,5208877264,Art - Graf,copyshop,printmaker,,diseno_publicidad
+node,5208877265,Lito Impresos Jacar,copyshop,printmaker,,diseno_publicidad
+node,5208928482,Bordicenter,copyshop,,,diseno_publicidad
+node,5208985627,Multicolor,copyshop,,,diseno_publicidad
+node,5209173448,Avisos Impresión Digital,copyshop,,,diseno_publicidad
+node,5214890316,Impresion digital,copyshop,,,diseno_publicidad
+node,5218613658,Papelería D'matias,copyshop,,,diseno_publicidad
+node,5218944540,Foto Picasso,copyshop,,,diseno_publicidad
+node,5220057126,Tintas & Tintas,copyshop,,,diseno_publicidad
+node,5220313298,Impresion Avisos,copyshop,,,diseno_publicidad
+node,5220408042,llamadas a Todo Operador,copyshop,,,diseno_publicidad
+node,5226672135,Jacna LTDA Publicitarios,,,advertising_agency,diseno_publicidad
+node,5227257603,D-K-CHE,copyshop,printmaker,,diseno_publicidad
+node,5227274887,Grabaddy Corte Laser,copyshop,,,diseno_publicidad
+node,5228466430,Plotter,copyshop,,,diseno_publicidad
+node,5228548662,Plotter,copyshop,,,diseno_publicidad
+node,5229062780,El Baul De Los Detalles,copyshop,,,diseno_publicidad
+node,5229160244,Interpapelera,copyshop,,,diseno_publicidad
+node,5229206861,Comunitel,copyshop,,,diseno_publicidad
+node,5230656437,Koral Copias Ltda.,copyshop,,,diseno_publicidad
+node,5230746815,Estratégica,,,advertising_agency,diseno_publicidad
+node,5230915283,Papeleria Y Centro De Copiado,copyshop,,,diseno_publicidad
+node,5231214654,Cabinas Servicopias,copyshop,,,diseno_publicidad
+node,5232999445,Foto Almacen Jersey,copyshop,,,diseno_publicidad
+node,5233194853,Holly Net,copyshop,,,diseno_publicidad
+node,5233329967,Fotocopias,copyshop,,,diseno_publicidad
+node,5233502754,Mundo Acopies,copyshop,,,diseno_publicidad
+node,5235465475,Brand,copyshop,,,diseno_publicidad
+node,5239723494,Eko,copyshop,,,diseno_publicidad
+node,5239867848,Maxy,copyshop,,,diseno_publicidad
+node,5239867932,Papeleria Voguls,copyshop,,,diseno_publicidad
+node,5240209103,Auros,copyshop,,,diseno_publicidad
+node,5240217718,Vision Grafica JAC,copyshop,,graphic_design,diseno_publicidad
+node,5241257880,Impresión Digital - Pendones,copyshop,,,diseno_publicidad
+node,5241275788,Formas y Textos,copyshop,,graphic_design,diseno_publicidad
+node,5241275793,FG,copyshop,,graphic_design,diseno_publicidad
+node,5250622069,Papely Lapiz,copyshop,,,diseno_publicidad
+node,5250811572,Fotocopias,copyshop,,,diseno_publicidad
+node,5283075373,Distolcopias,copyshop,,,diseno_publicidad
+node,5390388816,Pixell,,,graphic_design,diseno_publicidad
+node,5432472536,EcoGraficas,copyshop,,,diseno_publicidad
+node,5543879992,Copias y Variedades Javis,copyshop,,,diseno_publicidad
+node,5619439579,Litografía,copyshop,,,diseno_publicidad
+node,5619439582,Papelería,copyshop,,,diseno_publicidad
+node,5705926508,Fotocopias Ruli,copyshop,,,diseno_publicidad
+node,5754535405,Litografia Sellos,copyshop,,,diseno_publicidad
+node,5794579133,Cetak,copyshop,,,diseno_publicidad
+node,5798901347,Electropura,copyshop,,,diseno_publicidad
+node,5820606938,fotocopiadora don Alberto,copyshop,,,diseno_publicidad
+node,5999320887,"Fotocopiadora ""Chemo""",copyshop,,,diseno_publicidad
+node,6025186380,Jaime's Publicidad,,,advertising_agency,diseno_publicidad
+node,6026258856,Zeus,copyshop,,,diseno_publicidad
+node,6032137065,Studio Brand,copyshop,,,diseno_publicidad
+node,6032137066,Unicopias,copyshop,,,diseno_publicidad
+node,6038276154,Meca,copyshop,,,diseno_publicidad
+node,6049542761,Centro de copiado Copi-Nel,copyshop,,,diseno_publicidad
+node,6088710772,Visual Design,,,advertising_agency,diseno_publicidad
+node,6088741234,Polarizados y Avisos Estrada,,,graphic_design,diseno_publicidad
+node,6133918862,Guajira estereo,,,advertising_agency,diseno_publicidad
+node,6133918863,Guajira Televisión,,,advertising_agency,diseno_publicidad
+node,6226260285,Casa del Tiplex,copyshop,,,diseno_publicidad
+node,6237242587,Cemex Itagui,copyshop,,,diseno_publicidad
+node,6315246765,Plotter 43,copyshop,,,diseno_publicidad
+node,6330738237,A.D.I.S PUBLICIDAD Y DISEÑO,copyshop,,,diseno_publicidad
+node,6340807262,La Libelulaaz,copyshop,,,diseno_publicidad
+node,6352691235,Plottero soluciones gráficas,copyshop,,,diseno_publicidad
+node,6381942003,Litográficas Jose Luis Pieruccinni,,,graphic_design,diseno_publicidad
+node,6384482985,Idear Impresión,copyshop,printer,graphic_design,diseno_publicidad
+node,6384499021,Litografía Real,,,graphic_design,diseno_publicidad
+node,6385917825,Fotocopias - Minutos,copyshop,,,diseno_publicidad
+node,6389675627,Inngo,,,advertising_agency,diseno_publicidad
+node,6393527093,Copycentro,copyshop,,,diseno_publicidad
+node,6437216004,Copias N° Uno,copyshop,,,diseno_publicidad
+node,6501137711,Too Publicidad,,,advertising_agency,diseno_publicidad
+node,6513742925,Litho Copias,copyshop,,,diseno_publicidad
+node,6520145566,Escala,,,advertising_agency,diseno_publicidad
+node,6584251130,C y P,copyshop,,,diseno_publicidad
+node,6614898715,Le Champ Centro de copiado,copyshop,,,diseno_publicidad
+node,6867704207,Miscelánea - Fotocopias,copyshop,,,diseno_publicidad
+node,7036544210,Papelería INK Tech,copyshop,,,diseno_publicidad
+node,7036544230,Papelería y Miscelanea,copyshop,,,diseno_publicidad
+node,7036544231,Papelería La Nube,copyshop,,,diseno_publicidad
+node,7037244937,Papelería y Micelanea Luz,copyshop,,,diseno_publicidad
+node,7037244939,Papelería Multiservicios A & L,copyshop,,,diseno_publicidad
+node,7125234951,La Linterna,books,printer,,papeleria
+node,7160671134,SoluPrint,copyshop,,,diseno_publicidad
+node,7259597058,Foto Offset,copyshop,,,diseno_publicidad
+node,7403520768,Mediar3D,,,advertising_agency,diseno_publicidad
+node,7477139262,JH Rocket - Agencia de Marketing Digital & Publicidad,,,advertising_agency,diseno_publicidad
+node,7535706737,Miscelanea & papelería Zambrano Re yes,copyshop,,,diseno_publicidad
+node,7738641235,Impresos Nobel,,,advertising_agency,diseno_publicidad
+node,7752785836,Kiubo Papelería,copyshop,,,diseno_publicidad
+node,7752785837,Wigo,copyshop,,,diseno_publicidad
+node,8484879110,JK Impresores,,,advertising_agency,diseno_publicidad
+node,8493457760,Marca Publicidad,,,advertising_agency,diseno_publicidad
+node,8565485230,XUA,,,advertising_agency,diseno_publicidad
+node,8712633356,Contacto Publicidad,,,advertising_agency,diseno_publicidad
+node,8726286997,Conceptos Diseño y Soluciones Visuales,,,advertising_agency,diseno_publicidad
+node,8978552949,Miscelanea y Papelería Lodimar,copyshop,,,diseno_publicidad
+node,9222394341,Melborp,,,advertising_agency,diseno_publicidad
+node,9335859937,Max color,,,advertising_agency,diseno_publicidad
+node,9364086316,Hacemos Comunicación,,,advertising_agency,diseno_publicidad
+node,9490692099,Alejandro Penagos Publicidad,,,advertising_agency,diseno_publicidad
+node,9780271547,Papeleria y Piñateria,copyshop,,,diseno_publicidad
+node,10125938951,Copy Maxi,copyshop,,,diseno_publicidad
+node,10133170164,Digi Tech,copyshop,,,diseno_publicidad
+node,10175952775,Penta Publicidad,,,advertising_agency,diseno_publicidad
+node,10215860481,Gráficas e Ingeniería SAS,,,graphic_design,diseno_publicidad
+node,10236239553,Compraventa Universal,copyshop,,,diseno_publicidad
+node,10240275129,Magifoto,copyshop,,,diseno_publicidad
+node,10241238542,Estampados Personalizados,,signmaker,,diseno_publicidad
+node,10242281482,Fixtekk,copyshop,electronics_repair,,diseno_publicidad
+node,10242442762,Copyserve,copyshop,,,diseno_publicidad
+node,10242914849,Servi-Offic,copyshop,,,diseno_publicidad
+node,10255640857,La 38,copyshop,,,diseno_publicidad
+node,10255640858,Novedades Amor Numero 2,copyshop,,,diseno_publicidad
+node,10268588145,Papelería Expresar,copyshop,,,diseno_publicidad
+node,10268588168,Magifoto,copyshop,,,diseno_publicidad
+node,10270215033,El Chazero S.A.S,copyshop,,,diseno_publicidad
+node,10273752373,Unitoranth,copyshop,,,diseno_publicidad
+node,10278107386,Copycom Center,copyshop,,,diseno_publicidad
+node,10298833866,Publicidad Rincon,,,advertising_agency,diseno_publicidad
+node,10304718299,Papelería Pirámide,copyshop,,,diseno_publicidad
+node,10307471161,Copiya Pereira,copyshop,,,diseno_publicidad
+node,10555191266,Papelería Copias y Recargas.net,copyshop,,,diseno_publicidad
+node,10670096740,Plotter,copyshop,,,diseno_publicidad
+node,10704493840,Tu marca print,,signmaker,,diseno_publicidad
+node,10749850673,Auros,copyshop,,,diseno_publicidad
+node,10808292910,Auros,copyshop,,,diseno_publicidad
+node,10865145763,Global Paty,copyshop,,,diseno_publicidad
+node,11060801548,Merbs Publicidad,,,advertising_agency,diseno_publicidad
+node,11065973356,BrandLift,,,advertising_agency,diseno_publicidad
+node,11349671357,Auros,copyshop,,,diseno_publicidad
+node,11394348199,Donde Juanpablo,copyshop,,,diseno_publicidad
+node,11423782540,Publiboy Digital,,signmaker,,diseno_publicidad
+node,11423797556,GP Publicidad,,signmaker,,diseno_publicidad
+node,11423826124,Serviplotter 247,copyshop,,,diseno_publicidad
+node,11484307991,Variedades Mafer,copyshop,,,diseno_publicidad
+node,11503924569,Señalar,copyshop,,,diseno_publicidad
+node,11716179270,ARKS Impresion gran formato,copyshop,,,diseno_publicidad
+node,11802503984,Servicio de copias,copyshop,,,diseno_publicidad
+node,11916970137,Studio 747,,,graphic_design,diseno_publicidad
+node,11917019796,Gráficas Italia,,,graphic_design,diseno_publicidad
+node,11954672511,Taller de Grabado la Estampa,printing,,,diseno_publicidad
+node,12073897268,CC Graphics,,,graphic_design,diseno_publicidad
+node,12082014225,PIXELPRO,,,advertising_agency,diseno_publicidad
+node,12083752470,Papeleria,copyshop,,,diseno_publicidad
+node,12086527083,Agencia Pleka,,,advertising_agency,diseno_publicidad
+node,12116025905,El Copión,copyshop,,,diseno_publicidad
+node,12209143457,Casa con servicio de fotocopias e impresiones,copyshop,,,diseno_publicidad
+node,12285743885,FedEx Office,copyshop,,,diseno_publicidad
+node,12526674515,Impresos Leografic,,,graphic_design,diseno_publicidad
+node,12539136620,Rotulados R2,,signmaker,,diseno_publicidad
+node,12588071626,Papelería: Copy Trazos,copyshop,,,diseno_publicidad
+node,12591351049,Tech Net,copyshop,,,diseno_publicidad
+node,12717310080,Copygrafic,copyshop,,,diseno_publicidad
+node,12944027734,"Pepeleria, imprimintora",copyshop,,,diseno_publicidad
+node,12955548801,CFC Estadio Grafico,copyshop,,,diseno_publicidad
+node,13062021101,Bahaus Publicidad,copyshop,,,diseno_publicidad
+node,13131351947,Marketing CPE,,,advertising_agency,diseno_publicidad
+node,13144757029,Fotocopiar,copyshop,,,diseno_publicidad
+node,13151743201,GP Impresiones,copyshop,,,diseno_publicidad
+node,13207921104,Auros,copyshop,,,diseno_publicidad
+node,13276541288,Marca color,,,advertising_agency,diseno_publicidad
+node,13296780381,DPS Creativo,,,advertising_agency,diseno_publicidad
+node,13414334838,Taller Creativo,,,graphic_design,diseno_publicidad
+node,13588542427,servi-copy,copyshop,,,diseno_publicidad
+node,13682667212,Pixel,copyshop,,,diseno_publicidad
+node,13719046123,Foto Prisma,copyshop,,,diseno_publicidad
+node,13751693107,Baes,printing,,,diseno_publicidad
+node,13810105956,Ingearqui e Impresiones,,signmaker,,diseno_publicidad
+node,13810105958,HCM,,,advertising_agency,diseno_publicidad
+node,13861497758,Impacta,,,advertising_agency,diseno_publicidad
+node,13861497759,Acrílicos Armenia,,,advertising_agency,diseno_publicidad
+node,13884364742,Macaw Digital Pro,,,advertising_agency,diseno_publicidad
+node,13927008516,PYMECAD - LOCAL 8,,,graphic_design,diseno_publicidad
+node,13939264073,Dipro,printing,,,diseno_publicidad
+node,14003892351,+Estampados,copyshop,,,diseno_publicidad
+node,14021161504,Litografía Grafitor Impresores,printing,,,diseno_publicidad
+node,14027460030,Infinity,,,advertising_agency,diseno_publicidad
+node,14027565642,Corte y Grabado Laser,,,graphic_design,diseno_publicidad
+node,14030303028,Publicidad Que Impresiona,,,advertising_agency,diseno_publicidad
+node,14048262043,Litografía Americana,printing,,,diseno_publicidad
+node,14048262044,Pronto Grafic,,,advertising_agency,diseno_publicidad
+node,14048262047,Litografía Caribe,printing,,,diseno_publicidad
+node,14048262049,JC Publicidad,,,advertising_agency,diseno_publicidad
+node,14048262050,MagicArt,,,advertising_agency,diseno_publicidad
+node,14048262055,James: Bordados & Publicidad,,,advertising_agency,diseno_publicidad
+node,14048262056,Artes Gráficas Jorpal,,,advertising_agency,diseno_publicidad
+node,14055494465,Jota Soluciones,,,advertising_agency,diseno_publicidad
+node,14055494470,Planchas Litográficas,printing,,,diseno_publicidad
+node,14117745596,Publicidad,,,advertising_agency,diseno_publicidad
+node,14190534852,Litografía Diseñarte,,,graphic_design,diseno_publicidad
+node,14218743481,Tecnicopiamos,,,advertising_agency,diseno_publicidad
+way,184973585,Torito Publicidad,,,advertising_agency,diseno_publicidad
+way,188248357,Centro Nacional de Artes Gráficas,copyshop,,,diseno_publicidad
+way,231140223,universo publicidad,,,advertising_agency,diseno_publicidad
+way,333594564,Fotocopias Catastral,copyshop,,,diseno_publicidad
+way,372071269,Centro de copiado Virtual Center,copyshop,,,diseno_publicidad
+way,372071272,Librería Fotocopiadora Lider,copyshop,,,diseno_publicidad
+way,380020463,Impresiones Rotamnundo,copyshop,,,diseno_publicidad
+way,409854431,JD MARKETING DIGITAL,,,advertising_agency,diseno_publicidad
+way,409891717,RIVERA,,,advertising_agency,diseno_publicidad
+way,442365061,Publilab Laboratorio de Ideas,copyshop,,,diseno_publicidad
+way,528195572,La Imprenta,copyshop,,,diseno_publicidad
+way,529301147,Litografia,copyshop,,,diseno_publicidad
+way,537241397,Papiromania,printing,,,diseno_publicidad
+way,540740697,El Imperio Papeleria,copyshop,,,diseno_publicidad
+way,540855619,Avisos,copyshop,,,diseno_publicidad
+way,670006992,Gulupa Digital,,,advertising_agency,diseno_publicidad
+way,670600241,Copiatlántico,copyshop,,,diseno_publicidad
+way,670600243,La Carpita Verde,copyshop,,,diseno_publicidad
+way,694338592,Tipografía y litografía,,,advertising_agency,diseno_publicidad
+way,694410430,Escala,,,advertising_agency,diseno_publicidad
+way,695880188,Ciudad Plus,,,advertising_agency,diseno_publicidad
+way,695959439,El Clon,copyshop,,,diseno_publicidad
+way,749810058,Carpa Roja,copyshop,,,diseno_publicidad
+way,789299839,Grafitalia Ltda,copyshop,,,diseno_publicidad
+way,806143911,Publicidad Petos,,,advertising_agency,diseno_publicidad
+way,813540505,Editorial Mejoras,copyshop,,graphic_design,diseno_publicidad
+way,867557394,Juancho Calcomanias,,,advertising_agency,diseno_publicidad
+way,940802493,Copys,copyshop,,,diseno_publicidad
+way,1046349676,Publicidad,,,advertising_agency,diseno_publicidad
+way,1046349677,Lea Publicidad,,,advertising_agency,diseno_publicidad
+way,1046351738,Grafk,,,advertising_agency,diseno_publicidad
+way,1046351739,Caja de Ideas,,,advertising_agency,diseno_publicidad
+way,1046351740,Idea grafik,,,advertising_agency,diseno_publicidad
+way,1046354435,Francer,,,advertising_agency,diseno_publicidad
+way,1046354436,Sublimarcs,,,advertising_agency,diseno_publicidad
+way,1046354443,llaveros,,,advertising_agency,diseno_publicidad
+way,1046354444,Villadiego,,,advertising_agency,diseno_publicidad
+way,1046354445,Creativa.com,,,advertising_agency,diseno_publicidad
+way,1046354446,Artek,,,advertising_agency,diseno_publicidad
+way,1046354447,Don Gato,,,advertising_agency,diseno_publicidad
+way,1046354449,Imagina,,,advertising_agency,diseno_publicidad
+way,1046354450,Todo Led Cucuta,,,advertising_agency,diseno_publicidad
+way,1046358470,Spaciality,,,advertising_agency,diseno_publicidad
+way,1046869176,Logo publicidad,,,advertising_agency,diseno_publicidad
+way,1046915124,Boton creativo,,,advertising_agency,diseno_publicidad
+way,1047306521,Ro,,,advertising_agency,diseno_publicidad
+way,1047306523,Universal,,,advertising_agency,diseno_publicidad
+way,1047306524,Publinsumos y MP,,,advertising_agency,diseno_publicidad
+way,1047306525,inprecreativo,,,advertising_agency,diseno_publicidad
+way,1047306526,Lor Esmeralda,,,advertising_agency,diseno_publicidad
+way,1050106906,Doble A,,,advertising_agency,diseno_publicidad
+way,1050106916,servimpresores la torre,,,advertising_agency,diseno_publicidad
+way,1207685849,Copias Caribe,copyshop,,,diseno_publicidad
+way,1207685854,Office Copy,copyshop,,,diseno_publicidad
+way,1207685861,Ventras & Arriendos TBarboza,,signmaker,,diseno_publicidad
+way,1210867811,Estampamo,printing,,,diseno_publicidad
+way,1212108266,Arte Gráficas Lapiarte,,,graphic_design,diseno_publicidad
+way,1223375184,Mr. Makers,,signmaker,,diseno_publicidad
+way,1293124532,Ilustración,,,graphic_design,diseno_publicidad
+way,1293124533,Serigrafía,,,graphic_design,diseno_publicidad
+way,1293124534,Encuadernación,,,graphic_design,diseno_publicidad
+way,1329695334,Los gordos,copyshop,,,diseno_publicidad
+way,1349203127,Foto Almeida,copyshop,,,diseno_publicidad
+way,1351033018,El Taller de Sandrita,,,advertising_agency,diseno_publicidad
+way,1387419756,Fotocopias,copyshop,,,diseno_publicidad
+way,1413315402,Publicidad & Estampados Interp@l,,,advertising_agency,diseno_publicidad
+way,1414743675,Copitecnik S.A.S.,copyshop,,,diseno_publicidad
+way,1417423013,REVERZO,,,graphic_design,diseno_publicidad
+way,1479964481,Punto Estampado,printing,,,diseno_publicidad
+way,1499940408,Inkartagena,,,advertising_agency,diseno_publicidad
+way,1539902265,PubliVisual,,,advertising_agency,diseno_publicidad
+way,1540896761,Publisuministros,,signmaker,,diseno_publicidad

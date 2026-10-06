@@ -331,6 +331,22 @@ def por_clase_md(y, p):
     )
 
 
+def cargar_ampliacion(grupos_valle):
+    """Filas de `06_ampliacion_clases.py` (OSM en Colombia, clases escasas), o vacío.
+
+    Solo entrenan, nunca se evalúan: el holdout sigue siendo el del Valle. Se descarta
+    todo nombre que ya exista en el Valle (cadenas incluidas) para que ninguna fila
+    ampliada sea un nombre del holdout.
+    """
+    archivos = sorted(DATOS.glob("osm_ampliacion_*.csv"))
+    if not archivos:
+        return np.array([], dtype=object), np.array([], dtype=object), None
+    a = pd.read_csv(archivos[-1], keep_default_na=False)
+    a = a[(a["categoria"] != "") & a["categoria"].isin(CLASES)]
+    a = a[~a["nombre"].map(normalizar_grupo).isin(grupos_valle)]
+    return a["nombre"].to_numpy(), a["categoria"].to_numpy(), archivos[-1]
+
+
 def main() -> None:
     entrada = ultimo_csv("osm_valle_aburra")
     comuna = ultimo_csv("osm_comuna3")
@@ -341,6 +357,14 @@ def main() -> None:
     grupos = df["nombre"].map(normalizar_grupo).to_numpy()
     n_grupos = len(set(grupos))
     ids_comuna = set(pd.read_csv(comuna, keep_default_na=False)["osm_id"])
+    amp_t, amp_y, amp_archivo = cargar_ampliacion(set(grupos))
+
+    def entrenar_amp(t, yy, c, w=None):
+        """`entrenar` con las filas ampliadas (peso 1) sumadas: solo para conjuntos de ENTRENAMIENTO."""
+        w = np.ones(len(t)) if w is None else w
+        return entrenar(
+            np.concatenate([t, amp_t]), np.concatenate([yy, amp_y]), c, np.concatenate([w, np.ones(len(amp_t))])
+        )
 
     # --- Validaciones del conjunto de entrenamiento ------------------------
     assert not pd.isna(df["nombre"]).any() and (df["nombre"].str.len() > 0).all()
@@ -351,7 +375,7 @@ def main() -> None:
     sgkf = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=SEMILLA)
     tr, te = next(sgkf.split(textos, y, grupos))
     c_mejor, cv_c = elegir_c(textos[tr], y[tr], grupos[tr])
-    vec, clf = entrenar(textos[tr], y[tr], c_mejor)
+    vec, clf = entrenar_amp(textos[tr], y[tr], c_mejor)
     pred, P = predecir(vec, clf, textos[te])
 
     f1_modelo = f1m(y[te], pred)
@@ -374,7 +398,7 @@ def main() -> None:
         t_c = np.concatenate([textos[tr], propios["textos"]])
         y_c = np.concatenate([y[tr], propios["y"]])
         w_c = np.concatenate([np.ones(len(tr)), np.full(n_p, PESO_PROPIOS)])
-        vec_c, clf_c = entrenar(t_c, y_c, c_mejor, w_c)
+        vec_c, clf_c = entrenar_amp(t_c, y_c, c_mejor, w_c)
         pred_c, P_c = predecir(vec_c, clf_c, textos[te])
         cand = (vec_c, clf_c, pred_c, P_c, f1m(y[te], pred_c))
         cambian_holdout = int((pred_c != pred).sum())  # pred = la del modelo solo-OSM, todavía
@@ -382,7 +406,7 @@ def main() -> None:
             if w == PESO_PROPIOS:
                 sensibilidad[w] = cand[4]
                 continue
-            v_s, m_s = entrenar(t_c, y_c, c_mejor, np.concatenate([np.ones(len(tr)), np.full(n_p, w)]))
+            v_s, m_s = entrenar_amp(t_c, y_c, c_mejor, np.concatenate([np.ones(len(tr)), np.full(n_p, w)]))
             sensibilidad[w] = f1m(y[te], predecir(v_s, m_s, textos[te])[0])
     # Regla de publicación: el F1 macro del holdout de OSM no puede bajar.
     publicar = cand is not None and cand[4] >= f1_modelo and n_p >= MIN_PROPIOS
@@ -419,7 +443,7 @@ def main() -> None:
     nombres_comuna = set(grupos[es_comuna])
     # También se sacan del entrenamiento los nombres iguales (cadenas) de la comuna.
     train_geo = ~es_comuna & ~np.isin(grupos, list(nombres_comuna))
-    v_g, c_g = entrenar(textos[train_geo], y[train_geo], c_mejor)
+    v_g, c_g = entrenar_amp(textos[train_geo], y[train_geo], c_mejor)
     pred_g = predecir(v_g, c_g, textos[es_comuna])[0]
     f1_geo = f1m(y[es_comuna], pred_g)
     acc_geo = float(accuracy_score(y[es_comuna], pred_g))
@@ -430,14 +454,14 @@ def main() -> None:
     # Las métricas de arriba son de un modelo entrenado sin el holdout; el que
     # se publica ve los datos completos (más datos, mismo C). No se evalúa a sí mismo.
     if publicar:
-        vec_f, clf_f = entrenar(
+        vec_f, clf_f = entrenar_amp(
             np.concatenate([textos, propios["textos"]]),
             np.concatenate([y, propios["y"]]),
             c_mejor,
             np.concatenate([np.ones(len(textos)), np.full(len(propios["y"]), PESO_PROPIOS)]),
         )
     else:
-        vec_f, clf_f = entrenar(textos, y, c_mejor)
+        vec_f, clf_f = entrenar_amp(textos, y, c_mejor)
     orden = [list(clf_f.classes_).index(c) for c in CLASES]  # mismo orden que CATEGORIAS
     vocab = [t for t, _ in sorted(vec_f.vocabulary_.items(), key=lambda kv: kv[1])]
     fecha = ahora_iso()
@@ -467,9 +491,11 @@ def main() -> None:
         "umbral_confianza": UMBRAL_CONFIANZA,
         "hiperparametros": {"C": c_mejor, "class_weight": "balanced", "min_df": MIN_DF, "max_features": MAX_NGRAMAS},
         "entrenado_con": int(len(df)),
+        "entrenado_con_ampliacion": int(len(amp_t)),
         "entrenado_con_propios": int(len(propios["y"])) if publicar else 0,
         "peso_ejemplos_propios": PESO_PROPIOS if publicar else None,
         "fuente": f"{FUENTE}, Valle de Aburrá, datos {entrada.name}"
+        + (f"; más {len(amp_t)} locales de OSM en Colombia de clases escasas ({amp_archivo.name}, solo entrenamiento)" if len(amp_t) else "")
         + (f"; más {len(propios['y'])} fichas aprobadas del sitio (nombre y descripción, ejemplos {propios['meta']['fecha_corrida'][:10]})" if publicar else ""),
         "licencia": "ODbL 1.0 — los pesos derivan de nombres de OpenStreetMap"
         + (" y de fichas aprobadas del propio sitio" if publicar else ""),
@@ -493,7 +519,7 @@ def main() -> None:
 
 Fecha de corrida: {fecha} · semilla {SEMILLA} · generado por `pipeline/03_clasificador.py`.
 Datos: `{entrada.name}` (fuente: {FUENTE}). Etiqueta = tag de OSM mapeado a una de las
-12 categorías del sitio (`pipeline/comun.py › MAPEO_OSM`), no el nombre del local.
+{len(CATEGORIAS)} categorías del sitio (`pipeline/comun.py › MAPEO_OSM`), no el nombre del local.
 
 ## Resultado principal
 

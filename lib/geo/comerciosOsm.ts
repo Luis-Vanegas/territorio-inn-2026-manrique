@@ -64,6 +64,7 @@ const NOMBRE_CATEGORIA: Record<string, string> = {
   fotografia_eventos: 'Fotografía y eventos',
   lavanderia: 'Lavandería',
   reciclaje: 'Reciclaje y compraventa',
+  diseno_publicidad: 'Diseño, publicidad e impresiones',
   otros: 'Otros',
 };
 

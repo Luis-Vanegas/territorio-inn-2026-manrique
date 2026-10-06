@@ -97,6 +97,28 @@ Diseño en `docs/firmamento-modulos.md` y `docs/base-de-datos.md`; plan en `docs
       Las rutas `/api/admin/*` NO cambian.
       Hecho por Claude Code (3-oct): la verificación de CSP en `seguridad.md` se dejó como
       histórica, aclarando que la puerta nueva no se re-verificó.
+- [x] **Menú lateral y cajón móvil en paneles (`NavLateral` y `NavMovil`)**:
+      Reemplazo de la barra horizontal superior por menú lateral izquierdo (`lg+`, sticky,
+      con grupos derivados por `gruposDe`) y cajón deslizable con botón ☰ y badge de pendientes
+      en móviles (`components/firmamento/panel/NavPanel.tsx`, `PanelShell.tsx`).
+      Tipos y navegación en `lib/firmamento/navegacion.ts`.
+- [x] **Rediseño del panel de moderación y sugeridor de categorías de IA**:
+      `app/(firmamento)/firmamento/equipo/moderacion/page.tsx` con grid responsive de alertas
+      de calidad enriquecidas (`barrio`, estado). `SugeridorModeracion.tsx` reorganizado en
+      dos columnas («Categoría declarada» vs «Sugerencia del modelo / Alternativas» con %),
+      botones rápidos de acción («Usar «...»», «Mantener») y selector para corregir a mano.
+- [x] **Categoría `diseno_publicidad` («Diseño, publicidad e impresiones»)**:
+      Migración aditiva 037 (`lib/db/migrations/037_categoria_diseno_publicidad.sql`), mapeada
+      al grupo `oficios` en `lib/categorias/grupos.ts`, pares complementarios en `lib/firmamento/alianzas.ts`,
+      sinónimos en `lib/busqueda.ts` y etiqueta en `lib/geo/comerciosOsm.ts`. El pipeline mapea
+      `copyshop`/`printing`/`signmaker`/`printer` de OSM a la categoría nueva.
+      **Corregido (6-oct):** la primera versión metió ~33 filas inventadas (ids `node,9000…`, entre
+      ellas el aliado real Polarium Diseños) en los CSV de OSM; se borraron. La clase se entrena
+      ahora con 489 locales REALES de OSM en Colombia (`pipeline/06_ampliacion_clases.py`: copyshop,
+      printing, signmaker, printer, advertising_agency, graphic_design), solo como entrenamiento; el
+      holdout sigue siendo el del Valle. F1 macro 0,48 (holdout 960). «Diseño gráfico y publicidad»
+      99 %, «Litografía» 93 %; «Polarium Diseños» solo con el nombre queda en las 3 opciones (26 %),
+      con la descripción sube a 95 %. **Falta aplicar la 037 en la base antes del deploy.**
 
 ## 🔎 Análisis de SonarCloud — 2026-08-31
 
