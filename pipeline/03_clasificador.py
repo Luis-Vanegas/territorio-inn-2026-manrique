@@ -68,6 +68,10 @@ EJEMPLOS = DATOS / "ejemplos_constelaciones.json"
 # afinado: con tan pocos ejemplos no hay con qué ajustarlo sin hacer trampa; el
 # reporte muestra la sensibilidad (1, 5, 20) sobre el holdout de OSM para que se vea.
 PESO_PROPIOS = 5.0
+# Peso de cada fila de 06_ampliacion_clases.py. Medido el 6-oct con 1; 0,3; 0,1 y 0,03: los
+# falsos «diseño» del holdout no bajan (~35 de 960, nombres ambiguos como «Internet De Soto») y
+# con peso bajo las papelerías empiezan a caer en diseño. Sin ampliación la clase no acierta nada.
+PESO_AMPLIACION = 1.0
 # Con menos fichas propias, cualquier subida del F1 es ruido de clases chicas (con 5
 # ejemplos el modelo los memorizó y no mejoró dejando uno fuera): no se publica.
 MIN_PROPIOS = 30
@@ -363,7 +367,7 @@ def main() -> None:
         """`entrenar` con las filas ampliadas (peso 1) sumadas: solo para conjuntos de ENTRENAMIENTO."""
         w = np.ones(len(t)) if w is None else w
         return entrenar(
-            np.concatenate([t, amp_t]), np.concatenate([yy, amp_y]), c, np.concatenate([w, np.ones(len(amp_t))])
+            np.concatenate([t, amp_t]), np.concatenate([yy, amp_y]), c, np.concatenate([w, np.full(len(amp_t), PESO_AMPLIACION)])
         )
 
     # --- Validaciones del conjunto de entrenamiento ------------------------
