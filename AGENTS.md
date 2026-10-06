@@ -245,7 +245,7 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   consulta cruza con `portafolios` y filtra `p.usuario_id = ${usuarioId}` de la
   sesión: los ids del formulario se pueden inventar. `scripts/verificar-clientes.mjs`
   falla si una consulta nueva lo olvida (revisa también `lib/db/cuenta.repo.ts`,
-  que alimenta el panel del negocio: categoría y formalidad para «Para ti», semanas de vistas y
+  que alimenta el panel del negocio: categoría y formalidad para «Para ti», la `mayor_dolor` del negocio activo (`dificultadesDeNegocio`), semanas de vistas y
   contactos, comparación con la categoría; una consulta nueva del panel va en ese archivo y con ese filtro).
   Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
   correo. El contacto sale por
@@ -397,7 +397,13 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   Solo las `aprobada` y vigentes salen, y únicamente en «Para ti» del panel del negocio
   (`convocatoriasParaTi` con `perfilesParaTi` de `cuenta.repo.ts`): cruza
   NEGOCIO POR NEGOCIO categoría y formalidad (`aliados_investigacion`); formalidad
-  desconocida (null o `prefiero_no_decir`) ve también las restringidas. No van en
+  desconocida (null o `prefiero_no_decir`) ve también las restringidas. Debajo, plegado,
+  «Otras convocatorias abiertas»: `listarConvocatoriasVigentes` menos las que encajan (lista
+  compacta, solo título, entidad y cierre). Las guías de «Para ti» salen de
+  `guiasParaTi` (`lib/firmamento/guiasParaTi.ts`): cada `mayor_dolor` del negocio activo apunta
+  a guías por `slug` de las colecciones (si una guía se quita, se cae de la lista, no da 404);
+  sin respuesta, las generales. El asesor (`Asesor` con `consultarAsesorUsuario`) va en una
+  `Tarjeta` plegable de esa página: `AsesorFlotante` vive solo en el layout del sitio. No van en
   la vitrina: no llaman `invalidarVitrina()`.
 - **Barrio oficial de un negocio** (`portafolios.barrio_oficial`, FK a `barrios`,
   migración 033): lo calcula `portafolios.repo.ts` con `barrioDe` en las tres
