@@ -91,7 +91,9 @@ export function FichaComercioOsm({
 
       {conAclaracion && (
         <p className="mt-2 border-t border-tinta/12 pt-2 text-tinta/70">
-          Comercio mapeado en OpenStreetMap · no es aliado de Constelaciones
+          {/* El origen ya lo dice la atribución ODbL del mapa: acá basta con lo que importa al vecino. */}
+          No es aliado de Constelaciones
+
         </p>
       )}
     </div>

@@ -13,12 +13,14 @@ import { fechaLarga } from '@/lib/geo/constelaciones';
 
 const FUENTE_OSM = 'OpenStreetMap, © colaboradores (ODbL)';
 
-function Bloque({ titulo, fuente, children }: { titulo: string; fuente: string; children: React.ReactNode }) {
+// Sin fuente por bloque: los tres salen del mismo JSON de OSM, así que llevan UNA
+// línea debajo de los tres (DESIGN.md › Reglas de cifras; Luis, 6-oct-2026:
+// «OpenStreetMap» se repetía cinco veces en el inicio).
+function Bloque({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <div className="min-w-0">
       <h3 className="font-sans text-lg font-medium text-tinta">{titulo}</h3>
       <div className="mt-4">{children}</div>
-      <p className="mt-3 break-words font-sans text-xs leading-relaxed text-tinta/70">Fuente: {fuente}</p>
     </div>
   );
 }
@@ -58,7 +60,7 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
           etiqueta="aliados de Constelaciones"
           aclaracion={red ? undefined : 'No pudimos consultar este dato ahora.'}
         />
-        <Kpi valor={fmt(osm.totalComercios)} numero={osm.totalComercios} etiqueta="comercios en OpenStreetMap" />
+        <Kpi valor={fmt(osm.totalComercios)} numero={osm.totalComercios} etiqueta="comercios mapeados" />
         <Kpi valor={fmt(osm.constelaciones)} numero={osm.constelaciones} etiqueta="constelaciones" />
         <Kpi
           valor={CAMARA_EMPRESAS.valor}
@@ -70,15 +72,15 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
       </GrupoCifras>
 
       <div className="mt-12 grid gap-10 lg:grid-cols-3">
-        <Bloque titulo="Comercios por categoría" fuente={`${FUENTE_OSM} · ${fechaOsm}`}>
+        <Bloque titulo="Comercios por categoría">
           <BarrasCategoria
             filas={filasGrupo}
             columna="Comercios"
-            descripcion="Comercios de OpenStreetMap en la Comuna 3 por grupo de categoría, con su porcentaje"
+            descripcion="Comercios mapeados en la Comuna 3 por grupo de categoría, con su porcentaje"
           />
         </Bloque>
 
-        <Bloque titulo="Comercios por barrio" fuente={`${FUENTE_OSM} · ${fechaOsm}`}>
+        <Bloque titulo="Comercios por barrio">
           <BarrasCategoria
             filas={[...d.barrios].sort((a, b) => b.valor - a.valor).map((b) => ({
               id: b.barrio,
@@ -87,11 +89,11 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
             }))}
             encabezado="Barrio"
             columna="Comercios"
-            descripcion="Comercios de OpenStreetMap por barrio oficial de la Comuna 3"
+            descripcion="Comercios mapeados por barrio oficial de la Comuna 3"
           />
         </Bloque>
 
-        <Bloque titulo={`Las ${osm.constelaciones} constelaciones`} fuente={`${FUENTE_OSM}, agrupación HDBSCAN · ${fechaOsm}`}>
+        <Bloque titulo={`Las ${osm.constelaciones} constelaciones`}>
           <p className="font-sans text-sm leading-relaxed text-tinta/75">
             {fmt((1 - osm.sueltos / osm.totalComercios) * 100, 0)} % de los comercios está en una constelación.
             Las más grandes:
@@ -108,6 +110,9 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
           </ol>
         </Bloque>
       </div>
+      <p className="mt-6 break-words font-sans text-xs leading-relaxed text-tinta/70">
+        Fuente de los tres: {FUENTE_OSM}, agrupación HDBSCAN · {fechaOsm}
+      </p>
     </section>
   );
 }
