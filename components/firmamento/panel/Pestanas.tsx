@@ -35,7 +35,7 @@ export type ItemPestana = {
   activo: boolean;
 };
 
-function Insignia({ n, unidad = 'pendientes' }: { n: number; unidad?: string }) {
+export function Insignia({ n, unidad = 'pendientes' }: { n: number; unidad?: string }) {
   return (
     <span className="min-w-[22px] rounded-full bg-amarillo px-1.5 py-0.5 text-center font-sans text-xs font-medium leading-none tabular-nums text-noche">
       {n}

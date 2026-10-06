@@ -4,7 +4,7 @@ import type { ContextoPanel } from '@/lib/auth/firmamento';
 import { BOTON_SITIO, ROL_TEXTO } from '@/lib/firmamento/navegacion';
 import { FormaRol } from '../FormaRol';
 import { MenuUsuarioPanel } from './MenuUsuarioPanel';
-import { NavPanel, SubNavPanel, TituloPanel } from './NavPanel';
+import { NavLateral, NavMovil, TituloPanel } from './NavPanel';
 import { CLASE_BOTON_PANEL } from './Tarjeta';
 
 /**
@@ -12,9 +12,11 @@ import { CLASE_BOTON_PANEL } from './Tarjeta';
  * (DESIGN.md › Firmamento con sesión): arriba el `SiteHeader` del sitio (lo pone
  * `app/(firmamento)/firmamento/layout.tsx`), debajo el encabezado del panel
  * (rol, nombre del negocio o de la entidad, botón al sitio y menú de la
- * persona) y las pestañas; después el título de la sección (único h1) y la
- * página. Sin barra lateral. La noche entra solo en las `VentanaNoche` de cada
- * página.
+ * persona). Desde `lg`, menú lateral fijo a la izquierda (`NavLateral`); bajo
+ * `lg`, un botón ☰ al inicio del encabezado abre el mismo menú en un cajón
+ * (`NavMovil`). Luego el título de la sección (único h1) y la página. Solo los
+ * paneles con sesión usan este armazón: el sitio público no lleva menú
+ * lateral. La noche entra solo en las `VentanaNoche` de cada página.
  *
  * Cada `layout.tsx` de rol hace su guarda (`lib/auth/firmamento.ts`) y le pasa
  * el `contexto`; este componente no autoriza nada.
@@ -77,6 +79,9 @@ export function PanelShell({
       <div className="border-b border-tinta/10">
         <div className="margen-editorial">
           <div className="flex items-center gap-3 pb-4 pt-6 sm:gap-4 sm:pt-8">
+            <div className="lg:hidden">
+              <NavMovil rol={rol} insignias={insignias} />
+            </div>
             <FormaRol rol={rol} tamano={44} />
             <div className="min-w-0 flex-1">
               {/* Mayúsculas: etiqueta corta de sección, la excepción de voz de marca
@@ -107,17 +112,20 @@ export function PanelShell({
               )}
             </div>
           )}
-          <NavPanel rol={rol} insignias={insignias} />
         </div>
       </div>
 
-      <main className="margen-editorial pb-16 pt-4">
-        <SubNavPanel rol={rol} insignias={insignias} />
-        <div className="mt-6 sm:mt-8">
+      <div className="margen-editorial lg:flex lg:gap-10">
+        <aside className="hidden shrink-0 lg:block lg:w-60">
+          <div className="sticky top-6 max-h-[calc(100vh-3rem)] overflow-y-auto py-8 pr-2 [scrollbar-width:thin]">
+            <NavLateral rol={rol} insignias={insignias} />
+          </div>
+        </aside>
+        <main className="min-w-0 flex-1 pb-16 pt-6 sm:pt-8 lg:border-l lg:border-tinta/10 lg:pl-10">
           <TituloPanel rol={rol} />
-        </div>
-        <div className="mt-6">{children}</div>
-      </main>
+          <div className="mt-6">{children}</div>
+        </main>
+      </div>
 
       <footer className="margen-editorial border-t border-tinta/10 py-6 font-sans text-xs leading-relaxed text-tinta/70">
         <p>Mapa © colaboradores de OpenStreetMap (ODbL) · Datos abiertos con supresión de celdas menores a 5</p>

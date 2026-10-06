@@ -20,7 +20,7 @@ export type TipoAlerta = 'fuera' | 'barrio' | 'otros' | 'incompleta';
 
 export type AlertaCalidad = {
   tipo: TipoAlerta;
-  ficha: Pick<FichaCalidad, 'id' | 'nombre' | 'estado'>;
+  ficha: Pick<FichaCalidad, 'id' | 'nombre' | 'estado' | 'barrio' | 'categoria_nombre'>;
   texto: string;
   /** Solo en «otros»: lo que la persona escribió, para que el sugeridor proponga una categoría. */
   textoParaSugerir?: string;
@@ -44,7 +44,13 @@ export function alertasDeCalidad(fichas: readonly FichaCalidad[]): AlertaCalidad
   const alertas: AlertaCalidad[] = [];
 
   for (const f of fichas) {
-    const ficha = { id: f.id, nombre: f.nombre, estado: f.estado };
+    const ficha = {
+      id: f.id,
+      nombre: f.nombre,
+      estado: f.estado,
+      barrio: f.barrio,
+      categoria_nombre: f.categoria_nombre,
+    };
     const dentro = dentroDeManrique(f.latitud, f.longitud);
 
     if (!dentro) {

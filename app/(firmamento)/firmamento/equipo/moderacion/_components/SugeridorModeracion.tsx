@@ -24,9 +24,9 @@ const ESTADO_INICIAL: EstadoDecisionCategoria = { estado: 'inicial' };
 const porcentaje = (p: number) => `${Math.round(p * 100)} %`;
 
 const CLASE_BOTON =
-  'inline-flex min-h-[44px] items-center gap-2 border px-4 py-2 font-sans text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul-texto disabled:cursor-not-allowed disabled:opacity-40';
-const CLASE_PRIMARIO = `${CLASE_BOTON} border-azul-texto bg-azul-texto text-hueso hover:bg-transparent hover:text-azul-texto`;
-const CLASE_SECUNDARIO = `${CLASE_BOTON} border-tinta/55 text-tinta/75 hover:border-azul-texto hover:text-azul-texto`;
+  'inline-flex min-h-[44px] items-center justify-center rounded-lg px-3.5 py-1.5 font-sans text-xs font-medium transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul-texto disabled:cursor-not-allowed disabled:opacity-40';
+const CLASE_PRIMARIO = `${CLASE_BOTON} bg-azul-texto text-hueso hover:bg-azul-texto/90`;
+const CLASE_SECUNDARIO = `${CLASE_BOTON} border border-tinta/25 text-tinta/80 hover:bg-tinta/5 hover:border-tinta/50`;
 
 export function SugeridorModeracion({
   portafolioId,
@@ -68,11 +68,11 @@ export function SugeridorModeracion({
   }, [crudo, categorias]);
 
   if (crudo === null) {
-    return <p className="mt-4 font-sans text-sm text-tinta/65">Consultando el sugeridor…</p>;
+    return <p className="mt-3 font-sans text-xs text-tinta/65">Consultando el sugeridor…</p>;
   }
   if (!opciones) {
     return (
-      <p className="mt-4 font-sans text-sm text-tinta/65">
+      <p className="mt-3 font-sans text-xs text-tinta/65">
         El sugeridor no tiene texto suficiente para proponer una categoría.
       </p>
     );
@@ -97,86 +97,117 @@ export function SugeridorModeracion({
   const proponibles = opciones.filter((o) => o.id !== actual.id);
 
   return (
-    <section aria-label="Sugeridor de categoría" className="mt-5 max-w-2xl border-l-2 border-azul-texto/40 pl-4">
-      <p className="font-sans text-xs uppercase tracking-wide text-tinta/60">Sugeridor de categoría</p>
-      <p className="mt-1 font-sans text-sm text-tinta/80">
-        Ahora: <strong className="font-medium text-tinta">{actual.nombre}</strong>.{' '}
-        {segura ? 'Propone ' : 'Duda entre '}
-        {opciones.map((o, i) => (
-          <span key={o.id}>
-            {i > 0 && (i === opciones.length - 1 ? ' y ' : ', ')}
-            <strong className="font-medium text-tinta">{o.nombre}</strong>{' '}
-            <span className="font-sans tabular-nums text-xs text-tinta/65">{porcentaje(o.probabilidad)}</span>
+    <section
+      aria-label="Sugeridor de categoría"
+      className="mt-4 rounded-xl border border-azul/20 bg-azul/[0.04] p-4 text-tinta"
+    >
+      <div className="grid grid-cols-1 gap-3 border-b border-tinta/10 pb-3 sm:grid-cols-2">
+        <div>
+          <span className="block font-sans text-[11px] font-medium uppercase tracking-wider text-tinta/60">
+            Categoría declarada
           </span>
-        ))}
-        .
-      </p>
+          <p className="mt-1 font-sans text-sm font-semibold text-tinta">
+            {actual.nombre}
+          </p>
+        </div>
+        <div>
+          <span className="block font-sans text-[11px] font-medium uppercase tracking-wider text-azul-texto">
+            {segura ? 'Sugerencia del modelo' : 'Alternativas sugeridas'}
+          </span>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            {opciones.map((o) => (
+              <span key={o.id} className="inline-flex items-center gap-1.5 font-sans text-sm font-semibold text-tinta">
+                {o.nombre}
+                <span className="rounded-full bg-azul/15 px-2 py-0.5 font-sans text-xs font-semibold tabular-nums text-azul-texto">
+                  {porcentaje(o.probabilidad)}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {correcta ? (
-          <span className="inline-flex min-h-[44px] items-center font-sans text-sm text-azul-texto">Correcta ✓</span>
-        ) : revisada ? (
-          <span className="font-sans text-sm text-tinta/65">El equipo ya decidió sobre esta categoría.</span>
-        ) : (
-          <>
-            {proponibles.map((o, i) => (
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {correcta ? (
+            <span className="inline-flex min-h-[44px] items-center gap-1 font-sans text-sm font-medium text-azul-texto">
+              Correcta ✓
+            </span>
+          ) : revisada ? (
+            <span className="font-sans text-xs text-tinta/65">
+              El equipo ya decidió sobre esta categoría.
+            </span>
+          ) : (
+            <>
+              {proponibles.map((o, i) => (
+                <button
+                  key={o.id}
+                  type="button"
+                  disabled={enviando}
+                  onClick={() => decidir('usar', o.id)}
+                  className={i === 0 ? CLASE_PRIMARIO : CLASE_SECUNDARIO}
+                >
+                  Usar «{o.nombre}»
+                </button>
+              ))}
               <button
-                key={o.id}
                 type="button"
                 disabled={enviando}
-                onClick={() => decidir('usar', o.id)}
-                className={i === 0 ? CLASE_PRIMARIO : CLASE_SECUNDARIO}
+                onClick={() => decidir('mantener')}
+                className={CLASE_SECUNDARIO}
               >
-                Usar «{o.nombre}»
+                Mantener
+                <span className="sr-only"> «{actual.nombre}»</span>
               </button>
-            ))}
-            <button type="button" disabled={enviando} onClick={() => decidir('mantener')} className={CLASE_SECUNDARIO}>
-              Mantener
-              <span className="sr-only"> «{actual.nombre}»</span>
+            </>
+          )}
+        </div>
+
+        {!revisada && !correcta && (
+          <form
+            className="flex items-center gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (elegida) decidir('corregir', elegida);
+            }}
+          >
+            <div className="flex items-center gap-1.5">
+              <label htmlFor={idSelector} className="sr-only">
+                Corregir a mano
+              </label>
+              <select
+                id={idSelector}
+                value={elegida}
+                // Guardar en el onChange escribía en la base con cada flecha del teclado: decide el botón.
+                onChange={(e) => setElegida(e.target.value)}
+                className="min-h-[44px] rounded-lg border border-tinta/25 bg-hueso px-3 py-1 font-sans text-xs text-tinta transition-colors hover:border-tinta/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul-texto"
+              >
+                <option value="">Otra categoría…</option>
+                {categorias
+                  .filter((c) => c.id !== actual.id)
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nombre}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <button type="submit" disabled={enviando || !elegida} className={CLASE_SECUNDARIO}>
+              Cambiar
             </button>
-          </>
+          </form>
         )}
       </div>
 
-      <form
-        className="mt-3 flex flex-wrap items-end gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (elegida) decidir('corregir', elegida);
-        }}
-      >
-        <div className="flex flex-col">
-          <label htmlFor={idSelector} className="font-sans text-xs text-tinta/65">
-            Corregir a mano
-          </label>
-          <select
-            id={idSelector}
-            value={elegida}
-            onChange={(e) => setElegida(e.target.value)}
-            className="mt-1 min-h-[44px] border border-tinta/55 bg-transparent px-3 font-sans text-sm text-tinta focus:border-azul-texto focus:outline-none"
-          >
-            <option value="">Otra categoría…</option>
-            {categorias
-              .filter((c) => c.id !== actual.id)
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-          </select>
-        </div>
-        <button type="submit" disabled={enviando || !elegida} className={CLASE_SECUNDARIO}>
-          Cambiar
-        </button>
-      </form>
-
-      <p
-        role="status"
-        aria-live="polite"
-        className={`mt-2 font-sans text-sm ${estado.estado === 'error' ? 'text-tinta' : 'text-azul-texto'}`}
-      >
-        {enviando ? 'Guardando…' : estado.estado === 'inicial' ? '' : estado.mensaje}
-      </p>
+      {estado.estado !== 'inicial' && (
+        <p
+          role="status"
+          aria-live="polite"
+          className={`mt-2 font-sans text-xs ${estado.estado === 'error' ? 'text-tinta font-medium' : 'text-azul-texto'}`}
+        >
+          {enviando ? 'Guardando…' : estado.mensaje}
+        </p>
+      )}
     </section>
   );
 }

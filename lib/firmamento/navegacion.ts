@@ -1,7 +1,7 @@
 /**
- * Navegación de los paneles de Firmamento, como datos: un arreglo por rol. Las
- * pestañas, las subpestañas del equipo y el título de la sección (h1) salen
- * todos de acá.
+ * Navegación de los paneles de Firmamento, como datos: un arreglo por rol. El
+ * menú lateral (y el cajón del celular), sus grupos y el título de la sección
+ * (h1) salen todos de acá.
  *
  * Una página nueva de un panel = una entrada en el arreglo de su rol + su
  * carpeta bajo `app/(firmamento)/firmamento/<rol>/`. Mientras la carpeta no
@@ -17,11 +17,11 @@ export type RolFirmamento = 'negocio' | 'equipo' | 'entidad';
 export type ItemNav = {
   href: string;
   etiqueta: string;
-  /** Rótulo de la pestaña bajo `sm`, donde no cabe el largo. Contiene palabras de `etiqueta` (WCAG 2.5.3). */
+  /** Rótulo corto (hoy sin uso en el menú lateral, que tiene espacio). Contiene palabras de `etiqueta` (WCAG 2.5.3). */
   corta?: string;
   /**
-   * La pestaña del equipo donde vive (Hoy, Red, Datos, Guías): ahí sale como
-   * subpestaña. Sin `pestana`, el ítem es una pestaña propia (negocio, entidad).
+   * El grupo del equipo donde vive (Hoy, Red, Datos, Guías): en el menú lateral
+   * es el encabezado bajo el que sale. Sin `pestana`, el ítem va suelto (negocio, entidad).
    */
   pestana?: string;
   /** Qué cuenta la insignia de conteo, para el lector de pantalla («2 convocatorias»). Por defecto, «pendientes». */
@@ -69,20 +69,19 @@ export const NAV: Record<RolFirmamento, readonly ItemNav[]> = {
   ],
 };
 
-/** Una pestaña del panel: un ítem suelto, o un grupo del equipo con sus subpestañas. */
-export type Pestana = { etiqueta: string; corta?: string; href: string; items: readonly ItemNav[] };
+/** Un bloque del menú lateral: con `titulo` (grupo del equipo) o sin él (ítems sueltos). */
+export type GrupoNav = { titulo?: string; items: readonly ItemNav[] };
 
-/** Las pestañas del rol, en el orden del arreglo. */
-export function pestanasDe(rol: RolFirmamento): Pestana[] {
-  const pestanas: Pestana[] = [];
+/** Los bloques del menú del rol, en el orden del arreglo. Las páginas ocultas no salen. */
+export function gruposDe(rol: RolFirmamento): GrupoNav[] {
+  const grupos: GrupoNav[] = [];
   for (const it of NAV[rol]) {
     if (it.oculta) continue;
-    const nombre = it.pestana;
-    const previa = nombre ? pestanas.find((p) => p.etiqueta === nombre) : undefined;
-    if (previa) previa.items = [...previa.items, it];
-    else pestanas.push({ etiqueta: nombre ?? it.etiqueta, corta: nombre ? undefined : it.corta, href: it.href, items: [it] });
+    const ultimo = grupos[grupos.length - 1];
+    if (ultimo && ultimo.titulo === it.pestana) ultimo.items = [...ultimo.items, it];
+    else grupos.push({ titulo: it.pestana, items: [it] });
   }
-  return pestanas;
+  return grupos;
 }
 
 export const ROL_TEXTO: Record<RolFirmamento, string> = {
