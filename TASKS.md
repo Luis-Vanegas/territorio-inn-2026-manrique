@@ -46,7 +46,7 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
 - [x] OSM completo (`356d025`): 320 comercios (201 con nombre, 119 sin nombre, como la
       asesoría: 312 = 198 + 114), 20 constelaciones con código y nombre descriptivo. /aliados
       muestra mapa y comercios OSM en cualquier categoría (decisión de Luis: «mostrar todo»).
-- [ ] **Decisión pendiente de Luis:** HDBSCAN `eom` (18) vs `leaf` (20, vigente). Con 320
+- [x] **Decidido el 4-oct: se queda `leaf`** (grupos chicos y caminables: sirven para alianzas, brigadas y «negocios cerca»). HDBSCAN `eom` (18) vs `leaf` (20, vigente). Con 320
       comercios `eom` ya no colapsa; actualizar documento con la cifra elegida.
 - [x] Documento del concurso a 320/201/119 y 20 constelaciones (`b6be1b6`); el asesor tiene 11 pasos.
 - [x] Encabezado sin scroll a 320 px, menú Aprende ▾ + Firmamento, portada «mostrar todo»,
