@@ -9,12 +9,12 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       guardaba LF; los «222 modificados» del plan eran solo la copia de trabajo. Planes,
       subagentes y `pipeline/referencia/modelo_categoria.json` commiteados en la rama para
       que los worktrees los vean. `docs/.fuse_hidden*` es un residuo vacío: no se commitea.
-- [ ] Fase 1 · Datos y ML — hecha en `worktree-agent-a923aed9d6a0c4649`, falta QA y merge.
+- [x] Fase 1 · Datos y ML (integrada el 1-oct, ver abajo) — hecha en `worktree-agent-a923aed9d6a0c4649`, falta QA y merge.
       Corrida 1-oct: 192 comercios OSM en la comuna, 12 constelaciones (`leaf`), 70 sueltos,
       F1 macro 0,535. Detalle en `pipeline/reporte_modelo.md`.
-- [ ] Fase 4 · Documento — borrador en `worktree-agent-a9e81739e146db829`, falta QA y merge.
+- [x] Fase 4 · Documento (integrada el 1-oct; cifras del sugeridor al 6-oct, `fe791c1`) — borrador en `worktree-agent-a9e81739e146db829`, falta QA y merge.
       Dudas para Luis en `docs/concurso/notas-internas.md`.
-- [ ] Fase 3, pasos 1–2 de diseño — hechos en `worktree-agent-a5f2a8da08a407979`; falta
+- [x] Fase 3, pasos 1–2 de diseño (integrados el 1-oct) — hechos en `worktree-agent-a5f2a8da08a407979`; falta
       probar D1 con el server y QA. Decisión abierta para Luis: DM Mono vs DM Sans `tabular-nums`.
 - [x] Fases 1, 3 (pasos 1–2) y 4 integradas en `reto/alineacion` tras QA (1-oct).
       DM Mono quedó como tercera familia solo para cifras, fuentes y fechas (decisión de Luis).
@@ -36,7 +36,7 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       en español), sección «Otros comercios del barrio» en /aliados, buscador y cercanía.
       Sin botones nuevos (decisión de Luis).
 - [ ] **Los 3 aliados fuera del polígono no se pueden editar sin mover su punto**: corregirlos
-      desde el panel o avisar a los dueños.
+      desde el panel o avisar a los dueños. Desde el 6-oct el dueño ve el aviso «Mover mi punto».
 - [ ] Teclado: ~205 paradas de Tab en el mapa (una por estrella). Salida hoy: «Ver los aliados
       en lista». Mejorar sin control nuevo si se puede.
 - [ ] La «×» del popup de Leaflet dice «Close popup» en inglés (aria-label).
@@ -63,10 +63,10 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
 - [ ] Pruebas manuales en producción: registro con sugeridor, toggle público, aprobar una
       convocatoria, Mi cuenta con negocio aprobado.
 - [ ] Prueba que ejercite el refine de Zod con un punto fuera (hoy solo se prueba la función).
-- [ ] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP.
+- [x] Ingesta: try/catch en `verificarLimite` y limitar peticiones sin IP (036, `puertaIngesta`: 503 y cupo en memoria sin IP).
 - [ ] Documento: cifras nuevas con fuente (Cámara 2025: 2.626 empresas en Manrique; 15 barrios,
       Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.
-- [ ] Fase 2 · Integrador — lista para lanzar (A1 confirmado por el geocatálogo).
+- [x] Fase 2 · Integrador (mergeada, ver arriba) — lista para lanzar (A1 confirmado por el geocatálogo).
 
 ## ✨ Firmamento: login por rol y paneles (asesoría v2, 2–3 oct)
 
