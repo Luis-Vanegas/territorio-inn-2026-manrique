@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 
-import { MapaAliados } from '@/components/MapaAliados';
 import { GrupoCifras, Kpi } from '@/components/firmamento/Kpi';
 import { Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { VentanaNoche } from '@/components/firmamento/VentanaNoche';
@@ -18,6 +17,7 @@ import { formatearDistancia } from '@/lib/geo/distancia';
 import { urlSitio } from '@/lib/sitio';
 import { AvisoUbicacion } from '../_components/AvisoUbicacion';
 import { Invitar } from '../_components/Invitar';
+import { ExplorarConstelaciones } from './_components/ExplorarConstelaciones';
 import { ListaVecinos, type Vecino } from '../_components/ListaVecinos';
 import { SelectorNegocio } from '../_components/SelectorNegocio';
 import { SinNegocio } from '../_components/SinNegocio';
@@ -142,12 +142,16 @@ export default async function NegocioConstelacionPage() {
         </GrupoCifras>
 
         <div className="mt-5">
-          <MapaAliados
+          <ExplorarConstelaciones
             portafolios={enElMapa}
-            noche
             seleccionado={portafolio.id}
-            constelacionElegida={constelacion?.id}
-            hrefLista="/aliados#listado"
+            propia={constelacion?.id ?? null}
+            cercanas={entorno.cercanas.map(({ constelacion: c, metros }) => ({
+              id: c.id,
+              codigo: c.codigo ?? c.id,
+              etiqueta: etiquetaConstelacion(c),
+              metros,
+            }))}
           />
         </div>
       </VentanaNoche>

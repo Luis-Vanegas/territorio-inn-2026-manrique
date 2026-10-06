@@ -29,7 +29,7 @@ huecos menores.
 - [x] T3 · Aviso de ubicación (Inicio y Mi constelación): fuera de la Comuna 3
       (`dentroDeManrique`) o barrio declarado distinto del oficial → «Mover mi punto» a la
       ficha, en el selector de ubicación.
-- [ ] T4 · Mi constelación: recorrer las demás constelaciones en el mapa y volver a la propia.
+- [x] T4 · Mi constelación: recorrer las demás constelaciones en el mapa y volver a la propia.
 - [ ] T5 · Para ti: guías según las dificultades que declaró ESE negocio (`mayor_dolor`),
       otras convocatorias abiertas y botón al asesor de formalización.
 - [ ] T6 · Equipo › Modelos: cuadro «Pruébalo» (el sugeridor corre en el navegador).
@@ -63,4 +63,7 @@ para contactar» y «Proponer categoría al negocio» (necesitan estado nuevo en
 - T3 (delegado): `AvisoUbicacion` en el inicio y en «Mi constelación» con «Mover mi punto» a
   `/firmamento/negocio/ficha#ubicacion`; la regla vive en `lib/firmamento/ubicacion.ts`
   (`revisarUbicacion`), que ahora usan también las alertas del equipo (`calidad.ts`, mismo texto).
-  typecheck, lint y verificar en verde.
+  typecheck, lint y verificar en verde. Commit 59fadba.
+- T4 (delegado): «Mi constelación» abre en la propia y deja recorrer las cercanas (lista con
+  `BotonConstelacion` + «Ver una sola» del mapa) y «Volver a la mía» (`ExplorarConstelaciones`;
+  `useConstelacionElegida` acepta la constelación inicial). typecheck, lint y verificar en verde.

@@ -493,7 +493,9 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   es su pista sin texto, la usa también «Tu ficha está al N %»). `MapaEstelar`
   (`useConstelacionElegida` + `MapaEstelar` + `BotonConstelacion`) es el «mapa + lista que
   enciende una constelación» de `MapaTerritorio` y `ObservatorioCielo`; el inicio usa el hook y
-  `BotonConstelacion` con su propio mapa (`MapaAliadosDestacado`, con aliados); el hook se desestructura
+  `BotonConstelacion` con su propio mapa (`MapaAliadosDestacado`, con aliados); «Mi constelación» del negocio
+  también (`negocio/constelacion/_components/ExplorarConstelaciones.tsx`: abre en la propia con
+  `useConstelacionElegida(margen, inicial)`, lista de las cercanas, «Ver una sola» y «Volver a la mía»); el hook se desestructura
   (pasar el objeto entero a un componente rompe la regla `react-hooks/refs`). `MapaBarrios`
   pinta los 15 barrios por una cifra con la escala de `lib/escalaSecuencial.ts` (5 clases
   para conteos, 6 para la matriz; el número del barrio va escrito, el color solo agrupa).
