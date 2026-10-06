@@ -1,4 +1,5 @@
 import { listarAprobados } from "@/lib/db/portafolios.repo";
+import { listarTodosLosCampos } from "@/lib/db/camposPersonalizados.repo";
 import { BuscadorNegocios } from "@/components/BuscadorNegocios";
 import { ID_MAPA_INICIO, ProveedorBusqueda } from "@/components/BusquedaInicio";
 import { sugerenciasDeCategorias } from "@/lib/busqueda";
@@ -20,7 +21,7 @@ export const dynamic = "force-dynamic";
  * sin botones de registro: el registro se alcanza solo desde /firmamento/entrar.
  */
 export default async function Home() {
-  const [aliados, d] = await Promise.all([listarAprobados(), leerFirmamento()]);
+  const [aliados, d, definicionesCampos] = await Promise.all([listarAprobados(), leerFirmamento(), listarTodosLosCampos()]);
 
   return (
     <main>
@@ -44,6 +45,7 @@ export default async function Home() {
         >
           <MapaAliadosDestacado
             portafolios={aliados}
+            definicionesCampos={definicionesCampos}
             constelaciones={d.filas.map((f) => ({
               id: f.id,
               codigo: f.codigo,

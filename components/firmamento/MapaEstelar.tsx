@@ -95,6 +95,13 @@ export function MapaEstelar({
   );
 }
 
+/** Colores del chip con el código de una constelación, encendida o no. Lo comparten el botón y la fila del inicio. */
+export function claseChipConstelacion(activa: boolean) {
+  return activa
+    ? 'border-sodio bg-sodio font-medium text-noche'
+    : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto';
+}
+
 /**
  * Botón de 44 px que enciende o apaga una constelación en el mapa.
  * `codigo`: el chip con el código de la fila de una tabla («C04»).
@@ -111,9 +118,7 @@ export function BotonConstelacion({
   alAlternar: () => void;
   variante?: 'codigo' | 'texto';
 }) {
-  const estado = activa
-    ? 'border-sodio bg-sodio font-medium text-noche'
-    : 'border-tinta/40 text-tinta hover:border-azul-texto hover:text-azul-texto';
+  const estado = claseChipConstelacion(activa);
 
   if (variante === 'texto') {
     return (
