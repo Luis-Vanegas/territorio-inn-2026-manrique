@@ -191,7 +191,9 @@ export function FormularioEdicionPortafolio({
         titulo="¿Dónde queda tu negocio?"
         ayuda="Toca el botón para usar el GPS de tu celular, o marca el punto en el mapa."
         ancho="completo"
-        id="ubicacion"
+        // Destino de «Mover mi punto» del panel del negocio. Solo ahí: en moderación
+        // puede haber varias ediciones abiertas y el id se repetiría.
+        id={variante === 'panel' ? 'ubicacion' : undefined}
       >
         <SelectorUbicacion valorInicial={coords} alCambiar={alCambiarUbicacion} />
 
