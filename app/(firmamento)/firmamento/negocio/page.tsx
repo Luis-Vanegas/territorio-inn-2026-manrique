@@ -9,8 +9,10 @@ import { convocatoriasParaTi } from '@/lib/db/convocatorias.repo';
 import { comparacionCategoria, perfilesParaTi, semanasDeNegocio } from '@/lib/db/cuenta.repo';
 import { listarAprobados, obtenerPropio, type Portafolio } from '@/lib/db/portafolios.repo';
 import { entornoDeNegocio } from '@/lib/firmamento/entorno';
+import { revisarUbicacion } from '@/lib/firmamento/ubicacion';
 import { completitudFicha, resumenSemanas } from '@/lib/firmamento/ficha';
 import { fechaHoyBogota, formatearNumero } from '@/lib/formato';
+import { AvisoUbicacion } from './_components/AvisoUbicacion';
 import { DondeEstas } from './_components/DondeEstas';
 import { BarraFicha } from './_components/FichaCompleta';
 import { EstadoFicha } from './_components/EstadoFicha';
@@ -93,6 +95,7 @@ export default async function NegocioInicioPage({
       </div>
 
       <EstadoFicha estado={portafolio.estado} motivo={portafolio.motivo_rechazo} enlaceFicha />
+      <AvisoUbicacion revision={revisarUbicacion(portafolio)} barrio={portafolio.barrio} />
 
       <Tarjeta
         titulo={`Hola, ${primerNombre}`}

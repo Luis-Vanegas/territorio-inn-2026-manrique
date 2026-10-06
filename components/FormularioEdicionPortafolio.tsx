@@ -57,16 +57,19 @@ function Seccion({
   titulo,
   ayuda,
   ancho = 'angosto',
+  id,
   children,
 }: {
   numero: string;
   titulo: string;
   ayuda?: string;
   ancho?: 'angosto' | 'completo';
+  /** Ancla para llegar desde otra pantalla (`#ubicacion`, desde «Mover mi punto»). */
+  id?: string;
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="border-t border-tinta/12 pt-8">
+    <fieldset id={id} className="scroll-mt-24 border-t border-tinta/12 pt-8">
       <legend className="sr-only">{titulo}</legend>
 
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -188,6 +191,7 @@ export function FormularioEdicionPortafolio({
         titulo="¿Dónde queda tu negocio?"
         ayuda="Toca el botón para usar el GPS de tu celular, o marca el punto en el mapa."
         ancho="completo"
+        id="ubicacion"
       >
         <SelectorUbicacion valorInicial={coords} alCambiar={alCambiarUbicacion} />
 

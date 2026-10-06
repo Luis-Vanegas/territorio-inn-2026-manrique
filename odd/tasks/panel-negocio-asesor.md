@@ -26,7 +26,7 @@ huecos menores.
       aprobados y comercios de OSM cercanos), nombre de su constelación o «estrella suelta»,
       cuántos negocios hay cerca y botón a «Mi constelación».
 - [x] T2 · Inicio: «Editar mi ficha» junto a «Así te ven en Constelaciones».
-- [ ] T3 · Aviso de ubicación (Inicio y Mi constelación): fuera de la Comuna 3
+- [x] T3 · Aviso de ubicación (Inicio y Mi constelación): fuera de la Comuna 3
       (`dentroDeManrique`) o barrio declarado distinto del oficial → «Mover mi punto» a la
       ficha, en el selector de ubicación.
 - [ ] T4 · Mi constelación: recorrer las demás constelaciones en el mapa y volver a la propia.
@@ -59,4 +59,8 @@ para contactar» y «Proponer categoría al negocio» (necesitan estado nuevo en
   (`entornoDeNegocio`), que usan el inicio y «Mi constelación». typecheck, lint y verificar en verde.
   Sin verificación en navegador (el panel exige sesión de Google). Commit 2f9cc5c.
 - T2 (delegado): «Editar mi ficha» junto a «Ver mi ficha en Constelaciones» en «Así te ven tus vecinos»
-  (también cuando aún no está publicada). typecheck, lint y verificar en verde.
+  (también cuando aún no está publicada). typecheck, lint y verificar en verde. Commit b368d6f.
+- T3 (delegado): `AvisoUbicacion` en el inicio y en «Mi constelación» con «Mover mi punto» a
+  `/firmamento/negocio/ficha#ubicacion`; la regla vive en `lib/firmamento/ubicacion.ts`
+  (`revisarUbicacion`), que ahora usan también las alertas del equipo (`calidad.ts`, mismo texto).
+  typecheck, lint y verificar en verde.

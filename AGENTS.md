@@ -305,8 +305,8 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   panel (insignias, insumo de alertas y territorio, cambios de los dueños, aprendizaje del
   sugeridor, alcance de una convocatoria) van en `lib/db/equipo.repo.ts`. Las alertas de
   calidad NO se guardan: `alertasDeCalidad` (`lib/firmamento/calidad.ts`) las calcula al
-  vuelo con `dentroDeManrique`/`metrosAlBorde`, `barrio_oficial ?? barrioDe` y la categoría
-  `otros` (la propuesta del sugeridor corre en el navegador). `?ficha=<id>` en
+  vuelo con `revisarUbicacion` (`lib/firmamento/ubicacion.ts`: `dentroDeManrique`/`metrosAlBorde`,
+  `barrio_oficial ?? barrioDe`) y la categoría `otros` (la propuesta del sugeridor corre en el navegador). `?ficha=<id>` en
   `equipo/aliados` abre una ficha en su pestaña con la edición abierta: es el destino de
   «Cambios recientes» y de las alertas. Los CSV del panel (aliados, interacciones, plan de
   brigada, datos abiertos) salen de `/api/admin/exportar?conjunto=` (guarda propia).
@@ -345,6 +345,10 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   sin WhatsApp). La usan «Dónde estás» del inicio (`negocio/_components/DondeEstas.tsx`: `MapaAliados`
   acercado al punto con `seleccionado`, texto con las mismas cifras y botón a «Mi constelación») y
   `negocio/constelacion/page.tsx`; no recalcules eso en una página.
+  El mismo `revisarUbicacion` alimenta `AvisoUbicacion` (`negocio/_components/`) en el inicio y en «Mi
+  constelación»: punto fuera de la Comuna 3 o barrio declarado distinto del oficial → aviso con «Mover mi
+  punto» a `/firmamento/negocio/ficha#ubicacion` (el `id` lo lleva la sección del mapa de
+  `FormularioEdicionPortafolio`). Solo avisa; no bloquea nada.
 - **Dos puertas, una ficha**: un negocio entra por cuenta de Google
   (`usuarios.id` en `portafolios.usuario_id`) o por el enlace con
   `token_publico` — para quien registramos en campo y no maneja tecnología.

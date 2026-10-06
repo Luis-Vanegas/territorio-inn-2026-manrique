@@ -16,12 +16,9 @@ import { formatearDistancia } from '@/lib/geo/distancia';
 export function DondeEstas({
   entorno,
   portafolioId,
-  aviso,
 }: {
   entorno: EntornoNegocio;
   portafolioId: string;
-  /** El aviso de ubicación, si el punto o el barrio no cuadran. */
-  aviso?: React.ReactNode;
 }) {
   const { constelacion, aliadosCerca, comerciosCerca, cercanas, enElMapa } = entorno;
   const masCercana = constelacion ? null : cercanas[0] ?? null;
@@ -34,8 +31,6 @@ export function DondeEstas({
       id="donde-estas"
       resumen={constelacion ? 'en una constelación' : 'estrella suelta'}
     >
-      {aviso && <div className="mb-4">{aviso}</div>}
-
       <p className="font-sans text-base leading-relaxed text-tinta">
         {constelacion ? (
           <>Eres parte de {etiquetaConstelacion(constelacion)}.</>

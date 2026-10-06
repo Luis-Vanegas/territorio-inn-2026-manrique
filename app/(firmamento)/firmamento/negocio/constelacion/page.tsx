@@ -10,11 +10,13 @@ import { listarAprobados, obtenerPropio, type Portafolio } from '@/lib/db/portaf
 import { posiblesAlianzas } from '@/lib/firmamento/alianzas';
 import { datosOsm, entornoDeNegocio } from '@/lib/firmamento/entorno';
 import { negocioActivo } from '@/lib/firmamento/negocio';
+import { revisarUbicacion } from '@/lib/firmamento/ubicacion';
 import { fechaHoyBogota, formatearNumero } from '@/lib/formato';
 import { fechaLarga } from '@/lib/geo/constelaciones';
 import { etiquetaConstelacion, lineaMezcla } from '@/lib/geo/comerciosOsm';
 import { formatearDistancia } from '@/lib/geo/distancia';
 import { urlSitio } from '@/lib/sitio';
+import { AvisoUbicacion } from '../_components/AvisoUbicacion';
 import { Invitar } from '../_components/Invitar';
 import { ListaVecinos, type Vecino } from '../_components/ListaVecinos';
 import { SelectorNegocio } from '../_components/SelectorNegocio';
@@ -87,6 +89,7 @@ export default async function NegocioConstelacionPage() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-5">
       <SelectorNegocio negocios={negocios} actual={actual} />
+      <AvisoUbicacion revision={revisarUbicacion(portafolio)} barrio={portafolio.barrio} />
 
       {/* La ventana: quién tengo cerca, en cifras y en el mapa (el de siempre; no hay un segundo mapa). */}
       <VentanaNoche
