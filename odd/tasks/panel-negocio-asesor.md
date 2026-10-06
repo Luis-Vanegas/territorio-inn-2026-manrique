@@ -81,4 +81,4 @@ para contactar» y «Proponer categoría al negocio» (necesitan estado nuevo en
   (`ObservatorioCielo`); se suma la parte por barrio (`entidad/_components/ApoyoPorBarrio.tsx`: los 5
   barrios con más locales de OSM, sus constelaciones y los aliados de `por_barrio` de los datos
   abiertos, ya suprimidos). Sin repos de negocios (`verificar-entidades`: 11 archivos del panel).
-  typecheck, lint y verificar en verde. Sin verificación en navegador (sesión de entidad).
+  typecheck, lint y verificar en verde. Sin verificación en navegador (sesión de entidad). Commit d9463b8.
