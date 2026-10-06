@@ -90,6 +90,13 @@ Diseño en `docs/firmamento-modulos.md` y `docs/base-de-datos.md`; plan en `docs
 - [ ] El asesor flotante no se monta en el layout de Firmamento.
 - [ ] `constelaciones.json` no trae la referencia («UVA de los Sueños»): agregarla en el pipeline.
 
+- [x] Ideas del prototipo del asesor adaptadas con nuestros datos (6-oct, `odd/tasks/panel-negocio-asesor.md`):
+      «Dónde estás» y «Editar mi ficha» en el inicio del negocio, aviso «Mover mi punto», recorrer
+      constelaciones, «Para ti» por dificultad declarada, «Pruébalo» en Modelos y «Dónde apoyar
+      primero» por barrio para entidades. Sin probar en navegador (piden sesión).
+- [ ] Decidir: «Marcar para contactar» y «Proponer categoría al negocio» en las alertas del equipo.
+- [ ] El asesor embebido en «Para ti» usa el negocio más reciente de la cuenta, no el activo.
+
 ### 🟢 Para Antigravity (Firmamento)
 - [x] Reemplazar `/admin` por `/firmamento/equipo` (y `/admin/login` por `/firmamento/entrar?rol=equipo`)
       en `docs/analitica.md`, `docs/arquitectura-y-costos.md`, `docs/seguridad.md` y
