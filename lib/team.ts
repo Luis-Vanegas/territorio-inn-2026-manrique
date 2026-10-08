@@ -5,30 +5,28 @@
 export interface MiembroEquipo {
   iniciales: string;
   nombre: string;
-  programaInstitucion: string;
-  /** Opcional: no todos tienen un rol definido todavía. */
-  rol?: string;
+  rol: string;
   /** Ruta dentro de /public, ej. "/equipo/luis.jpg". Opcional: sin foto, se muestran las iniciales. */
   foto?: string;
 }
 
 export const equipo: MiembroEquipo[] = [
   {
-    iniciales: "LR",
-    nombre: "Luis Rios Vanegas",
-    programaInstitucion: "Ingeniería en Ciencia de Datos, en curso",
-    foto: "/equipo/fotoitm.jpeg",
-  },
-  {
     iniciales: "EM",
-    nombre: "Estefania Mesa Makiu",
-    programaInstitucion: "Ingeniería de Diseño Industrial, en curso · ITM",
-    foto: "/equipo/Estefania.jpeg",
+    nombre: "Estefanía Makiu",
+    rol: "Gestora Administrativa y de Formalización",
+    foto: "/equipo/estefania.jpg",
   },
   {
-    iniciales: "MJ",
-    nombre: "Maria Camila Jaramillo Zapata",
-    programaInstitucion: "Negocios Internacionales, en curso · Tecnológico de Antioquia",
-    foto: "/equipo/fotoCamila.jpeg",
+    iniciales: "LR",
+    nombre: "Luis Ríos",
+    rol: "Ingeniero de Innovación e Implementación Web",
+    foto: "/equipo/luis.jpg",
+  },
+  {
+    iniciales: "CJ",
+    nombre: "Camila Jaramillo",
+    rol: "Líder de Crecimiento de Negocios y Experiencia de Usuario",
+    foto: "/equipo/camila.jpg",
   },
 ];

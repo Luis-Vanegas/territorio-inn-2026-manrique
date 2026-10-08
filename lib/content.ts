@@ -26,14 +26,10 @@ export interface ModuloFuturo {
 const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
 
 export const reto = {
-  titulo: "El reto",
   parrafos: [
-    "El Reto #2 — Empleo y Desarrollo Económico — parte de una pregunta simple: ¿cómo se ve, con datos reales, la economía de un territorio que históricamente se ha leído solo desde afuera? Manrique concentra unidades productivas informales, oficios heredados y un tejido económico que rara vez aparece en los indicadores oficiales.",
-    "El Plan de Ordenamiento Territorial (POT) de Medellín identifica la reactivación económica de las comunas nororientales como un eje de equidad territorial. Sin información local, actualizada y accesible, esa reactivación se diseña a ciegas.",
-    "Constelaciones propone una primera capa: una landing pública que explica el problema y siembra la base de un sistema de datos abierto sobre empleo, informalidad y unidades productivas en Manrique.",
+    "¿Han visto a Manrique de noche? Parece un cielo de estrellas, pero cuando caminas por sus calles descubres la verdadera luz: sus negocios y emprendedores. En un país donde el 87 % de los micronegocios no figura en mapas ni registros oficiales, creamos Constelaciones: una red comunitaria gratuita que los georreferencia en minutos, conectando a vecinos y agrupando locales cercanos para que se recomienden y crezcan juntos.",
+    "Firmamento, nuestro tablero de datos e inteligencia artificial, dota a cada comerciante de métricas para medir su negocio y un vigía de convocatorias públicas para que ninguna ayuda se pierda. Porque en Manrique cada negocio es una estrella… y juntos iluminamos la comuna.",
   ],
-  cita:
-    "“Acá el trabajo existe, lo que no existe es el dato que lo cuente.”",
 };
 
 // El módulo de inventario predictivo todavía no tiene datos reales detrás — se
