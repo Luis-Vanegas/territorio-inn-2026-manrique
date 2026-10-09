@@ -29,8 +29,30 @@ for (const archivo of ARCHIVOS) {
   });
 }
 
+// El botón de WhatsApp solo sale con un celular colombiano (lib/contacto.ts).
+// Node >= 22.18 carga el .ts sin flag; sin import de valores, no necesita más.
+const { esCelularColombiano } = await import('../lib/contacto.ts');
+const CASOS_CELULAR = [
+  ['300 123 4567', true],
+  ['3001234567', true],
+  ['+57 300 123 4567', true],
+  ['573001234567', true],
+  ['604 444 5566', false], // fijo de Medellín
+  ['6044445566', false],
+  ['300 123 456', false], // le falta un dígito
+  ['5760444455', false],
+  ['', false],
+];
+for (const [numero, esperado] of CASOS_CELULAR) {
+  if (esCelularColombiano(numero) !== esperado) {
+    problemas.push(`esCelularColombiano(${JSON.stringify(numero)}) debía dar ${esperado}`);
+  }
+}
+
 if (problemas.length > 0) {
   console.error(`✗ clientes: ${problemas.length} problema(s)\n  - ${problemas.join('\n  - ')}`);
   process.exit(1);
 }
-console.log(`✓ clientes y cuenta: las ${total} consultas filtran por el dueño del negocio`);
+console.log(
+  `✓ clientes y cuenta: las ${total} consultas filtran por el dueño del negocio; ${CASOS_CELULAR.length} casos de celular`,
+);
