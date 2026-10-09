@@ -16,7 +16,7 @@ Cada tabla pertenece a UN dominio. Si una tabla nueva no cabe en ninguno, se dis
 | **A. Identidad y acceso** | `usuarios`, `admins` (equipo), `entidades`*, `miembros_entidad`*, `invitaciones` (035) | Google OAuth, equipo |
 | **B. Catálogos** | `categorias`, `barrios`*, `definiciones_campo` | Equipo |
 | **C. Negocio** (núcleo) | `portafolios` + `aliados_investigacion`, `aliados_consentimiento`, `interacciones_portafolio`, `clientes_negocio` | Dueño, equipo, sistema |
-| **D. Oportunidades** | `convocatorias`, `convocatoria_categorias`* | Vigía, entidad (propone), equipo (decide) |
+| **D. Oportunidades** | `convocatorias`, `convocatoria_categorias`*, `vigia_corridas` y `vigia_fuentes_estado` (036) | Vigía, entidad (propone), equipo (decide) |
 | **E. Modelos y datos** | `sugerencias_categoria` | Sistema (registro), equipo (moderación, 034) |
 | **F. Bitácora** | `bitacora`* | Todas las acciones que cambian algo |
 | **G. Operación** | `intentos_registro`, `visitas_sitio`, `peticiones`, `candidatos`, `_migraciones` | Sistema |
@@ -304,3 +304,19 @@ El SQL completo está en `lib/db/migrations/036_vigia.sql`.
   corrida anterior). `responde` = primera vez que se ve la fuente.
 - **Huella**: sha256 de TODOS los enlaces de la página (texto + destino, ordenados), no del HTML crudo.
 - ponytail: las corridas no se purgan (una por día, pocas filas). Si crecen, una línea en `/api/cron/purgar`.
+
+## 11. Migración 037: categoría de diseño y publicidad
+
+Dominio B. Solo inserta la categoría `diseno_publicidad` («Diseño, publicidad e impresiones»); el
+sugeridor se reentrenó con ella (ver `pipeline/reporte_modelo.md`).
+
+## 12. Migración 038: los clientes no cambian de dueño + índices
+
+- **Trigger `trg_portafolios_cambio_dueno`**: `clientes_negocio` no tiene dueño propio (los ve quien
+  sea dueño del portafolio). Cuando `portafolios.usuario_id` cambia y antes había dueño (el equipo
+  reasigna o desvincula, o la cuenta se borra y queda `null`), se borran los clientes de ese negocio
+  en la misma transacción. Son datos de terceros (Ley 1581): el dueño nuevo no los recibió.
+- **Índices** parciales en llaves foráneas que no tenían: `bitacora.convocatoria_id`,
+  `invitaciones.entidad_id`, `invitaciones.usada_por`, `convocatorias.propuesta_por`,
+  `vigia_fuentes_estado.entidad_id`, `portafolios.barrio_oficial`.
+- **Se quita** `idx_usuarios_google_sub` (027): el `unique` de la columna ya crea su índice.
