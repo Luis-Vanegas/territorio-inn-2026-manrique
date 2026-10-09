@@ -47,25 +47,37 @@ export async function listarClientes(usuarioId: string, portafolioId: string): P
   return rows as ClienteNegocio[];
 }
 
+export type ResultadoCrearCliente = 'creado' | 'tope' | 'no_disponible';
+
 /**
  * `insert … select` y no `insert … values`: si el negocio no es de este
- * usuario, o ya llegó al tope, el select no devuelve filas y no se inserta
- * nada. Dueño y cupo se comprueban en la misma sentencia que escribe.
+ * usuario, está archivado o ya llegó al tope, el select no devuelve filas y no
+ * se inserta nada. Dueño y cupo se comprueban en la misma sentencia que escribe.
+ * Si no se insertó, una segunda lectura dice por qué, para no culpar al tope
+ * cuando el negocio ya no está disponible.
  */
 export async function crearCliente(
   usuarioId: string,
   portafolioId: string,
   datos: DatosCliente,
-): Promise<boolean> {
+): Promise<ResultadoCrearCliente> {
   const rows = await sql`
     insert into clientes_negocio (portafolio_id, nombre, telefono, nota, etapa, proximo_contacto)
     select p.id, ${datos.nombre}, ${datos.telefono}, ${datos.nota}, ${datos.etapa}, ${datos.proximo_contacto}
     from portafolios p
-    where p.id = ${portafolioId} and p.usuario_id = ${usuarioId}
+    where p.id = ${portafolioId} and p.usuario_id = ${usuarioId} and p.estado <> 'archivado'
       and (select count(*) from clientes_negocio c where c.portafolio_id = p.id) < ${MAXIMO_CLIENTES}
     returning id
   `;
-  return rows.length > 0;
+  if (rows.length > 0) return 'creado';
+
+  const negocio = await sql`
+    select (select count(*) from clientes_negocio c where c.portafolio_id = p.id)::int as total
+    from portafolios p
+    where p.id = ${portafolioId} and p.usuario_id = ${usuarioId} and p.estado <> 'archivado'
+  `;
+  const total = (negocio[0] as { total: number } | undefined)?.total;
+  return total !== undefined && total >= MAXIMO_CLIENTES ? 'tope' : 'no_disponible';
 }
 
 export async function actualizarCliente(
@@ -79,6 +91,7 @@ export async function actualizarCliente(
         etapa = ${datos.etapa}, proximo_contacto = ${datos.proximo_contacto}, actualizado_en = now()
     from portafolios p
     where c.id = ${clienteId} and p.id = c.portafolio_id and p.usuario_id = ${usuarioId}
+      and p.estado <> 'archivado'
     returning c.id
   `;
   return rows.length > 0;

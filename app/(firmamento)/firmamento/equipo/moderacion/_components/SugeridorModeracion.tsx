@@ -2,6 +2,7 @@
 
 import { startTransition, useActionState, useEffect, useId, useMemo, useState } from 'react';
 
+import { CLASE_BOTON_PANEL, CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
 import { decidirCategoria, type EstadoDecisionCategoria } from '@/lib/actions/decidirCategoria';
 import { cargarModelo, sugerirCategoria, type ResultadoSugerencia, type Sugerencia } from '@/lib/ml/categoria';
 
@@ -23,10 +24,8 @@ const ESTADO_INICIAL: EstadoDecisionCategoria = { estado: 'inicial' };
 
 const porcentaje = (p: number) => `${Math.round(p * 100)} %`;
 
-const CLASE_BOTON =
-  'inline-flex min-h-[44px] items-center justify-center rounded-lg px-3.5 py-1.5 font-sans text-xs font-medium transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul-texto disabled:cursor-not-allowed disabled:opacity-40';
-const CLASE_PRIMARIO = `${CLASE_BOTON} bg-azul-texto text-hueso hover:bg-azul-texto/90`;
-const CLASE_SECUNDARIO = `${CLASE_BOTON} border border-tinta/25 text-tinta/80 hover:bg-tinta/5 hover:border-tinta/50`;
+const CLASE_PRIMARIO = CLASE_BOTON_PRIMARIO;
+const CLASE_SECUNDARIO = `${CLASE_BOTON_PANEL} disabled:cursor-not-allowed disabled:opacity-60`;
 
 export function SugeridorModeracion({
   portafolioId,
@@ -127,6 +126,11 @@ export function SugeridorModeracion({
         </div>
       </div>
 
+      <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/70">
+        El porcentaje es qué tan seguro está el modelo. Al elegir, la categoría de la ficha cambia de inmediato y tu
+        decisión le sirve al modelo para aprender.
+      </p>
+
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {correcta ? (
@@ -180,7 +184,7 @@ export function SugeridorModeracion({
                 value={elegida}
                 // Guardar en el onChange escribía en la base con cada flecha del teclado: decide el botón.
                 onChange={(e) => setElegida(e.target.value)}
-                className="min-h-[44px] rounded-lg border border-tinta/25 bg-hueso px-3 py-1 font-sans text-xs text-tinta transition-colors hover:border-tinta/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul-texto"
+                className="min-h-[44px] rounded-lg border border-tinta/55 bg-hueso px-3 py-1 font-sans text-sm text-tinta transition-colors hover:border-tinta/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul-texto"
               >
                 <option value="">Otra categoría…</option>
                 {categorias

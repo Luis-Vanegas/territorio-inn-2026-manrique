@@ -14,7 +14,9 @@ import { CLASE_BOTON_PANEL } from './Tarjeta';
  * (rol, nombre del negocio o de la entidad, botón al sitio y menú de la
  * persona). Desde `lg`, menú lateral fijo a la izquierda (`NavLateral`); bajo
  * `lg`, un botón ☰ al inicio del encabezado abre el mismo menú en un cajón
- * (`NavMovil`). Luego el título de la sección (único h1) y la página. Solo los
+ * (`NavMovil`). Luego el título de la sección (único h1), su descripción y la
+ * página, con UN ancho máximo para todos los paneles (`max-w-6xl` en el `main`:
+ * las páginas no ponen el suyo). Solo los
  * paneles con sesión usan este armazón: el sitio público no lleva menú
  * lateral. La noche entra solo en las `VentanaNoche` de cada página.
  *
@@ -121,14 +123,17 @@ export function PanelShell({
             <NavLateral rol={rol} insignias={insignias} />
           </div>
         </aside>
-        <main className="min-w-0 flex-1 pb-16 pt-6 sm:pt-8 lg:border-l lg:border-tinta/10 lg:pl-10">
+        <main className="min-w-0 max-w-6xl flex-1 pb-16 pt-6 sm:pt-8 lg:border-l lg:border-tinta/10 lg:pl-10">
           <TituloPanel rol={rol} />
           <div className="mt-6">{children}</div>
         </main>
       </div>
 
       <footer className="margen-editorial border-t border-tinta/10 py-6 font-sans text-xs leading-relaxed text-tinta/70">
-        <p>Mapa © colaboradores de OpenStreetMap (ODbL) · Datos abiertos con supresión de celdas menores a 5</p>
+        <p>
+          Mapa © colaboradores de OpenStreetMap (ODbL) · Cuando una cifra es menor que 5 no la publicamos, para que
+          nadie pueda identificar un negocio.
+        </p>
       </footer>
     </div>
   );

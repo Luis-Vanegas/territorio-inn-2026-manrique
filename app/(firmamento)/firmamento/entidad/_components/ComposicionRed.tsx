@@ -15,7 +15,7 @@ import { CELDA_PEQUENA } from '@/lib/privacidad/kAnonimato';
  * porque dibujarla con un largo revelaría el número que se escondió.
  */
 export function ComposicionRed({ datos }: { datos: DatosAbiertos | null }) {
-  const fuente = 'Constelaciones · Manrique, aliados aprobados por moderación (datos abiertos, regla k = 5)';
+  const fuente = 'Constelaciones · Manrique, aliados aprobados por moderación (datos abiertos; las cifras menores que 5 no se publican, para que nadie pueda identificar un negocio)';
 
   if (!datos) {
     return (

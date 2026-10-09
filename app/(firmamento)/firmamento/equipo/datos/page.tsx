@@ -38,25 +38,27 @@ function TablaCeldas({
 }) {
   return (
     <Tarjeta titulo={titulo} id={id}>
-      <table className="w-full border-collapse">
-        <caption className="sr-only">{titulo}: negocios aprobados por opción</caption>
-        <thead>
-          <tr>
-            <th scope="col" className="py-2 pr-3 text-left font-sans text-xs font-medium text-tinta/70">Opción</th>
-            <th scope="col" className="py-2 text-right font-sans text-xs font-medium text-tinta/70">Negocios</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filas.map((f) => (
-            <tr key={f.clave}>
-              <th scope="row" className="border-t border-tinta/12 py-2 pr-3 text-left font-sans text-sm font-normal text-tinta">
-                {f.nombre}
-              </th>
-              <td className="border-t border-tinta/12 py-2 text-right font-sans text-sm text-tinta tabular-nums">{f.negocios}</td>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <caption className="sr-only">{titulo}: negocios aprobados por opción</caption>
+          <thead>
+            <tr>
+              <th scope="col" className="py-2 pr-3 text-left font-sans text-xs font-medium text-tinta/70">Opción</th>
+              <th scope="col" className="py-2 text-right font-sans text-xs font-medium text-tinta/70">Negocios</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filas.map((f) => (
+              <tr key={f.clave}>
+                <th scope="row" className="border-t border-tinta/12 py-2 pr-3 text-left font-sans text-sm font-normal text-tinta">
+                  {f.nombre}
+                </th>
+                <td className="border-t border-tinta/12 py-2 text-right font-sans text-sm text-tinta tabular-nums">{f.negocios}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {nota && <p className="mt-3 font-sans text-sm text-tinta/70">{nota}</p>}
     </Tarjeta>
   );
@@ -79,13 +81,13 @@ export default async function DatosAbiertosPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Tarjeta titulo="Qué publica /api/datos" id="titulo-que">
+      <Tarjeta titulo="Qué datos publicamos para cualquiera" id="titulo-que">
         <p className="max-w-prose font-sans text-base leading-relaxed text-tinta/70">
           Conteos de negocios <strong className="font-medium text-tinta">aprobados</strong>, por
           categoría, barrio, formalidad y mayor dificultad. Toda celda con menos de 5
           negocios sale como «&lt;5», también los ceros; en categorías y barrios, si
           queda una sola celda escondida se esconde también la menor visible, para que
-          no se pueda deducir restando del total. Lo usan /firmamento, el panel de las
+          no se pueda deducir restando del total. Lo usan el inicio del sitio, el panel de las
           entidades y cualquiera desde afuera (CORS abierto, caché de 1 hora).
         </p>
         <p className="mt-3 max-w-prose font-sans text-base leading-relaxed text-tinta/70">

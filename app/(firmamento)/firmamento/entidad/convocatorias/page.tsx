@@ -145,7 +145,7 @@ export default async function EntidadConvocatoriasPage() {
   const hoy = hoyBogota();
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <p className="max-w-3xl font-sans text-base leading-relaxed text-tinta/70">
         Las convocatorias que el equipo ya aprobó para los negocios de la comuna, y un lugar para proponer las de tu
         entidad.

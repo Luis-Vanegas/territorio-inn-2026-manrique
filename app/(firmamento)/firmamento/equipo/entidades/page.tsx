@@ -35,8 +35,7 @@ export default async function EntidadesPage() {
         Las territoriales (JAL, CEDEZO…) miran el observatorio; las oferentes
         publican convocatorias. Para darle acceso a una persona, agrégala como
         miembro con el correo de su cuenta de Google: antes tiene que haber entrado
-        una vez en Constelaciones con ese correo. Una entidad solo ve datos
-        agregados, nunca fichas de negocios.
+        una vez en Constelaciones con ese correo.
       </p>
 
       <Tarjeta titulo="Nueva entidad" id="titulo-nueva">

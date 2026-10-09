@@ -4,10 +4,11 @@ import Link from 'next/link';
 import { Plegable } from '@/components/firmamento/Plegable';
 import { CLASE_BOTON_PANEL, Tarjeta } from '@/components/firmamento/panel/Tarjeta';
 import { exigirNegocio } from '@/lib/auth/firmamento';
-import { enlaceWhatsapp } from '@/lib/contacto';
+import { enlaceWhatsapp, esCelularColombiano } from '@/lib/contacto';
 import { listarClientes, MAXIMO_CLIENTES, type ClienteNegocio } from '@/lib/db/clientes.repo';
+import { negociosDe } from '@/lib/db/usuarios.repo';
 import { negocioActivo } from '@/lib/firmamento/negocio';
-import { ETIQUETA_ETAPA } from '@/lib/validation/cliente.schema';
+import { ETAPAS_CERRADAS, ETIQUETA_ETAPA } from '@/lib/validation/cliente.schema';
 import { SelectorNegocio } from '../_components/SelectorNegocio';
 import { SinNegocio } from '../_components/SinNegocio';
 import { BotonBorrarCliente, FormularioCliente } from './_components/FormularioCliente';
@@ -19,6 +20,10 @@ export const dynamic = 'force-dynamic';
 /** Hoy en Medellín, 'YYYY-MM-DD'. El servidor corre en UTC: a las 8 p. m. de acá allá ya es mañana. */
 function hoyEnColombia(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
+}
+
+function cerrado(c: ClienteNegocio): boolean {
+  return ETAPAS_CERRADAS.includes(c.etapa);
 }
 
 function fechaLegible(iso: string): string {
@@ -36,20 +41,33 @@ export default async function MisClientesPage() {
   const { negocios, actual: negocio } = await negocioActivo(usuarioId);
 
   if (!negocio) {
-    return <SinNegocio aviso="Para llevar tus clientes primero registra tu negocio." />;
+    // negocioActivo ya descartó los archivados: si la cuenta tiene alguno, decirle
+    // «registra tu negocio» sonaría a que nunca lo hizo.
+    const tieneArchivados = (await negociosDe(usuarioId)).length > 0;
+    return (
+      <SinNegocio
+        aviso={
+          tieneArchivados
+            ? 'Tu negocio está archivado, así que su lista de clientes ya no se puede usar. Para llevar tus clientes, registra un negocio activo.'
+            : 'Para llevar tus clientes primero registra tu negocio.'
+        }
+      />
+    );
   }
 
   // El repo filtra por la cuenta de la sesión: un id ajeno no devuelve nada.
   const clientes = await listarClientes(usuarioId, negocio.id);
   const hoy = hoyEnColombia();
   // Lo que ya tocaba (o toca hoy) y no se cerró: es lo primero que hay que ver.
-  const paraHoy = clientes.filter(
-    (c) => c.proximo_contacto && c.proximo_contacto <= hoy && c.etapa !== 'compro' && c.etapa !== 'no_compro',
-  );
-  const resto = clientes.filter((c) => !paraHoy.includes(c));
+  const paraHoy = clientes.filter((c) => !cerrado(c) && c.proximo_contacto && c.proximo_contacto <= hoy);
+  // Los cerrados al final: ya no hay venta que perseguir. sort es estable y
+  // conserva el orden por fecha del repo dentro de cada grupo.
+  const resto = clientes
+    .filter((c) => !paraHoy.includes(c))
+    .sort((a, b) => Number(cerrado(a)) - Number(cerrado(b)));
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <SelectorNegocio negocios={negocios} actual={negocio} />
 
       <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
@@ -135,7 +153,9 @@ function ListaClientes({
     <Tarjeta titulo={titulo} id={id} resumen={clientes.length}>
       <ul className="divide-y divide-tinta/12">
         {clientes.map((c) => {
-          const atrasado = c.proximo_contacto !== null && c.proximo_contacto < hoy;
+          // Un cliente cerrado no se persigue: ni atrasado ni fecha a la vista.
+          const fecha = cerrado(c) ? null : c.proximo_contacto;
+          const atrasado = fecha !== null && fecha < hoy;
           // El mensaje de "Seguimiento simple" de la guía Vende mejor, ya armado.
           const mensaje = `Hola, ${c.nombre}. Te escribo de ${negocio.nombre} por si todavía te interesa lo que conversamos. Si quieres, te ayudo a resolver cualquier duda.`;
 
@@ -151,12 +171,10 @@ function ListaClientes({
                       <span className="block break-words font-sans text-base font-medium text-tinta">{c.nombre}</span>
                       <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-sm text-tinta/70">
                         <span className="rounded border border-tinta/55 px-2 py-0.5 text-xs">{ETIQUETA_ETAPA[c.etapa]}</span>
-                        {c.proximo_contacto && (
+                        {fecha && (
                           <span className={atrasado ? 'font-medium text-azul-texto' : ''}>
-                            {atrasado ? 'Tocaba escribirle el ' : c.proximo_contacto === hoy ? 'Escríbele hoy' : 'Escribirle el '}
-                            {c.proximo_contacto !== hoy && (
-                              <span className="tabular-nums">{fechaLegible(c.proximo_contacto)}</span>
-                            )}
+                            {atrasado ? 'Tocaba escribirle el ' : fecha === hoy ? 'Escríbele hoy' : 'Escribirle el '}
+                            {fecha !== hoy && <span className="tabular-nums">{fechaLegible(fecha)}</span>}
                           </span>
                         )}
                       </span>
@@ -173,7 +191,8 @@ function ListaClientes({
                 )}
 
                 <div className={`flex flex-wrap items-center gap-x-5 gap-y-2 ${c.nota ? 'mt-4' : ''}`}>
-                  {c.telefono && (
+                  {/* Un fijo no tiene WhatsApp: el botón abriría un chat que no le llega a nadie. */}
+                  {c.telefono && esCelularColombiano(c.telefono) && (
                     <a
                       href={`${enlaceWhatsapp(c.telefono)}?text=${encodeURIComponent(mensaje)}`}
                       target="_blank"

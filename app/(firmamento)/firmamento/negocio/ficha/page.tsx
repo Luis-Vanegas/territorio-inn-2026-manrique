@@ -50,7 +50,7 @@ export default async function NegocioFichaPage() {
   const { estado, motivo_rechazo, moderado_por, moderado_en, foto_blob_pathname, menu_blob_pathname, ...publica } = portafolio;
 
   return (
-    <div className="mx-auto max-w-6xl">
+    <div>
       <SelectorNegocio negocios={negocios} actual={actual} />
 
       <VistaPreviaEnVivo

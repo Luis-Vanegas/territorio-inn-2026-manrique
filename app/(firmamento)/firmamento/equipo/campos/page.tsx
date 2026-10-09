@@ -25,9 +25,8 @@ export default async function CamposPage() {
   return (
     <div>
       <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Los campos que agregues aquí aparecen en el formulario público de
-        registro, después de los campos fijos (nombre, categoría, ubicación,
-        contacto). Desactivar un campo lo saca del formulario sin borrar los
+        Aparecen en el formulario de registro, después de los campos fijos
+        (nombre, categoría, ubicación, contacto). Desactivar un campo lo saca del formulario sin borrar los
         valores que ya cargó la gente. Lo que la gente escribe en un campo solo
         se ve en la vitrina si lo marcas como público; por defecto cada campo
         nuevo es privado.

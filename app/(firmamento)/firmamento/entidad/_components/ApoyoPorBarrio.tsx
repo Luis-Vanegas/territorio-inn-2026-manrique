@@ -66,7 +66,7 @@ export function ApoyoPorBarrio({
       )}
       <LineaFuente>
         Fuente: locales y constelaciones, OpenStreetMap © colaboradores (ODbL), datos al {fechaOsm}; aliados, datos
-        abiertos de Constelaciones con la regla k = 5; barrios: Alcaldía de Medellín
+        abiertos de Constelaciones (las cifras menores que 5 no se publican, para que nadie pueda identificar un negocio); barrios: Alcaldía de Medellín
       </LineaFuente>
     </Tarjeta>
   );

@@ -81,7 +81,7 @@ export default async function EquipoResumenPage() {
             etiqueta="Convocatorias por revisar"
             valor={numero(conteos.convocatorias)}
             numero={conteos.convocatorias}
-            aclaracion="Del vigía y de las entidades"
+            aclaracion="Del buscador automático de convocatorias (vigía) y de las entidades"
             enlace={conteos.convocatorias > 0 ? { href: '/firmamento/equipo/convocatorias', texto: 'Revisar' } : undefined}
           />
           <Kpi
@@ -123,7 +123,7 @@ export default async function EquipoResumenPage() {
           )}
           {enOtros > 0 && (
             <p className="mt-3 font-sans text-sm text-tinta/70">
-              «Otros» tiene <span className="tabular-nums">{enOtros}</span> {enOtros === 1 ? 'ficha' : 'fichas'}: ahí el sugeridor propone una categoría.
+              «Otros» tiene <span className="tabular-nums">{enOtros}</span> {enOtros === 1 ? 'ficha' : 'fichas'}: ahí el sugeridor (un modelo que lee el nombre del negocio y propone una categoría) te ayuda a ubicarlas.
             </p>
           )}
         </Tarjeta>
@@ -171,6 +171,11 @@ export default async function EquipoResumenPage() {
         </Tarjeta>
 
         <Tarjeta titulo="Aprendizaje del sugeridor" id="titulo-sugeridor" plegable>
+          <p className="mb-4 font-sans text-sm leading-relaxed text-tinta/70">
+            El sugeridor es un modelo que lee el nombre del negocio y propone una categoría. Aquí ves cuántas veces la
+            gente y el equipo usaron su propuesta, la corrigieron o la dejaron como estaba: cada decisión le sirve para
+            aprender.
+          </p>
           <AprendizajeSugeridor datos={sugeridor} />
           <LineaFuente>Fuente: sugerencias del registro y de la moderación, sin el texto escrito · {hoy}</LineaFuente>
           <Link href="/firmamento/equipo/modelos" className={`${CLASE_BOTON_PANEL} mt-4`}>
@@ -190,7 +195,7 @@ export default async function EquipoResumenPage() {
         }
       >
         {actividad.filas.length === 0 ? (
-          <p className="font-sans text-sm text-tinta/70">Todavía no hay nada en la bitácora.</p>
+          <p className="font-sans text-sm text-tinta/70">Todavía no hay nada en el historial de cambios.</p>
         ) : (
           <ListaBitacora filas={actividad.filas.slice(0, 8)} />
         )}

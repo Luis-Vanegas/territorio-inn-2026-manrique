@@ -26,25 +26,17 @@ export default async function RegistroNegocioPage() {
   const [categorias, camposPersonalizados] = await Promise.all([listarCategorias(), listarCamposActivos()]);
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Llena los datos de tu negocio. Lo revisamos antes de publicarlo en el mapa de Constelaciones: toma
-        menos de 3 minutos y es gratis.
-      </p>
-      <div className="mt-8">
-        <VistaPreviaEnVivo
-          categorias={categorias}
-          definicionesCampos={camposPersonalizados}
-          nota="Esta es tu tarjeta en el mapa de Aliados. Cambia mientras escribes; se publica cuando el equipo la apruebe."
-        >
-          <FormularioRegistro
-            categorias={categorias}
-            camposPersonalizados={camposPersonalizados}
-            accion={registrarPortafolio}
-            modo="propio"
-          />
-        </VistaPreviaEnVivo>
-      </div>
-    </div>
+    <VistaPreviaEnVivo
+      categorias={categorias}
+      definicionesCampos={camposPersonalizados}
+      nota="Esta es tu tarjeta en el mapa de Aliados. Cambia mientras escribes; se publica cuando el equipo la apruebe."
+    >
+      <FormularioRegistro
+        categorias={categorias}
+        camposPersonalizados={camposPersonalizados}
+        accion={registrarPortafolio}
+        modo="propio"
+      />
+    </VistaPreviaEnVivo>
   );
 }

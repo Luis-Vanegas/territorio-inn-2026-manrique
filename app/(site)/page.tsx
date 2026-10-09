@@ -33,6 +33,10 @@ export default async function Home() {
           >
             Los negocios de la Comuna 3, Manrique, en un mapa.
           </h1>
+          <p className="mt-3 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
+            Busca un negocio o toca el mapa. Las estrellas grandes son aliados de Constelaciones; las pequeñas,
+            comercios del mapa abierto (OpenStreetMap). Una constelación es un grupo de comercios cercanos.
+          </p>
           <div className="mt-6 max-w-xl">
             <BuscadorNegocios />
           </div>

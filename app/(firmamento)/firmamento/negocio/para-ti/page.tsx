@@ -77,7 +77,7 @@ export default async function NegocioParaTiPage() {
   const totalGuias = guias.generales.length + guias.dificultades.reduce((n, d) => n + d.guias.length, 0);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <Tarjeta
         titulo="Convocatorias abiertas para tu negocio"
         id="convocatorias"

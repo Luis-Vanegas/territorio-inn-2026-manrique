@@ -115,7 +115,7 @@ export function BarraPestanas({
 
 /**
  * Vistas de una página por URL (`?vista=`): la API de siempre (`etiqueta` e
- * `items` con `texto`, `n` y `activo`), ahora con el lenguaje de las pestañas.
+ * `items` con `texto`, `corta`, `n` y `activo`), ahora con el lenguaje de las pestañas.
  * Aquí `n` es lo que hay en la vista (un conteo neutro), no una insignia.
  */
 export function SubPestanas({
@@ -123,7 +123,7 @@ export function SubPestanas({
   items,
 }: {
   etiqueta: string;
-  items: { href: string; texto: string; n?: number; activo: boolean }[];
+  items: { href: string; texto: string; corta?: string; n?: number; activo: boolean }[];
 }) {
   return (
     <BarraPestanas

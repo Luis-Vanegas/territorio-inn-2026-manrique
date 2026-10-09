@@ -251,7 +251,14 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   contactos, comparación con la categoría; una consulta nueva del panel va en ese archivo y con ese filtro).
   Lo mínimo por Ley 1581: nombre, teléfono y nota; nada de cédula, dirección ni
   correo. El contacto sale por
-  WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo.
+  WhatsApp (`enlaceWhatsapp` + `?text=`), sin proveedor de correo, y el botón solo
+  sale con un celular (`esCelularColombiano` de `lib/contacto.ts`: 10 dígitos con 3
+  o 12 con 573; sus casos van en `verificar-clientes.mjs`). Un negocio archivado no
+  recibe ni edita clientes (`p.estado <> 'archivado'` en el insert y el update); al
+  cambiar el dueño los borra el trigger de la 038, no el código. Las etapas
+  cerradas (`ETAPAS_CERRADAS`: compró / no compró) nunca salen atrasadas, no
+  muestran fecha y van al final. Las dos actions devuelven estado (`useActionState`)
+  y `guardarCliente` devuelve `valores` en todo error para no vaciar el formulario.
 - **Dos poblaciones, dos cookies**: `admin_session` (moderadores, 8 h) y
   `sesion_usuario` (vecinos, 14 días; con prefijo `__Host-` en producción).
   Cookies separadas a propósito: con una sola, un campo "rol" adentro sería lo
@@ -294,8 +301,10 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   sesión con `cache` de React). Un layout NO basta (no se re-ejecuta al navegar entre hermanas): la
   guarda va en el layout del rol Y en cada `page.tsx`, junto a la lectura de datos,
   y cada action/repo revalida. La navegación es DATOS (`lib/firmamento/navegacion.ts`,
-  un arreglo por rol); una sección nueva = entrada ahí + carpeta
-  `<rol>/<seccion>/page.tsx`. Mientras no exista la carpeta, `<rol>/[...resto]/page.tsx`
+  un arreglo por rol); una sección nueva = entrada ahí (con su `descripcion`: una o dos frases
+  sin jerga que `TituloPanel` pinta bajo el h1; la página no repite esa intro) + carpeta
+  `<rol>/<seccion>/page.tsx`. El ancho máximo de todas las páginas es UNO, `max-w-6xl` en el
+  `main` de `PanelShell`: una página no pone su propio `max-w`/`mx-auto`. Mientras no exista la carpeta, `<rol>/[...resto]/page.tsx`
   muestra «En construcción» (y 404 si la ruta no está en el menú). El armazón es
   `components/firmamento/panel/PanelShell.tsx`; las insignias del menú son una prop
   (`insignias` por `href`). La puerta devuelve a una ruta interna con `?destino=` en

@@ -214,12 +214,17 @@ export function NavMovil({ rol, insignias = {} }: { rol: RolFirmamento; insignia
   );
 }
 
-/** El título de la sección actual: el único h1 del panel. */
+/** El título de la sección actual (el único h1 del panel) y, debajo, qué se hace en ella. */
 export function TituloPanel({ rol }: { rol: RolFirmamento }) {
   const actual = useActual(rol);
   return (
-    <h1 className="break-words font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl">
-      {actual.etiqueta}
-    </h1>
+    <>
+      <h1 className="break-words font-display text-3xl font-medium leading-tight text-tinta sm:text-4xl">
+        {actual.etiqueta}
+      </h1>
+      {actual.descripcion && (
+        <p className="mt-2 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">{actual.descripcion}</p>
+      )}
+    </>
   );
 }

@@ -21,25 +21,17 @@ export default async function RegistroEnCampoPage() {
   const [categorias, camposPersonalizados] = await Promise.all([listarCategorias(), listarCamposActivos()]);
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Para quien no tiene cuenta de Google. Llena los datos con la persona presente y, al final, indica
-        cómo autorizó el tratamiento de sus datos. Queda en revisión y le envías su enlace personal.
-      </p>
-      <div className="mt-8">
-        <VistaPreviaEnVivo
-          categorias={categorias}
-          definicionesCampos={camposPersonalizados}
-          nota="Muéstrale a la persona cómo se verá su tarjeta en el mapa de Aliados cuando la aprueben."
-        >
-          <FormularioRegistro
-            categorias={categorias}
-            camposPersonalizados={camposPersonalizados}
-            accion={registrarAsistido}
-            modo="asistido"
-          />
-        </VistaPreviaEnVivo>
-      </div>
-    </div>
+    <VistaPreviaEnVivo
+      categorias={categorias}
+      definicionesCampos={camposPersonalizados}
+      nota="Muéstrale a la persona cómo se verá su tarjeta en el mapa de Aliados cuando la aprueben."
+    >
+      <FormularioRegistro
+        categorias={categorias}
+        camposPersonalizados={camposPersonalizados}
+        accion={registrarAsistido}
+        modo="asistido"
+      />
+    </VistaPreviaEnVivo>
   );
 }

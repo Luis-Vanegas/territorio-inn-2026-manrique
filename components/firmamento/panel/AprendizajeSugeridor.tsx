@@ -13,7 +13,7 @@ function Grupo({ titulo, filas }: { titulo: string; filas: [string, number][] })
   return (
     <div className="min-w-0">
       <h3 className="font-sans text-sm font-medium text-tinta">{titulo}</h3>
-      <dl className="mt-2 grid grid-cols-3 gap-3">
+      <dl className="mt-2 grid grid-cols-1 gap-3 min-[400px]:grid-cols-3">
         {filas.map(([t, n]) => (
           <div key={t} className="min-w-0">
             <dd className="font-cifra text-2xl leading-none tabular-nums text-tinta">{numero(n)}</dd>

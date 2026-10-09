@@ -70,20 +70,15 @@ export default async function EntidadObservatorioPage() {
   // Una sola línea de fuente para la banda: cada cifra viene de un lado y la línea dice de dónde.
   const fuenteBanda = (
     <>
-      aliados, datos abiertos de Constelaciones con la regla k = 5
+      aliados, datos abiertos de Constelaciones (las cifras menores que 5 no se publican, para que nadie pueda identificar un negocio)
       {datosRed ? ` (consultado el ${fechaLarga(datosRed.generado_en)})` : ' (sin consulta en este momento)'}; locales
-      y constelaciones, OpenStreetMap © colaboradores (ODbL), datos al {fechaOsm} y agrupados con HDBSCAN el{' '}
+      y constelaciones, OpenStreetMap © colaboradores (ODbL), datos al {fechaOsm} y agrupados por cercanía el{' '}
       {fechaCorrida}; convocatorias, aprobadas por el equipo.
     </>
   );
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-5">
-      <p className="max-w-3xl font-sans text-base leading-relaxed text-tinta/70">
-        Aquí ves la red como la ve Constelaciones: solo conteos, nunca un negocio por su nombre. Toda cifra con menos
-        de 5 negocios sale como «{CELDA_PEQUENA}».
-      </p>
-
+    <div className="flex flex-col gap-5">
       <VentanaNoche titulo="La red y el territorio hoy" id="cifras-principales">
         <GrupoCifras fuente={fuenteBanda} fecha={fechaHoyBogota()}>
           <Kpi

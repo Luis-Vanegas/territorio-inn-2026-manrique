@@ -59,7 +59,7 @@ function Paginacion({ vista, pagina, hayMas }: { vista: Vista; pagina: number; h
  * - Cambios recientes: lo que editaron los dueños. Su edición se publica
  *   directo (docs/firmamento-modulos.md, decisión 2); el equipo corrige después.
  * - Alertas de calidad: calculadas al vuelo, sin tabla (lib/firmamento/calidad.ts).
- * - Historial: la bitácora completa, paginada.
+ * - Historial: la bitácora completa, paginada (en pantalla, «historial de cambios»).
  */
 export default async function ModeracionPage({
   searchParams,
@@ -80,10 +80,10 @@ export default async function ModeracionPage({
     <SubPestanas
       etiqueta="Vistas de moderación"
       items={[
-        { href: `${RUTA}?vista=revisar`, texto: 'Por revisar', n: pendientes.length, activo: vista === 'revisar' },
-        { href: `${RUTA}?vista=cambios`, texto: 'Cambios recientes', activo: vista === 'cambios' },
-        { href: `${RUTA}?vista=alertas`, texto: 'Alertas de calidad', n: alertas.length, activo: vista === 'alertas' },
-        { href: `${RUTA}?vista=historial`, texto: 'Historial', activo: vista === 'historial' },
+        { href: `${RUTA}?vista=revisar`, texto: 'Por revisar', corta: 'Revisar', n: pendientes.length, activo: vista === 'revisar' },
+        { href: `${RUTA}?vista=cambios`, texto: 'Cambios recientes', corta: 'Cambios', activo: vista === 'cambios' },
+        { href: `${RUTA}?vista=alertas`, texto: 'Alertas de calidad', corta: 'Alertas', n: alertas.length, activo: vista === 'alertas' },
+        { href: `${RUTA}?vista=historial`, texto: 'Historial', corta: 'Historial', activo: vista === 'historial' },
       ]}
     />
   );
@@ -127,7 +127,7 @@ export default async function ModeracionPage({
         {pestanas}
         <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
           Lo que los dueños cambiaron en su ficha. Se publica sin esperar: si algo
-          quedó mal, corrígelo desde la ficha. La bitácora guarda qué campos
+          quedó mal, corrígelo desde la ficha. El historial de cambios guarda qué campos
           cambiaron, nunca los valores anteriores.
         </p>
         <Tarjeta titulo="Ediciones de los dueños" id="titulo-cambios" className="mt-6">
@@ -183,10 +183,7 @@ export default async function ModeracionPage({
         ) : (
           <section aria-label="Lista de alertas de calidad" className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-2">
             {alertas.map((a) => (
-              <article
-                key={`${a.ficha.id}-${a.tipo}`}
-                className="flex flex-col justify-between rounded-xl border border-tinta/12 bg-hueso p-5 sm:p-6"
-              >
+              <Tarjeta key={`${a.ficha.id}-${a.tipo}`} titulo={a.ficha.nombre} id={`alerta-${a.ficha.id}-${a.tipo}`}>
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-full border border-tinta/15 bg-tinta/5 px-2.5 py-0.5 font-sans text-xs font-medium text-tinta/80">
@@ -206,11 +203,7 @@ export default async function ModeracionPage({
                     </span>
                   </div>
 
-                  <h3 className="mt-3 font-display text-xl font-medium leading-snug text-tinta">
-                    {a.ficha.nombre}
-                  </h3>
-
-                  <p className="mt-1.5 font-sans text-sm leading-relaxed text-tinta/75">
+                  <p className="mt-3 font-sans text-sm leading-relaxed text-tinta/75">
                     {a.texto}
                   </p>
 
@@ -225,19 +218,16 @@ export default async function ModeracionPage({
                   )}
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-tinta/10 pt-4">
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-tinta/10 pt-4">
                   <span className="font-sans text-xs text-tinta/60">
                     {a.ficha.estado === 'aprobado' ? 'Ficha activa en el mapa' : 'En espera de aprobación'}
                   </span>
-                  <Link
-                    href={enlaceFicha(a.ficha.id)}
-                    className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-tinta/30 px-3.5 py-1.5 font-sans text-xs font-medium text-tinta transition-colors hover:border-tinta/60 hover:bg-tinta/5"
-                  >
+                  <Link href={enlaceFicha(a.ficha.id)} className={CLASE_BOTON_PANEL}>
                     {a.ficha.estado === 'aprobado' ? 'Corregir la ficha' : 'Ver la ficha'} →
                     <span className="sr-only"> {a.ficha.nombre}</span>
                   </Link>
                 </div>
-              </article>
+              </Tarjeta>
             ))}
           </section>
         )}
@@ -249,9 +239,13 @@ export default async function ModeracionPage({
   return (
     <div>
       {pestanas}
-      <Tarjeta titulo="Historial" id="titulo-historial" className="mt-6">
+      <p className="mt-6 max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
+        Todo lo que pasó con los negocios y las convocatorias, del más reciente al más antiguo: quién registró,
+        editó, aprobó o rechazó, y cuándo. Guarda qué campos cambiaron, nunca los datos que había antes.
+      </p>
+      <Tarjeta titulo="Historial de cambios" id="titulo-historial" className="mt-6">
         {filas.length === 0 ? (
-          <p className="font-sans text-sm text-tinta/70">Todavía no hay nada en la bitácora.</p>
+          <p className="font-sans text-sm text-tinta/70">Todavía no hay nada en el historial de cambios.</p>
         ) : (
           <ListaBitacora filas={filas} />
         )}

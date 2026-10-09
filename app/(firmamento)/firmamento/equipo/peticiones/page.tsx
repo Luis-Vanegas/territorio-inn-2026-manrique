@@ -35,11 +35,6 @@ export default async function PeticionesPage({
 
   return (
     <div>
-      <p className="max-w-xl font-sans text-base leading-relaxed text-tinta/70">
-        Mensajes que dejó la gente desde /contacto. Se responden por fuera, con
-        el contacto que dejó cada uno.
-      </p>
-
       <PestanasEstado ruta="/firmamento/equipo/peticiones" estados={ESTADOS} activo={estadoActivo} conteos={conteos} />
 
       <section aria-label="Mensajes" className="mt-8">

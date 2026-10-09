@@ -35,7 +35,7 @@ export function TarjetaPaso({ paso }: { paso: PasoFormalizacion }) {
           // Nativo, sin JS: mismo patrón que Tarjeta plegable pero a escala
           // de tarjeta — acá no hace falta el +/− ni el conteo aparte.
           <details className="group">
-            <summary className="flex cursor-pointer list-none items-center gap-1.5 font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 [&::-webkit-details-marker]:hidden">
+            <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-1.5 font-sans text-xs text-tinta/70 underline decoration-azul/40 underline-offset-4 [&::-webkit-details-marker]:hidden">
               Necesitas tener ({paso.requisitos.length})
               <svg
                 viewBox="0 0 24 24"

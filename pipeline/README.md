@@ -167,6 +167,11 @@ INGESTA_URL=https://<dominio>/api/ingesta/convocatorias INGESTA_SECRETO=... pyth
 # INGESTA_VIGIA_URL: si el informe va a otra URL; por defecto es INGESTA_URL con «/vigia» al final
 ```
 
+Corre solo cada día a las 6:00 a. m. de Bogotá (`.github/workflows`, cron `0 11 * * *`). Para lanzarlo
+ya sin esperar: en GitHub, pestaña Actions › «Vigía de convocatorias» › Run workflow, o el comando de
+arriba desde un computador con `INGESTA_URL` e `INGESTA_SECRETO`. (Antes estas instrucciones salían en el
+panel cuando el vigía aún no había corrido; ahora el panel solo dice qué hace, y los pasos viven aquí.)
+
 Fuentes actuales: Fondo Emprender (SENA) y Bancóldex (`/es/noticias`, filtrada a líneas de crédito y
 convocatorias). Se revisaron y NO se agregaron: iNNpulsa y SENA (el listado se arma con JavaScript, el HTML
 llega vacío), Ruta N (`/ofertas` es una lista filtrada por JavaScript; el resto solo trae ofertas de empleo) y

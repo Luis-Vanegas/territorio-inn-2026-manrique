@@ -10,6 +10,9 @@ import { formatearNumero } from '@/lib/formato';
  * lector de pantalla. Es estático a propósito: nada arranca en `opacity: 0` ni
  * hay movimiento que respetar.
  *
+ * Colores del tema (`azul-texto`, `morado-texto`, `hueso`), no hex de noche: cambian
+ * solos con el modo y pasan 3:1 sobre `hueso` en claro y en oscuro.
+ *
  * `semanas` va de la más vieja a la más nueva; la última es «los últimos 7 días».
  * El SVG lleva `max-w` para que, en pantallas anchas, el texto no se agrande más
  * de la cuenta (la escala del viewBox es la del texto).
@@ -40,8 +43,8 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
         <defs>
           {/* Rayas: lo que distingue a los contactos sin depender del color. */}
           <pattern id="rayas-contacto" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="5" height="5" fill="#F4CC48" />
-            <rect width="2" height="5" fill="#0B1026" />
+            <rect width="5" height="5" className="fill-hueso" />
+            <rect width="2" height="5" className="fill-morado-texto" />
           </pattern>
         </defs>
 
@@ -54,11 +57,11 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
               <text x="0" y={y + 21} fontSize="12" className="fill-tinta/70" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {etiqueta(i)}
               </text>
-              <rect x={COL_ETIQUETA} y={y + 4} width={lV} height={ALTO_BARRA} fill="#7FB0FF" rx="2" />
+              <rect x={COL_ETIQUETA} y={y + 4} width={lV} height={ALTO_BARRA} className="fill-azul-texto" rx="2" />
               <text x={COL_ETIQUETA + lV + 5} y={y + 14.5} fontSize="12" className="fill-tinta" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {s.vistas}
               </text>
-              <rect x={COL_ETIQUETA} y={y + 4 + ALTO_BARRA + 2} width={lC} height={ALTO_BARRA} fill="url(#rayas-contacto)" stroke="#F4CC48" strokeWidth="1" rx="2" />
+              <rect x={COL_ETIQUETA} y={y + 4 + ALTO_BARRA + 2} width={lC} height={ALTO_BARRA} fill="url(#rayas-contacto)" className="stroke-morado-texto" strokeWidth="1" rx="2" />
               <text x={COL_ETIQUETA + lC + 5} y={y + 28.5} fontSize="12" className="fill-tinta" fontFamily="var(--font-dm-sans), system-ui, sans-serif">
                 {s.contactos}
               </text>
@@ -69,14 +72,14 @@ export function GraficoSemanas({ semanas, nombre }: { semanas: readonly SemanaIn
 
       <figcaption className="mt-3 flex flex-wrap gap-x-5 gap-y-2 font-sans text-sm text-tinta/70">
         <span className="inline-flex items-center gap-2">
-          <span aria-hidden="true" className="h-3 w-3 rounded-sm" style={{ backgroundColor: "#7FB0FF" }} />
+          <span aria-hidden="true" className="h-3 w-3 rounded-sm bg-azul-texto" />
           Vistas de tu ficha
         </span>
         <span className="inline-flex items-center gap-2">
           <span
             aria-hidden="true"
-            className="h-3 w-3 rounded-sm border border-[#F4CC48]"
-            style={{ backgroundImage: 'repeating-linear-gradient(45deg,#F4CC48 0 2px,#0B1026 2px 5px)' }}
+            className="h-3 w-3 rounded-sm border border-morado-texto"
+            style={{ backgroundImage: 'repeating-linear-gradient(45deg, rgb(var(--morado-texto-rgb)) 0 2px, transparent 2px 5px)' }}
           />
           Toques para contactarte
         </span>

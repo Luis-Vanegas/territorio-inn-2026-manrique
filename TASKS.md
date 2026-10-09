@@ -68,6 +68,15 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
       Decreto 346/2000) — ver engram `reto2/cifras-con-fuente`.
 - [x] Fase 2 · Integrador (mergeada, ver arriba) — lista para lanzar (A1 confirmado por el geocatálogo).
 
+## 🧑‍⚖️ Revisión final para el jurado (9-oct)
+
+Rama `feat/revision-final-jurado`, detalle en `odd/tasks/revision-final-jurado.md`.
+
+- [x] Paneles con descripción por página, sin jerga; adaptativo a 375 px; CRM corregido.
+- [ ] Cuenta del jurado: Equipo con contraseña (`npm run db:admin`), la crea Luis.
+- [ ] Aplicar 038 en producción (respaldo antes). Probada en la rama de Neon `prueba-038` (borrarla después).
+- [ ] Recorrer los paneles con sesión en el navegador antes de la entrega.
+
 ## ✨ Firmamento: login por rol y paneles (asesoría v2, 2–3 oct)
 
 Diseño en `docs/firmamento-modulos.md` y `docs/base-de-datos.md`; plan en `docs/plan-firmamento-2026-10.md`.
