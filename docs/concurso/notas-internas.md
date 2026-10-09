@@ -16,12 +16,13 @@ de microdatos sin ponderar; el dato oficial de uso de internet es 75,8 %).
 - Comuna 3, snapshot de OpenStreetMap del 2 de octubre de 2026, 17:01:31 UTC: **320 establecimientos dentro del polígono oficial, 201 con nombre y 119 sin nombre** (los 119 incluyen 4 cuyo `name` en OpenStreetMap es literalmente «Sin nombre»).
 - HDBSCAN `leaf` (`min_cluster_size` = 6, `min_samples` = 3): **20 constelaciones, 213 agrupados, 107 sueltos**; cúmulo mayor de 19 locales, radio de unos 101 m. Con `eom`: 18 constelaciones, 88 sueltos, cúmulo mayor de 29 locales, radio de unos 111 m.
 - Cada constelación tiene código (C01…) y nombre «vía · categoría dominante»; 7 de 20 sin calle registrada. Radios grandes: `C03` (unos 306 m, 16 locales) y `C18` (unos 462 m, 6 locales).
-- Clasificador sin cambios: F1 macro 0,528; entrenamiento con 4.790 comercios con nombre del Valle de Aburrá (snapshot del 2 de octubre, 04:40 UTC).
+- Clasificador (corrida del 6 de octubre de 2026, 13 categorías; fuente: `pipeline/reporte_modelo.md` y `public/modelo_categoria.json`): F1 macro 0,480, exactitud 0,628 en el holdout agrupado por nombre (960 locales); líneas base 0,040 / 0,353 (mayoritaria) y 0,069 / 0,207 (azar); con umbral 0,45 sugiere una sola en el 85,2 % y acierta el 69,4 % de ellas; top 3: 86,7 %; holdout geográfico (174 locales de la Comuna 3): 0,594, exactitud 0,718. Entrenamiento: 4.796 comercios con nombre del Valle de Aburrá (snapshot del 2 de octubre, 04:40 UTC) más 469 de Colombia de clases escasas (snapshot del 6 de octubre, 16:53 UTC; solo entrenamiento). La bajada de 0,528 a 0,480 se explica en el documento técnico (4.3): la clase nueva, con 3 ejemplos en el holdout, saca F1 0,100.
 - Misma metodología de conteo que la asesoría, que contó 312 = 198 con nombre + 114 sin nombre con un snapshot del 1 de octubre. La diferencia con 320 es de fecha de la base, no de criterio. No se afirma que una cifra sea la correcta y la otra errónea.
 
 **No deben aparecer como vigentes** (si se mencionan, se rotulan «corrida anterior»):
 
 - 205 comercios (solo con nombre, snapshot de la mañana del 2 de octubre), con 12 constelaciones, 125 agrupados, 80 sueltos y `eom` con 171 en un cúmulo.
+- Clasificador de la corrida del 2 de octubre (12 categorías): F1 macro 0,528, exactitud 0,633, 4.790 de entrenamiento, una sola sugerencia en el 84,6 % con 70,4 % de acierto, top 3 en el 89,6 %, holdout geográfico 0,636 (173 locales), «Misceláneo El Vecino» → comidas con 0,90.
 - Corrida del 1 de octubre (espejo, snapshot del 6 de mayo de 2026): 5.007, 192, 122 agrupados, 70 sueltos, 4.446 de entrenamiento, F1 0,535, exactitud 0,654, holdout geográfico 0,670.
 - Cifras del pipeline de la asesoría como hechos propios: 15 constelaciones, 91 sueltos, F1 de 0,63 y 3.398 locales de entrenamiento. Solo 312 (198 + 114) se cita, y como cifra de la asesoría con su snapshot.
 - El F1 del modelo de referencia no se cita como logro: probablemente vio los nombres al entrenarse y su código no es reproducible.
@@ -44,7 +45,7 @@ Siguen marcados como `[PENDIENTE: métrica de datos-ml]`.
 - Proporción de locales ubicados en la mitad norte del recuadro (riesgo de sesgo, 8.2): el pipeline no la calcula.
 - Revisión manual de una muestra de etiquetas de OpenStreetMap (las etiquetas son débiles).
 - Validación del sugeridor con registros propios (hoy hay 7, insuficientes).
-- Confirmar el caso «Misceláneo El Vecino» → comidas (0,90): lo aportó el equipo y no está en `pipeline/reporte_modelo.md`.
+- Caso «Misceláneo El Vecino» → comidas: con el modelo del 6 de octubre la confianza es 0,74 (antes 0,90), según `scripts/verificar-sugeridor.mjs`; no está en `pipeline/reporte_modelo.md`.
 - Tasa de aceptación y corrección del sugeridor en uso real (indicador de la sección 7).
 - Decidir si el umbral 0,45 se mantiene tras medir el uso real.
 - Si se repite la descarga de Overpass, volver a leer las cifras de `constelaciones.json` y del reporte y corregir el documento técnico, la versión corta y el guion. La corrida vigente es la del 2 de octubre de 2026: Valle a las 04:40 UTC y Comuna 3 a las 17:01 UTC.
@@ -106,7 +107,7 @@ El texto de la pregunta está en la sección 8.4 del documento técnico.
 
 Ninguna se resolvió a favor de la asesoría; el documento usa la cifra del repo y cita su fuente.
 
-- **Pipeline:** la asesoría v2 trae 15 constelaciones, 91 sueltos, F1 macro 0,63 y 3.398 locales de entrenamiento (312 establecimientos). El repo (corrida del 2-oct) trae 20, 107, 0,528 y 4.790 (320). El 0,63 no se cita.
+- **Pipeline:** la asesoría v2 trae 15 constelaciones, 91 sueltos, F1 macro 0,63 y 3.398 locales de entrenamiento (312 establecimientos). El repo trae 20, 107 y 320 (corrida del 2-oct); el clasificador vigente (6-oct, 13 categorías) trae 0,480 y 4.796 + 469 (histórico del 2-oct: 0,528 y 4.790). El 0,63 no se cita.
 - **Edición del dueño:** el prototipo de la asesoría encolaba los cambios para revisión; el repo publica directo (decisión de Luis, `docs/firmamento-modulos.md`). El documento lo declara como riesgo.
 - **GitHub Actions:** la asesoría lo da por gratis en repositorios públicos; `TASKS.md` dice que la cuenta tiene $0 en Actions y la integración continua se retiró. El documento no afirma que el vigía corra solo.
 - **Negocios y visitas:** la asesoría anota 7 negocios y 1.013 visitas en 30 días; `docs/base-de-datos.md` cuenta 10 filas en `portafolios` (incluye no aprobadas) y el plan de diseño dice que las visitas están infladas. No se cita ninguna; la cifra de aliados es `[PENDIENTE]` el día de la entrega.

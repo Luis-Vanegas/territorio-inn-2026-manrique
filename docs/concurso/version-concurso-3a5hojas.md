@@ -60,11 +60,12 @@ pocos registros propios:
 
 - **Sugeridor de categoría:** a partir del nombre de un negocio sugiere su categoría (TF-IDF de
   caracteres y regresión logística, Pedregosa et al., 2011). Corre en el navegador, sin costo. Si
-  la confianza es baja, pregunta en lugar de sugerir. Entrenado con 4.790 comercios del Valle de
-  Aburrá y probado con nombres que no vio, obtuvo un F1 macro de 0,528 (líneas base: 0,044 y 0,074);
-  sugiere una sola categoría en el 84,6 % de los casos, acierta el 70,4 % de ellas y la correcta está
-  entre las tres primeras en el 89,6 %. Puede sugerir con confianza alta una categoría errónea
-  (por ejemplo, «Misceláneo El Vecino» como «comidas», con 0,90); por eso solo sugiere y la persona
+  la confianza es baja, pregunta en lugar de sugerir. Entrenado con 4.796 comercios del Valle de
+  Aburrá (más 469 de Colombia para una categoría escasa) y probado con nombres que no vio, obtuvo
+  en 13 categorías un F1 macro de 0,480 (líneas base: 0,040 y 0,069); sugiere una sola categoría en
+  el 85,2 % de los casos, acierta el 69,4 % de ellas y la correcta está entre las tres primeras en
+  el 86,7 %. Puede sugerir con confianza alta una categoría errónea (por ejemplo, «Misceláneo El
+  Vecino» como «comidas», con 0,74); por eso solo sugiere y la persona
   elige. Sus etiquetas vienen de OpenStreetMap sin revisión manual y aún no se ha validado con
   registros propios.
 - **Constelaciones comerciales:** agrupa los comercios por cercanía con HDBSCAN (Campello et al.,
@@ -179,8 +180,8 @@ http://www.secretariasenado.gov.co/senado/basedoc/ley_1581_2012.html
 Departamento Administrativo Nacional de Estadística. (2026). *Encuesta de micronegocios (EMICRON)
 2025* [Boletín técnico, 30 de julio]. [COMPLETAR: URL del boletín].
 
-OpenStreetMap contributors. (2026). *OpenStreetMap* [Licencia ODbL 1.0; snapshot del 2 de octubre de
-2026, obtenido ese día]. https://www.openstreetmap.org/copyright
+OpenStreetMap contributors. (2026). *OpenStreetMap* [Licencia ODbL 1.0; snapshots del 2 y del 6 de
+octubre de 2026, obtenidos esos días]. https://www.openstreetmap.org/copyright
 
 Pacheco Duarte, J. F., Galindo Gómez, S. F., & Rodríguez Pupo, S. (2022). *Ruta de innovación
 social: Paso a paso para desarrollar innovaciones sociales* (Documento técnico 02). UNIMINUTO.

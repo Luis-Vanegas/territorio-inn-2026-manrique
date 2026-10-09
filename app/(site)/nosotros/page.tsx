@@ -5,7 +5,7 @@ import { EquipoSection } from '@/components/EquipoSection';
 export const metadata: Metadata = {
   title: 'Nosotros · Constelaciones',
   description:
-    'El reto que motiva a Constelaciones y el equipo que lo construye — Comuna 3, Manrique.',
+    'Qué es Constelaciones y el equipo que lo construye — Comuna 3, Manrique.',
 };
 
 // Estático: no consulta la base, a diferencia de la home. Reto y Equipo salieron
