@@ -41,12 +41,6 @@ export default async function AdminEmpleoPage({
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Personas que buscan trabajo. Aquí se publican teléfonos reales, así que
-        la moderación filtra spam y datos falsos antes de que salgan a la
-        vitrina.
-      </p>
-
       <PestanasEstado ruta="/firmamento/equipo/empleo" estados={ESTADOS} activo={estadoActivo} conteos={conteos} />
 
       <section aria-label="Registros" className="mt-8">

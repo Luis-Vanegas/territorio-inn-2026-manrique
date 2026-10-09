@@ -294,8 +294,10 @@ data/                datasets fuente (DANE, cámara de comercio, etc.) — no to
   sesión con `cache` de React). Un layout NO basta (no se re-ejecuta al navegar entre hermanas): la
   guarda va en el layout del rol Y en cada `page.tsx`, junto a la lectura de datos,
   y cada action/repo revalida. La navegación es DATOS (`lib/firmamento/navegacion.ts`,
-  un arreglo por rol); una sección nueva = entrada ahí + carpeta
-  `<rol>/<seccion>/page.tsx`. Mientras no exista la carpeta, `<rol>/[...resto]/page.tsx`
+  un arreglo por rol); una sección nueva = entrada ahí (con su `descripcion`: una o dos frases
+  sin jerga que `TituloPanel` pinta bajo el h1; la página no repite esa intro) + carpeta
+  `<rol>/<seccion>/page.tsx`. El ancho máximo de todas las páginas es UNO, `max-w-6xl` en el
+  `main` de `PanelShell`: una página no pone su propio `max-w`/`mx-auto`. Mientras no exista la carpeta, `<rol>/[...resto]/page.tsx`
   muestra «En construcción» (y 404 si la ruta no está en el menú). El armazón es
   `components/firmamento/panel/PanelShell.tsx`; las insignias del menú son una prop
   (`insignias` por `href`). La puerta devuelve a una ruta interna con `?destino=` en

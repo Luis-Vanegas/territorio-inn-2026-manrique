@@ -79,9 +79,13 @@ export default async function ModelosPage() {
         descripcion={`Propone la categoría desde el nombre del negocio, en el navegador de quien se registra: lo que escribe no sale de su pantalla. Con confianza de ${Math.round(modelo.umbral_confianza * 100)} % o más sugiere una; si no, las tres más probables.`}
       >
         <GrupoCifras fuente={fuenteModelo} fecha={`corrida ${modelo.fecha_corrida.slice(0, 10)}`}>
-          <Kpi etiqueta="F1 macro" valor={dec(m.f1_macro_holdout)} aclaracion="Holdout agrupado por nombre" />
-          <Kpi etiqueta="Exactitud" valor={dec(m.accuracy_holdout)} aclaracion="En esos mismos locales" />
-          <Kpi etiqueta="Línea base" valor={dec(m.f1_macro_linea_base_mayoritaria)} aclaracion="Decir siempre la clase mayoritaria" />
+          <Kpi
+            etiqueta="F1 macro"
+            valor={dec(m.f1_macro_holdout)}
+            aclaracion="De 0 a 1: qué tan bien acierta en todas las categorías por igual, medido en locales que el modelo nunca vio (holdout)"
+          />
+          <Kpi etiqueta="Exactitud" valor={dec(m.accuracy_holdout)} aclaracion="Proporción de aciertos en esos mismos locales" />
+          <Kpi etiqueta="Línea base" valor={dec(m.f1_macro_linea_base_mayoritaria)} aclaracion="Lo que sacaría adivinando siempre la categoría más común" />
           <Kpi etiqueta="Entrenado con" valor={numero(modelo.entrenado_con)} aclaracion="Locales de OpenStreetMap" />
         </GrupoCifras>
 
@@ -142,7 +146,7 @@ export default async function ModelosPage() {
           filas={[
             ['F1 macro entrenado sin la Comuna 3, probado en ella', dec(m.f1_macro_holdout_geografico_comuna3)],
             ['Locales de la Comuna 3 en esa prueba', numero(m.n_holdout_geografico)],
-            ['Locales en el holdout', numero(m.n_holdout)],
+            ['Locales en el holdout (los que el modelo nunca vio)', numero(m.n_holdout)],
             ['Modelo', modelo.tipo],
             ['Hiperparámetros', Object.entries(modelo.hiperparametros).map(([k, v]) => `${k} = ${v}`).join(' · ')],
             ['Semilla', String(modelo.semilla)],
@@ -159,6 +163,11 @@ export default async function ModelosPage() {
         <p className="max-w-prose font-sans text-base leading-relaxed text-tinta/70">
           Agrupa los comercios de OpenStreetMap por cercanía. Las líneas del mapa son el árbol de expansión mínima
           real de cada grupo, no un dibujo.
+        </p>
+        <p className="mt-3 max-w-prose font-sans text-sm leading-relaxed text-tinta/70">
+          Cómo se agruparon: un algoritmo (HDBSCAN) busca zonas donde muchos comercios quedan juntos. Un grupo
+          necesita al menos el «tamaño mínimo» de comercios para contar como constelación; los que quedan lejos de
+          todos salen como sueltos.
         </p>
         <div className="mt-5">
           <Datos

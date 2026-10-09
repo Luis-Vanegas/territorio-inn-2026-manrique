@@ -455,7 +455,7 @@ export default function MapaAliadosClient({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => contar(p.id, 'contacto')}
-                  className="mt-2 inline-block font-sans text-xs text-azul-texto underline decoration-azul/40 underline-offset-4 hover:text-tinta"
+                  className="mt-1 inline-flex min-h-[44px] items-center font-sans text-xs text-azul-texto underline decoration-azul/40 underline-offset-4 hover:text-tinta"
                 >
                   Escribir por WhatsApp →
                 </a>

@@ -15,6 +15,7 @@ import { formatearCamposExtra } from '@/lib/camposExtra';
 import { FormularioEdicionPortafolio } from '@/components/FormularioEdicionPortafolio';
 import { BadgeEstado, type TonoBadge } from '@/components/admin/BadgeEstado';
 import { FotoAmpliable } from '@/components/FotoAmpliable';
+import { CLASE_BOTON_PANEL, CLASE_BOTON_PRIMARIO } from '@/components/firmamento/panel/Tarjeta';
 import { SugeridorModeracion } from '../../moderacion/_components/SugeridorModeracion';
 
 const ESTADO_INICIAL: EstadoModeracion = { estado: 'inicial' };
@@ -42,12 +43,7 @@ function Boton({
       onClick={(e) => {
         if (confirmar && !window.confirm(confirmar)) e.preventDefault();
       }}
-      className={[
-        'min-h-[44px] border px-4 py-2 font-sans text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40',
-        variante === 'primaria'
-          ? 'border-azul-texto bg-azul-texto text-hueso hover:bg-transparent hover:text-azul-texto'
-          : 'border-tinta/20 text-tinta/65 hover:border-azul-texto hover:text-azul-texto',
-      ].join(' ')}
+      className={`${variante === 'primaria' ? CLASE_BOTON_PRIMARIO : CLASE_BOTON_PANEL} disabled:cursor-not-allowed disabled:opacity-60`}
     >
       {etiqueta}
     </button>
@@ -182,7 +178,7 @@ export function FichaModeracion({
             <Dato etiqueta="Barrio" valor={portafolio.barrio} />
             <Dato etiqueta="Referencia" valor={portafolio.punto_referencia} />
             <Dato
-              etiqueta="Coords"
+              etiqueta="Ubicación (lat, long)"
               valor={`${portafolio.latitud.toFixed(6)}, ${portafolio.longitud.toFixed(6)}`}
             />
             <Dato etiqueta="Otra categoría" valor={portafolio.categoria_otra} />
@@ -252,7 +248,7 @@ export function FichaModeracion({
               href={portafolio.menu_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
+              className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/70 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
             >
               Ver menú / flyer enviado ↗
             </a>
@@ -283,20 +279,23 @@ export function FichaModeracion({
                 Motivo del rechazo
               </label>
               <p className="mt-1 font-sans text-xs text-tinta/65">
-                Lo va a leer el emprendedor. Explica qué corregir.
+                Lo va a leer el emprendedor. Explica qué corregir. Mínimo 10 caracteres.
               </p>
               <textarea
                 id={`motivo-${portafolio.id}`}
                 name="motivo_rechazo"
                 rows={3}
                 minLength={10}
-                className="mt-2 w-full border border-tinta/55 bg-transparent p-3 font-sans text-sm text-tinta focus:border-azul focus:outline-none"
+                className="mt-2 w-full rounded-lg border border-tinta/55 bg-transparent p-3 font-sans text-sm text-tinta focus:border-azul"
               />
             </div>
           )}
 
           {estado.estado === 'error' && (
-            <p role="alert" className="mb-3 font-sans text-xs text-azul-texto">
+            <p
+              role="alert"
+              className="mb-3 max-w-xl border border-amarillo bg-amarillo/15 px-4 py-3 font-sans text-sm leading-relaxed text-tinta"
+            >
               {estado.mensaje}
             </p>
           )}
@@ -309,7 +308,7 @@ export function FichaModeracion({
                   <button
                     type="button"
                     onClick={() => setMostrarRechazo(true)}
-                    className="min-h-[44px] border border-tinta/55 px-4 py-2 font-sans text-sm text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className={CLASE_BOTON_PANEL}
                   >
                     Rechazar…
                   </button>
@@ -320,7 +319,7 @@ export function FichaModeracion({
                   <button
                     type="button"
                     onClick={() => setMostrarRechazo(false)}
-                    className="min-h-[44px] border border-tinta/55 px-4 py-2 font-sans text-sm text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                    className={CLASE_BOTON_PANEL}
                   >
                     Cancelar
                   </button>
@@ -332,7 +331,7 @@ export function FichaModeracion({
                 <button
                   type="button"
                   onClick={() => setEditando((v) => !v)}
-                  className="min-h-[44px] border border-tinta/55 px-4 py-2 font-sans text-sm text-tinta/65 transition-colors hover:border-azul-texto hover:text-azul-texto"
+                  className={CLASE_BOTON_PANEL}
                 >
                   {editando ? 'Cerrar edición' : 'Editar ficha'}
                 </button>

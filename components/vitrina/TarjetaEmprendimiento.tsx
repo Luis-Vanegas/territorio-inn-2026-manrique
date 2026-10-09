@@ -68,7 +68,7 @@ function Contacto({ portafolio, contarToques }: { portafolio: Portafolio; contar
   if (enlaces.length === 0) return null;
 
   return (
-    <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
+    <ul className="mt-3 flex flex-wrap gap-x-4">
       {enlaces.map((e) => (
         <li key={e.href}>
           <a
@@ -78,7 +78,7 @@ function Contacto({ portafolio, contarToques }: { portafolio: Portafolio; contar
             // Tocar un contacto es la señal que le importa al negocio: es
             // alguien que dejó de mirar y decidió escribir.
             onClick={contarToques ? () => contar(portafolio.id, 'contacto') : undefined}
-            className="inline-flex items-center gap-1.5 font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
+            className="inline-flex min-h-[44px] items-center gap-1.5 font-sans text-xs text-tinta/70 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
           >
             <IconoContacto tipo={e.tipo} className="h-3.5 w-3.5 shrink-0" />
             {e.etiqueta}
@@ -194,7 +194,7 @@ export function TarjetaEmprendimiento({
               href={portafolio.menu_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 inline-block font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
+              className="mt-1 inline-flex min-h-[44px] items-center font-sans text-xs text-tinta/70 underline decoration-azul/40 underline-offset-4 transition-colors hover:text-azul-texto"
             >
               Ver menú / flyer ↗
             </a>

@@ -24,7 +24,7 @@ function BotonToggle({ activo }: { activo: boolean }) {
     <button
       type="submit"
       disabled={pending}
-      className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto disabled:opacity-40"
+      className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/70 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto disabled:opacity-40"
     >
       {activo ? 'desactivar' : 'reactivar'}
     </button>
@@ -150,7 +150,7 @@ export function FilaCampo({ campo, conValor }: { campo: DefinicionCampo; conValo
         <button
           type="button"
           onClick={() => setEditando(true)}
-          className="font-sans text-xs text-tinta/60 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
+          className="inline-flex min-h-[44px] items-center font-sans text-sm text-tinta/70 underline decoration-azul/40 underline-offset-4 hover:text-azul-texto"
         >
           editar
         </button>

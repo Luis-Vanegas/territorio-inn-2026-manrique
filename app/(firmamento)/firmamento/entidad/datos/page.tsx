@@ -59,34 +59,36 @@ function Tabla({ datos, dimension }: { datos: DatosAbiertos; dimension: Dimensio
   const filas = filasPlanas(datos).filter((f) => f.dimension === dimension);
   return (
     <div className="min-w-0">
-      <table className="w-full border-collapse text-left font-sans text-sm text-tinta">
-        <caption className="pb-1 text-left font-sans text-base font-medium text-tinta">
-          {NOMBRE_DIMENSION[dimension]}
-        </caption>
-        <thead>
-          <tr className="text-tinta/70">
-            <th scope="col" className="py-2 pr-3 font-medium">
-              Opción
-            </th>
-            <th scope="col" className="py-2 text-right font-medium">
-              Negocios
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {filas.map((f) => (
-            <tr key={f.id} className="border-t border-tinta/12">
-              <th scope="row" className="min-w-0 break-words py-2.5 pr-3 font-normal">
-                {f.nombre}
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-left font-sans text-sm text-tinta">
+          <caption className="pb-1 text-left font-sans text-base font-medium text-tinta">
+            {NOMBRE_DIMENSION[dimension]}
+          </caption>
+          <thead>
+            <tr className="text-tinta/70">
+              <th scope="col" className="py-2 pr-3 font-medium">
+                Opción
               </th>
-              <td className="py-2.5 text-right font-sans tabular-nums text-azul-texto">
-                {f.negocios}
-                {f.negocios === '<5' && <span className="sr-only"> (menos de 5 negocios)</span>}
-              </td>
+              <th scope="col" className="py-2 text-right font-medium">
+                Negocios
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filas.map((f) => (
+              <tr key={f.id} className="border-t border-tinta/12">
+                <th scope="row" className="min-w-0 break-words py-2.5 pr-3 font-normal">
+                  {f.nombre}
+                </th>
+                <td className="py-2.5 text-right font-sans tabular-nums text-azul-texto">
+                  {f.negocios}
+                  {f.negocios === '<5' && <span className="sr-only"> (menos de 5 negocios)</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {dimension === 'dificultad' && (
         <p className="pt-2 font-sans text-sm leading-relaxed text-tinta/70">
           Cada negocio puede elegir hasta dos: las cifras no suman el total.
@@ -112,12 +114,7 @@ export default async function EntidadDatosPage() {
   const enlace = `${urlSitio()}/api/datos`;
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-5">
-      <p className="max-w-3xl font-sans text-base leading-relaxed text-tinta/70">
-        Los mismos datos que cualquier persona puede consultar, listos para tu informe o tu tablero. Son conteos de
-        negocios: nunca un negocio por su nombre.
-      </p>
-
+    <div className="flex flex-col gap-5">
       <Tarjeta titulo="Descárgalos o conéctalos" id="conectar-titulo">
         <div className="flex flex-wrap gap-3">
           <a href="/api/datos" download="constelaciones-datos-abiertos.json" className={CLASE_BOTON_PRIMARIO}>
@@ -171,7 +168,7 @@ export default async function EntidadDatosPage() {
               ))}
             </div>
             <LineaFuente>
-              Fuente: Constelaciones · Manrique, aliados aprobados por moderación (datos abiertos, regla k = 5) ·
+              Fuente: Constelaciones · Manrique, aliados aprobados por moderación (datos abiertos; las cifras menores que 5 no se publican, para que nadie pueda identificar un negocio) ·
               consultado el {fechaLarga(datos.generado_en)}
             </LineaFuente>
           </>

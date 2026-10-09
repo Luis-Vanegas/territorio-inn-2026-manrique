@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { BarrasCategoria, type FilaBarra } from '@/components/firmamento/BarrasCategoria';
+import { GrupoCifras, Kpi } from '@/components/firmamento/Kpi';
+import { CLASE_BOTON_PANEL } from '@/components/firmamento/panel/Tarjeta';
 import { exigirEquipo } from '@/lib/auth/firmamento';
 import { grupoDeCategoria } from '@/lib/categorias/grupos';
 
@@ -22,26 +24,6 @@ import { totalVisitas } from '@/lib/db/visitas.repo';
 export const metadata: Metadata = { title: 'Estadísticas' };
 
 export const dynamic = 'force-dynamic';
-
-function Metrica({
-  valor,
-  etiqueta,
-  nota,
-}: {
-  valor: string | number;
-  etiqueta: string;
-  nota?: string;
-}) {
-  return (
-    <div className="border-t border-tinta/12 pt-4">
-      <p className="font-cifra text-3xl text-tinta">{valor}</p>
-      <p className="mt-1 font-sans text-xs uppercase tracking-wider text-tinta/65">
-        {etiqueta}
-      </p>
-      {nota && <p className="mt-1 font-sans text-xs text-tinta/60">{nota}</p>}
-    </div>
-  );
-}
 
 /** Barras compartidas (`BarrasCategoria`); acá solo se arman las filas y el texto de apoyo. */
 function Barras({
@@ -166,6 +148,7 @@ export default async function EstadisticasPage() {
     totalVisitas(30),
   ]);
 
+  const sinVistas = interes.filter((f) => f.vistas === 0).length;
   const tasaAprobacion =
     resumen.aprobados + resumen.rechazados > 0
       ? Math.round((resumen.aprobados / (resumen.aprobados + resumen.rechazados)) * 100)
@@ -173,26 +156,21 @@ export default async function EstadisticasPage() {
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Datos de los registros del módulo. El tráfico del sitio —visitantes,
-        páginas vistas, de dónde llegan— se mide aparte y de forma anónima.
-      </p>
-
       {/* Los CSV traen el DETALLE, no este resumen. Un panel responde las
           preguntas que alguien previó; una tabla dinámica sobre el detalle
           responde las que van a aparecer después. */}
-      <div className="mt-6 flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <a
           href="/api/admin/exportar?conjunto=aliados"
           download
-          className="inline-flex min-h-[44px] items-center border border-tinta/55 px-4 py-2 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+          className={CLASE_BOTON_PANEL}
         >
           ↓ Aliados en CSV
         </a>
         <a
           href="/api/admin/exportar?conjunto=interacciones"
           download
-          className="inline-flex min-h-[44px] items-center border border-tinta/55 px-4 py-2 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+          className={CLASE_BOTON_PANEL}
         >
           ↓ Interacciones por día en CSV
         </a>
@@ -206,21 +184,21 @@ export default async function EstadisticasPage() {
           01 · Resumen
         </h2>
 
-        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
-          <Metrica valor={resumen.total} etiqueta="Registros totales" />
-          <Metrica
-            valor={resumen.pendientes}
+        <GrupoCifras className="mt-6" fuente="registros de la base de Constelaciones">
+          <Kpi valor={String(resumen.total)} numero={resumen.total} etiqueta="Registros totales" />
+          <Kpi
+            valor={String(resumen.pendientes)} numero={resumen.pendientes}
             etiqueta="En espera"
-            nota={resumen.pendientes > 0 ? 'requieren revisión' : 'cola al día'}
+            aclaracion={resumen.pendientes > 0 ? 'requieren revisión' : 'cola al día'}
           />
-          <Metrica valor={resumen.aprobados} etiqueta="Publicados" />
-          <Metrica valor={resumen.ultimos7dias} etiqueta="Últimos 7 días" />
-          <Metrica
+          <Kpi valor={String(resumen.aprobados)} numero={resumen.aprobados} etiqueta="Publicados" />
+          <Kpi valor={String(resumen.ultimos7dias)} numero={resumen.ultimos7dias} etiqueta="Últimos 7 días" />
+          <Kpi
             valor={tasaAprobacion === null ? '—' : `${tasaAprobacion}%`}
             etiqueta="Tasa de aprobación"
-            nota={tasaAprobacion === null ? 'sin decisiones aún' : undefined}
+            aclaracion={tasaAprobacion === null ? 'sin decisiones aún' : undefined}
           />
-          <Metrica
+          <Kpi
             valor={
               resumen.total > 0
                 ? `${Math.round((resumen.conFoto / resumen.total) * 100)}%`
@@ -228,7 +206,7 @@ export default async function EstadisticasPage() {
             }
             etiqueta="Con fotografía"
           />
-          <Metrica
+          <Kpi
             valor={
               resumen.horasPromedioModeracion === null
                 ? '—'
@@ -237,10 +215,10 @@ export default async function EstadisticasPage() {
                   : `${Math.round(resumen.horasPromedioModeracion / 24)} d`
             }
             etiqueta="Demora en moderar"
-            nota="promedio desde el registro"
+            aclaracion="promedio desde el registro"
           />
-          <Metrica valor={resumen.rechazados} etiqueta="Rechazados" />
-        </div>
+          <Kpi valor={String(resumen.rechazados)} numero={resumen.rechazados} etiqueta="Rechazados" />
+        </GrupoCifras>
       </section>
 
       <section className="mt-16">
@@ -265,28 +243,28 @@ export default async function EstadisticasPage() {
           saber si dos vistas son de la misma persona.
         </p>
 
-        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
-          <Metrica valor={totalesInteres.vistas} etiqueta="Fichas abiertas" />
-          <Metrica
-            valor={totalesInteres.contactos}
+        <GrupoCifras className="mt-6" fuente="contador propio y anónimo de fichas abiertas y contactos">
+          <Kpi valor={String(totalesInteres.vistas)} numero={totalesInteres.vistas} etiqueta="Fichas abiertas" />
+          <Kpi
+            valor={String(totalesInteres.contactos)} numero={totalesInteres.contactos}
             etiqueta="Contactos tocados"
-            nota="WhatsApp, teléfono, correo o redes"
+            aclaracion="WhatsApp, teléfono, correo o redes"
           />
-          <Metrica
+          <Kpi
             valor={
               totalesInteres.vistas > 0
                 ? `${Math.round((totalesInteres.contactos / totalesInteres.vistas) * 100)}%`
                 : '—'
             }
             etiqueta="Pasan a contactar"
-            nota={totalesInteres.vistas === 0 ? 'sin datos aún' : 'de los que miran'}
+            aclaracion={totalesInteres.vistas === 0 ? 'sin datos aún' : 'de los que miran'}
           />
-          <Metrica
-            valor={interes.filter((f) => f.vistas === 0).length}
+          <Kpi
+            valor={String(sinVistas)} numero={sinVistas}
             etiqueta="Sin una sola vista"
-            nota="publicados que nadie abrió"
+            aclaracion="publicados que nadie abrió"
           />
-        </div>
+        </GrupoCifras>
 
         <div className="mt-8 max-w-3xl">
           <p className="mb-3 font-sans text-xs uppercase tracking-wider text-tinta/60">
@@ -388,13 +366,13 @@ export default async function EstadisticasPage() {
           07 · Tráfico del sitio
         </h2>
 
-        <div className="mt-6 grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-3">
-          <Metrica
-            valor={visitas}
+        <GrupoCifras className="mt-6" columnas={2} fuente="contador propio y anónimo de páginas abiertas">
+          <Kpi
+            valor={String(visitas)} numero={visitas}
             etiqueta="Páginas abiertas · 30 días"
-            nota="Contador propio, anónimo. Es el número que se muestra en el home."
+            aclaracion="Contador propio, anónimo. Es el número que se muestra en el home."
           />
-        </div>
+        </GrupoCifras>
 
         <p className="mt-6 font-sans text-sm leading-relaxed text-tinta/70">
           Ese contador dice cuántas páginas se abrieron, no cuántas personas
@@ -416,14 +394,14 @@ export default async function EstadisticasPage() {
             href="https://vercel.com/dashboard"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-[44px] items-center border border-tinta/55 px-4 py-2 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className={CLASE_BOTON_PANEL}
           >
             Abrir Vercel Analytics ↗
           </a>
 
           <Link
             href="/firmamento/equipo/moderacion"
-            className="inline-flex min-h-[44px] items-center border border-tinta/55 px-4 py-2 font-sans text-sm text-tinta/70 transition-colors hover:border-azul-texto hover:text-azul-texto"
+            className={CLASE_BOTON_PANEL}
           >
             ← Volver a moderación
           </Link>

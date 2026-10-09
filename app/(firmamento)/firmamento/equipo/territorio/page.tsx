@@ -61,7 +61,7 @@ export default async function TerritorioPage() {
       <VentanaNoche
         titulo="Constelaciones y centralidades"
         id="titulo-mapa-constelaciones"
-        descripcion="Cada estrella es un comercio de OpenStreetMap. Enciende las centralidades del POT para ver dónde coinciden."
+        descripcion="Cada estrella es un comercio de OpenStreetMap. Enciende las centralidades del Plan de Ordenamiento Territorial (POT) de Medellín, las zonas que la ciudad planea como centros de comercio y servicios, para ver dónde coinciden."
       >
         <MapaTerritorio centralidades={CENTRALIDADES} />
       </VentanaNoche>
@@ -95,8 +95,9 @@ export default async function TerritorioPage() {
           }
         >
           <p className="font-sans text-sm leading-relaxed text-tinta/70">
-            Constelaciones con más comercios sin registrar: por aquí empieza el registro asistido. El CSV marca los
-            comercios que quedan a pocos metros de un aliado.
+            El plan de brigada es la lista de lugares para salir a registrar negocios en persona: las constelaciones
+            con más comercios sin registrar. Allí empieza el registro asistido, cuando el equipo llena la ficha con
+            el dueño presente. El CSV marca los comercios que quedan a pocos metros de un aliado.
           </p>
           <ol className="mt-4 flex flex-col">
             {constelaciones.slice(0, 5).map((c, i) => (
@@ -126,7 +127,8 @@ export default async function TerritorioPage() {
         resumen={`${POT.centralidades.length} en la comuna`}
       >
         <p className="font-sans text-sm leading-relaxed text-tinta/70">
-          Uso interno: licencia de los polígonos pendiente, por eso no se dibujan en páginas públicas. Del comercio de
+          Las centralidades del Plan de Ordenamiento Territorial (POT) de Medellín son las zonas que la ciudad planea
+          como centros de comercio y servicios. Uso interno: licencia de los polígonos pendiente, por eso no se dibujan en páginas públicas. Del comercio de
           OpenStreetMap, {POT.resumen.pct_comercios_dentro_de_centralidad.toLocaleString('es-CO')} % cae dentro de una
           centralidad.
         </p>

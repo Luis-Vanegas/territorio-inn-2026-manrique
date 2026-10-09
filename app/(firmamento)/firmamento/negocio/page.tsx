@@ -78,7 +78,7 @@ export default async function NegocioInicioPage({
   const entorno = entornoDeNegocio(portafolio, aprobados);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       {registrado && (
         <p role="status" className="rounded-xl border border-azul/60 bg-hueso p-4 font-sans text-base text-tinta">
           <span aria-hidden="true" className="mr-2 text-azul-texto">✓</span>

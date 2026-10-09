@@ -34,13 +34,8 @@ export function FuentesVigia({ vigia }: { vigia: VigiaVista | null }) {
     return (
       <Tarjeta titulo="Fuentes del vigía" id="vigia-titulo" resumen="aún no ha corrido" className="mt-8">
         <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-          El vigía aún no ha corrido, así que no hay estado de sus {filas.length === 1 ? 'fuente' : 'fuentes'} que
-          mostrar. Corre solo cada día a las 6:00 a. m. (hora de Bogotá) desde GitHub Actions. Para lanzarlo ya:
-          en el repositorio, pestaña Actions › «Vigía de convocatorias» › Run workflow, o desde un
-          computador con{' '}
-          <code className="font-sans text-tinta">python pipeline/04_vigia_convocatorias.py</code> y las variables{' '}
-          <code className="font-sans text-tinta">INGESTA_URL</code> e{' '}
-          <code className="font-sans text-tinta">INGESTA_SECRETO</code>.
+          El vigía revisa cada mañana, a las 6:00 a. m. (hora de Bogotá), las páginas de entidades que publican
+          convocatorias. Todavía no ha corrido; cuando lo haga, aquí ves qué encontró en cada fuente.
         </p>
         <TablaFuentesVigia
           filas={filas}

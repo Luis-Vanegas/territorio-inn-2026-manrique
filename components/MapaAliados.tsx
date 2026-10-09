@@ -240,7 +240,10 @@ export function MapaAliados({
           </li>
         ))}
       </ul>
-      <p className="mt-1.5 font-sans text-xs text-tinta/65">Estrella grande: aliado de Constelaciones.</p>
+      <p className="mt-1.5 font-sans text-xs leading-relaxed text-tinta/70">
+        Estrella grande: aliado de Constelaciones. Estrella pequeña: comercio de OpenStreetMap, el mapa abierto.
+        Una constelación es un grupo de comercios cercanos.
+      </p>
 
       {activa && elegida && !resultados && (
         <p aria-live="polite" className="mt-2 break-words font-sans text-xs leading-relaxed text-tinta/75">

@@ -52,7 +52,7 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
 
       <GrupoCifras
         className="mt-8"
-        fuente={`${FUENTE_OSM} y agrupación HDBSCAN · ${fechaOsm}. Aliados: datos abiertos de Constelaciones (k = 5) · ${fechaRed}`}
+        fuente={`${FUENTE_OSM} agrupados por cercanía · ${fechaOsm}. Aliados: datos abiertos de Constelaciones (las cifras menores que 5 no se publican) · ${fechaRed}`}
       >
         <Kpi
           valor={red ? String(red.negocios_aprobados) : '—'}
@@ -111,7 +111,7 @@ export function CifrasBarrio({ d }: { d: DatosFirmamento }) {
         </Bloque>
       </div>
       <p className="mt-6 break-words font-sans text-xs leading-relaxed text-tinta/70">
-        Fuente de los tres: {FUENTE_OSM}, agrupación HDBSCAN · {fechaOsm}
+        Fuente de los tres: {FUENTE_OSM}, agrupados por cercanía · {fechaOsm}
       </p>
     </section>
   );

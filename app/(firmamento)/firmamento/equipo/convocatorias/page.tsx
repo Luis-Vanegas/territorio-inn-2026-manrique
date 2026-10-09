@@ -62,9 +62,9 @@ export default async function ConvocatoriasPage({
   return (
     <div>
       <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Oferta de entidades: la que detecta el vigía cada día y la que proponen
-        las entidades aliadas desde su panel. Todo entra por revisar: solo las que
-        apruebes aparecen en «Para ti» de los negocios, y solo a los de las
+        Llegan del buscador automático de convocatorias (vigía), que revisa cada
+        día las páginas de entidades, y de las entidades aliadas desde su panel.
+        Las que apruebes salen en «Para ti» de los negocios, solo para las
         categorías y la formalidad que marques al aprobar. El texto viene de
         terceros: revisa el enlace antes de aprobar.
       </p>

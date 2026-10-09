@@ -68,11 +68,6 @@ export default async function AliadosEquipoPage({
 
   return (
     <div>
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Cada registro aprobado se publica en el mapa de Aliados de inmediato. Las
-        fichas publicadas se pueden corregir con «Editar ficha».
-      </p>
-
       <PestanasEstado ruta={RUTA} estados={ESTADOS} activo={estadoActivo} conteos={conteos} />
 
       {ficha && (

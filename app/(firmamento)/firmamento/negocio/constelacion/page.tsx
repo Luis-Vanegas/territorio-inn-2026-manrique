@@ -87,7 +87,7 @@ export default async function NegocioConstelacionPage() {
   const masDeOsm = comerciosCerca.length - 6;
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+    <div className="flex flex-col gap-5">
       <SelectorNegocio negocios={negocios} actual={actual} />
       <AvisoUbicacion revision={revisarUbicacion(portafolio)} barrio={portafolio.barrio} />
 

@@ -40,11 +40,6 @@ export default async function ModeradoresPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <p className="max-w-2xl font-sans text-base leading-relaxed text-tinta/70">
-        Un moderador ve todas las fichas, con sus contactos, y decide qué se publica. Dale el acceso solo a quien
-        trabaja en el equipo, y quítaselo cuando deje de hacerlo.
-      </p>
-
       <Tarjeta titulo="Invitar moderador" id="titulo-invitar">
         <FormularioInvitacion tipo="moderador" destino="el panel del equipo" />
         <InvitacionesPendientes invitaciones={invitaciones} />

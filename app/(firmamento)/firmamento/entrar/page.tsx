@@ -101,6 +101,9 @@ export default async function EntrarFirmamentoPage({
             </Link>
           </Aviso>
         )}
+        <p className="font-sans text-sm text-tinta/70">
+          Para el equipo de Constelaciones y el jurado. Entra con el correo y la contraseña que te dieron.
+        </p>
         <FormularioEquipo />
         {conGoogle && (
           <>
