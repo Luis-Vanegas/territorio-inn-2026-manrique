@@ -73,8 +73,8 @@ Plan: `docs/plan-reto-2026-10.md` y `docs/plan-diseno-2026-10.md`. Rama `reto/al
 Rama `feat/revision-final-jurado`, detalle en `odd/tasks/revision-final-jurado.md`.
 
 - [x] Paneles con descripción por página, sin jerga; adaptativo a 375 px; CRM corregido.
-- [ ] Cuenta del jurado: Equipo con contraseña (`npm run db:admin`), la crea Luis.
-- [ ] Aplicar 038 en producción (respaldo antes). Probada en la rama de Neon `prueba-038` (borrarla después).
+- [x] Cuenta del jurado: Equipo con contraseña, creada por Luis el 9-oct (`jurado@tu-dominio.co`).
+- [x] 038 aplicada en producción el 9-oct (respaldo `respaldo-pre-038`). Borrar las ramas de Neon `prueba-038` y `respaldo-pre-038` cuando todo ande.
 - [ ] Recorrer los paneles con sesión en el navegador antes de la entrega.
 
 ## ✨ Firmamento: login por rol y paneles (asesoría v2, 2–3 oct)
