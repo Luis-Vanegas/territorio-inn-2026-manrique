@@ -26,9 +26,12 @@ export interface ModuloFuturo {
 const EMPLEO_ACTIVO = process.env.NEXT_PUBLIC_MODULO_EMPLEO === "true";
 
 export const reto = {
+  pregunta: "¿Has visto a Manrique de noche?",
   parrafos: [
-    "¿Han visto a Manrique de noche? Parece un cielo de estrellas, pero cuando caminas por sus calles descubres la verdadera luz: sus negocios y emprendedores. En un país donde el 87 % de los micronegocios no figura en mapas ni registros oficiales, creamos Constelaciones: una red comunitaria gratuita que los georreferencia en minutos, conectando a vecinos y agrupando locales cercanos para que se recomienden y crezcan juntos.",
-    "Firmamento, nuestro tablero de datos e inteligencia artificial, dota a cada comerciante de métricas para medir su negocio y un vigía de convocatorias públicas para que ninguna ayuda se pierda. Porque en Manrique cada negocio es una estrella… y juntos iluminamos la comuna.",
+    "Desde lejos parece un cielo encendido de estrellas, pero cuando caminas sus cuadras, subes las lomas y entras a sus esquinas, descubres de dónde viene esa luz: de la señora de las empanadas, del taller de la esquina, de la confeccionista y de cada vecino que saca adelante su día a día.",
+    "Somos estudiantes del ITM y vecinos de la comuna. Conocemos Manrique porque lo caminamos, vivimos sus retos y sabemos que gran parte de su economía popular existe en el silencio de los mapas: sin aparecer en internet ni en los registros oficiales. Por eso nació Constelaciones.",
+    "Pero ser parte de esta constelación no es solo tener un punto en un mapa. Es pertenecer a una red que te acompaña: aquí te formas en herramientas digitales a tu ritmo, aprendes a vender mejor, descubres convocatorias y apoyos que antes parecían inalcanzables, y te conectas con los comercios vecinos para cuidarse y crecer juntos.",
+    "Porque en Manrique ningún negocio debería estar solo en la oscuridad: cada emprendimiento es una estrella, y juntos formamos el firmamento.",
   ],
 };
 
